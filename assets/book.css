@@ -69,6 +69,7 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .hypothesis-block span { margin-right: .45rem; font-weight: 700; }
 .tool-list { margin: 1.4rem 0; padding: 1rem 1rem 1rem 3.2rem; border-left: .25rem solid var(--blue); background: #f3f5fb; }
 .tool-list li { margin: .4rem 0; padding-left: .25rem; }
+.use-case-list { padding: 1rem 1rem 1rem 2.6rem; border: 1px solid var(--line); border-radius: .35rem; background: #fff; }
 .rethinking-box { margin: 2rem 0; padding: 1.15rem 1.25rem; border: 1px solid #d9dcf0; border-radius: .35rem; background: #f0f1fa; }
 .rethinking-box h3 { margin: 0 0 .45rem; color: var(--blue); font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; font-size: 1rem; }
 .rethinking-box p { margin: 0; font-size: .96rem; line-height: 1.72; }

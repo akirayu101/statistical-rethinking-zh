@@ -77,7 +77,19 @@
     "confidence interval": "置信区间",
     "cross-validation": "交叉验证",
     "information criterion": "信息准则",
-    "predictive accuracy": "预测准确性"
+    "predictive accuracy": "预测准确性",
+    "influential observation": "高影响力观测",
+    "Neanderthal": "尼安德特人",
+    "partial pooling": "部分汇聚",
+    "hierarchical model": "层级模型",
+    "random effects model": "随机效应模型",
+    "mixed effects model": "混合效应模型",
+    "imputation": "插补",
+    "treatment effect": "处理效应",
+    "identification problem": "识别问题",
+    "confounding variable": "混杂变量",
+    "intervention": "干预",
+    "randomized controlled experiment": "随机对照实验"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"
