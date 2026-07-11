@@ -73,6 +73,21 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .use-case-list { padding: 1rem 1rem 1rem 2.6rem; border: 1px solid var(--line); border-radius: .35rem; background: #fff; }
 .roadmap-list { counter-reset: roadmap; }
 .roadmap-list li { margin-bottom: 1rem; }
+.globe-figure img { width: min(100%, 34rem); }
+.marble-conjectures { display: grid; grid-template-columns: repeat(5, minmax(6rem, 1fr)); gap: .6rem; margin: 1.5rem 0; padding: 0; list-style-position: inside; }
+.marble-conjectures li { padding: .65rem .55rem; border: 1px solid var(--line); border-radius: .35rem; background: #fff; text-align: center; white-space: nowrap; }
+.marble-set { display: inline-flex; gap: .18em; align-items: center; vertical-align: -.08em; white-space: nowrap; }
+.marble { display: inline-block; width: .86em; height: .86em; border: .1em solid #1f211d; border-radius: 50%; background: #fff; }
+.marble.blue { border-color: #172860; background: #315bd7; }
+.data-sequence { margin-inline: .35rem; padding: .18rem .3rem; border-radius: .3rem; background: var(--blue-soft); }
+.marble-tree { margin: 1.5rem auto; padding: .75rem; max-width: 46rem; overflow-x: auto; border: 1px solid var(--line); border-radius: .5rem; background: #fff; }
+.marble-tree svg { display: block; width: 100%; min-width: 24rem; height: auto; }
+.marble-tree.wide svg { min-width: 42rem; }
+.marble-tree .tree-lines { stroke: #30322d; stroke-width: 2; }
+.marble-tree .tree-root { fill: #30322d; }
+.marble-tree .tree-node { stroke: #1f211d; stroke-width: 2; }
+.marble-tree .tree-node.white { fill: #fff; }
+.marble-tree .tree-node.blue { fill: #315bd7; stroke: #172860; }
 .rethinking-box { margin: 2rem 0; padding: 1.15rem 1.25rem; border: 1px solid #d9dcf0; border-radius: .35rem; background: #f0f1fa; }
 .rethinking-box h3 { margin: 0 0 .45rem; color: var(--blue); font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; font-size: 1rem; }
 .rethinking-box p { margin: 0; font-size: .96rem; line-height: 1.72; }
@@ -100,4 +115,5 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
   .toc-number { grid-column: 1 / -1; }
   .book-article > p, .book-article section > p { font-size: 1.02rem; text-align: left; }
   .scroll-hint { display: block; }
+  .marble-conjectures { grid-template-columns: 1fr; }
 }

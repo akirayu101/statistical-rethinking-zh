@@ -104,9 +104,6 @@ def main() -> int:
         for figure in article.select("figure"):
             if figure.select_one("figcaption") is None:
                 failures.append(f"{path.name}: figure without figcaption")
-            for svg in figure.select("svg[role='img']"):
-                if svg.select_one("title") is None or svg.select_one("desc") is None:
-                    failures.append(f"{path.name}: accessible SVG requires title and desc")
             for image in figure.select("img[src]"):
                 src = image.get("src", "")
                 if not image.get("alt", "").strip():
@@ -124,6 +121,9 @@ def main() -> int:
                                 failures.append(f"{path.name}: image asset too small {src} ({width}x{height})")
                         except Exception as error:
                             failures.append(f"{path.name}: unreadable image asset {src}: {error}")
+        for svg in article.select("svg[role='img']"):
+            if svg.select_one("title") is None or svg.select_one("desc") is None:
+                failures.append(f"{path.name}: accessible SVG requires title and desc")
         contract = CONTRACTS.get(path.stem)
         if contract:
             required_status = contract.get("required_status")

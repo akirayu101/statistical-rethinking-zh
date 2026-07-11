@@ -1,0 +1,125 @@
+<article class="book-article" data-chapter="chapter-02" data-source-pages="35-37">
+  <header class="chapter-header">
+    <p class="eyebrow">第二章</p>
+    <h1>小世界与大世界</h1>
+    <p class="source-range">当前译稿对应原书 PDF 第 35–37 页</p>
+  </header>
+
+  <p>1492 年，Cristoforo Colombo（Christopher Columbus，中文常译“哥伦布”）那次声名狼藉的向西航行开始时，他相信地球是球形的。在这一点上，他和当时大多数受过教育的人一样。与大多数人不同的是，他还相信地球比实际小得多：赤道周长只有 30,000 公里，而不是真实的 40,000 公里（图 2.1）。<sup><a href="#note-37" aria-label="尾注 37">37</a></sup>这是欧洲历史上影响最为深远的错误之一。</p>
+
+  <p>如果哥伦布相信地球周长是 40,000 公里，他就会正确推断出，船队无法携带足够的食物与饮用水，一路向西完成前往亚洲的航程。但若周长只有 30,000 公里，亚洲便位于加利福尼亚海岸以西不远处；携带足够补给抵达那里似乎可行。这项非传统估计给了他部分勇气，于是哥伦布扬帆出海，最终在巴哈马群岛登陆。</p>
+
+  <figure class="book-figure image-figure globe-figure" id="fig-2-1">
+    <img src="/media/behaim-globe-1492.png" width="1088" height="1083" alt="Martin Behaim 1492 年地球仪的历史插图，欧洲在右，亚洲和标为 Cipangu 的日本在左">
+    <figcaption><strong>图 2.1：</strong>Martin Behaim 1492 年地球仪的插图，展示哥伦布预想的小世界。欧洲位于右侧，亚洲位于左侧；标为“Cipangu”的大岛是日本。</figcaption>
+  </figure>
+
+  <p>哥伦布根据“世界很小”的看法作出预测。但他生活在一个大世界里，因此预测的某些部分错了。对他而言，这次错误很幸运。他的小世界模型以一种没有预料到的方式出错：航路上横着大片陆地。如果他按预期方式出错——欧洲与亚洲之间除了海洋别无所有——那么，整个探险队早在抵达东印度群岛之前就会耗尽补给。</p>
+
+  <p>哥伦布的小世界与大世界，构成模型和现实之间的对照。所有统计建模都有同样两副框架：模型自身的<strong>小世界</strong>，以及我们希望把模型部署其中的<strong>大世界</strong>。<sup><a href="#note-38" aria-label="尾注 38">38</a></sup>在两个世界之间航行，始终是统计建模的核心挑战；忘记两者的区别，会让挑战更加严峻。</p>
+
+  <p><strong>小世界</strong>是模型自包含的逻辑世界。在小世界中，一切可能性都已列出，不会出现“欧亚之间原来存在一整块巨大大陆”这样的纯粹意外。在模型的小世界中，我们必须能够验证模型逻辑，确保它在有利假设下按预期运行。贝叶斯模型在这方面有一些优势，因为它对最优性有合理主张：假设小世界准确描述了真实世界，就没有其他模型能更好地利用数据中的信息、支持更好的决策。<sup><a href="#note-39" aria-label="尾注 39">39</a></sup></p>
+
+  <p><strong>大世界</strong>是部署模型的更广阔语境。大世界中可能发生小世界从未设想的事件。而且，模型永远只是大世界的不完整表征；即使各种事件都已被妥善列出，它仍会犯错。模型在小世界中逻辑自洽，并不能保证它在大世界中同样最优，但至少能带来一点温暖的安慰。</p>
+
+  <p>本章将开始构建贝叶斯模型。贝叶斯模型从证据中学习的方式，在小世界中可以说是最优的；当其假设近似现实时，它在大世界中也会表现良好。但大世界表现必须通过实际证据展示，不能只靠逻辑推导。在两个世界之间来回穿梭，使贝叶斯推断等形式方法与同行评议等非形式方法都能发挥不可替代的作用。</p>
+
+  <p>本章聚焦小世界。它以概率理论最本质的形式解释概率：计算事情可能以多少种方式发生。贝叶斯推断会从这一视角自动产生。接着，本章介绍贝叶斯统计模型的程式化组成部分，也就是一个从数据中学习的模型；然后展示怎样赋予模型生命，使其产生估计。</p>
+
+  <p>这些工作为下一章奠定基础。下一章将学习如何总结贝叶斯估计，并开始考虑我们对大世界负有的义务。</p>
+
+  <aside class="rethinking-box">
+    <h3>再思考：大世界中的快而省</h3>
+    <p>尝试做科学会不断提醒我们，自然世界十分复杂。然而，从不起眼的蜱虫、勤劳的松鼠到无所事事的树懒，各种动物都经常能够作出适应性决策。但多数动物大概并不是贝叶斯主义者，哪怕只是因为做贝叶斯分析代价高昂，而且依赖一个好模型。</p>
+    <p>动物采用的是适合其当前或过去环境的各种启发式方法。这些启发式方法走适应性捷径；把信息收集与处理的成本，以及过拟合（第 6 章）考虑在内后，它们可能胜过严格的贝叶斯分析。<sup><a href="#note-40" aria-label="尾注 40">40</a></sup>一旦已经知道哪些信息应忽略、哪些应关注，完整贝叶斯分析便是一种浪费。真实动物表明，贝叶斯分析既不是良好决策的必要条件，也不是充分条件。不过，对人类这种动物而言，贝叶斯分析提供了一种发现相关信息并以逻辑方式处理它的通用方法。只是别以为它是唯一方法。</p>
+  </aside>
+
+  <section id="sec-2-1">
+    <h2>2.1 分叉数据的花园</h2>
+
+    <p>本节的目标，是从最朴素的起点构建贝叶斯推断，让它不再带有任何迷信色彩。贝叶斯推断其实只是对各种可能性进行计数和比较。可以类比 Jorge Luis Borges（豪尔赫·路易斯·博尔赫斯）的短篇小说《小径分岔的花园》。故事中的一名男子遇到一本充满矛盾的书。在大多数书中，人物抵达情节点时，必须在不同道路中作出选择。主人公也许来到一个男人家里；她可以杀掉那个人，也可以喝一杯茶。谋杀或饮茶，只会走其中一条路。</p>
+
+    <p>但 Borges 故事中的那本书探索所有道路，每个决定都会向外分支，形成一座不断扩张的小径分岔花园。</p>
+
+    <p>贝叶斯推断提供的正是同一种装置。要对实际发生的事情作出良好推断，考虑所有本来可能发生的事情会很有帮助。贝叶斯分析是一座分叉数据的花园，其中培育着不同的事件序列。随着我们了解到实际发生了什么，一些备选序列会被修剪掉；最后留下的，只有与现有知识在逻辑上相容的序列。</p>
+
+    <p>这种方法会给假说作出定量排序；在给定输入其中的假设与数据后，这种排序最大程度地保守。按大世界标准，它不能保证答案正确；但按小世界标准，它能保证给出由输入信息所能推导的最佳答案。</p>
+
+    <p>来看下面这个玩具例子。</p>
+
+    <section id="sec-2-1-1">
+      <h3>2.1.1 计算各种可能性</h3>
+
+      <p>假设有一个袋子，里面装着四颗弹珠。弹珠有蓝、白两种颜色。我们知道袋中共有四颗，却不知道每种颜色各有多少。已知只有五种可能：</p>
+
+      <ol class="marble-conjectures">
+        <li><span class="marble-set" aria-label="0 颗蓝色，4 颗白色"><i class="marble white"></i><i class="marble white"></i><i class="marble white"></i><i class="marble white"></i></span></li>
+        <li><span class="marble-set" aria-label="1 颗蓝色，3 颗白色"><i class="marble blue"></i><i class="marble white"></i><i class="marble white"></i><i class="marble white"></i></span></li>
+        <li><span class="marble-set" aria-label="2 颗蓝色，2 颗白色"><i class="marble blue"></i><i class="marble blue"></i><i class="marble white"></i><i class="marble white"></i></span></li>
+        <li><span class="marble-set" aria-label="3 颗蓝色，1 颗白色"><i class="marble blue"></i><i class="marble blue"></i><i class="marble blue"></i><i class="marble white"></i></span></li>
+        <li><span class="marble-set" aria-label="4 颗蓝色，0 颗白色"><i class="marble blue"></i><i class="marble blue"></i><i class="marble blue"></i><i class="marble blue"></i></span></li>
+      </ol>
+
+      <p>这些是与我们对袋中内容的知识相容的全部可能。把这五种可能称为<strong>猜想</strong>。</p>
+
+      <p>我们的目标，是利用关于袋中内容的一些证据，找出哪种猜想最可信。现在确实有一些证据：每次从袋中取出一颗弹珠，记录后放回，再摇匀袋子，然后继续抽取；连续三次得到的顺序是
+        <span class="marble-set data-sequence" aria-label="蓝色、白色、蓝色"><i class="marble blue"></i><i class="marble white"></i><i class="marble blue"></i></span>。这就是数据。</p>
+
+      <p>现在来种下花园，看看怎样用数据推断袋中有什么。先只考虑一个猜想：袋里有一颗蓝色和三颗白色弹珠，即
+        <span class="marble-set" aria-label="1 颗蓝色，3 颗白色"><i class="marble blue"></i><i class="marble white"></i><i class="marble white"></i><i class="marble white"></i></span>。第一次从袋中抽取时，可能发生四件事，分别对应袋中的四颗弹珠。可以把分叉的可能性画出来：</p>
+
+      <div class="marble-tree" role="group" aria-label="第一次抽取的四条可能路径">
+        <svg viewBox="0 0 420 180" role="img" aria-labelledby="tree-one-title tree-one-desc">
+          <title id="tree-one-title">第一次抽取的分叉路径</title>
+          <desc id="tree-one-desc">从袋子出发分成四条路径，一条得到蓝色弹珠，三条得到彼此不同的白色弹珠。</desc>
+          <g class="tree-lines"><line x1="210" y1="150" x2="70" y2="36"/><line x1="210" y1="150" x2="160" y2="36"/><line x1="210" y1="150" x2="260" y2="36"/><line x1="210" y1="150" x2="350" y2="36"/></g>
+          <circle class="tree-root" cx="210" cy="150" r="6"/>
+          <circle class="tree-node blue" cx="70" cy="36" r="12"/><circle class="tree-node white" cx="160" cy="36" r="12"/><circle class="tree-node white" cx="260" cy="36" r="12"/><circle class="tree-node white" cx="350" cy="36" r="12"/>
+        </svg>
+      </div>
+
+      <p>请注意，从数据的角度看，三颗白色弹珠虽然长得一样——毕竟我们只记录颜色——它们实际上对应不同事件。这一点很重要，因为它意味着看到白色的方式比看到蓝色多三倍。</p>
+
+      <p>现在考虑从袋中再抽一次，花园会向外扩张一层：</p>
+
+      <div class="marble-tree wide" role="group" aria-label="连续两次抽取的十六条可能路径">
+        <svg viewBox="0 0 760 330" role="img" aria-labelledby="tree-two-title tree-two-desc">
+          <title id="tree-two-title">连续两次抽取的分叉路径</title>
+          <desc id="tree-two-desc">第一次抽取分成四条路径，每条路径在第二次抽取时又分成四条，因此共有十六条路径。</desc>
+          <g class="tree-lines">
+            <line x1="380" y1="305" x2="95" y2="220"/><line x1="380" y1="305" x2="285" y2="220"/><line x1="380" y1="305" x2="475" y2="220"/><line x1="380" y1="305" x2="665" y2="220"/>
+            <line x1="95" y1="208" x2="35" y2="55"/><line x1="95" y1="208" x2="75" y2="55"/><line x1="95" y1="208" x2="115" y2="55"/><line x1="95" y1="208" x2="155" y2="55"/>
+            <line x1="285" y1="208" x2="225" y2="55"/><line x1="285" y1="208" x2="265" y2="55"/><line x1="285" y1="208" x2="305" y2="55"/><line x1="285" y1="208" x2="345" y2="55"/>
+            <line x1="475" y1="208" x2="415" y2="55"/><line x1="475" y1="208" x2="455" y2="55"/><line x1="475" y1="208" x2="495" y2="55"/><line x1="475" y1="208" x2="535" y2="55"/>
+            <line x1="665" y1="208" x2="605" y2="55"/><line x1="665" y1="208" x2="645" y2="55"/><line x1="665" y1="208" x2="685" y2="55"/><line x1="665" y1="208" x2="725" y2="55"/>
+          </g>
+          <circle class="tree-root" cx="380" cy="305" r="6"/>
+          <circle class="tree-node blue" cx="95" cy="220" r="11"/><circle class="tree-node white" cx="285" cy="220" r="11"/><circle class="tree-node white" cx="475" cy="220" r="11"/><circle class="tree-node white" cx="665" cy="220" r="11"/>
+          <g class="tree-leaves">
+            <circle class="tree-node blue" cx="35" cy="55" r="10"/><circle class="tree-node white" cx="75" cy="55" r="10"/><circle class="tree-node white" cx="115" cy="55" r="10"/><circle class="tree-node white" cx="155" cy="55" r="10"/>
+            <circle class="tree-node blue" cx="225" cy="55" r="10"/><circle class="tree-node white" cx="265" cy="55" r="10"/><circle class="tree-node white" cx="305" cy="55" r="10"/><circle class="tree-node white" cx="345" cy="55" r="10"/>
+            <circle class="tree-node blue" cx="415" cy="55" r="10"/><circle class="tree-node white" cx="455" cy="55" r="10"/><circle class="tree-node white" cx="495" cy="55" r="10"/><circle class="tree-node white" cx="535" cy="55" r="10"/>
+            <circle class="tree-node blue" cx="605" cy="55" r="10"/><circle class="tree-node white" cx="645" cy="55" r="10"/><circle class="tree-node white" cx="685" cy="55" r="10"/><circle class="tree-node white" cx="725" cy="55" r="10"/>
+          </g>
+        </svg>
+        <p class="scroll-hint">图较宽，可横向滚动查看全部十六条路径。</p>
+      </div>
+
+      <p>现在，花园中共有 16 条可能路径，每条路径对应两次抽取的一个结果对。第二次抽取时，上面的每条路径都会再次分成四条。为什么？</p>
+    </section>
+  </section>
+
+  <section class="endnotes" id="chapter-02-notes" role="doc-endnotes">
+    <h2>尾注</h2>
+    <ol start="37">
+      <li id="note-37">Morison（1942）。地球仪插图改自 Wikipedia 的 Martin Behaim 词条所收公版图像。除了低估地球周长，哥伦布还高估了亚洲的大小，以及中国大陆与日本之间的距离。 <a class="backref" href="#fig-2-1" aria-label="返回正文">↩</a></li>
+      <li id="note-38">这种区分与术语来自 Savage（1962）。Savage 用它们表达从较少现实性到较多现实性的一系列模型。统计模型很少是大世界。 <a class="backref" href="#sec-2-1" aria-label="返回正文">↩</a></li>
+      <li id="note-39">关于贝叶斯推断在决策论意义上的最优性，参见 Robert（2007）的全面论述。 <a class="backref" href="#sec-2-1" aria-label="返回正文">↩</a></li>
+      <li id="note-40">参见 Simon（1969）以及 Gigerenzer 等（2000）的相关章节。 <a class="backref" href="#sec-2-1" aria-label="返回正文">↩</a></li>
+    </ol>
+  </section>
+
+  <aside class="translation-status" aria-label="翻译状态">
+    <strong>译稿状态：</strong>PDF 第 35–37 页已完成翻译、逐页渲染对照，以及桌面和移动端浏览器验收。
+  </aside>
+</article>

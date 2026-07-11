@@ -97,7 +97,13 @@
     "causal salad": "因果沙拉",
     "omitted variable": "遗漏变量",
     "control variable": "控制变量",
-    "spatial correlation": "空间相关性"
+    "spatial correlation": "空间相关性",
+    "small world": "小世界",
+    "large world": "大世界",
+    "heuristic": "启发式方法",
+    "conjecture": "猜想",
+    "plausibility": "可信程度",
+    "peer review": "同行评议"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"
