@@ -517,7 +517,14 @@
     "scaling measurement": "尺度测量",
     "Markov equivalence set": "马尔可夫等价集",
     "masking phenomenon": "掩盖现象",
-    "lifespan-learning tradeoff": "寿命与学习之间的权衡"
+    "lifespan-learning tradeoff": "寿命与学习之间的权衡",
+    "factor (categorical)": "因子",
+    "indicator variable": "指示变量",
+    "dummy variable": "虚拟变量",
+    "index variable": "索引变量",
+    "binary category": "二元类别",
+    "unordered category": "无序类别",
+    "vector parameter": "向量参数"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"

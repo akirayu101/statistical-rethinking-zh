@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-05" data-source-pages="143-172">
+<article class="book-article" data-chapter="chapter-05" data-source-pages="143-175">
   <header class="chapter-header">
     <p class="eyebrow">第五章</p>
     <h1>多变量与虚假华夫饼</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 143–172 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 143–175 页</p>
   </header>
 
   <p>在北美——即便不算全世界——最可靠的华夫饼来源之一，是华夫饼屋（Waffle House）餐厅。华夫饼屋几乎总在营业，哪怕飓风刚刚过境也不例外。多数门店都投入资金做好灾害准备，其中包括自备发电机。因此，美国灾害救援机构联邦紧急事务管理署（FEMA）会非正式地把华夫饼屋当作衡量灾情严重程度的指标。<sup id="note-77-ref"><a href="#note-77">77</a></sup> 如果华夫饼屋关门了，那就是严重事件。</p>
@@ -1062,8 +1062,123 @@ K &lt;- rnorm( n , N - M )
 d_sim3 &lt;- data.frame(K=K,N=N,M=M)</code></pre>
       </figure>
       <p>在灵长类乳汁例子中，大体型与高新皮层百分比之间的正关联，可能源自寿命与学习之间的权衡。大型动物往往寿命较长；在这类动物中，投资学习可能更划算，因为学习成本可以摊销到更长寿命上。于是，大体型和大新皮层都会影响乳汁组成，但出于不同原因、方向也不同。这个故事意味着第一幅 DAG——从 <span class="math-inline"><var>M</var></span> 指向 <span class="math-inline"><var>N</var></span>——才是正确的。然而，凭手头证据并不容易看出哪一个正确。要计算马尔可夫等价集，下面先定义第一幅 DAG，再请 <code>dagitty</code> 完成繁重工作。</p>
-      <p class="continuation-note">计算马尔可夫等价集的代码与侧栏余文将在原书 PDF 第 173 页继续。</p>
+      <figure class="code-listing" id="code-5-43">
+        <figcaption>R 代码 5.43</figcaption>
+        <pre><code>dag5.7 &lt;- dagitty( "dag{
+    M -&gt; K &lt;- N
+    M -&gt; N }" )
+coordinates(dag5.7) &lt;- list( x=c(M=0,K=1,N=2) , y=c(M=0.5,K=1,N=0.5) )
+MElist &lt;- equivalentDAGs(dag5.7)</code></pre>
+      </figure>
+      <p>现在 <code>MElist</code> 应当包含六个不同的 DAG。要把它们全部画出来，可以使用 <code>drawdag(MElist)</code>。</p>
     </aside>
+  </section>
+
+  <section id="sec-5-3">
+    <h2>5.3 类别变量</h2>
+
+    <p>统计方法中的一个常见问题是：某个类别存在或不存在时，结果会发生多大变化。这里的<strong>类别</strong>是离散且无序的。再次考虑乳汁能量数据中的不同物种：有些是类人猿，另一些是新大陆猴。我们可能想问，当物种是类人猿而不是猴时，预测应当怎样变化。分类学组别是类别变量，因为任何物种都不可能一半是猿、一半是猴（离散性），也没有哪一类比另一类“更大”或“更小”的意义（无序性）。类别变量的其他常见例子包括：</p>
+
+    <ul class="category-examples">
+      <li><strong>性别：</strong>男性、女性</li>
+      <li><strong>发育状态：</strong>婴儿、幼体、成年</li>
+      <li><strong>地理区域：</strong>非洲、欧洲、美拉尼西亚</li>
+    </ul>
+
+    <p>许多读者已经知道，这类通常称为<strong>因子</strong>的变量很容易纳入线性模型。但人们通常不太清楚，它们究竟怎样进入模型，因为多数时候计算机替我们完成了全部工作。不过，这里有一些细微之处，值得揭开机器内部的机制。多数情况下，建立类别模型有不同方式；其中一种可能更容易，因为更容易定义先验。类别变量的估计也可能比普通连续变量更难解释。了解机器怎样工作，会消除很多困难。</p>
+
+    <section id="sec-5-3-1">
+      <h3>5.3.1 二元类别</h3>
+
+      <p>最简单的情形中，关心的变量只有两个类别，例如男性和女性。让我们回到第 4 章见过的 Kalahari 数据。当时在预测身高时忽略了性别，但显然会预期男性与女性的平均身高不同。先看看有哪些变量：</p>
+
+      <figure class="code-listing" id="code-5-44">
+        <figcaption>R 代码 5.44</figcaption>
+        <pre><code>data(Howell1)
+d &lt;- Howell1
+str(d)</code></pre>
+        <pre class="code-output"><code>'data.frame': 544 obs. of 4 variables:
+ $ height: num 152 140 137 157 145 ...
+ $ weight: num 47.8 36.5 31.9 53 41.3 ...
+ $ age   : num 63 63 65 41 51 35 32 27 19 54 ...
+ $ male  : int 1 0 0 1 0 1 0 1 0 1 ...</code></pre>
+      </figure>
+
+      <p><code>male</code> 是新的预测变量，也是<strong>指示变量</strong>的一个例子。指示变量有时也称为“虚拟变量”，是把无序类别编码进定量模型的工具。这里绝不意味着“男性”比“女性”多一个单位。<code>male</code> 的用途只是指出样本中的某个人何时为“男性”：男性取值 1，女性（或任何其他类别）取值 0。究竟让“男性”还是“女性”由 1 表示并不重要，模型不会在意；但正确解释模型需要记住这一点，所以最好用被赋值为 1 的类别来命名变量。</p>
+
+      <p>可以用两种方式利用这条信息建模。第一种，是像使用普通预测变量一样，直接在线性模型中使用指示变量。指示变量会为属于该类别的个案“打开”一个参数，同时为另一类别的个案“关闭”同一个参数。看到模型的数学定义后会更容易理解。再次考虑第 4 章那样的身高线性模型；这次忽略体重和其他变量，只关注性别：</p>
+
+      <div class="equation-block model-system-equation" id="eq-5-height-indicator-model">
+        <div><var>h</var><sub>i</sub> ∼ Normal(<var>μ</var><sub>i</sub>, <var>σ</var>)</div>
+        <div><var>μ</var><sub>i</sub> = <var>α</var> + <var>β</var><sub>m</sub><var>m</var><sub>i</sub></div>
+        <div><var>α</var> ∼ Normal(178, 20)</div>
+        <div><var>β</var><sub>m</sub> ∼ Normal(0, 10)</div>
+        <div><var>σ</var> ∼ Uniform(0, 50)</div>
+      </div>
+
+      <p>其中 <span class="math-inline"><var>h</var></span> 是身高，<span class="math-inline"><var>m</var></span> 是指示男性个体的虚拟变量。参数 <span class="math-inline"><var>β</var><sub>m</sub></span> 只会影响 <span class="math-inline"><var>m</var><sub>i</sub> = 1</span> 的个案。若 <span class="math-inline"><var>m</var><sub>i</sub> = 0</span>，它在模型 <span class="math-inline"><var>α</var> + <var>β</var><sub>m</sub><var>m</var><sub>i</sub></span> 中乘以零，因此无论其值是多少，对预测都没有影响。也就是说，当 <span class="math-inline"><var>m</var><sub>i</sub> = 1</span> 时，线性模型是 <span class="math-inline"><var>μ</var><sub>i</sub> = <var>α</var> + <var>β</var><sub>m</sub></span>；当 <span class="math-inline"><var>m</var><sub>i</sub> = 0</span> 时，则只是 <span class="math-inline"><var>μ</var><sub>i</sub> = <var>α</var></span>。</p>
+
+      <p>采用这种方法意味着，<span class="math-inline"><var>β</var><sub>m</sub></span> 表示男性与女性预期身高的差异。参数 <span class="math-inline"><var>α</var></span> 同时用于预测女性和男性身高，但男性身高会额外加上 <span class="math-inline"><var>β</var><sub>m</sub></span>。这也意味着 <span class="math-inline"><var>α</var></span> 不再是样本的平均身高，而只是女性的平均身高。这会让合理先验更难指定一些。如果在看到数据前并不清楚合理的预期身高差异，那么这种纳入类别的方式可能过于麻烦。</p>
+
+      <p>此外，这种方法必然假设对一个类别——本例中的“男性”——比另一个类别有更多不确定性。为什么？因为对男性的预测包含两个参数，因此也包含两个先验。可以直接从先验模拟：</p>
+
+      <figure class="code-listing" id="code-5-45">
+        <figcaption>R 代码 5.45</figcaption>
+        <pre><code>mu_female &lt;- rnorm(1e4,178,20)
+mu_male &lt;- rnorm(1e4,178,20) + rnorm(1e4,0,10)
+precis( data.frame( mu_female , mu_male ) )</code></pre>
+        <pre class="code-output"><code>'data.frame': 10000 obs. of 2 variables:
+              mean    sd   5.5% 94.5% histogram
+mu_female   178.41 20.04 146.30 209.94 ▁▁▃▇▇▂▁▁
+mu_male     177.97 22.40 142.39 214.82 ▁▁▁▃▇▇▂▁▁</code></pre>
+      </figure>
+
+      <p>男性的先验更宽，因为它同时使用两个参数。虽然在这样简单的回归中，这些先验很快就会被数据冲淡，但一般而言仍应谨慎。我们在先验上其实并不比女性身高更不确定男性身高。还有别的方法吗？</p>
+
+      <p>另一种使用同样信息的方法，是改用<strong>索引变量</strong>。索引变量包含与不同类别对应的整数。这些整数只是名称，但也让我们能引用一组对应参数，每个类别一个。本例可以这样构造索引：</p>
+
+      <figure class="code-listing" id="code-5-46">
+        <figcaption>R 代码 5.46</figcaption>
+        <pre><code>d$sex &lt;- ifelse( d$male==1 , 2 , 1 )
+str( d$sex )</code></pre>
+        <pre class="code-output"><code> num [1:544] 2 1 1 2 1 2 1 2 1 2 ...</code></pre>
+      </figure>
+
+      <p>现在“1”表示女性，“2”表示男性，并不暗示顺序；它们只是标签。模型的数学形式变成：</p>
+
+      <div class="equation-block model-system-equation" id="eq-5-height-index-model">
+        <div><var>h</var><sub>i</sub> ∼ Normal(<var>μ</var><sub>i</sub>, <var>σ</var>)</div>
+        <div><var>μ</var><sub>i</sub> = <var>α</var><sub>sex[i]</sub></div>
+        <div><var>α</var><sub>j</sub> ∼ Normal(178, 20), &nbsp; <var>j</var> = 1…2</div>
+        <div><var>σ</var> ∼ Uniform(0, 50)</div>
+      </div>
+
+      <p>这个模型会创建一组 <span class="math-inline"><var>α</var></span> 参数，索引变量的每个唯一值对应一个。本例最终有两个参数 <span class="math-inline"><var>α</var><sub>1</sub></span> 与 <span class="math-inline"><var>α</var><sub>2</sub></span>，下标对应索引变量 <code>sex</code> 中的值。这看起来似乎过分复杂，却解决了先验问题：现在可以给每个参数指定相同先验，对应于“在看到数据前所有类别都相同”的想法。任何类别都不会比另一个类别有更多先验不确定性。稍后还会看到，这种方法可以非常自然地扩展到两个以上的类别。</p>
+
+      <p>下面近似这个索引变量模型的后验：</p>
+
+      <figure class="code-listing" id="code-5-47">
+        <figcaption>R 代码 5.47</figcaption>
+        <pre><code>m5.8 &lt;- quap(
+    alist(
+        height ~ dnorm( mu , sigma ) ,
+        mu &lt;- a[sex] ,
+        a[sex] ~ dnorm( 178 , 20 ) ,
+        sigma ~ dunif( 0 , 50 )
+    ) , data=d )
+precis( m5.8 , depth=2 )</code></pre>
+        <pre class="code-output"><code>       mean   sd   5.5% 94.5%
+a[1] 134.91 1.61 132.34 137.48
+a[2] 142.58 1.70 139.86 145.29
+sigma 27.31 0.83  25.98  28.63</code></pre>
+      </figure>
+
+      <p>注意我给 <code>precis</code> 增加了 <code>depth=2</code>。这会让它显示向量参数，例如新的 <code>a</code> 向量。<code>precis</code> 默认隐藏向量（和矩阵）参数，因为有时这类参数很多，并不想逐一查看它们的值；后面各章会看到具体例子。</p>
+
+      <p>这些参数很容易解释——它们就是每个类别的预期身高。但我们往往关心类别之间的差异。本例中，女性与男性的预期身高差是多少？</p>
+
+      <p class="continuation-note">类别间差异的后验分布与二元类别余文将在原书 PDF 第 176 页继续。</p>
+    </section>
   </section>
 
   <section class="endnotes" id="chapter-05-notes" role="doc-endnotes">
@@ -1079,6 +1194,6 @@ d_sim3 &lt;- data.frame(K=K,N=N,M=M)</code></pre>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 143–172 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 173 页继续。
+    <strong>译稿状态：</strong>PDF 第 143–175 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 176 页继续。
   </aside>
 </article>
