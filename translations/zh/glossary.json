@@ -196,7 +196,14 @@
     "interval of defined boundaries": "边界已知的区间",
     "interval of defined mass": "概率质量已知的区间",
     "credible interval": "可信区间",
-    "compatibility interval": "兼容区间"
+    "compatibility interval": "兼容区间",
+    "quantile": "分位数",
+    "percentile": "百分位数",
+    "highest posterior density interval": "最高后验密度区间",
+    "skewed distribution": "偏斜分布",
+    "median": "中位数",
+    "nested intervals": "嵌套区间",
+    "significance threshold": "显著性阈值"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"

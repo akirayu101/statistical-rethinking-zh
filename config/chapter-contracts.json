@@ -186,7 +186,7 @@
   },
   "chapter-03": {
     "required_status": "in_progress",
-    "source_pages": [65, 70],
+    "source_pages": [65, 73],
     "required_ids": [
       "eq-3-vampire-positive",
       "eq-3-positive-rate",
@@ -208,12 +208,23 @@
       "code-3-8",
       "overthinking-counting-sum",
       "sec-3-2-2",
+      "fig-3-2",
+      "code-3-9",
+      "code-3-10",
+      "code-3-11",
+      "code-3-12",
+      "code-3-13",
+      "fig-3-3",
+      "rethinking-why-95",
       "chapter-03-notes",
       "note-49",
       "note-50",
       "note-51",
       "note-52",
-      "note-53"
+      "note-53",
+      "note-54",
+      "note-55",
+      "note-56"
     ],
     "required_headings": [
       "从想象中采样",
@@ -224,22 +235,26 @@
       "3.2.1 边界已知的区间",
       "过度思考：用 sum 计数",
       "3.2.2 概率质量已知的区间",
+      "再思考：为什么是 95%？",
       "尾注"
     ],
     "counts": {
       "section": 5,
-      "figure": 9,
-      "figure img": 1,
+      "figure": 16,
+      "figure img": 3,
       ".posterior-samples-figure": 1,
+      ".interval-figure": 2,
       ".equation-block": 4,
-      ".code-listing": 8,
-      ".rethinking-box": 2,
+      ".code-listing": 13,
+      ".rethinking-box": 3,
       ".overthinking-box": 1,
+      ".book-quote": 1,
+      ".fisher-quote": 1,
       ".frequency-scenario": 1,
       ".frequency-scenario li": 3,
       ".sample-questions": 1,
       ".sample-questions li": 5,
-      ".endnotes li": 5
+      ".endnotes li": 8
     }
   }
 }
