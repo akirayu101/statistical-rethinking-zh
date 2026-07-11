@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-05" data-source-pages="143-163">
+<article class="book-article" data-chapter="chapter-05" data-source-pages="143-166">
   <header class="chapter-header">
     <p class="eyebrow">第五章</p>
     <h1>多变量与虚假华夫饼</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 143–163 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 143–166 页</p>
   </header>
 
   <p>在北美——即便不算全世界——最可靠的华夫饼来源之一，是华夫饼屋（Waffle House）餐厅。华夫饼屋几乎总在营业，哪怕飓风刚刚过境也不例外。多数门店都投入资金做好灾害准备，其中包括自备发电机。因此，美国灾害救援机构联邦紧急事务管理署（FEMA）会非正式地把华夫饼屋当作衡量灾情严重程度的指标。<sup id="note-77-ref"><a href="#note-77">77</a></sup> 如果华夫饼屋关门了，那就是严重事件。</p>
@@ -714,8 +714,138 @@ mtext( "Total counterfactual effect of M on D" )</code></pre>
         <p>现在只模拟 <span class="math-inline"><var>D</var></span>——注意代码中 <code>sim()</code> 的 <code>vars</code> 参数。无需模拟 <span class="math-inline"><var>A</var></span>，因为 <span class="math-inline"><var>M</var></span> 不影响它。<a href="#fig-5-7">图 5.7</a>显示结果；趋势自然弱得多，因为已经发现没有证据表明 <span class="math-inline"><var>M</var></span> 强烈影响 <span class="math-inline"><var>D</var></span>。</p>
 
         <p>在包含许多潜在路径的更复杂模型中，同样的策略可以为关心的暴露计算反事实。但后面会看到，某些暴露 <span class="math-inline"><var>X</var></span> 对结果 <span class="math-inline"><var>Y</var></span> 的可信、无混杂因果效应往往根本无法估计。即使如此，仍有重要的反事实值得考虑；后续各章会回到这个主题。</p>
+
+        <aside class="overthinking-box" id="overthinking-simulating-counterfactuals">
+          <h3>过度思考：自行模拟反事实</h3>
+          <p>本节例子用 <code>sim()</code> 隐藏了细节，但自己模拟反事实并不困难，只需使用模型定义。假设已经拟合模型 <code>m5.3_A</code>，其中包含 <span class="math-inline"><var>A</var> → <var>D</var></span> 与 <span class="math-inline"><var>A</var> → <var>M</var> → <var>D</var></span> 两条因果路径。先定义要赋给 <span class="math-inline"><var>A</var></span> 的取值范围：</p>
+          <figure class="code-listing" id="code-5-24">
+            <figcaption>R 代码 5.24</figcaption>
+            <pre><code>A_seq &lt;- seq( from=-2 , to=2 , length.out=30 )</code></pre>
+          </figure>
+          <p>接着提取后验样本，因为要为每组样本模拟观测。然后只需像此前例子一样，把模型定义与样本结合。模型定义了 <span class="math-inline"><var>M</var></span> 的分布；把它转换为对应的模拟函数，本例是 <code>rnorm</code>：</p>
+          <figure class="code-listing" id="code-5-25">
+            <figcaption>R 代码 5.25</figcaption>
+            <pre><code>post &lt;- extract.samples( m5.3_A )
+M_sim &lt;- with( post , sapply( 1:30 ,
+    function(i) rnorm( 1e3 , aM + bAM*A_seq[i] , sigma_M ) ) )</code></pre>
+          </figure>
+          <p>这里使用 <code>with()</code>，免得在每个参数名前都输入 <code>post$</code>。<code>rnorm</code> 内部的线性模型直接来自模型定义。结果是一个矩阵：样本在行，<code>A_seq</code> 的取值对应各列。得到 <span class="math-inline"><var>M</var></span> 的模拟值后，也可以模拟 <span class="math-inline"><var>D</var></span>：</p>
+          <figure class="code-listing" id="code-5-26">
+            <figcaption>R 代码 5.26</figcaption>
+            <pre><code>D_sim &lt;- with( post , sapply( 1:30 ,
+    function(i) rnorm( 1e3 , a + bA*A_seq[i] + bM*M_sim[,i] , sigma ) ) )</code></pre>
+          </figure>
+          <p>把 <code>A_seq</code> 与 <code>D_sim</code> 的列均值画在一起，就会得到与前面相同的结果。复杂模型可能需要模拟更多变量，但基本程序不变。</p>
+        </aside>
       </section>
     </section>
+  </section>
+
+  <section id="sec-5-2">
+    <h2>5.2 被掩盖的关系</h2>
+
+    <p>离婚率例子表明，多预测变量可以用来排除虚假关联。使用多个预测变量的第二个理由，是在二元关系看不出任何影响时，测量多个因素对结果的直接影响。这类问题往往出现在两个彼此相关的预测变量之间：其中一个与结果正相关，另一个与结果负相关。</p>
+
+    <p>下面在一个新的数据背景中研究这类问题：灵长类物种的乳汁组成，以及体重、脑容量等物种特征。<sup id="note-82-ref"><a href="#note-82">82</a></sup> 乳汁是一项巨大的投入，成本远高于妊娠。这样昂贵的资源，很可能会随不同哺乳动物物种的生理与发育细节发生细微调整。先把数据载入 R：</p>
+
+    <figure class="code-listing" id="code-5-27">
+      <figcaption>R 代码 5.27</figcaption>
+      <pre><code>library(rethinking)
+data(milk)
+d &lt;- milk
+str(d)</code></pre>
+    </figure>
+
+    <p>从数据框结构中应能看到：共有 29 行（个案）和 8 个变量（列）。</p>
+
+    <p>一种流行假说认为，脑容量较大的灵长类会产生能量更高的乳汁，以便大脑快速生长。在进化生物学中，回答这类问题会耗费大量精力，因为跨物种比较会遇到许多微妙的统计问题。这里先从简单方法开始，到全书末尾再纳入更多细节。目前考虑的变量是：</p>
+
+    <dl class="term-definitions milk-variables">
+      <dt><code>kcal.per.g</code></dt><dd>每克乳汁含有的能量，单位为千卡。</dd>
+      <dt><code>mass</code></dt><dd>雌性平均体重，单位为千克。</dd>
+      <dt><code>neocortex.perc</code></dt><dd>新皮层质量占脑总质量的百分比。</dd>
+    </dl>
+
+    <p>这里的问题是：以千卡测量的乳汁能量含量，在多大程度上与新皮层占脑质量的百分比相关。新皮层是大脑外侧的灰色部分，在哺乳动物、尤其是灵长类中格外发达。为了看见变量之间被掩盖的关系，最终还会需要雌性体重。先把三个变量标准化；与此前例子一样，标准化既有助于可靠地近似后验，也有助于构造合理先验。</p>
+
+    <figure class="code-listing" id="code-5-28">
+      <figcaption>R 代码 5.28</figcaption>
+      <pre><code>d$K &lt;- scale( d$kcal.per.g )
+d$N &lt;- scale( d$neocortex.perc )
+d$M &lt;- scale( log(d$mass) )</code></pre>
+    </figure>
+
+    <p>首先考虑千卡与新皮层百分比之间的简单二元回归。这个回归已经知道怎样建立，数学形式为：</p>
+    <div class="equation-block model-system-equation" id="eq-5-milk-neocortex-model">
+      <div><var>K</var><sub>i</sub> ∼ Normal(<var>μ</var><sub>i</sub>, <var>σ</var>)</div>
+      <div><var>μ</var><sub>i</sub> = <var>α</var> + <var>β</var><sub>N</sub><var>N</var><sub>i</sub></div>
+    </div>
+
+    <p>其中 <span class="math-inline"><var>K</var></span> 是标准化千卡，<span class="math-inline"><var>N</var></span> 是标准化新皮层百分比。仍需考虑先验，但先用一些模糊先验尝试运行 <code>quap</code>，因为还有一个关键建模问题必须先处理。</p>
+
+    <figure class="code-listing" id="code-5-29">
+      <figcaption>R 代码 5.29</figcaption>
+      <pre><code>m5.5_draft &lt;- quap(
+    alist(
+        K ~ dnorm( mu , sigma ) ,
+        mu &lt;- a + bN*N ,
+        a ~ dnorm( 0 , 1 ) ,
+        bN ~ dnorm( 0 , 1 ) ,
+        sigma ~ dexp( 1 )
+    ) , data=d )</code></pre>
+      <pre class="code-output"><code>Error in quap(alist(K ~ dnorm(mu, sigma), mu &lt;- a + bN * N, a ~ dnorm(0, :
+  initial value in 'vmmin' is not finite
+The start values for the parameters were invalid. This could be caused by
+missing values (NA) in the data or by start values outside the parameter
+constraints. If there are no NA values in the data, try using explicit start
+values.</code></pre>
+    </figure>
+
+    <p>这条令人困惑的错误信息意味着：模型甚至对起始参数值都没有返回有效概率。本例的罪魁祸首是变量 <span class="math-inline"><var>N</var></span> 中的缺失值。查看原始变量即可确认：</p>
+
+    <figure class="code-listing" id="code-5-30">
+      <figcaption>R 代码 5.30</figcaption>
+      <pre><code>d$neocortex.perc</code></pre>
+      <pre class="code-output"><code> [1] 55.16    NA    NA    NA    NA 64.54 64.54 67.64    NA 68.85 58.85 61.69
+[13] 60.32    NA    NA 69.97    NA 70.41    NA 73.40    NA 67.53    NA 71.26
+[25] 72.60    NA 70.24 76.30 75.49</code></pre>
+    </figure>
+
+    <p>输出中的每个 <code>NA</code> 都是缺失值。把这种向量传给 <code>dnorm</code> 之类的似然函数，它不知道该怎么办：缺失值的概率是多少？无论答案是什么，它都不是数字，所以 <code>dnorm</code> 返回 <code>NaN</code>。<code>quap</code>（真正工作的其实是 <code>optim</code>）甚至无法开始，于是放弃，并抱怨名为 <code>vmmin</code> 的怪东西不是有限值。这种晦涩错误信息在 R 中不幸是常态；附加提示说 <code>NA</code> 可能是原因，只是 <code>quap</code> 的猜测。</p>
+
+    <p>修复很容易：手动删掉所有含缺失值的个案。这称为<strong>完整案例分析</strong>。<code>lm</code> 和 <code>glm</code> 等更自动化的模型拟合命令会默默替你删掉这些个案，但这并不总是好事，后面各章会看到原因。现在请先耐心配合；学会亲手完成值得。创建只含完整案例的新数据框：</p>
+
+    <figure class="code-listing" id="code-5-31">
+      <figcaption>R 代码 5.31</figcaption>
+      <pre><code>dcc &lt;- d[ complete.cases(d$K,d$N,d$M) , ]</code></pre>
+    </figure>
+
+    <p>这会创建新数据框 <code>dcc</code>，由 <code>d</code> 中三列都有值的 17 行组成。现在使用新数据框；下面代码唯一的新东西，就是用 <code>dcc</code> 代替 <code>d</code>：</p>
+
+    <figure class="code-listing" id="code-5-32">
+      <figcaption>R 代码 5.32</figcaption>
+      <pre><code>m5.5_draft &lt;- quap(
+    alist(
+        K ~ dnorm( mu , sigma ) ,
+        mu &lt;- a + bN*N ,
+        a ~ dnorm( 0 , 1 ) ,
+        bN ~ dnorm( 0 , 1 ) ,
+        sigma ~ dexp( 1 )
+    ) , data=dcc )</code></pre>
+    </figure>
+
+    <p>在考虑后验预测之前，先考虑这些先验。和许多简单线性回归问题一样，它们没有危害；但合理吗？建立合理先验十分重要，因为模型不再简单后，先验会很有帮助——前提是它们在科学上合理。下面模拟并绘制 50 条先验回归线：</p>
+
+    <figure class="code-listing" id="code-5-33">
+      <figcaption>R 代码 5.33</figcaption>
+      <pre><code>prior &lt;- extract.prior( m5.5_draft )
+xseq &lt;- c(-2,2)
+mu &lt;- link( m5.5_draft , post=prior , data=list(N=xseq) )
+plot( NULL , xlim=xseq , ylim=xseq )
+for ( i in 1:50 ) lines( xseq , mu[i,] , col=col.alpha("black",0.3) )</code></pre>
+    </figure>
+
+    <p class="continuation-note">先验预测图、修订先验与乳汁模型后验将在原书 PDF 第 167 页继续。</p>
   </section>
 
   <section class="endnotes" id="chapter-05-notes" role="doc-endnotes">
@@ -726,10 +856,11 @@ mtext( "Total counterfactual effect of M on D" )</code></pre>
       <li id="note-79">关于因果推断的争论由来已久，大卫·休谟是一个关键引文来源。现代统计学中有一道奇特障碍：经典因果推理要求，如果 A 导致 B，那么 A 出现时 B 就总会出现。但在大多数当代科学模型所描述的概率关系中，谈论概率性原因毫不奇怪，此时 B 只会在 A 之后偶尔发生。参见 <span class="url-text">http://plato.stanford.edu/entries/causation-probabilistic/</span>。 <a class="backref" href="#note-79-ref" aria-label="返回正文">↩</a></li>
       <li id="note-80">可参见 Pearl（2014）的通俗导论及其讨论；另见 Rubin（2005）介绍的一种相关方法。 <a class="backref" href="#note-80-ref" aria-label="返回正文">↩</a></li>
       <li id="note-81">参见 Freckleton（2002）。 <a class="backref" href="#note-81-ref" aria-label="返回正文">↩</a></li>
+      <li id="note-82">数据来自 Hinde 和 Milligan（2011）的表 2。 <a class="backref" href="#note-82-ref" aria-label="返回正文">↩</a></li>
     </ol>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 143–163 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 164 页继续。
+    <strong>译稿状态：</strong>PDF 第 143–166 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 167 页继续。
   </aside>
 </article>
