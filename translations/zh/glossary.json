@@ -358,7 +358,18 @@
     "polynomial": "多项式",
     "model criticism": "模型批评",
     "model revision": "模型修订",
-    "marginal distribution table": "边际分布表"
+    "marginal distribution table": "边际分布表",
+    "centering": "中心化",
+    "posterior mean line": "后验均值线",
+    "posterior inference": "后验推断",
+    "model assumption": "模型假设",
+    "badly specified model": "定义糟糕的模型",
+    "interaction effect": "交互效应",
+    "regression line cloud": "回归线云",
+    "mean uncertainty": "均值不确定性",
+    "correlated random sample": "相关随机样本",
+    "joint posterior": "联合后验",
+    "regression interval": "回归区间"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"

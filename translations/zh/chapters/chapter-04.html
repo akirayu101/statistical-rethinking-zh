@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-04" data-source-pages="89-118">
+<article class="book-article" data-chapter="chapter-04" data-source-pages="89-121">
   <header class="chapter-header">
     <p class="eyebrow">第四章</p>
     <h1>地心模型</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 89–118 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 89–121 页</p>
   </header>
 
   <p>历史对托勒密并不宽厚。克劳狄乌斯·托勒密（约公元 90 年生，168 年卒）是埃及数学家和天文学家，最著名的成就是太阳系地心模型。今天，科学家若想嘲讽某人，有时会把他比作地心模型的拥护者。但托勒密是位天才。他描述行星运动的数学模型（<a href="#fig-4-1">图 4.1</a>）极其准确。为了达到这种精度，模型采用了一种叫作<strong>本轮</strong>的装置，也就是圆上套圆。甚至还能有“本轮上的本轮”：圆上套圆再套圆。只要在适当位置放置足够多的本轮，托勒密模型的预测精度就能超过此前任何人。因此，这套模型沿用了一千多年。托勒密和许多与他相似的人历经数百年艰苦推演，在没有计算机帮助的条件下解决了这一切。任何人被比作托勒密，都应该感到受宠若惊。</p>
@@ -949,6 +949,7 @@ b &lt;- rlnorm( N , 0 , 1 )</code></pre>
           <p>本章采用的程序，是根据看到数据之前对数据的知识——它的约束、范围和理论关系——来选择先验。正因如此，前一节没有展示实际数据。我们是用一般事实，而不是这个样本，来判断先验。接下来再观察模型在真实数据上的表现。</p>
         </aside>
       </section>
+
     </section>
 
     <section id="sec-4-4-2">
@@ -1066,7 +1067,122 @@ sigma    5.07 0.19   4.77   5.38</code></pre>
         </figure>
 
         <p>第一行给出 <span class="math-inline"><var>α</var></span> 的二次近似，第二行给出 <span class="math-inline"><var>β</var></span> 的近似，第三行给出 <span class="math-inline"><var>σ</var></span> 的近似。下面尝试理解这些结果。</p>
-        <p class="continuation-note">参数解释将在原书 PDF 第 119 页继续。</p>
+
+        <p>先关注 <code>b</code>（<span class="math-inline"><var>β</var></span>），因为它是新参数。既然 <span class="math-inline"><var>β</var></span> 是斜率，0.90 就可以读作：一个人体重每增加 1 千克，期望身高增加 0.90 厘米。89% 的后验概率位于 0.84 到 0.97 之间。这表明，接近零或远大于一的 <span class="math-inline"><var>β</var></span> 值，与这些数据和这个模型高度不相容。它绝不是身高与体重关系为线性的证据，因为模型只考虑了直线。它只说明：如果坚持使用直线，斜率约为 0.9 的直线比较可信。</p>
+
+        <p>请记住，默认 <code>precis</code> 输出里的数字，不足以完整描述二次近似后验。还需要方差-协方差矩阵。可以用 <code>vcov</code> 查看参数之间的协方差：</p>
+
+        <figure class="code-listing" id="code-4-45">
+          <figcaption>R 代码 4.45</figcaption>
+          <pre><code>round( vcov( m4.3 ) , 3 )</code></pre>
+          <pre class="code-output"><code>          a     b sigma
+a     0.073 0.000 0.000
+b     0.000 0.002 0.000
+sigma 0.000 0.000 0.037</code></pre>
+        </figure>
+
+        <p>本例中参数之间几乎不协变。使用 <code>pairs(m4.3)</code> 可以同时看到边际后验与协方差。在章末习题中会看到，参数之间缺乏协方差，是一种称为<strong>中心化</strong>的处理带来的结果。</p>
+      </section>
+
+      <section id="sec-4-4-3-2">
+        <h4>4.4.3.2 把后验推断与数据画在一起</h4>
+
+        <p>几乎总是把后验推断与数据画在一起更有用。绘图不仅有助于解释后验，也能对模型假设作非正式检查。如果模型预测远离图中关键观测或模式，就有理由怀疑：模型要么没有正确拟合，要么定义得相当糟糕。即使只把图当作帮助解释后验的工具，它也价值无可替代。对本例这样的简单模型，可以只读数字表格来理解模型说了什么——尽管并不总是容易。但只要模型稍微复杂一点，尤其包含交互效应（第 8 章）时，后验分布就很难解释；再加上必须把 <code>vcov</code> 中的信息纳入解释，图形就不可替代。</p>
+
+        <p>先从任务的简单版本开始：只把后验均值叠加到身高和体重数据上。然后逐步向预测图加入更多信息，直到用完整个后验分布。</p>
+
+        <p>先从原始数据和一条直线开始。下面的代码绘制原始数据，计算 <code>a</code> 与 <code>b</code> 的后验均值，再画出它们蕴含的直线：</p>
+
+        <figure class="code-listing" id="code-4-46">
+          <figcaption>R 代码 4.46</figcaption>
+          <pre><code>plot( height ~ weight , data=d2 , col=rangi2 )
+post &lt;- extract.samples( m4.3 )
+a_map &lt;- mean(post$a)
+b_map &lt;- mean(post$b)
+curve( a_map + b_map*(x - xbar) , add=TRUE )</code></pre>
+        </figure>
+
+        <figure class="book-figure height-weight-fit-figure" id="fig-4-6">
+          <div class="figure-scroll" tabindex="0" aria-label="可横向滚动的身高体重散点图与后验均值线">
+            <img src="/media/chapter-04-height-weight-fit.svg" alt="蓝色圆点显示个体身高和体重，黑线显示后验均值斜率和截距定义的回归线">
+          </div>
+          <p class="scroll-hint">图较宽，可横向滚动查看完整坐标、散点与后验均值线。</p>
+          <figcaption><strong>图 4.6：</strong>纵轴为身高（厘米），横轴为体重（千克）；黑线是后验均值对应的直线。</figcaption>
+        </figure>
+
+        <p><a href="#fig-4-6">图 4.6</a>展示了结果。图中每个点都是一个人，黑线由平均斜率 <span class="math-inline"><var>β</var></span> 和平均截距 <span class="math-inline"><var>α</var></span> 定义。这条线并不差，看起来确实非常可信；但它附近还有无穷多条同样高度可信的直线。接下来也把它们画出来。</p>
+      </section>
+
+      <section id="sec-4-4-3-3">
+        <h4>4.4.3.3 为均值添加不确定性</h4>
+
+        <p>后验均值线只是后验均值，是后验分布考察过的无穷直线宇宙中最可信的一条。像<a href="#fig-4-6">图 4.6</a>这样绘制平均线，有助于感受某个变量估计影响的大小，却不擅长传达不确定性。请记住，后验分布会考虑连接身高与体重的每一条可能回归线，并为每条线赋予相对可信程度。这意味着，<span class="math-inline"><var>α</var></span> 与 <span class="math-inline"><var>β</var></span> 的每种组合都有一个后验概率。也许有许多直线的后验概率几乎与平均线相同；也可能后验分布在平均线附近相当狭窄。</p>
+
+        <p>怎样把这份不确定性放到图上？<span class="math-inline"><var>α</var></span> 与 <span class="math-inline"><var>β</var></span> 的一组组合共同定义一条直线。因此，可以从后验分布抽取许多条直线，再把它们显示在图中，以可视化回归关系的不确定性。</p>
+
+        <p>为了更好地理解后验分布怎样包含直线，需要使用模型的全部样本。先仔细看看这些样本：</p>
+
+        <figure class="code-listing" id="code-4-47">
+          <figcaption>R 代码 4.47</figcaption>
+          <pre><code>post &lt;- extract.samples( m4.3 )
+post[1:5,]</code></pre>
+          <pre class="code-output"><code>         a         b    sigma
+1 154.5505 0.9222372 5.188631
+2 154.4965 0.9286227 5.278370
+3 154.4794 0.9490329 4.937513
+4 155.2289 0.9252048 4.869807
+5 154.9545 0.8192535 5.063672</code></pre>
+        </figure>
+
+        <p>每一行都是三个参数联合后验中的一个相关随机样本，使用 <code>vcov(m4.3)</code> 提供的协方差。每行配对的 <code>a</code> 与 <code>b</code> 值定义一条直线。非常多条这类直线的平均，就是后验均值线；但平均值周围的离散很有意义，因为它会改变我们对预测变量与结果之间关系的信心。</p>
+
+        <p>现在显示一批这样的直线，以便看到离散程度。如果一开始只使用部分数据，这一课会更容易理解；这样就能看到增加数据怎样改变直线的离散。因此，先只使用 <code>d2</code> 中前 10 个案例。下面的代码提取前 10 个案例并重新估计模型：</p>
+
+        <figure class="code-listing" id="code-4-48">
+          <figcaption>R 代码 4.48</figcaption>
+          <pre><code>N &lt;- 10
+dN &lt;- d2[ 1:N , ]
+mN &lt;- quap(
+    alist(
+        height ~ dnorm( mu , sigma ) ,
+        mu &lt;- a + b*( weight - mean(weight) ) ,
+        a ~ dnorm( 178 , 20 ) ,
+        b ~ dlnorm( 0 , 1 ) ,
+        sigma ~ dunif( 0 , 50 )
+    ) , data=dN )</code></pre>
+        </figure>
+
+        <p>接着绘制其中 20 条直线，看看不确定性是什么样子：</p>
+
+        <figure class="code-listing" id="code-4-49">
+          <figcaption>R 代码 4.49</figcaption>
+          <pre><code># extract 20 samples from the posterior
+post &lt;- extract.samples( mN , n=20 )
+
+# display raw data and sample size
+plot( dN$weight , dN$height ,
+    xlim=range(d2$weight) , ylim=range(d2$height) ,
+    col=rangi2 , xlab="weight" , ylab="height" )
+mtext(concat("N = ",N))
+
+# plot the lines, with transparency
+for ( i in 1:20 )
+    curve( post$a[i] + post$b[i]*(x-mean(dN$weight)) ,
+        col=col.alpha("black",0.3) , add=TRUE )</code></pre>
+        </figure>
+
+        <p>最后几行循环处理全部 20 条直线，用 <code>curve</code> 显示每一条。</p>
+
+        <p>结果显示在图 4.7 左上角（见原书 PDF 第 122 页）。从后验中抽取多条回归线并画在一起，就能轻松看出关系中高度确定的部分和不太确定的部分。回归线云在体重极端值处显示出更大的不确定性。</p>
+
+        <p>图 4.7 的其他面板展示同样的关系，但使用越来越多的数据。只需重用前面的代码，把 <code>N &lt;- 10</code> 改成其他值。注意，随着样本量增加，回归线云会变得更紧凑；这是模型对均值位置越来越有信心的结果。</p>
+      </section>
+
+      <section id="sec-4-4-3-4">
+        <h4>4.4.3.4 绘制回归区间与等高线</h4>
+
+        <p>图 4.7 中的回归线云是一种很有吸引力的展示，因为它以许多人觉得直观的方式传达关系的不确定性。不过，更常见、也往往更清楚的做法，是绘制回归区间与等高线。</p>
+        <p class="continuation-note">图 4.7 与本节将在原书 PDF 第 122 页继续。</p>
       </section>
     </section>
   </section>
@@ -1089,6 +1205,6 @@ sigma    5.07 0.19   4.77   5.38</code></pre>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 89–118 页已完成翻译、逐页核对、阶段契约和桌面/移动端视觉验收。下一批从 PDF 第 119 页继续。
+    <strong>译稿状态：</strong>PDF 第 89–121 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 122 页继续。
   </aside>
 </article>
