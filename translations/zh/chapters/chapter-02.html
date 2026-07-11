@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-02" data-source-pages="35-49">
+<article class="book-article" data-chapter="chapter-02" data-source-pages="35-52">
   <header class="chapter-header">
     <p class="eyebrow">第二章</p>
     <h1>小世界与大世界</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 35–49 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 35–52 页</p>
   </header>
 
   <p>1492 年，Cristoforo Colombo（Christopher Columbus，中文常译“哥伦布”）那次声名狼藉的向西航行开始时，他相信地球是球形的。在这一点上，他和当时大多数受过教育的人一样。与大多数人不同的是，他还相信地球比实际小得多：赤道周长只有 30,000 公里，而不是真实的 40,000 公里（图 2.1）。<sup><a href="#note-37" aria-label="尾注 37">37</a></sup>这是欧洲历史上影响最为深远的错误之一。</p>
@@ -485,8 +485,112 @@ ways/sum(ways)</code></pre>
         <p>上式应读作：</p>
 
         <p class="formula-reading">“水域”计数 <span class="math-inline"><var>W</var></span> 与“陆地”计数 <span class="math-inline"><var>L</var></span> 服从二项分布，每次投掷得到“水域”的概率为 <span class="math-inline"><var>p</var></span>。</p>
+
+        <p>二项分布公式已经内置于 R，因此可以很容易地计算：当 <span class="math-inline"><var>p</var> = 0.5</span> 时，九次投掷得到六个 W 的可信程度：</p>
+
+        <figure class="code-listing" id="code-2-2">
+          <figcaption>R 代码 2.2</figcaption>
+          <pre><code>dbinom( 6 , size=9 , prob=0.5 )</code></pre>
+          <pre class="code-output" aria-label="R 输出"><code>[1] 0.1640625</code></pre>
+        </figure>
+
+        <p>这个数表示：固定 <span class="math-inline"><var>p</var> = 0.5</span>，并固定 <span class="math-inline"><var>N</var> = <var>W</var> + <var>L</var> = 9</span> 时，得到六个水域观测的相对方式数。因此，它完成的正是对花园中相对路径数的计数。把代码里的 <code>0.5</code> 换成其他值，就能看到结果如何变化。</p>
+
+        <p>本书后面的第 10 章会说明，二项分布相当特殊，因为它以<strong>最大熵</strong>方式对二元事件计数。“最大熵”听起来也许很糟：熵不就是混乱吗？“最大熵”难道不是宇宙的死亡？其实，这里的意思是，分布除了以下信息外不含任何额外信息：只有两种事件，每次试验中两者的概率分别是 <span class="math-inline"><var>p</var></span> 与 <span class="math-inline">1 - <var>p</var></span>。第 10 章会详细解释，现在完全可以先不管这些细节。</p>
+
+        <aside class="overthinking-box">
+          <h3>过度思考：名称与概率分布</h3>
+          <p><code>dbinom</code> 中的 <code>d</code> 代表密度（density）。按这种方式命名的函数，几乎总有以 <code>r</code> 开头、用于随机抽样的伙伴，以及以 <code>p</code> 开头、用于累积概率的伙伴。例如可查看帮助 <code>?dbinom</code>。</p>
+        </aside>
+
+        <aside class="rethinking-box">
+          <h3>再思考：似然的核心作用</h3>
+          <p>大量文字都在强调贝叶斯与非贝叶斯数据分析有何不同。关注差异很有用，却有时会让人忽略根本相似之处。值得注意的是，在贝叶斯模型和许多非贝叶斯模型中，影响最大的假设都是分配给数据的分布，也就是似然函数。</p>
+          <p>似然会影响每一份数据的推断；随着样本量增大，似然越来越重要。这有助于解释为何贝叶斯与非贝叶斯推断经常如此相似。如果只能用一个方面来界定“贝叶斯”，应该描述似然，而不是先验。</p>
+        </aside>
+      </section>
+
+      <section id="sec-2-3-2-2">
+        <h4>2.3.2.2 未观测变量</h4>
+
+        <p>分配给观测变量的分布，通常拥有自己的变量。在上面的二项分布中，就有 <span class="math-inline"><var>p</var></span>——抽到水域的概率。由于 <span class="math-inline"><var>p</var></span> 没有被观测，通常称它为<strong>参数</strong>。虽然无法观测 <span class="math-inline"><var>p</var></span>，仍然必须定义它。</p>
+
+        <p>后续章节的模型会包含更多参数。在统计建模中，我们对数据提出的许多常见问题，都由参数直接回答：</p>
+
+        <ul class="parameter-questions">
+          <li>处理组之间的平均差异是多少？</li>
+          <li>某种处理与结果之间的关联有多强？</li>
+          <li>处理效应是否取决于某个协变量？</li>
+          <li>不同组之间存在多大变异？</li>
+        </ul>
+
+        <p>你将看到，这些问题如何变成我们分配给数据的分布函数中的额外参数。</p>
+
+        <p>贝叶斯机器要考虑的每个参数，都必须配备一个先验可信程度分布，也就是它的<strong>先验</strong>。贝叶斯机器必须给参数的每个可能值分配初始可信程度，而这些初始分配会发挥有用作用。如果已有先前估计可交给机器，它就能成为先验，如图 2.5 的更新步骤。图 2.5 中，机器每次只学习一份数据，因此每次估计都会成为下一步的先验。</p>
+
+        <p>但这并没有解决“最初先验从哪里来”的问题：在时间的黎明、<span class="math-inline"><var>N</var> = 0</span> 时，机器仍然必须为参数 <span class="math-inline"><var>p</var></span> 拥有初始信息状态。图 2.5 用一条平坦直线表示这一状态，即每个可能值具有相同可信程度。</p>
+
+        <p>那么，先验从哪里来？它既是为了帮助机器学习而选择的工程假设，也是为了反映我们对现象的了解而选择的科学假设。图 2.5 中的平坦先验十分常见，却几乎从来不是最佳先验。后续章节会更深入地讨论先验选择。</p>
+
+        <p>贝叶斯推断有一个流派，强调依据分析者的个人信念选择先验。<sup><a href="#note-47" aria-label="尾注 47">47</a></sup>这种<strong>主观贝叶斯</strong>方法在一些统计学、哲学和经济学项目中蓬勃发展，在科学领域却很少见。在自然科学和社会科学的贝叶斯数据分析中，先验只是模型的一部分，因此应当像模型的所有其他组成部分一样被选择、评估和修订。实践中，主观主义者与非主观主义者往往会以几乎相同的方式分析数据。</p>
+
+        <p>这些话不应被理解为任何统计分析都不是内在主观的——当然都是；科学的每个部分都包含许多细小的主观决定。只是先验和贝叶斯数据分析，并不比似然和显著性检验所需的重复抽样假设更为内在主观。<sup><a href="#note-48" aria-label="尾注 48">48</a></sup>去过大学统计咨询台的人大概都体验过这种主观性：除了最简单的问题，统计学家通常不会对如何分析完全一致。统计推断使用数学，并不意味着只存在一种合理或有用的分析方式；工程学同样使用数学，而桥可以有很多种造法。</p>
+
+        <p>除此之外，也没有法律规定只能使用一个先验。如果对某个特定先验没有强有力的论证，就尝试不同先验。先验既然是假设，就应像其他假设一样接受质询：改变它，再检查推断对这项假设有多敏感。没有人必须宣誓效忠模型假设，任何一组假设也不值得我们服从。</p>
+
+        <aside class="overthinking-box">
+          <h3>过度思考：作为概率分布的先验</h3>
+          <p>本例的先验可以写成：</p>
+          <div class="equation-block prior-equation" id="eq-2-prior-uniform" role="math" aria-label="p 的先验概率等于一除以一减零，结果为一">
+            <span>Pr(<var>p</var>) =</span>
+            <span class="fraction"><span>1</span><span>1 - 0</span></span>
+            <span>= 1</span>
+          </div>
+          <p>先验是参数的概率分布。一般而言，对于从 <span class="math-inline"><var>a</var></span> 到 <span class="math-inline"><var>b</var></span> 的均匀先验，区间中任一点的概率为 <span class="math-inline">1 / (<var>b</var> - <var>a</var>)</span>。如果你对 <span class="math-inline"><var>p</var></span> 每个值的概率都等于 1 感到困惑，请记住，每个概率分布的总和（积分）都必须为 1。表达式 <span class="math-inline">1 / (<var>b</var> - <var>a</var>)</span> 保证从 <span class="math-inline"><var>a</var></span> 到 <span class="math-inline"><var>b</var></span> 的平坦直线下方面积为 1。第 4 章还会继续讨论。</p>
+        </aside>
+
+        <aside class="rethinking-box">
+          <h3>再思考：数据还是参数？</h3>
+          <p>通常会把数据与参数视为完全不同的两类实体：数据已被测量、是已知的；参数未知，必须从数据估计。很有用的一点是，在贝叶斯框架中，数据与参数的区别并没有那么根本。有时我们观测到一个变量，有时没有。即使没有观测，同一个分布函数仍然适用。</p>
+          <p>因此，同一项假设可以根据语境表现为“似然”或“先验”，模型本身无需改变。本书后面的第 15 章会利用确定性（数据）与不确定性（参数）之间这种深层同一性，把测量误差和缺失数据纳入建模。</p>
+        </aside>
+
+        <aside class="rethinking-box">
+          <h3>再思考：先验，先验，谎话连篇</h3>
+          <p>历史上，一些贝叶斯推断的反对者曾批评先验的任意性。先验确实非常灵活，能够编码许多不同的信息状态。如果先验可以是任何东西，难道不能得到任何想要的答案吗？确实可以。尽管如此，经过两百多年的贝叶斯计算，事实并没有表明人们用先验撒谎。如果目标是用统计说谎，选择先验会很愚蠢，因为这种谎言很容易被揭穿。更好的办法是利用更不透明的似然机器；或者——千万别真照做——摆弄数据、删除某些“离群值”，以其他方式进行动机驱动的数据变换。</p>
+          <p>诚然，似然的选择比先验选择更为惯例化。但惯例选择往往很差，会偷偷带入难以发现的影响。在这方面，贝叶斯与非贝叶斯模型同样受困，因为两种传统都高度依赖似然函数和惯例化模型形式。非贝叶斯程序无需对先验作假设，也没有多少值得安慰之处，因为它要作出贝叶斯程序不必作出的选择，例如选择估计量或似然惩罚。这些选择往往可被证明等价于某种贝叶斯先验选择，或更准确地说，等价于损失函数的选择。第 3 章将介绍损失函数。</p>
+        </aside>
       </section>
     </section>
+
+    <section id="sec-2-3-3">
+      <h3>2.3.3 模型诞生了</h3>
+
+      <p>完成上述工作后，现在可以概括模型。观测变量 <span class="math-inline"><var>W</var></span> 和 <span class="math-inline"><var>L</var></span> 通过二项分布获得相对计数，因此可以简写为：</p>
+
+      <div class="equation-block model-statement" id="model-2-binomial" role="math" aria-label="W 服从参数为 N 和 p 的二项分布">
+        <span><var>W</var> ∼ Binomial(<var>N</var>, <var>p</var>)</span>
+      </div>
+
+      <p>其中 <span class="math-inline"><var>N</var> = <var>W</var> + <var>L</var></span>。上式只是表达以下假设的惯例写法：在 <span class="math-inline"><var>N</var></span> 次试验中、每次概率为 <span class="math-inline"><var>p</var></span> 时，实现 <span class="math-inline"><var>W</var></span> 的相对方式数来自二项分布。未观测参数 <span class="math-inline"><var>p</var></span> 则类似地写成：</p>
+
+      <div class="equation-block model-statement" id="model-2-prior" role="math" aria-label="p 服从从零到一的均匀分布">
+        <span><var>p</var> ∼ Uniform(0, 1)</span>
+      </div>
+
+      <p>这表示 <span class="math-inline"><var>p</var></span> 在从 0 到 1 的整个可能范围上拥有均匀、平坦的先验。前面已经说过，这显然不是能做到的最好选择，因为即使还不知道确切比例，我们也知道地球的水域多于陆地。</p>
+
+      <p>接下来看看如何利用这些假设产生推断。</p>
+    </section>
+  </section>
+
+  <section id="sec-2-4">
+    <h2>2.4 让模型运转起来</h2>
+
+    <p>命名所有变量并为每个变量选择定义后，贝叶斯模型就能把全部先验分布更新为其纯粹的逻辑后果：<strong>后验分布</strong>。数据、似然、参数与先验每一种独特组合，都对应唯一的后验分布。这个分布包含在给定数据和模型条件下，不同参数值的相对可信程度。</p>
+
+    <p>后验分布采取“给定数据后参数的概率”这一形式。在本例中，就是 <span class="math-inline">Pr(<var>p</var> | <var>W</var>, <var>L</var>)</span>：给定我们实际观测到的 <span class="math-inline"><var>W</var></span> 与 <span class="math-inline"><var>L</var></span> 后，<span class="math-inline"><var>p</var></span> 每个可能值的概率。</p>
+  </section>
   </section>
 
   <section class="endnotes" id="chapter-02-notes" role="doc-endnotes">
@@ -502,10 +606,12 @@ ways/sum(ways)</code></pre>
       <li id="note-44">严格说来，这是一组“没有免费的午餐”定理。这些定理，以及名称和推导各异但内容相近的其他结果，实际上都表明：无论是贝叶斯方法选择先验，还是非贝叶斯方法选择估计量或程序，都不存在最优的通用方式。例如参见 Wolpert 和 Macready（1997）。 <a class="backref" href="#sec-2-2-2" aria-label="返回正文">↩</a></li>
       <li id="note-45">这是一个微妙观点，后续还会展开。关于假设的准确性与信息处理，参见 Jaynes（1985）附录 A：高斯误差分布不必在物理上正确，也可能是最有用的假设。 <a class="backref" href="#sec-2-2-3" aria-label="返回正文">↩</a></li>
       <li id="note-46">重要数论家 Kronecker（1823–1891）据称说过：“上帝创造了整数，其余一切皆为人造。”数学家对数学中哪些部分是发现的、哪些部分是发明的，似乎并无共识。 <a class="backref" href="#sec-2-2-3" aria-label="返回正文">↩</a></li>
+      <li id="note-47">这种方法通常与 Bruno de Finetti 和 L. J. Savage 联系在一起。综述与解释参见 Kadane（2011）。 <a class="backref" href="#sec-2-3-2-2" aria-label="返回正文">↩</a></li>
+      <li id="note-48">关于这些观点的进一步讨论，例如参见 Berger 和 Berry（1988）。 <a class="backref" href="#sec-2-3-2-2" aria-label="返回正文">↩</a></li>
     </ol>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 35–49 页已完成翻译、逐页渲染对照和桌面/移动端视觉验收；下一批从 PDF 第 50 页开始。
+    <strong>译稿状态：</strong>PDF 第 35–52 页已完成翻译、逐页渲染对照和桌面/移动端视觉验收；下一批从 PDF 第 53 页开始。
   </aside>
 </article>

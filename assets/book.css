@@ -16,6 +16,7 @@
 body { margin: 0; background: var(--paper); line-height: 1.86; }
 a { color: var(--blue); text-underline-offset: 0.18em; }
 section[id], figure[id], li[id] { scroll-margin-top: 4.5rem; }
+.equation-block[id] { scroll-margin-top: 4.5rem; }
 .topbar {
   position: sticky; top: 0; z-index: 10; display: flex; gap: 1rem; align-items: center;
   padding: .72rem max(1rem, calc((100vw - 72rem) / 2)); border-bottom: 1px solid var(--line);
@@ -126,6 +127,15 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .rethinking-box h3 { margin: 0 0 .45rem; color: var(--blue); font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; font-size: 1rem; }
 .rethinking-box p { margin: 0; font-size: .96rem; line-height: 1.72; }
 .rethinking-box p + p { margin-top: .75rem; }
+.overthinking-box { margin: 2rem 0; padding: 1rem 1.15rem; border-block: 2px solid #6074bd; background: #fafbff; }
+.overthinking-box h3 { margin: 0 0 .45rem; color: #3e4f91; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; font-size: 1rem; }
+.overthinking-box p { margin: 0; font-size: .94rem; line-height: 1.72; }
+.overthinking-box p + p { margin-top: .7rem; }
+.parameter-questions { margin: 1.5rem 0; padding: 1rem 1rem 1rem 2.8rem; border: 1px solid var(--line); border-radius: .35rem; background: #fff; }
+.parameter-questions li { margin: .55rem 0; padding-left: .25rem; }
+.prior-equation, .model-statement { display: flex; flex-wrap: wrap; justify-content: center; gap: .55rem; align-items: center; }
+.prior-equation .fraction { min-width: 4.5rem; }
+.model-statement { max-width: 31rem; font-size: 1.16rem; }
 .book-quote { margin: 1.5rem 1rem; padding: .85rem 1.1rem; border-left: .22rem solid var(--blue); background: #f7f7f3; color: #3e403b; }
 .book-quote p { margin: 0; font-size: .98rem; line-height: 1.7; }
 .relations-figure svg { display: block; width: 100%; min-width: 48rem; height: auto; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; }
