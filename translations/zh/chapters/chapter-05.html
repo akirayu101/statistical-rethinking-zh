@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-05" data-source-pages="143-169">
+<article class="book-article" data-chapter="chapter-05" data-source-pages="143-172">
   <header class="chapter-header">
     <p class="eyebrow">第五章</p>
     <h1>多变量与虚假华夫饼</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 143–169 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 143–172 页</p>
   </header>
 
   <p>在北美——即便不算全世界——最可靠的华夫饼来源之一，是华夫饼屋（Waffle House）餐厅。华夫饼屋几乎总在营业，哪怕飓风刚刚过境也不例外。多数门店都投入资金做好灾害准备，其中包括自备发电机。因此，美国灾害救援机构联邦紧急事务管理署（FEMA）会非正式地把华夫饼屋当作衡量灾情严重程度的指标。<sup id="note-77-ref"><a href="#note-77">77</a></sup> 如果华夫饼屋关门了，那就是严重事件。</p>
@@ -928,7 +928,142 @@ sigma  0.95 0.16  0.70  1.20</code></pre>
 
     <p>请修改绘制同一幅图左上角的代码，确保自己理解怎样完成它。</p>
 
-    <p class="continuation-note">同时纳入新皮层与体重的多元模型及被掩盖关系的解释将在原书 PDF 第 170 页继续。</p>
+    <p>现在看看把两个预测变量同时加入回归后会发生什么。这个多变量模型的数学形式为：</p>
+
+    <div class="equation-block model-system-equation" id="eq-5-milk-multiple-model">
+      <div><var>K</var><sub>i</sub> ∼ Normal(<var>μ</var><sub>i</sub>, <var>σ</var>)</div>
+      <div><var>μ</var><sub>i</sub> = <var>α</var> + <var>β</var><sub>N</sub><var>N</var><sub>i</sub> + <var>β</var><sub>M</sub><var>M</var><sub>i</sub></div>
+      <div><var>α</var> ∼ Normal(0, 0.2)</div>
+      <div><var>β</var><sub>N</sub> ∼ Normal(0, 0.5)</div>
+      <div><var>β</var><sub>M</sub> ∼ Normal(0, 0.5)</div>
+      <div><var>σ</var> ∼ Exponential(1)</div>
+    </div>
+
+    <p>近似后验无需任何新技巧：</p>
+
+    <figure class="code-listing" id="code-5-38">
+      <figcaption>R 代码 5.38</figcaption>
+      <pre><code>m5.7 &lt;- quap(
+    alist(
+        K ~ dnorm( mu , sigma ) ,
+        mu &lt;- a + bN*N + bM*M ,
+        a ~ dnorm( 0 , 0.2 ) ,
+        bN ~ dnorm( 0 , 0.5 ) ,
+        bM ~ dnorm( 0 , 0.5 ) ,
+        sigma ~ dexp( 1 )
+    ) , data=dcc )
+precis(m5.7)</code></pre>
+      <pre class="code-output"><code>       mean   sd  5.5% 94.5%
+a      0.07 0.13 -0.15  0.28
+bN     0.68 0.25  0.28  1.07
+bM    -0.70 0.22 -1.06 -0.35
+sigma  0.74 0.13  0.53  0.95</code></pre>
+    </figure>
+
+    <p>把两个预测变量都纳入回归后，二者与结果的后验关联都增强了。把这个后验与前两个模型直观比较会很有帮助：</p>
+
+    <figure class="code-listing" id="code-5-39">
+      <figcaption>R 代码 5.39</figcaption>
+      <pre><code>plot( coeftab( m5.5 , m5.6 , m5.7 ) , pars=c("bM","bN") )</code></pre>
+    </figure>
+
+    <figure class="book-figure coefficient-comparison-figure milk-coefficient-comparison-figure" id="fig-5-milk-coefficients">
+      <svg viewBox="0 0 900 520" role="img" aria-labelledby="milk-coef-title milk-coef-desc">
+        <title id="milk-coef-title">三个乳汁模型的斜率后验比较</title>
+        <desc id="milk-coef-desc">多变量模型 m5.7 中，新皮层的正斜率与体重的负斜率都比两个简单回归更强。</desc>
+        <rect width="900" height="520" fill="#fff"/>
+        <line x1="560" y1="50" x2="560" y2="445" stroke="#b8bbb8" stroke-width="2"/>
+        <g font-size="20" fill="#263f86" font-weight="700"><text x="75" y="65">bM</text><text x="75" y="275">bN</text></g>
+        <g font-size="18" fill="#30332e"><text x="140" y="105">m5.7</text><text x="140" y="150">m5.6</text><text x="140" y="195">m5.5</text><text x="140" y="315">m5.7</text><text x="140" y="360">m5.6</text><text x="140" y="405">m5.5</text></g>
+        <g stroke="#30332e" stroke-width="5" stroke-linecap="round"><line x1="292" y1="98" x2="455" y2="98"/><line x1="405" y1="143" x2="573" y2="143"/><line x1="678" y1="308" x2="855" y2="308"/><line x1="458" y1="398" x2="620" y2="398"/></g>
+        <g fill="#6670ee" stroke="#263f86" stroke-width="2"><circle cx="375" cy="98" r="8"/><circle cx="493" cy="143" r="8"/><circle cx="765" cy="308" r="8"/><circle cx="590" cy="398" r="8"/></g>
+        <line x1="270" y1="445" x2="850" y2="445" stroke="#343732" stroke-width="2"/>
+        <g font-size="17" fill="#30332e" text-anchor="middle"><text x="295" y="475">−1.0</text><text x="428" y="475">−0.5</text><text x="560" y="475">0.0</text><text x="693" y="475">0.5</text><text x="825" y="475">1.0</text><text x="560" y="505" fill="#263f86" font-weight="700">估计值</text></g>
+      </svg>
+      <figcaption>点表示后验均值，实心水平线表示 89% 相容区间；没有估计该参数的模型保留空行。多变量模型 <code>m5.7</code> 中，两条斜率都远离零。</figcaption>
+    </figure>
+
+    <p>新皮层百分比关联的后验均值增大到原来的五倍，其 89% 区间现在完全位于零以上。对数体重后验均值的绝对大小增大到原来的 2.5 倍。</p>
+
+    <p>这里发生了什么？为什么把新皮层和体重放进同一个模型，会让二者的估计效应都变大？这是这样一种情形：两个变量都与结果相关，但一个与结果正相关，另一个与结果负相关；此外，两个解释变量彼此正相关。可以用简单的变量对图体会这种相关：<code>pairs( ~K + M + N , dcc )</code>。结果是，它们往往彼此抵消。</p>
+
+    <p>这又是一个多元回归会自动找到信息最丰富个案并用来推断的例子。回归模型实际在问：对其体重而言，新皮层百分比偏高的物种，乳汁能量是否更高？同样地，对其新皮层百分比而言，体重偏高的物种，乳汁能量是否更高？类人猿等较大的物种，乳汁能量更低；但新皮层更大的物种，乳汁往往更“浓”。体型与新皮层在不同物种间相关，因此除非同时考虑二者，否则很难看出这些关系。</p>
+
+    <p>一些 DAG 会有帮助。至少有三种图与数据中的模式相容。先看图，再逐一解释。</p>
+
+    <figure class="book-figure dag-figure milk-dag-candidates" id="dag-5-milk-candidates">
+      <svg viewBox="0 0 1050 360" role="img" aria-labelledby="milk-dag-title milk-dag-desc">
+        <title id="milk-dag-title">乳汁数据的三种候选 DAG</title>
+        <desc id="milk-dag-desc">左图是 M 指向 N；中图是 N 指向 M；右图是未观测的 U 同时指向 M 和 N。三个图中 M 与 N 都指向 K。</desc>
+        <defs><marker id="milk-dag-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#3f4752"/></marker></defs>
+        <g stroke="#3f4752" stroke-width="4" marker-end="url(#milk-dag-arrow)">
+          <line x1="100" y1="95" x2="245" y2="95"/><line x1="105" y1="120" x2="168" y2="255"/><line x1="250" y1="120" x2="192" y2="255"/>
+          <line x1="600" y1="95" x2="455" y2="95"/><line x1="450" y1="120" x2="512" y2="255"/><line x1="595" y1="120" x2="538" y2="255"/>
+          <line x1="780" y1="120" x2="850" y2="255"/><line x1="990" y1="120" x2="920" y2="255"/><line x1="870" y1="75" x2="800" y2="75"/><line x1="900" y1="75" x2="970" y2="75"/>
+        </g>
+        <g fill="#f0f1fa" stroke="#263f86" stroke-width="3"><circle cx="75" cy="95" r="34"/><circle cx="275" cy="95" r="34"/><circle cx="180" cy="290" r="34"/><circle cx="425" cy="95" r="34"/><circle cx="625" cy="95" r="34"/><circle cx="525" cy="290" r="34"/><circle cx="765" cy="95" r="34"/><circle cx="875" cy="65" r="34" fill="#fff" stroke-dasharray="6 5"/><circle cx="1005" cy="95" r="34"/><circle cx="885" cy="290" r="34"/></g>
+        <g text-anchor="middle" font-size="28" font-weight="700" fill="#263f86"><text x="75" y="105">M</text><text x="275" y="105">N</text><text x="180" y="300">K</text><text x="425" y="105">M</text><text x="625" y="105">N</text><text x="525" y="300">K</text><text x="765" y="105">M</text><text x="875" y="75">U</text><text x="1005" y="105">N</text><text x="885" y="300">K</text></g>
+      </svg>
+      <figcaption>左：<span class="math-inline"><var>M</var> → <var>N</var></span>，二者再共同影响 <span class="math-inline"><var>K</var></span>。中：<span class="math-inline"><var>N</var> → <var>M</var></span>，二者共同影响 <span class="math-inline"><var>K</var></span>。右：未观测变量 <span class="math-inline"><var>U</var></span> 同时影响 <span class="math-inline"><var>M</var></span> 与 <span class="math-inline"><var>N</var></span>，而二者共同影响 <span class="math-inline"><var>K</var></span>。</figcaption>
+    </figure>
+
+    <p>从左开始，第一种可能性是体重 <span class="math-inline"><var>M</var></span> 影响新皮层百分比 <span class="math-inline"><var>N</var></span>，然后二者都影响乳汁千卡 <span class="math-inline"><var>K</var></span>。第二，中间的图表示新皮层反过来影响体重；两个变量在样本中仍会相关。最后，右图可能存在一个未观测变量 <span class="math-inline"><var>U</var></span>，它同时影响 <span class="math-inline"><var>M</var></span> 和 <span class="math-inline"><var>N</var></span>，从而在二者之间产生相关。本书会用虚线圆圈表示未观测变量。因果推断的一大威胁是，可能有非常多未观测变量影响结果；下一章会进一步讨论。</p>
+
+    <p>哪幅图正确？单凭数据无法判断，因为这些图蕴含同一组条件独立性。本例中根本没有条件独立性——无论以什么为条件，上面每个 DAG 都意味着所有变量对彼此关联。拥有相同条件独立性的一组 DAG 称为<strong>马尔可夫等价集</strong>。下面的“过度思考”侧栏会模拟与每个 DAG 相容的观测，说明它们都能产生掩盖现象，并用 <code>dagitty</code> 包计算完整的马尔可夫等价 DAG 集。请记住：单靠数据永远无法告诉你哪个因果模型正确，但关于变量的科学知识会排除大量荒唐、却与之马尔可夫等价的 DAG。</p>
+
+    <p>最后还要用这些模型补完<a href="#fig-5-9">图 5.9</a>。下面制作反事实图，看看模型如何理解这个问题。一旦有多个预测变量，就可以做反事实实验：改变一个预测变量，同时保持其他变量不变。在真实世界中，这种实验通常不可能。如果改变动物体型，自然选择随后会改变其他特征来与之匹配。但反事实图确实能帮助我们理解，模型如何看待每个预测变量与结果之间的关联。下面代码生成<a href="#fig-5-9">图 5.9</a>右下角：</p>
+
+    <p class="source-erratum"><strong>原文勘误：</strong>原书把代码 5.40 生成的面板写成图 5.9 左下角，并让读者复现右下角；但代码改变 <span class="math-inline"><var>M</var></span> 且固定 <span class="math-inline"><var>N</var> = 0</span>，实际生成右下角。相应地，读者应修改代码复现左下角。</p>
+
+    <figure class="code-listing" id="code-5-40">
+      <figcaption>R 代码 5.40</figcaption>
+      <pre><code>xseq &lt;- seq( from=min(dcc$M)-0.15 , to=max(dcc$M)+0.15 , length.out=30 )
+mu &lt;- link( m5.7 , data=data.frame( M=xseq , N=0 ) )
+mu_mean &lt;- apply(mu,2,mean)
+mu_PI &lt;- apply(mu,2,PI)
+plot( NULL , xlim=range(dcc$M) , ylim=range(dcc$K) )
+lines( xseq , mu_mean , lwd=2 )
+shade( mu_PI , xseq )</code></pre>
+    </figure>
+
+    <p>请适当修改这段代码，尝试复现左下角的图。</p>
+
+    <aside class="overthinking-box" id="overthinking-simulating-masking">
+      <h3>过度思考：模拟被掩盖的关系</h3>
+      <p>和理解虚假关联（印刷页 143）时一样，模拟两个有意义的预测变量彼此掩盖的数据会有所帮助。上一节展示了与此相容的三个 DAG。要模拟与第一个 DAG 相容的数据：</p>
+      <figure class="code-listing" id="code-5-41">
+        <figcaption>R 代码 5.41</figcaption>
+        <pre><code># M -&gt; K &lt;- N
+# M -&gt; N
+n &lt;- 100
+M &lt;- rnorm( n )
+N &lt;- rnorm( n , M )
+K &lt;- rnorm( n , N - M )
+d_sim &lt;- data.frame(K=K,N=N,M=M)</code></pre>
+      </figure>
+      <p>把模型 <code>m5.5</code>、<code>m5.6</code> 和 <code>m5.7</code> 中的 <code>dcc</code> 换成 <code>d_sim</code>，就能很快看到这种推断掩盖模式。查看 <code>precis</code> 摘要，会看到同样的模式：到了 <code>m5.7</code>，斜率会变得更加极端。另两个 DAG 可以这样模拟：</p>
+      <figure class="code-listing" id="code-5-42">
+        <figcaption>R 代码 5.42</figcaption>
+        <pre><code># M -&gt; K &lt;- N
+# N -&gt; M
+n &lt;- 100
+N &lt;- rnorm( n )
+M &lt;- rnorm( n , N )
+K &lt;- rnorm( n , N - M )
+d_sim2 &lt;- data.frame(K=K,N=N,M=M)
+
+# M -&gt; K &lt;- N
+# M &lt;- U -&gt; N
+n &lt;- 100
+U &lt;- rnorm( n )
+N &lt;- rnorm( n , U )
+M &lt;- rnorm( n , U )
+K &lt;- rnorm( n , N - M )
+d_sim3 &lt;- data.frame(K=K,N=N,M=M)</code></pre>
+      </figure>
+      <p>在灵长类乳汁例子中，大体型与高新皮层百分比之间的正关联，可能源自寿命与学习之间的权衡。大型动物往往寿命较长；在这类动物中，投资学习可能更划算，因为学习成本可以摊销到更长寿命上。于是，大体型和大新皮层都会影响乳汁组成，但出于不同原因、方向也不同。这个故事意味着第一幅 DAG——从 <span class="math-inline"><var>M</var></span> 指向 <span class="math-inline"><var>N</var></span>——才是正确的。然而，凭手头证据并不容易看出哪一个正确。要计算马尔可夫等价集，下面先定义第一幅 DAG，再请 <code>dagitty</code> 完成繁重工作。</p>
+      <p class="continuation-note">计算马尔可夫等价集的代码与侧栏余文将在原书 PDF 第 173 页继续。</p>
+    </aside>
   </section>
 
   <section class="endnotes" id="chapter-05-notes" role="doc-endnotes">
@@ -944,6 +1079,6 @@ sigma  0.95 0.16  0.70  1.20</code></pre>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 143–169 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 170 页继续。
+    <strong>译稿状态：</strong>PDF 第 143–172 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 173 页继续。
   </aside>
 </article>
