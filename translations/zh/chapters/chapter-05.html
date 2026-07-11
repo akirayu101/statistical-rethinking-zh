@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-05" data-source-pages="143-154">
+<article class="book-article" data-chapter="chapter-05" data-source-pages="143-157">
   <header class="chapter-header">
     <p class="eyebrow">第五章</p>
     <h1>多变量与虚假华夫饼</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 143–154 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 143–157 页</p>
   </header>
 
   <p>在北美——即便不算全世界——最可靠的华夫饼来源之一，是华夫饼屋（Waffle House）餐厅。华夫饼屋几乎总在营业，哪怕飓风刚刚过境也不例外。多数门店都投入资金做好灾害准备，其中包括自备发电机。因此，美国灾害救援机构联邦紧急事务管理署（FEMA）会非正式地把华夫饼屋当作衡量灾情严重程度的指标。<sup id="note-77-ref"><a href="#note-77">77</a></sup> 如果华夫饼屋关门了，那就是严重事件。</p>
@@ -437,8 +437,80 @@ div &lt;- rnorm( N , age )  # sim A -&gt; D</code></pre>
       <h3>5.1.5 绘制多变量后验</h3>
       <p>继续之前，先停一下。这里有许多活动部件：三个变量、一些奇怪的 DAG，以及三个模型。如果你觉得有些困惑，那只是因为你正在认真留意。</p>
       <p>把模型的推断可视化会有帮助。像上一章那样的简单二元回归，其后验分布很容易可视化：只有一个预测变量，所以一张散点图就能传达大量信息。上一章先绘制数据散点，再叠加回归线和区间，以便（1）显示预测变量与结果之间关联的大小；（2）粗略感受模型预测个体观测的能力。</p>
-      <p>对于多变量回归，需要更多图形。有大量文献详述各种绘图技术，它们都试图帮助理解多元线性回归。</p>
-      <p class="continuation-note">预测变量残差图与反事实预测图将在原书 PDF 第 155 页继续。</p>
+      <p>对于多变量回归，需要更多图形。有大量文献详述各种绘图技术，它们都试图帮助理解多元线性回归。没有一种技术适合所有任务，而且多数无法推广到线性回归之外。因此，这里采用的方法，是帮助你从模型计算出实际需要的任何量。下面给出三种解释性图形：</p>
+      <ol class="interpretive-plots">
+        <li><strong>预测变量残差图。</strong>把结果与预测变量的残差值画在一起。它们有助于理解统计模型，但除此之外用途不大。</li>
+        <li><strong>后验预测图。</strong>把基于模型的预测与原始数据比较，或以其他方式显示预测误差。它们是检查拟合和评估预测的工具，不是因果工具。</li>
+        <li><strong>反事实图。</strong>显示假想实验所隐含的预测，允许探索操纵一个或多个变量的因果含义。</li>
+      </ol>
+      <p>视具体情境与问题而定，每类图都有优点和缺点。本节余下部分会在离婚数据的背景下逐一制作它们。</p>
+
+      <section id="sec-5-1-5-1">
+        <h4>5.1.5.1 预测变量残差图</h4>
+        <p>预测变量残差，是使用其他全部预测变量对关心的某个预测变量建模时的平均预测误差。这个概念很复杂，所以直接看例子会更容易理解。计算这些残差的好处是：把它们与结果画在一起后，会得到某种已经“控制”其他全部预测变量的二元回归；图中只保留了其他预测变量对均值 <span class="math-inline"><var>μ</var></span> 的模型所未预期到的变异。</p>
+
+        <p>离婚率多变量模型有两个预测变量：（1）结婚率 <span class="math-inline"><var>M</var></span>；（2）结婚年龄中位数 <span class="math-inline"><var>A</var></span>。要计算其中任何一个预测变量的残差，只需用另一个预测变量对它建模。对于结婚率，需要下面的模型：</p>
+
+        <div class="equation-block model-system-equation" id="eq-5-marriage-residual-model">
+          <div><var>M</var><sub>i</sub> ∼ Normal(<var>μ</var><sub>i</sub>, <var>σ</var>)</div>
+          <div><var>μ</var><sub>i</sub> = <var>α</var> + <var>β</var><var>A</var><sub>i</sub></div>
+          <div><var>α</var> ∼ Normal(0, 0.2)</div>
+          <div><var>β</var> ∼ Normal(0, 0.5)</div>
+          <div><var>σ</var> ∼ Exponential(1)</div>
+        </div>
+
+        <p>和前面一样，<span class="math-inline"><var>M</var></span> 是结婚率，<span class="math-inline"><var>A</var></span> 是结婚年龄中位数。由于两个变量都已标准化，仍然预期均值 <span class="math-inline"><var>α</var></span> 接近零，因此复用之前的先验。下面的代码近似后验：</p>
+
+        <figure class="code-listing" id="code-5-13">
+          <figcaption>R 代码 5.13</figcaption>
+          <pre><code>m5.4 &lt;- quap(
+    alist(
+        M ~ dnorm( mu , sigma ) ,
+        mu &lt;- a + bAM * A ,
+        a ~ dnorm( 0 , 0.2 ) ,
+        bAM ~ dnorm( 0 , 0.5 ) ,
+        sigma ~ dexp( 1 )
+    ) , data = d )</code></pre>
+        </figure>
+
+        <p>随后，用各州观测到的结婚率减去上面模型给出的预测率，计算残差：</p>
+
+        <figure class="code-listing" id="code-5-14">
+          <figcaption>R 代码 5.14</figcaption>
+          <pre><code>mu &lt;- link(m5.4)
+mu_mean &lt;- apply( mu , 2 , mean )
+mu_resid &lt;- d$M - mu_mean</code></pre>
+        </figure>
+
+        <figure class="book-figure residual-diagnostics-figure" id="fig-5-4">
+          <div class="figure-scroll" tabindex="0" aria-label="可横向滚动的四面板预测变量残差诊断图">
+            <img src="/media/chapter-05-residual-diagnostics.svg" alt="上排让结婚率与结婚年龄相互回归并显示残差，下排用两组残差分别预测离婚率">
+          </div>
+          <p class="scroll-hint">图较宽，可横向滚动比较四个残差面板。</p>
+          <figcaption><strong>图 5.4：</strong>通过残差理解多元回归。上排把每个预测变量对另一个预测变量回归；连接模型预期值（回归线）与实际值的线段长度就是残差。下排用上排的残差对离婚率回归。左下：结婚率的残余变异与离婚率没有关联。右下：离婚率对结婚年龄残差的回归，显示残差中剩余的变异，而这些变异与离婚率相关。</figcaption>
+        </figure>
+
+        <p>残差为正，表示在给定该州结婚年龄中位数后，观测结婚率高于模型预期；残差为负，表示观测率低于预期。更简单地说，正残差州相对于其结婚年龄而言结婚率偏高，负残差州则偏低。<a href="#fig-5-4">图 5.4</a>左上显示模型 <code>m5.4</code>，并用线段表示每个残差。可以看到，残差就是剔除两个变量之间纯线性关系后剩余的结婚率变异。</p>
+
+        <p>接着把这些残差放在横轴上，与真正关心的结果——离婚率——作图。图 5.4 左下将残差与离婚率画在一起，并叠加二者的线性回归。可以把这理解为：在统计上“控制”结婚年龄中位数后，显示离婚率与结婚率之间的线性关系。竖直虚线表示恰好符合结婚年龄预期的结婚率；右侧州的结婚率高于预期，左侧州低于预期。虚线两侧的平均离婚率大致相同，所以回归线显示离婚率与结婚率之间几乎没有关系。</p>
+
+        <p>同样的程序适用于另一个预测变量。图 5.4 右上显示 <span class="math-inline"><var>A</var></span> 对 <span class="math-inline"><var>M</var></span> 的回归及其残差；右下用这些残差预测离婚率。竖直虚线右侧的州，其结婚年龄中位数高于预期，左侧则低于预期。现在可以发现，右侧平均离婚率低于左侧，回归线也表明了这一点：在给定结婚率时，人们结婚年龄高于预期的州往往离婚更少。</p>
+
+        <p>这一切有什么意义？从概念上说，先减去其他预测变量的影响，再把基于模型的预测与结果并列展示，是有价值的；图 5.4 正是如此。但这个过程也强化了一条信息：回归模型测量的是已经知道其他预测变量之后，每个预测变量与结果之间剩余的关联。计算预测变量残差图时，必须亲自完成这些运算；统一的多变量模型会自动完成。不过，始终记住这一事实仍很有用，因为回归可能因此产生令人意外的行为，稍后就会看到一个例子。</p>
+
+        <p>线性回归用一种非常特定的加性模型，同时测量变量之间的关系。但预测变量之间可能以非加性方式相关。在这些情况下，统计控制的基本逻辑不变，细节却必然改变，而残差图也不再有用。幸好还有其他理解模型的办法，下面转向其中一种。</p>
+
+        <aside class="rethinking-box" id="rethinking-never-use-residuals-as-data">
+          <h3>再思考：绝不要把残差当作数据</h3>
+          <p>特别是在生物学的一些分支中，有一种传统：把一个模型的残差当作另一个模型的数据。例如，生物学家可能先用体型预测脑容量，再把脑容量残差作为另一个模型的数据。这个程序永远是错误的。残差并非已知量；它们是参数，是取值未观测的变量。把它们当作已知值，会丢弃不确定性。控制体型的正确做法，是把它放进同一个模型，最好还是一个采用显式因果识别策略设计的模型。<sup id="note-81-ref"><a href="#note-81">81</a></sup></p>
+        </aside>
+      </section>
+
+      <section id="sec-5-1-5-2">
+        <h4>5.1.5.2 后验预测图</h4>
+        <p>检查模型隐含的预测与观测数据是否相符十分重要。第三章中通过模拟后验预测时，已经做过这件事。</p>
+        <p class="continuation-note">后验预测图的构造与图 5.5 将在原书 PDF 第 158 页继续。</p>
+      </section>
     </section>
   </section>
 
@@ -449,10 +521,11 @@ div &lt;- rnorm( N , age )  # sim A -&gt; D</code></pre>
       <li id="note-78">参见 Meehl（1990），尤其是第 204 页所述的“杂物因子”（crud factor）。 <a class="backref" href="#note-78-ref" aria-label="返回正文">↩</a></li>
       <li id="note-79">关于因果推断的争论由来已久，大卫·休谟是一个关键引文来源。现代统计学中有一道奇特障碍：经典因果推理要求，如果 A 导致 B，那么 A 出现时 B 就总会出现。但在大多数当代科学模型所描述的概率关系中，谈论概率性原因毫不奇怪，此时 B 只会在 A 之后偶尔发生。参见 <span class="url-text">http://plato.stanford.edu/entries/causation-probabilistic/</span>。 <a class="backref" href="#note-79-ref" aria-label="返回正文">↩</a></li>
       <li id="note-80">可参见 Pearl（2014）的通俗导论及其讨论；另见 Rubin（2005）介绍的一种相关方法。 <a class="backref" href="#note-80-ref" aria-label="返回正文">↩</a></li>
+      <li id="note-81">参见 Freckleton（2002）。 <a class="backref" href="#note-81-ref" aria-label="返回正文">↩</a></li>
     </ol>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 143–154 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 155 页继续。
+    <strong>译稿状态：</strong>PDF 第 143–157 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 158 页继续。
   </aside>
 </article>

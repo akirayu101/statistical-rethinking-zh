@@ -115,6 +115,7 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .waffle-divorce-figure .figure-scroll img { display: block; width: 45rem; max-width: none; height: auto; margin: 0 auto; }
 .divorce-predictors-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
 .divorce-prior-lines-figure .figure-scroll img { display: block; width: 45rem; max-width: none; height: auto; margin: 0 auto; }
+.residual-diagnostics-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
 .dag-figure svg { display: block; width: min(100%, 32rem); height: auto; margin: 0 auto; }
 .gaussian-density-equation { display: flex; flex-wrap: wrap; justify-content: center; gap: .35rem; align-items: center; }
 .gaussian-density-equation .fraction { min-width: 5.5rem; }
@@ -157,6 +158,8 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .multiple-model-code-map > div { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1rem; align-items: baseline; }
 .multiple-model-code-map code { justify-self: start; font-size: .9em; }
 .coefficient-comparison-figure svg { display: block; width: min(100%, 45rem); height: auto; margin: 0 auto; }
+.interpretive-plots { margin: 1.5rem 0; padding: 1rem 1rem 1rem 3.2rem; border-left: .25rem solid var(--blue); background: #f3f5fb; }
+.interpretive-plots li { margin: .75rem 0; padding-left: .25rem; }
 .units-regression-equation { display: grid; gap: .7rem; font-size: 1rem; }
 .observation-sequence { display: flex; justify-content: center; gap: .75rem; margin: 1.5rem auto !important; padding: .75rem 1rem; max-width: 28rem; border-block: 1px solid var(--line); background: #fff; font: 700 1.1rem/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: .04em; }
 .model-loop { margin: 1.5rem 0; padding: 1rem 1rem 1rem 3.2rem; border-left: .25rem solid var(--blue); background: #f3f5fb; }

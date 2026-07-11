@@ -692,7 +692,7 @@
   },
   "chapter-05": {
     "required_status": "in_progress",
-    "source_pages": [143, 154],
+    "source_pages": [143, 157],
     "required_ids": [
       "fig-5-1",
       "rethinking-causal-inference",
@@ -733,11 +733,19 @@
       "overthinking-simulating-divorce",
       "code-5-12",
       "sec-5-1-5",
+      "sec-5-1-5-1",
+      "eq-5-marriage-residual-model",
+      "code-5-13",
+      "code-5-14",
+      "fig-5-4",
+      "rethinking-never-use-residuals-as-data",
+      "sec-5-1-5-2",
       "chapter-05-notes",
       "note-77",
       "note-78",
       "note-79",
-      "note-80"
+      "note-80",
+      "note-81"
     ],
     "required_headings": [
       "多变量与虚假华夫饼",
@@ -752,30 +760,34 @@
       "5.1.4 近似后验",
       "过度思考：模拟离婚例子",
       "5.1.5 绘制多变量后验",
+      "5.1.5.1 预测变量残差图",
+      "再思考：绝不要把残差当作数据",
+      "5.1.5.2 后验预测图",
       "尾注"
     ],
     "counts": {
-      "section": 7,
-      "figure": 19,
-      "figure img": 3,
+      "section": 9,
+      "figure": 22,
+      "figure img": 4,
       "figure svg": 4,
       ".waffle-divorce-figure": 1,
       ".divorce-predictors-figure": 1,
       ".divorce-prior-lines-figure": 1,
+      ".residual-diagnostics-figure": 1,
       ".dag-figure": 3,
-      ".equation-block": 7,
+      ".equation-block": 8,
       ".conditional-independence-equation": 1,
       ".not-independent": 4,
-      ".model-system-equation": 1,
+      ".model-system-equation": 2,
       ".annotated-model-equation": 1,
       ".compact-regression-equation": 1,
       ".expanded-regression-equation": 1,
       ".matrix-regression-equation": 1,
       ".multiple-model-code-map": 1,
-      ".code-listing": 12,
+      ".code-listing": 14,
       ".code-output": 3,
       ".coefficient-comparison-figure": 1,
-      ".rethinking-box": 2,
+      ".rethinking-box": 3,
       ".overthinking-box": 3,
       ".source-erratum": 1,
       ".book-quote": 2,
@@ -787,7 +799,9 @@
       ".conditional-questions li": 2,
       ".multiple-regression-steps": 1,
       ".multiple-regression-steps li": 3,
-      ".endnotes li": 4
+      ".interpretive-plots": 1,
+      ".interpretive-plots li": 3,
+      ".endnotes li": 5
     }
   }
 }

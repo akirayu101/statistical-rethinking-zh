@@ -318,6 +318,93 @@ def prior_lines_figure() -> str:
     return "\n".join(body)
 
 
+def residual_diagnostics_figure(data: list[dict[str, float | str]]) -> str:
+    def standardize(values: list[float]) -> list[float]:
+        mean = sum(values) / len(values)
+        sd = math.sqrt(sum((value - mean) ** 2 for value in values) / (len(values) - 1))
+        return [(value - mean) / sd for value in values]
+
+    ages = standardize([float(row["age"]) for row in data])
+    marriages = standardize([float(row["marriage"]) for row in data])
+    divorces = standardize([float(row["divorce"]) for row in data])
+    a_m_intercept, a_m_slope, *_ = fit_line(ages, marriages)
+    m_a_intercept, m_a_slope, *_ = fit_line(marriages, ages)
+    marriage_residuals = [m - (a_m_intercept + a_m_slope * a) for a, m in zip(ages, marriages)]
+    age_residuals = [a - (m_a_intercept + m_a_slope * m) for a, m in zip(ages, marriages)]
+
+    width, height = 1200, 1000
+    body = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">',
+        "  <title>通过残差理解多元回归</title>",
+        "  <desc>上排让两个预测变量互相回归并显示残差，下排用两组残差分别预测离婚率。</desc>",
+        '  <rect width="100%" height="100%" fill="#fff"/>',
+    ]
+
+    def add_panel(
+        xs: list[float],
+        ys: list[float],
+        *,
+        x: float,
+        y: float,
+        x_range: tuple[float, float],
+        y_range: tuple[float, float],
+        x_label: str,
+        y_label: str,
+        residual_segments: bool = False,
+        vertical_zero: bool = False,
+        labels: set[str] | None = None,
+    ) -> None:
+        labels = labels or set()
+        panel_w, panel_h = 430, 335
+
+        def px(value: float) -> float:
+            return x + (value - x_range[0]) / (x_range[1] - x_range[0]) * panel_w
+
+        def py(value: float) -> float:
+            return y + panel_h - (value - y_range[0]) / (y_range[1] - y_range[0]) * panel_h
+
+        intercept, slope, *_ = fit_line(xs, ys)
+        if residual_segments:
+            for xv, yv in zip(xs, ys):
+                expected = intercept + slope * xv
+                body.append(f'  <line x1="{fmt(px(xv))}" y1="{fmt(py(expected))}" x2="{fmt(px(xv))}" y2="{fmt(py(yv))}" stroke="#9b9e9a" stroke-width="2"/>')
+        if vertical_zero:
+            body.append(f'  <line x1="{fmt(px(0))}" y1="{y}" x2="{fmt(px(0))}" y2="{y + panel_h}" stroke="#777b76" stroke-width="2" stroke-dasharray="7 7"/>')
+        x1, x2 = x_range
+        body.extend(
+            [
+                f'  <rect x="{x}" y="{y}" width="{panel_w}" height="{panel_h}" fill="none" stroke="#343732" stroke-width="1.5"/>',
+                f'  <line x1="{fmt(px(x1))}" y1="{fmt(py(intercept + slope * x1))}" x2="{fmt(px(x2))}" y2="{fmt(py(intercept + slope * x2))}" stroke="#242724" stroke-width="3"/>',
+            ]
+        )
+        for row, xv, yv in zip(data, xs, ys):
+            body.append(f'  <circle cx="{fmt(px(xv))}" cy="{fmt(py(yv))}" r="4.8" fill="#fff" stroke="#6670ee" stroke-width="2"/>')
+            loc = str(row["loc"])
+            if loc in labels:
+                dx = -8 if loc in {"ME", "ID"} else 8
+                anchor = "end" if dx < 0 else "start"
+                body.append(f'  <text x="{fmt(px(xv) + dx)}" y="{fmt(py(yv) - 8)}" text-anchor="{anchor}" font-family="{FONT}" font-size="16" font-weight="700" fill="#30332e">{loc}</text>')
+        for tick in [-2, -1, 0, 1, 2, 3]:
+            if x_range[0] <= tick <= x_range[1]:
+                body.append(f'  <text x="{fmt(px(tick))}" y="{y + panel_h + 27}" text-anchor="middle" font-family="{FONT}" font-size="14" fill="#30332e">{tick}</text>')
+            if y_range[0] <= tick <= y_range[1]:
+                body.append(f'  <text x="{x - 13}" y="{fmt(py(tick) + 5)}" text-anchor="end" font-family="{FONT}" font-size="14" fill="#30332e">{tick}</text>')
+        body.extend(
+            [
+                f'  <text x="{x + panel_w / 2}" y="{y + panel_h + 58}" text-anchor="middle" font-family="{FONT}" font-size="18" font-weight="700" fill="#263f86">{x_label}</text>',
+                f'  <text x="{x - 58}" y="{y + panel_h / 2}" transform="rotate(-90 {x - 58} {y + panel_h / 2})" text-anchor="middle" font-family="{FONT}" font-size="18" font-weight="700" fill="#263f86">{y_label}</text>',
+            ]
+        )
+
+    add_panel(ages, marriages, x=105, y=60, x_range=(-2.2, 3.2), y_range=(-2, 3.1), x_label="结婚年龄（标准化）", y_label="结婚率（标准化）", residual_segments=True, labels={"WY", "ND", "HI", "ME", "DC"})
+    add_panel(marriages, ages, x=690, y=60, x_range=(-2, 3.1), y_range=(-2.2, 3.2), x_label="结婚率（标准化）", y_label="结婚年龄（标准化）", residual_segments=True, labels={"DC", "HI", "ID"})
+    add_panel(marriage_residuals, divorces, x=105, y=555, x_range=(-1.8, 1.8), y_range=(-2.2, 2.2), x_label="结婚率残差", y_label="离婚率（标准化）", vertical_zero=True, labels={"ME", "WY", "HI", "ND", "DC"})
+    add_panel(age_residuals, divorces, x=690, y=555, x_range=(-1.5, 2.2), y_range=(-2.2, 2.2), x_label="结婚年龄残差", y_label="离婚率（标准化）", vertical_zero=True, labels={"DC", "HI", "ID"})
+    body.extend(["</svg>", ""])
+    return "\n".join(body)
+
+
 def main() -> int:
     data = rows()
     MEDIA.mkdir(parents=True, exist_ok=True)
@@ -325,6 +412,7 @@ def main() -> int:
         MEDIA / "chapter-05-waffle-divorce.svg": waffle_figure(data),
         MEDIA / "chapter-05-divorce-predictors.svg": predictors_figure(data),
         MEDIA / "chapter-05-prior-regression-lines.svg": prior_lines_figure(),
+        MEDIA / "chapter-05-residual-diagnostics.svg": residual_diagnostics_figure(data),
     }
     for path, content in outputs.items():
         path.write_text(content, encoding="utf-8")

@@ -474,7 +474,15 @@
     "additional predictive power": "额外预测力",
     "naive regression": "朴素回归",
     "Markov equivalence": "马尔可夫等价",
-    "multivariate posterior": "多变量后验"
+    "multivariate posterior": "多变量后验",
+    "interpretive plot": "解释性图形",
+    "predictor residual plot": "预测变量残差图",
+    "posterior prediction plot": "后验预测图",
+    "counterfactual plot": "反事实图",
+    "predictor variable residual": "预测变量残差",
+    "prediction error": "预测误差",
+    "residual variation": "残余变异",
+    "causal identification strategy": "因果识别策略"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"
