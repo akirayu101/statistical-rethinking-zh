@@ -29,6 +29,7 @@ h1, h2 { line-height: 1.25; text-wrap: balance; }
 h1 { margin: 0; font-size: clamp(2.25rem, 6vw, 4.5rem); letter-spacing: -.035em; }
 h2 { margin-top: 3.6rem; font-size: clamp(1.5rem, 4vw, 2.1rem); color: var(--blue); }
 h3 { margin: 2.6rem 0 1rem; font-size: 1.22rem; line-height: 1.4; }
+h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.45; }
 .subtitle, .source-range { color: var(--muted); }
 .progress-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: .7rem; margin: 2.25rem 0 1rem; }
 .progress-grid div { padding: 1rem; border: 1px solid var(--line); border-radius: .7rem; background: #fff; }
@@ -63,6 +64,10 @@ h3 { margin: 2.6rem 0 1rem; font-size: 1.22rem; line-height: 1.4; }
 .scroll-hint { display: none; margin: .45rem 0 0; color: var(--muted); font: .76rem/1.5 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; }
 .argument-list { margin: 1.5rem 0; padding-left: 2rem; }
 .argument-list li { margin: .75rem 0; padding-left: .4rem; }
+.hypothesis-block { margin: 1.4rem auto !important; padding: .8rem 1rem; max-width: 31rem; border-block: 1px solid var(--line); background: #fff; text-align: center !important; font-size: 1.05rem !important; }
+.hypothesis-block span { margin-right: .45rem; font-weight: 700; }
+.tool-list { margin: 1.4rem 0; padding: 1rem 1rem 1rem 3.2rem; border-left: .25rem solid var(--blue); background: #f3f5fb; }
+.tool-list li { margin: .4rem 0; padding-left: .25rem; }
 .rethinking-box { margin: 2rem 0; padding: 1.15rem 1.25rem; border: 1px solid #d9dcf0; border-radius: .35rem; background: #f0f1fa; }
 .rethinking-box h3 { margin: 0 0 .45rem; color: var(--blue); font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; font-size: 1rem; }
 .rethinking-box p { margin: 0; font-size: .96rem; line-height: 1.72; }

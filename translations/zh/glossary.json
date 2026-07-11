@@ -54,7 +54,19 @@
     "maximum entropy": "最大熵",
     "sampling bias": "抽样偏差",
     "unobserved variable": "未观测变量",
-    "model identification": "模型识别"
+    "model identification": "模型识别",
+    "modus tollens": "否定后件式",
+    "observation error": "观测误差",
+    "false positive": "假阳性",
+    "false negative": "假阴性",
+    "faster-than-light neutrino": "超光速中微子",
+    "special relativity": "狭义相对论",
+    "continuous hypothesis": "连续型假说",
+    "caloric theory": "热质说",
+    "generative model": "生成模型",
+    "Bayesian data analysis": "贝叶斯数据分析",
+    "model comparison": "模型比较",
+    "graphical causal model": "图形因果模型"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"
