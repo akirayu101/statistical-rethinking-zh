@@ -492,7 +492,15 @@
     "model revision": "模型修订",
     "spurious predictor": "虚假预测变量",
     "imaginary intervention": "假想干预",
-    "intervention variable": "干预变量"
+    "intervention variable": "干预变量",
+    "joint model": "联合模型",
+    "simultaneous regression": "同时回归",
+    "observable": "可观测量",
+    "total causal effect": "总因果效应",
+    "manipulated variable": "操纵变量",
+    "perfectly controlled experiment": "完美控制实验",
+    "exposure": "暴露",
+    "unconfounded causal effect": "无混杂因果效应"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"

@@ -461,6 +461,74 @@ def posterior_predictive_figure(data: list[dict[str, float | str]]) -> str:
     return "\n".join(body)
 
 
+def counterfactual_figures(data: list[dict[str, float | str]]) -> dict[str, str]:
+    def standardize(values: list[float]) -> list[float]:
+        mean = sum(values) / len(values)
+        sd = math.sqrt(sum((value - mean) ** 2 for value in values) / (len(values) - 1))
+        return [(value - mean) / sd for value in values]
+
+    ages = standardize([float(row["age"]) for row in data])
+    marriages = standardize([float(row["marriage"]) for row in data])
+    _, b_am, *_ = fit_line(ages, marriages)
+    b_a, b_m = -0.61, -0.07
+    total_a = b_a + b_m * b_am
+
+    def panel(
+        *, x: float, y: float, plot_w: float, plot_h: float, slope: float,
+        title: str, x_label: str, y_label: str, interval: float,
+    ) -> list[str]:
+        def px(value: float) -> float:
+            return x + (value + 2) / 4 * plot_w
+
+        def py(value: float) -> float:
+            return y + plot_h - (value + 2) / 4 * plot_h
+
+        grid = [-2 + 4 * index / 120 for index in range(121)]
+        upper = [(px(value), py(slope * value + interval)) for value in grid]
+        lower = [(px(value), py(slope * value - interval)) for value in grid]
+        body = [
+            f'  <text x="{x + plot_w / 2}" y="{y - 22}" text-anchor="middle" font-family="{FONT}" font-size="21" font-weight="700" fill="#263f86">{title}</text>',
+            f'  <rect x="{x}" y="{y}" width="{plot_w}" height="{plot_h}" fill="#fff" stroke="#343732" stroke-width="1.5"/>',
+            f'  <polygon points="{point_string(upper + list(reversed(lower)))}" fill="#cfd2d5" opacity="0.82"/>',
+            f'  <line x1="{fmt(px(-2))}" y1="{fmt(py(-2 * slope))}" x2="{fmt(px(2))}" y2="{fmt(py(2 * slope))}" stroke="#242724" stroke-width="3"/>',
+        ]
+        for tick in [-2, -1, 0, 1, 2]:
+            body.extend([
+                f'  <text x="{fmt(px(tick))}" y="{y + plot_h + 29}" text-anchor="middle" font-family="{FONT}" font-size="15" fill="#30332e">{tick}</text>',
+                f'  <text x="{x - 13}" y="{fmt(py(tick) + 5)}" text-anchor="end" font-family="{FONT}" font-size="15" fill="#30332e">{tick}</text>',
+            ])
+        body.extend([
+            f'  <text x="{x + plot_w / 2}" y="{y + plot_h + 65}" text-anchor="middle" font-family="{FONT}" font-size="19" font-weight="700" fill="#263f86">{x_label}</text>',
+            f'  <text x="{x - 58}" y="{y + plot_h / 2}" transform="rotate(-90 {x - 58} {y + plot_h / 2})" text-anchor="middle" font-family="{FONT}" font-size="19" font-weight="700" fill="#263f86">{y_label}</text>',
+        ])
+        return body
+
+    body56 = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="650" viewBox="0 0 1200 650" role="img">',
+        "  <title>结婚年龄干预的反事实效应</title>",
+        "  <desc>左图显示操纵结婚年龄对离婚率的总因果效应，右图显示操纵结婚年龄对结婚率的效应。</desc>",
+        '  <rect width="100%" height="100%" fill="#fff"/>',
+    ]
+    body56.extend(panel(x=105, y=90, plot_w=430, plot_h=420, slope=total_a, title="A 对 D 的总反事实效应", x_label="操纵后的 A", y_label="反事实 D", interval=0.22))
+    body56.extend(panel(x=690, y=90, plot_w=430, plot_h=420, slope=b_am, title="反事实效应 A → M", x_label="操纵后的 A", y_label="反事实 M", interval=0.20))
+    body56.extend(["</svg>", ""])
+
+    body57 = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<svg xmlns="http://www.w3.org/2000/svg" width="900" height="650" viewBox="0 0 900 650" role="img">',
+        "  <title>结婚率干预对离婚率的反事实效应</title>",
+        "  <desc>操纵结婚率对离婚率几乎没有趋势。</desc>",
+        '  <rect width="100%" height="100%" fill="#fff"/>',
+    ]
+    body57.extend(panel(x=155, y=90, plot_w=600, plot_h=420, slope=b_m, title="M 对 D 的总反事实效应", x_label="操纵后的 M", y_label="反事实 D", interval=0.24))
+    body57.extend(["</svg>", ""])
+    return {
+        "chapter-05-counterfactual-age.svg": "\n".join(body56),
+        "chapter-05-counterfactual-marriage.svg": "\n".join(body57),
+    }
+
+
 def main() -> int:
     data = rows()
     MEDIA.mkdir(parents=True, exist_ok=True)
@@ -471,6 +539,7 @@ def main() -> int:
         MEDIA / "chapter-05-residual-diagnostics.svg": residual_diagnostics_figure(data),
         MEDIA / "chapter-05-posterior-predictive.svg": posterior_predictive_figure(data),
     }
+    outputs.update({MEDIA / name: content for name, content in counterfactual_figures(data).items()})
     for path, content in outputs.items():
         path.write_text(content, encoding="utf-8")
         print(f"generated {path}")

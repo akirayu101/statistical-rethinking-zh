@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-05" data-source-pages="143-160">
+<article class="book-article" data-chapter="chapter-05" data-source-pages="143-163">
   <header class="chapter-header">
     <p class="eyebrow">第五章</p>
     <h1>多变量与虚假华夫饼</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 143–160 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 143–163 页</p>
   </header>
 
   <p>在北美——即便不算全世界——最可靠的华夫饼来源之一，是华夫饼屋（Waffle House）餐厅。华夫饼屋几乎总在营业，哪怕飓风刚刚过境也不例外。多数门店都投入资金做好灾害准备，其中包括自备发电机。因此，美国灾害救援机构联邦紧急事务管理署（FEMA）会非正式地把华夫饼屋当作衡量灾情严重程度的指标。<sup id="note-77-ref"><a href="#note-77">77</a></sup> 如果华夫饼屋关门了，那就是严重事件。</p>
@@ -607,7 +607,113 @@ d &lt;- data.frame(y,x_real,x_spur) # bind all together in data frame</code></pr
           <figcaption>反事实模拟采用的因果结构：<span class="math-inline"><var>A</var> → <var>M</var></span>、<span class="math-inline"><var>A</var> → <var>D</var></span>、<span class="math-inline"><var>M</var> → <var>D</var></span>。</figcaption>
         </figure>
 
-        <p class="continuation-note">联合模型与结婚年龄干预模拟将在原书 PDF 第 161 页继续。</p>
+        <p>要从这个结构模拟，仅有 DAG 还不够；还需要一组函数，说明每个变量怎样生成。为简单起见，每个变量都使用高斯分布，就像模型 <code>m5.3</code> 一样。但 <code>m5.3</code> 忽略了 <span class="math-inline"><var>A</var></span> 影响 <span class="math-inline"><var>M</var></span> 的假设。估计 <span class="math-inline"><var>A</var> → <var>D</var></span> 时不需要它；可是要预测操纵 <span class="math-inline"><var>A</var></span> 的后果，就必须纳入它，因为 <span class="math-inline"><var>A</var></span> 的部分效应会经过 <span class="math-inline"><var>M</var></span>。</p>
+
+        <p>要估计 <span class="math-inline"><var>A</var></span> 对 <span class="math-inline"><var>M</var></span> 的影响，只需用 <span class="math-inline"><var>A</var></span> 回归 <span class="math-inline"><var>M</var></span>；DAG 中没有其他变量会在二者之间制造关联。可以把这项回归加入 <code>quap()</code> 模型，同时运行两个回归：</p>
+        <p class="source-erratum"><strong>原文勘误：</strong>原书文字写成“用 <span class="math-inline"><var>M</var></span> 回归 <span class="math-inline"><var>A</var></span>”，但紧随其后的模型、DAG 和目标均为 <span class="math-inline"><var>A</var> → <var>M</var></span>；译稿按模型修正为“用 <span class="math-inline"><var>A</var></span> 回归 <span class="math-inline"><var>M</var></span>”。</p>
+
+        <figure class="code-listing" id="code-5-19">
+          <figcaption>R 代码 5.19</figcaption>
+          <pre><code>data(WaffleDivorce)
+d &lt;- list()
+d$A &lt;- standardize( WaffleDivorce$MedianAgeMarriage )
+d$D &lt;- standardize( WaffleDivorce$Divorce )
+d$M &lt;- standardize( WaffleDivorce$Marriage )
+
+m5.3_A &lt;- quap(
+    alist(
+      ## A -&gt; D &lt;- M
+        D ~ dnorm( mu , sigma ) ,
+        mu &lt;- a + bM*M + bA*A ,
+        a ~ dnorm( 0 , 0.2 ) ,
+        bM ~ dnorm( 0 , 0.5 ) ,
+        bA ~ dnorm( 0 , 0.5 ) ,
+        sigma ~ dexp( 1 ),
+      ## A -&gt; M
+        M ~ dnorm( mu_M , sigma_M ),
+        mu_M &lt;- aM + bAM*A,
+        aM ~ dnorm( 0 , 0.2 ),
+        bAM ~ dnorm( 0 , 0.5 ),
+        sigma_M ~ dexp( 1 )
+    ) , data = d )</code></pre>
+        </figure>
+
+        <p>查看 <code>precis(m5.3_A)</code> 的汇总，会发现 <span class="math-inline"><var>M</var></span> 与 <span class="math-inline"><var>A</var></span> 强烈负相关。如果按因果方式解释，这表示操纵 <span class="math-inline"><var>A</var></span> 会降低 <span class="math-inline"><var>M</var></span>。</p>
+
+        <p>目标是模拟操纵 <span class="math-inline"><var>A</var></span> 时会发生什么，所以先为 <span class="math-inline"><var>A</var></span> 定义一个取值范围：</p>
+        <figure class="code-listing" id="code-5-20">
+          <figcaption>R 代码 5.20</figcaption>
+          <pre><code>A_seq &lt;- seq( from=-2 , to=2 , length.out=30 )</code></pre>
+        </figure>
+
+        <p>这定义了 30 个假想干预，从均值以下两个标准差延伸到均值以上两个标准差。现在可以使用上一章介绍的 <code>sim()</code>，从模型 <code>m5.3_A</code> 模拟观测。但这一次要按顺序模拟 <span class="math-inline"><var>M</var></span> 和 <span class="math-inline"><var>D</var></span>。为什么是这个顺序？必须先模拟 <span class="math-inline"><var>A</var></span> 对 <span class="math-inline"><var>M</var></span> 的影响，然后才能模拟 <span class="math-inline"><var>A</var></span> 与 <span class="math-inline"><var>M</var></span> 对 <span class="math-inline"><var>D</var></span> 的联合影响。<code>sim()</code> 的 <code>vars</code> 参数同时指定要模拟哪些可观测量，以及模拟顺序。</p>
+
+        <figure class="code-listing" id="code-5-21">
+          <figcaption>R 代码 5.21</figcaption>
+          <pre><code># prep data
+sim_dat &lt;- data.frame( A=A_seq )
+
+# simulate M and then D, using A_seq
+s &lt;- sim( m5.3_A , data=sim_dat , vars=c("M","D") )</code></pre>
+        </figure>
+
+        <p>就这么简单。不过，至少请扫一眼本节末尾的“过度思考”侧栏；那里会展示各个步骤，以便用任何软件拟合的任何模型执行这类反事实模拟。下面绘制预测：</p>
+        <figure class="code-listing" id="code-5-22">
+          <figcaption>R 代码 5.22</figcaption>
+          <pre><code># display counterfactual predictions
+plot( sim_dat$A , colMeans(s$D) , ylim=c(-2,2) , type="l" ,
+    xlab="manipulated A" , ylab="counterfactual D" )
+shade( apply(s$D,2,PI) , sim_dat$A )
+mtext( "Total counterfactual effect of A on D" )</code></pre>
+        </figure>
+
+        <figure class="book-figure counterfactual-age-figure" id="fig-5-6">
+          <div class="figure-scroll" tabindex="0" aria-label="可横向滚动的结婚年龄干预双面板反事实图">
+            <img src="/media/chapter-05-counterfactual-age.svg" alt="左图显示操纵结婚年龄对离婚率的总反事实效应，右图显示操纵结婚年龄对结婚率的反事实效应">
+          </div>
+          <p class="scroll-hint">图较宽，可横向滚动比较两个反事实效应。</p>
+          <figcaption><strong>图 5.6：</strong>多变量离婚模型 <code>m5.3</code> 的反事实图。两图显示操纵结婚年龄 <span class="math-inline"><var>A</var></span> 对离婚率 <span class="math-inline"><var>D</var></span> 的预测效应。左：操纵 <span class="math-inline"><var>A</var></span> 对 <span class="math-inline"><var>D</var></span> 的总因果效应；模型允许一部分总效应通过 <span class="math-inline"><var>M</var></span> 发生，包含 <span class="math-inline"><var>A</var> → <var>D</var></span> 与 <span class="math-inline"><var>A</var> → <var>M</var> → <var>D</var></span> 两条路径。右：模拟的 <span class="math-inline"><var>M</var></span> 值显示估计关系 <span class="math-inline"><var>A</var> → <var>M</var></span>。</figcaption>
+        </figure>
+
+        <p><a href="#fig-5-6">图 5.6</a>左侧显示结果。<span class="math-inline"><var>D</var></span> 的预测趋势包含 <span class="math-inline"><var>A</var> → <var>D</var></span> 和 <span class="math-inline"><var>A</var> → <var>M</var> → <var>D</var></span> 两条路径。前面发现 <span class="math-inline"><var>M</var> → <var>D</var></span> 很小，所以第二条路径贡献不大；但如果 <span class="math-inline"><var>M</var></span> 强烈影响 <span class="math-inline"><var>D</var></span>，上面的代码也会纳入该效应。反事实模拟还生成了 <span class="math-inline"><var>M</var></span> 的取值，显示在图 5.6 右侧；代码对象 <code>s</code> 中包含这些模拟值，可以修改绘图代码自行复现。</p>
+
+        <p>模拟反事实的诀窍，是认识到：操纵变量 <span class="math-inline"><var>X</var></span> 时，会切断其他变量对 <span class="math-inline"><var>X</var></span> 的因果影响。也就是说，要修改 DAG，使得没有箭头进入 <span class="math-inline"><var>X</var></span>。假设现在模拟操纵 <span class="math-inline"><var>M</var></span> 的效应，对应 DAG 如下：</p>
+
+        <figure class="book-figure dag-figure" id="dag-5-manipulate-m">
+          <svg viewBox="0 0 640 330" role="img" aria-labelledby="dag-5-manipulate-m-title dag-5-manipulate-m-desc">
+            <title id="dag-5-manipulate-m-title">操纵结婚率后的 DAG</title><desc id="dag-5-manipulate-m-desc">A 指向 D，M 指向 D；A 到 M 的箭头已删除。</desc>
+            <defs><marker id="dag-manip-m-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#3f4752"/></marker></defs>
+            <line x1="195" y1="105" x2="305" y2="245" stroke="#3f4752" stroke-width="4" marker-end="url(#dag-manip-m-arrow)"/><line x1="445" y1="105" x2="335" y2="245" stroke="#3f4752" stroke-width="4" marker-end="url(#dag-manip-m-arrow)"/>
+            <circle cx="160" cy="85" r="38" fill="#f0f1fa" stroke="#263f86" stroke-width="3"/><circle cx="480" cy="85" r="38" fill="#f0f1fa" stroke="#263f86" stroke-width="3"/><circle cx="320" cy="270" r="38" fill="#f0f1fa" stroke="#263f86" stroke-width="3"/>
+            <text x="160" y="96" text-anchor="middle" font-size="32" font-weight="700" fill="#263f86">A</text><text x="480" y="96" text-anchor="middle" font-size="32" font-weight="700" fill="#263f86">M</text><text x="320" y="281" text-anchor="middle" font-size="32" font-weight="700" fill="#263f86">D</text>
+          </svg>
+          <figcaption>操纵 <span class="math-inline"><var>M</var></span> 会删除 <span class="math-inline"><var>A</var> → <var>M</var></span>，但保留 <span class="math-inline"><var>A</var> → <var>D</var></span> 与 <span class="math-inline"><var>M</var> → <var>D</var></span>。</figcaption>
+        </figure>
+
+        <p>箭头 <span class="math-inline"><var>A</var> → <var>M</var></span> 被删除，因为如果控制 <span class="math-inline"><var>M</var></span> 的取值，<span class="math-inline"><var>A</var></span> 就不再影响它，这就像一个完美控制的实验。现在修改代码，模拟操纵 <span class="math-inline"><var>M</var></span> 的反事实结果。对于平均州，令 <span class="math-inline"><var>A</var> = 0</span>，观察改变 <span class="math-inline"><var>M</var></span> 会怎样：</p>
+
+        <figure class="code-listing" id="code-5-23">
+          <figcaption>R 代码 5.23</figcaption>
+          <pre><code>sim_dat &lt;- data.frame( M=seq(from=-2,to=2,length.out=30) , A=0 )
+s &lt;- sim( m5.3_A , data=sim_dat , vars="D" )
+
+plot( sim_dat$M , colMeans(s) , ylim=c(-2,2) , type="l" ,
+    xlab="manipulated M" , ylab="counterfactual D" )
+shade( apply(s,2,PI) , sim_dat$M )
+mtext( "Total counterfactual effect of M on D" )</code></pre>
+        </figure>
+
+        <figure class="book-figure counterfactual-marriage-figure" id="fig-5-7">
+          <div class="figure-scroll" tabindex="0" aria-label="可横向滚动的操纵结婚率对离婚率反事实效应图">
+            <img src="/media/chapter-05-counterfactual-marriage.svg" alt="操纵结婚率对离婚率的总反事实效应接近水平">
+          </div>
+          <p class="scroll-hint">图较宽，可横向滚动查看区间与趋势。</p>
+          <figcaption><strong>图 5.7：</strong>操纵结婚率 <span class="math-inline"><var>M</var></span> 对离婚率 <span class="math-inline"><var>D</var></span> 的反事实效应。由于估计的 <span class="math-inline"><var>M</var> → <var>D</var></span> 很小，图中几乎没有趋势。操纵 <span class="math-inline"><var>M</var></span> 会切断 <span class="math-inline"><var>A</var></span> 对 <span class="math-inline"><var>M</var></span> 的影响，从而消除 <span class="math-inline"><var>M</var></span> 与 <span class="math-inline"><var>D</var></span> 之间的关联。</figcaption>
+        </figure>
+
+        <p>现在只模拟 <span class="math-inline"><var>D</var></span>——注意代码中 <code>sim()</code> 的 <code>vars</code> 参数。无需模拟 <span class="math-inline"><var>A</var></span>，因为 <span class="math-inline"><var>M</var></span> 不影响它。<a href="#fig-5-7">图 5.7</a>显示结果；趋势自然弱得多，因为已经发现没有证据表明 <span class="math-inline"><var>M</var></span> 强烈影响 <span class="math-inline"><var>D</var></span>。</p>
+
+        <p>在包含许多潜在路径的更复杂模型中，同样的策略可以为关心的暴露计算反事实。但后面会看到，某些暴露 <span class="math-inline"><var>X</var></span> 对结果 <span class="math-inline"><var>Y</var></span> 的可信、无混杂因果效应往往根本无法估计。即使如此，仍有重要的反事实值得考虑；后续各章会回到这个主题。</p>
       </section>
     </section>
   </section>
@@ -624,6 +730,6 @@ d &lt;- data.frame(y,x_real,x_spur) # bind all together in data frame</code></pr
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 143–160 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 161 页继续。
+    <strong>译稿状态：</strong>PDF 第 143–163 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 164 页继续。
   </aside>
 </article>
