@@ -118,6 +118,10 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .annotated-model-equation .equation-label { color: var(--muted); font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; font-size: .78rem; }
 .height-posterior-equation { display: flex; flex-wrap: wrap; justify-content: center; gap: .5rem; align-items: center; }
 .height-posterior-equation .fraction { min-width: min(100%, 34rem); overflow-wrap: anywhere; }
+.quap-formula-map { display: grid; gap: .55rem; }
+.quap-formula-map > div { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1rem; align-items: baseline; }
+.quap-formula-map code { justify-self: start; font-size: .9em; }
+.source-erratum { margin: -.45rem auto 1.4rem !important; padding: .7rem .9rem; max-width: 40rem; border-left: .22rem solid #b77725; background: #fff8eb; color: #5f4a2d; font-size: .9rem; }
 .observation-sequence { display: flex; justify-content: center; gap: .75rem; margin: 1.5rem auto !important; padding: .75rem 1rem; max-width: 28rem; border-block: 1px solid var(--line); background: #fff; font: 700 1.1rem/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: .04em; }
 .model-loop { margin: 1.5rem 0; padding: 1rem 1rem 1rem 3.2rem; border-left: .25rem solid var(--blue); background: #f3f5fb; }
 .model-loop li { margin: .55rem 0; padding-left: .25rem; }
@@ -222,4 +226,5 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
   .exercise p { text-align: left; }
   .scroll-hint { display: block; }
   .marble-conjectures { grid-template-columns: 1fr; }
+  .quap-formula-map > div { grid-template-columns: 1fr; gap: .3rem; }
 }

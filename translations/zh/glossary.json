@@ -308,7 +308,19 @@
     "marginal posterior density": "边际后验密度",
     "right-hand tail": "右尾",
     "normal approximation": "正态近似",
-    "posterior curvature": "后验曲率"
+    "posterior curvature": "后验曲率",
+    "formula syntax": "公式语法",
+    "fitted model": "拟合模型",
+    "marginal distribution": "边际分布",
+    "starting value": "初始值",
+    "informative prior": "信息性先验",
+    "parameter dimension": "参数维度",
+    "multidimensional Gaussian distribution": "多维高斯分布",
+    "covariance": "协方差",
+    "variance-covariance matrix": "方差-协方差矩阵",
+    "correlation matrix": "相关矩阵",
+    "variance vector": "方差向量",
+    "correlated change": "相关变化"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"

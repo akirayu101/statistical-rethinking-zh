@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-04" data-source-pages="89-106">
+<article class="book-article" data-chapter="chapter-04" data-source-pages="89-109">
   <header class="chapter-header">
     <p class="eyebrow">第四章</p>
     <h1>地心模型</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 89–106 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 89–109 页</p>
   </header>
 
   <p>历史对托勒密并不宽厚。克劳狄乌斯·托勒密（约公元 90 年生，168 年卒）是埃及数学家和天文学家，最著名的成就是太阳系地心模型。今天，科学家若想嘲讽某人，有时会把他比作地心模型的拥护者。但托勒密是位天才。他描述行星运动的数学模型（<a href="#fig-4-1">图 4.1</a>）极其准确。为了达到这种精度，模型采用了一种叫作<strong>本轮</strong>的装置，也就是圆上套圆。甚至还能有“本轮上的本轮”：圆上套圆再套圆。只要在适当位置放置足够多的本轮，托勒密模型的预测精度就能超过此前任何人。因此，这套模型沿用了一千多年。托勒密和许多与他相似的人历经数百年艰苦推演，在没有计算机帮助的条件下解决了这一切。任何人被比作托勒密，都应该感到受宠若惊。</p>
@@ -596,8 +596,137 @@ d &lt;- Howell1
 d2 &lt;- d[ d$age &gt;= 18 , ]</code></pre>
       </figure>
 
-      <p>现在可以使用 R 的公式语法定义模型。本例的模型定义与前面相同，不过接下来会再次列出它，并在每一行旁边给出对应的 R 代码。</p>
-      <p class="continuation-note">模型定义将在原书 PDF 第 107 页继续。</p>
+      <p>现在可以使用 R 的公式语法定义模型。本例的模型定义与前面相同，不过下面会再次列出它，并在右侧给出每一行对应的 R 代码：</p>
+
+      <div class="equation-block quap-formula-map" id="eq-4-quap-formula-map">
+        <div><span>hᵢ ∼ Normal(μ, σ)</span><code>height ~ dnorm(mu,sigma)</code></div>
+        <div><span>μ ∼ Normal(178, 20)</span><code>mu ~ dnorm(156,10)</code></div>
+        <div><span>σ ∼ Uniform(0, 50)</span><code>sigma ~ dunif(0,50)</code></div>
+      </div>
+
+      <p class="source-erratum"><strong>原书数值说明：</strong>PDF 第 107 页右栏把 <span class="math-inline"><var>μ</var></span> 先验写成 <code>dnorm(156,10)</code>；紧接着的正式模型代码恢复为前文的 <code>dnorm(178,20)</code>。此处按原页保留两者。</p>
+
+      <p>现在把这些 R 等价式放进一个 <code>alist</code>。下面就是上述公式的 <code>alist</code>：</p>
+
+      <figure class="code-listing" id="code-4-27">
+        <figcaption>R 代码 4.27</figcaption>
+        <pre><code>flist &lt;- alist(
+    height ~ dnorm( mu , sigma ) ,
+    mu ~ dnorm( 178 , 20 ) ,
+    sigma ~ dunif( 0 , 50 )
+)</code></pre>
+      </figure>
+
+      <p>注意每一行末尾都有逗号，只有最后一行没有。这些逗号把模型定义的各行分隔开。</p>
+
+      <p>用下面的代码把模型拟合到数据框 <code>d2</code> 中的数据：</p>
+
+      <figure class="code-listing" id="code-4-28">
+        <figcaption>R 代码 4.28</figcaption>
+        <pre><code>m4.1 &lt;- quap( flist , data=d2 )</code></pre>
+      </figure>
+
+      <p>执行后，拟合好的模型会保存在符号 <code>m4.1</code> 中。现在查看后验分布：</p>
+
+      <figure class="code-listing" id="code-4-29">
+        <figcaption>R 代码 4.29</figcaption>
+        <pre><code>precis( m4.1 )</code></pre>
+        <pre class="code-output"><code>        Mean StdDev   5.5% 94.5%
+mu    154.61   0.41 153.95 155.27
+sigma   7.73   0.29   7.27   8.20</code></pre>
+      </figure>
+
+      <p>这些数字给出了每个参数边际分布的高斯近似。也就是说，对 <span class="math-inline"><var>σ</var></span> 各个值的可信程度求平均以后，<span class="math-inline"><var>μ</var></span> 每个值的可信程度由均值 154.6、标准差 0.4 的高斯分布给出。</p>
+
+      <p>5.5% 与 94.5% 分位数是百分位区间的边界，对应 89% 兼容区间。为什么是 89%？它只是默认值。这个区间相当宽，因此能展示参数值的一个高概率范围。若想使用另一个区间，比如传统而不加思索的 95%，可以输入 <code>precis(m4.1,prob=0.95)</code>。不过我不推荐 95% 区间，因为读者很难不把它们当作显著性检验。89 还是一个素数，所以如果有人要求你解释这个选择，可以意味深长地盯着对方，念道：“因为它是素数。”这个理由并不比选择 95% 的传统理由更差。</p>
+
+      <p>建议把这组 89% 边界与前面网格近似得到的兼容区间比较。你会发现它们几乎完全相同。当后验近似高斯分布时，就应该预期这种结果。</p>
+
+      <aside class="overthinking-box" id="overthinking-quap-start-values">
+        <h3>过度思考：quap 的初始值</h3>
+
+        <p><code>quap</code> 像爬山一样沿后验向上攀爬，借此估计后验。要开始攀爬，它必须先站在某个位置，也就是某组参数值上。除非另行指定，否则 <code>quap</code> 会从先验中随机抽取的值开始。不过，也可以为模型中的任何参数指定初始值。在上一节的示例中，这意味着参数 <span class="math-inline"><var>μ</var></span> 和 <span class="math-inline"><var>σ</var></span>。本例中一组不错的初始值是：</p>
+
+        <figure class="code-listing" id="code-4-30">
+          <figcaption>R 代码 4.30</figcaption>
+          <pre><code>start &lt;- list(
+    mu=mean(d2$height),
+    sigma=sd(d2$height)
+)
+m4.1 &lt;- quap( flist , data=d2 , start=start )</code></pre>
+        </figure>
+
+        <p>这些初始值能较好地猜到 MAP 值的大致位置。</p>
+
+        <p>注意，初始值列表是普通的 <code>list</code>，不像公式列表那样是 <code>alist</code>。<code>alist</code> 与 <code>list</code> 的基本作用相同：都允许创建任意 R 对象的集合。它们有一处重要区别：<code>list</code> 会求值其中嵌入的代码，而 <code>alist</code> 不会。因此，定义公式列表时应使用 <code>alist</code>，避免代码被执行；但为参数定义初始值列表时应该使用 <code>list</code>，让 <code>mean(d2$height)</code> 这样的代码真正求值得到数值。</p>
+      </aside>
+
+      <p>之前使用的先验非常弱，一是因为它们近乎平坦，二是因为数据很多。下面给 <span class="math-inline"><var>μ</var></span> 换入一个信息性更强的先验，以便观察效果。唯一的改动是把先验标准差改为 0.1，使先验非常狭窄。我还会把公式直接写进 <code>quap</code> 调用，让你看到怎样一次性完成全部构造。</p>
+
+      <figure class="code-listing" id="code-4-31">
+        <figcaption>R 代码 4.31</figcaption>
+        <pre><code>m4.2 &lt;- quap(
+    alist(
+        height ~ dnorm( mu , sigma ) ,
+        mu ~ dnorm( 178 , 0.1 ) ,
+        sigma ~ dunif( 0 , 50 )
+    ) , data=d2 )
+precis( m4.2 )</code></pre>
+        <pre class="code-output"><code>         Mean StdDev   5.5% 94.5%
+mu     177.86   0.10 177.70 178.02
+sigma   24.52   0.93  23.03  26.00</code></pre>
+      </figure>
+
+      <p>注意，<span class="math-inline"><var>μ</var></span> 的估计几乎没有离开先验。先验高度集中在 178 附近，所以这并不意外。但也要注意，<span class="math-inline"><var>σ</var></span> 的估计变化很大，尽管它的先验完全没有改动。一旦魔像确信均值接近 178——正如先验坚持的那样——它就必须以此为条件估计 <span class="math-inline"><var>σ</var></span>。因此，虽然我们只改变了另一个参数的先验信息，<span class="math-inline"><var>σ</var></span> 的后验也会改变。</p>
+    </section>
+
+    <section id="sec-4-3-6">
+      <h3>4.3.6 从 quap 抽样</h3>
+
+      <p>上面说明了怎样使用 <code>quap</code> 得到后验的二次近似。那么，接下来怎样从二次近似的后验分布中抽取样本？答案相当简单，却不明显；关键是认识到：如果后验分布有不止一个参数维度——<span class="math-inline"><var>μ</var></span> 和 <span class="math-inline"><var>σ</var></span> 各贡献一个维度——它的二次近似就是一个多维高斯分布。</p>
+
+      <p>因此，当 R 构造二次近似时，它不仅计算所有参数的标准差，还会计算每一对参数之间的协方差。正如均值与标准差（或标准差的平方，即方差）足以描述一维高斯分布，一个均值列表加上一张方差与协方差矩阵，也足以描述多维高斯分布。要查看模型 <code>m4.1</code> 的这张矩阵，可以使用：</p>
+
+      <figure class="code-listing" id="code-4-32">
+        <figcaption>R 代码 4.32</figcaption>
+        <pre><code>vcov( m4.1 )</code></pre>
+        <pre class="code-output"><code>                mu        sigma
+mu    0.1697395865 0.0002180593
+sigma 0.0002180593 0.0849057933</code></pre>
+      </figure>
+
+      <p>上面是一张<strong>方差-协方差矩阵</strong>。它是二次近似的多维黏合剂，因为它告诉我们：后验分布中的每个参数怎样与其他每个参数相关。方差-协方差矩阵可以分解为两个元素：（1）参数方差组成的向量；（2）相关矩阵，它说明任一参数的变化怎样引起其他参数的相关变化。这种分解通常更容易理解，所以现在就来做：</p>
+
+      <figure class="code-listing" id="code-4-33">
+        <figcaption>R 代码 4.33</figcaption>
+        <pre><code>diag( vcov( m4.1 ) )
+cov2cor( vcov( m4.1 ) )</code></pre>
+        <pre class="code-output"><code>        mu      sigma
+0.16973959 0.08490579
+
+               mu       sigma
+mu    1.000000000 0.001816412
+sigma 0.001816412 1.000000000</code></pre>
+      </figure>
+
+      <p>输出中的两元素向量就是方差列表。对它开平方，就会得到 <code>precis</code> 输出中显示的标准差。输出里的 2 × 2 矩阵则是相关矩阵。每个条目表示一对参数之间的相关性，取值范围是 -1 到 +1。数字 1 表示参数与自身的相关性；如果这些值不是 1，就该担心了。其他条目通常更接近零，本例中尤其接近零。这表明，了解 <span class="math-inline"><var>μ</var></span> 并不能告诉我们任何关于 <span class="math-inline"><var>σ</var></span> 的信息；反之亦然。对这类简单高斯模型而言，这很典型，但一般情况下相当少见，后面几章会看到这一点。</p>
+
+      <p>那么，怎样从这个多维后验中抽样？现在不再从简单高斯分布中抽取单个值，而要从多维高斯分布中抽取数值向量。<code>rethinking</code> 包提供了一个便利函数，恰好能完成这件事：</p>
+
+      <figure class="code-listing" id="code-4-34">
+        <figcaption>R 代码 4.34</figcaption>
+        <pre><code>library(rethinking)
+post &lt;- extract.samples( m4.1 , n=1e4 )
+head(post)</code></pre>
+        <pre class="code-output"><code>        mu    sigma
+1 155.0031 7.443893
+2 154.0347 7.771255
+3 154.9157 7.822178
+4 154.4252 7.530331
+5 154.5307 7.655490</code></pre>
+      </figure>
+
+      <p class="continuation-note">代码 4.34 的输出与说明将在原书 PDF 第 110 页继续。</p>
     </section>
   </section>
 
@@ -617,6 +746,6 @@ d2 &lt;- d[ d$age &gt;= 18 , ]</code></pre>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 89–106 页已完成翻译、逐页核对、阶段契约和桌面/移动端视觉验收。下一批从 PDF 第 107 页继续。
+    <strong>译稿状态：</strong>PDF 第 89–109 页已完成翻译、逐页核对、阶段契约和桌面/移动端视觉验收。下一批从 PDF 第 110 页继续。
   </aside>
 </article>
