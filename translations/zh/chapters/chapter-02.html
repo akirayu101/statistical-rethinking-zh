@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-02" data-source-pages="35-37">
+<article class="book-article" data-chapter="chapter-02" data-source-pages="35-40">
   <header class="chapter-header">
     <p class="eyebrow">第二章</p>
     <h1>小世界与大世界</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 35–37 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 35–40 页</p>
   </header>
 
   <p>1492 年，Cristoforo Colombo（Christopher Columbus，中文常译“哥伦布”）那次声名狼藉的向西航行开始时，他相信地球是球形的。在这一点上，他和当时大多数受过教育的人一样。与大多数人不同的是，他还相信地球比实际小得多：赤道周长只有 30,000 公里，而不是真实的 40,000 公里（图 2.1）。<sup><a href="#note-37" aria-label="尾注 37">37</a></sup>这是欧洲历史上影响最为深远的错误之一。</p>
@@ -106,6 +106,71 @@
       </div>
 
       <p>现在，花园中共有 16 条可能路径，每条路径对应两次抽取的一个结果对。第二次抽取时，上面的每条路径都会再次分成四条。为什么？</p>
+
+      <p>因为我们相信，摇匀袋子会让每颗弹珠都有公平的抽中机会，与上一次抽到了哪颗无关。第三层以同样方式构建，完整花园见图 2.2。总共有 <span class="math-inline">4<sup>3</sup> = 64</span> 条可能路径。</p>
+
+      <figure class="book-figure garden-figure" id="fig-2-2">
+        <div class="figure-scroll" tabindex="0" aria-label="可横向滚动的六十四条弹珠抽取路径">
+          <img src="/media/chapter-02-garden-64.svg" alt="一蓝三白的袋子连续有放回抽取三次所生成的六十四条完整分叉路径">
+        </div>
+        <p class="scroll-hint">图较宽，可横向滚动查看全部 64 条路径。</p>
+        <figcaption><strong>图 2.2：</strong>假定袋中有一颗蓝色、三颗白色弹珠时生成的 64 条可能路径。</figcaption>
+      </figure>
+
+      <p>随着逐次查看抽取结果，其中一些路径会在逻辑上被排除。回想一下，第一次抽到蓝色，因此花园底部的三条白色路径立即淘汰。若把真实数据想象成在花园中描出一条路径，它必定经过靠近起点的那条蓝色路径。</p>
+
+      <p>第二次抽到白色，于是从第一颗蓝色弹珠分出的四条路径中，有三条继续保留。数据沿路径前进时，我们知道它必定经过这三条白色路径之一（此前先经过蓝色路径），却不知道具体是哪一条，因为只记录了弹珠颜色。最后，第三次抽到蓝色。中间层剩下的三条路径各自保留一条蓝色路径，所以，在假定袋中有一蓝三白时，序列
+        <span class="marble-set data-sequence" aria-label="蓝色、白色、蓝色"><i class="marble blue"></i><i class="marble white"></i><i class="marble blue"></i></span>
+        共有三种出现方式。</p>
+
+      <p>图 2.3 再次展示花园，这次把逻辑上已排除的路径灰化。我们无法确定真实数据走的是三条路径中的哪一条。但只要目前只考虑“一蓝三白”这个猜想，就可以肯定数据走过其中一条。这些是同时符合袋中内容知识（四颗弹珠，非白即蓝）与数据（蓝–白–蓝）的全部路径。</p>
+
+      <figure class="book-figure garden-figure" id="fig-2-3">
+        <div class="figure-scroll" tabindex="0" aria-label="可横向滚动的路径淘汰图">
+          <img src="/media/chapter-02-garden-pruned.svg" alt="六十四条路径中不符合蓝白蓝观测序列的路径被灰化，只剩三条深色路径">
+        </div>
+        <p class="scroll-hint">图较宽，可横向滚动查看被保留和淘汰的路径。</p>
+        <figcaption><strong>图 2.3：</strong>排除与观测序列不相容的路径后，64 条路径中只剩 3 条。</figcaption>
+      </figure>
+
+      <p>这说明，一蓝三白的袋子共有三种方式产生蓝–白–蓝数据。我们无法在这三种方式之间进一步判断；推断力来自把这个计数，与其他袋中组成猜想产生同一数据的方式数相比较。</p>
+
+      <p>例如，考虑全白猜想。它产生观测数据的方式数为零，因为只要出现一颗蓝色就与它在逻辑上不相容。全蓝猜想同样与数据不相容，因为数据中出现了白色。于是可以排除这两个猜想：它们连一条与数据相容的路径都无法提供。</p>
+
+      <p>图 2.4 展示剩余三个猜想的完整比较：一蓝三白、二蓝二白、三蓝一白。第一个面板对应图 2.3；第二个面板展示二蓝二白猜想的同类花园；第三个面板展示三蓝一白。现在，计算每个猜想产生观测数据的全部方式数。一蓝三白有 3 条；二蓝二白有 8 条；三蓝一白有 9 条。</p>
+
+      <figure class="book-figure garden-figure" id="fig-2-4">
+        <div class="figure-scroll" tabindex="0" aria-label="可横向滚动的三个猜想路径比较图">
+          <img src="/media/chapter-02-garden-comparison.svg" alt="三个面板比较一蓝三白、二蓝二白、三蓝一白猜想与蓝白蓝数据相容的路径，分别剩三条、八条、九条">
+        </div>
+        <p class="scroll-hint">图较宽，可横向滚动比较三个猜想。</p>
+        <figcaption><strong>图 2.4：</strong>分叉数据的花园，展示袋中每种可能组成与数据在逻辑上相容的分叉路径。</figcaption>
+      </figure>
+
+      <p>总结一下，我们考察了五种袋中组成猜想，从零颗蓝色到四颗蓝色。对每个猜想，都计算了分叉数据花园中有多少条序列可能产生观测到的蓝–白–蓝数据：</p>
+
+      <div class="table-wrap count-table-wrap">
+        <table class="count-table">
+          <thead><tr><th scope="col">猜想</th><th scope="col">产生蓝–白–蓝的方式数</th></tr></thead>
+          <tbody>
+            <tr><th scope="row"><span class="marble-set" aria-label="0 蓝 4 白"><i class="marble white"></i><i class="marble white"></i><i class="marble white"></i><i class="marble white"></i></span></th><td>0 × 4 × 0 = 0</td></tr>
+            <tr><th scope="row"><span class="marble-set" aria-label="1 蓝 3 白"><i class="marble blue"></i><i class="marble white"></i><i class="marble white"></i><i class="marble white"></i></span></th><td>1 × 3 × 1 = 3</td></tr>
+            <tr><th scope="row"><span class="marble-set" aria-label="2 蓝 2 白"><i class="marble blue"></i><i class="marble blue"></i><i class="marble white"></i><i class="marble white"></i></span></th><td>2 × 2 × 2 = 8</td></tr>
+            <tr><th scope="row"><span class="marble-set" aria-label="3 蓝 1 白"><i class="marble blue"></i><i class="marble blue"></i><i class="marble blue"></i><i class="marble white"></i></span></th><td>3 × 1 × 3 = 9</td></tr>
+            <tr><th scope="row"><span class="marble-set" aria-label="4 蓝 0 白"><i class="marble blue"></i><i class="marble blue"></i><i class="marble blue"></i><i class="marble blue"></i></span></th><td>4 × 0 × 4 = 0</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>请注意，每个猜想产生数据的方式数，可以先数花园每一“环”中的路径数，再把这些计数相乘得到。这只是一个计算装置：它与图 2.4 告诉我们的内容相同，却不必真正画出花园。计算时出现乘法，并没有改变这样一个事实：我们仍只是在数逻辑上可能的路径。以后遇到贝叶斯推断的更形式化表示时，这一点还会再次出现。</p>
+
+      <p>这些计数有什么用？比较它们，已经为评定每种袋中组成猜想的相对可信程度提供了部分答案。但只是部分答案，因为要比较这些计数，还得先决定每个猜想本身可以通过多少种方式实现。可以主张，在没有理由作其他假定时，把每个猜想视为同样可信，直接比较计数即可；但我们往往确实有理由作不同假定。</p>
+
+      <aside class="rethinking-box">
+        <h3>再思考：论证依据</h3>
+        <p>把花园中的路径计数用作相对可信程度的度量，可以从多种方式加以论证。这里采用逻辑论证：如果希望对可信程度进行推理，同时与普通逻辑——关于真与假的陈述——保持一致，就应遵守这套程序。<sup><a href="#note-41" aria-label="尾注 41">41</a></sup>还有其他论证也会导向相同的数学程序。</p>
+        <p>无论在哲学上选择怎样为它辩护，请注意它确实有效。论证与哲学为方法提供动机，但真正重要的是结果。贝叶斯推断在现实世界中的众多成功应用，或许已经是你所需要的全部依据。20 世纪反对贝叶斯数据分析的人曾主张，贝叶斯推断易于辩护，却难以应用。<sup><a href="#note-42" aria-label="尾注 42">42</a></sup>幸运的是，这已经不再成立。事实上，情况往往恰好相反：科学家正转向贝叶斯方法，因为它让他们能够使用自己想要的模型。</p>
+      </aside>
     </section>
   </section>
 
@@ -116,10 +181,12 @@
       <li id="note-38">这种区分与术语来自 Savage（1962）。Savage 用它们表达从较少现实性到较多现实性的一系列模型。统计模型很少是大世界。 <a class="backref" href="#sec-2-1" aria-label="返回正文">↩</a></li>
       <li id="note-39">关于贝叶斯推断在决策论意义上的最优性，参见 Robert（2007）的全面论述。 <a class="backref" href="#sec-2-1" aria-label="返回正文">↩</a></li>
       <li id="note-40">参见 Simon（1969）以及 Gigerenzer 等（2000）的相关章节。 <a class="backref" href="#sec-2-1" aria-label="返回正文">↩</a></li>
+      <li id="note-41">参见 Cox（1946）。Jaynes（2003）与 Van Horn（2003）解释了 Cox 定理及其在推断中的作用。另见 Skilling 和 Knuth（2019），该文展示了这种概率论观点如何统一看似不同的领域。 <a class="backref" href="#sec-2-1-1" aria-label="返回正文">↩</a></li>
+      <li id="note-42">例子参见 Gelman 和 Robert（2013）。 <a class="backref" href="#sec-2-1-1" aria-label="返回正文">↩</a></li>
     </ol>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 35–37 页已完成翻译、逐页渲染对照，以及桌面和移动端浏览器验收。
+    <strong>译稿状态：</strong>PDF 第 35–40 页已完成翻译、逐页渲染对照和桌面/移动端视觉验收；下一批从 PDF 第 41 页开始。
   </aside>
 </article>

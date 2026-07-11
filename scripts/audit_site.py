@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import re
 import sys
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from bs4 import BeautifulSoup
@@ -112,6 +113,17 @@ def main() -> int:
                     asset = SITE / src.lstrip("/")
                     if not asset.is_file():
                         failures.append(f"{path.name}: missing image asset {src}")
+                    elif asset.suffix.lower() == ".svg":
+                        try:
+                            svg_root = ET.parse(asset).getroot()
+                            if not svg_root.tag.endswith("svg") or not svg_root.get("viewBox"):
+                                failures.append(f"{path.name}: invalid SVG image asset {src}")
+                            if svg_root.find("{http://www.w3.org/2000/svg}title") is None:
+                                failures.append(f"{path.name}: SVG image asset lacks title {src}")
+                            if svg_root.find("{http://www.w3.org/2000/svg}desc") is None:
+                                failures.append(f"{path.name}: SVG image asset lacks desc {src}")
+                        except Exception as error:
+                            failures.append(f"{path.name}: unreadable SVG image asset {src}: {error}")
                     else:
                         try:
                             with Image.open(asset) as decoded:

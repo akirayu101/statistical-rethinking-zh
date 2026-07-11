@@ -103,7 +103,9 @@
     "heuristic": "启发式方法",
     "conjecture": "猜想",
     "plausibility": "可信程度",
-    "peer review": "同行评议"
+    "peer review": "同行评议",
+    "relative plausibility": "相对可信程度",
+    "Cox theorem": "Cox 定理"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"

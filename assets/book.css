@@ -88,6 +88,13 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .marble-tree .tree-node { stroke: #1f211d; stroke-width: 2; }
 .marble-tree .tree-node.white { fill: #fff; }
 .marble-tree .tree-node.blue { fill: #315bd7; stroke: #172860; }
+.garden-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
+.table-wrap { width: 100%; overflow-x: auto; }
+.count-table { width: min(100%, 34rem); margin: 1.5rem auto; border-collapse: collapse; background: #fff; }
+.count-table th, .count-table td { padding: .7rem 1rem; border-bottom: 1px solid var(--line); text-align: center; }
+.count-table thead th { color: var(--blue); font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; font-size: .86rem; }
+.count-table tbody th { font-weight: 400; }
+.math-inline { padding-inline: .15rem; white-space: nowrap; font-family: "Times New Roman", serif; }
 .rethinking-box { margin: 2rem 0; padding: 1.15rem 1.25rem; border: 1px solid #d9dcf0; border-radius: .35rem; background: #f0f1fa; }
 .rethinking-box h3 { margin: 0 0 .45rem; color: var(--blue); font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; font-size: 1rem; }
 .rethinking-box p { margin: 0; font-size: .96rem; line-height: 1.72; }
