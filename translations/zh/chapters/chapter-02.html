@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-02" data-source-pages="35-40">
+<article class="book-article" data-chapter="chapter-02" data-source-pages="35-43">
   <header class="chapter-header">
     <p class="eyebrow">第二章</p>
     <h1>小世界与大世界</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 35–40 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 35–43 页</p>
   </header>
 
   <p>1492 年，Cristoforo Colombo（Christopher Columbus，中文常译“哥伦布”）那次声名狼藉的向西航行开始时，他相信地球是球形的。在这一点上，他和当时大多数受过教育的人一样。与大多数人不同的是，他还相信地球比实际小得多：赤道周长只有 30,000 公里，而不是真实的 40,000 公里（图 2.1）。<sup><a href="#note-37" aria-label="尾注 37">37</a></sup>这是欧洲历史上影响最为深远的错误之一。</p>
@@ -170,7 +170,157 @@
         <h3>再思考：论证依据</h3>
         <p>把花园中的路径计数用作相对可信程度的度量，可以从多种方式加以论证。这里采用逻辑论证：如果希望对可信程度进行推理，同时与普通逻辑——关于真与假的陈述——保持一致，就应遵守这套程序。<sup><a href="#note-41" aria-label="尾注 41">41</a></sup>还有其他论证也会导向相同的数学程序。</p>
         <p>无论在哲学上选择怎样为它辩护，请注意它确实有效。论证与哲学为方法提供动机，但真正重要的是结果。贝叶斯推断在现实世界中的众多成功应用，或许已经是你所需要的全部依据。20 世纪反对贝叶斯数据分析的人曾主张，贝叶斯推断易于辩护，却难以应用。<sup><a href="#note-42" aria-label="尾注 42">42</a></sup>幸运的是，这已经不再成立。事实上，情况往往恰好相反：科学家正转向贝叶斯方法，因为它让他们能够使用自己想要的模型。</p>
+        <p>不过，贝叶斯推断能够得到论证，并不意味着其他方法便无法得到论证。魔像有许多类型，而每一种类型中都有一些有用的。</p>
       </aside>
+    </section>
+
+    <section id="sec-2-1-2">
+      <h3>2.1.2 结合其他信息</h3>
+
+      <p>我们可能还掌握每个猜想相对可信程度的额外信息。这些信息可能来自对袋中内容如何生成的了解，也可能来自先前的数据。无论来源是什么，若能把不同信息源结合起来并更新可信程度，都会很有帮助。幸运的是，有一个自然的解法：把计数相乘即可。</p>
+
+      <p>为了理解这个解法，假设我们愿意认为每个猜想起初同样可信。于是，只需比较每个猜想与观测数据相容的方式数。这个比较表明，
+        <span class="marble-set" aria-label="3 蓝 1 白"><i class="marble blue"></i><i class="marble blue"></i><i class="marble blue"></i><i class="marble white"></i></span>
+        比
+        <span class="marble-set" aria-label="2 蓝 2 白"><i class="marble blue"></i><i class="marble blue"></i><i class="marble white"></i><i class="marble white"></i></span>
+        略可信一些，而二者都大约是
+        <span class="marble-set" aria-label="1 蓝 3 白"><i class="marble blue"></i><i class="marble white"></i><i class="marble white"></i><i class="marble white"></i></span>
+        的三倍可信。由于这些是我们的初始计数，接下来还要更新它们，便把它们称为<strong>先验计数</strong>。</p>
+
+      <p>现在，假设我们从袋中再抽一颗弹珠，得到一个新观测：<span class="marble-set data-sequence" aria-label="蓝色"><i class="marble blue"></i></span>。此时有两种选择。可以从头再来，画一座四层花园，描出与数据序列
+        <span class="marble-set data-sequence" aria-label="蓝色、白色、蓝色、蓝色"><i class="marble blue"></i><i class="marble white"></i><i class="marble blue"></i><i class="marble blue"></i></span>
+        相容的路径；也可以取前一次各猜想的计数——先验计数（0、3、8、9、0）——再依据新观测更新它们。只要新观测在逻辑上独立于先前观测，这两种方法在数学上完全相同。</p>
+
+      <p>具体做法如下。首先，数出每个猜想能够产生新观测<span class="marble-set data-sequence" aria-label="蓝色"><i class="marble blue"></i></span>的方式数；然后，把这些新计数分别乘以各猜想先验的方式数。整理成表格：</p>
+
+      <div class="table-wrap">
+        <table class="count-table update-table">
+          <thead><tr><th scope="col">猜想</th><th scope="col">产生新观测<br>蓝色的方式数</th><th scope="col">先验计数</th><th scope="col">新计数</th></tr></thead>
+          <tbody>
+            <tr><th scope="row"><span class="marble-set" aria-label="0 蓝 4 白"><i class="marble white"></i><i class="marble white"></i><i class="marble white"></i><i class="marble white"></i></span></th><td>0</td><td>0</td><td>0 × 0 = 0</td></tr>
+            <tr><th scope="row"><span class="marble-set" aria-label="1 蓝 3 白"><i class="marble blue"></i><i class="marble white"></i><i class="marble white"></i><i class="marble white"></i></span></th><td>1</td><td>3</td><td>3 × 1 = 3</td></tr>
+            <tr><th scope="row"><span class="marble-set" aria-label="2 蓝 2 白"><i class="marble blue"></i><i class="marble blue"></i><i class="marble white"></i><i class="marble white"></i></span></th><td>2</td><td>8</td><td>8 × 2 = 16</td></tr>
+            <tr><th scope="row"><span class="marble-set" aria-label="3 蓝 1 白"><i class="marble blue"></i><i class="marble blue"></i><i class="marble blue"></i><i class="marble white"></i></span></th><td>3</td><td>9</td><td>9 × 3 = 27</td></tr>
+            <tr><th scope="row"><span class="marble-set" aria-label="4 蓝 0 白"><i class="marble blue"></i><i class="marble blue"></i><i class="marble blue"></i><i class="marble blue"></i></span></th><td>4</td><td>0</td><td>0 × 4 = 0</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="scroll-hint table-scroll-hint">表格较宽，可横向滚动查看全部列。</p>
+
+      <p>右栏的新计数汇总了支持每个猜想的全部证据。随着新数据到来，只要它们独立于先前观测，猜想产生截至该时点全部数据的逻辑可能方式数，就可以直接用新计数乘以旧计数得到。</p>
+
+      <p>这种更新方法只是在断言：第一，若先前信息表明，一个猜想有 <span class="math-inline"><var>W</var><sub>prior</sub></span> 种方式产生先前观测 <span class="math-inline"><var>D</var><sub>prior</sub></span>；第二，我们又得到新观测 <span class="math-inline"><var>D</var><sub>new</sub></span>，同一猜想有 <span class="math-inline"><var>W</var><sub>new</sub></span> 种方式产生它；那么第三，该猜想同时解释 <span class="math-inline"><var>D</var><sub>prior</sub></span> 与 <span class="math-inline"><var>D</var><sub>new</sub></span> 的方式数，就是乘积 <span class="math-inline"><var>W</var><sub>prior</sub> × <var>W</var><sub>new</sub></span>。</p>
+
+      <p>例如，上表中的猜想
+        <span class="marble-set" aria-label="2 蓝 2 白"><i class="marble blue"></i><i class="marble blue"></i><i class="marble white"></i><i class="marble white"></i></span>
+        有 <span class="math-inline"><var>W</var><sub>prior</sub> = 8</span> 种方式产生 <span class="math-inline"><var>D</var><sub>prior</sub></span> =
+        <span class="marble-set data-sequence" aria-label="蓝色、白色、蓝色"><i class="marble blue"></i><i class="marble white"></i><i class="marble blue"></i></span>；它又有 <span class="math-inline"><var>W</var><sub>new</sub> = 2</span> 种方式产生新观测 <span class="math-inline"><var>D</var><sub>new</sub></span> =
+        <span class="marble-set data-sequence" aria-label="蓝色"><i class="marble blue"></i></span>。所以，该猜想产生 <span class="math-inline"><var>D</var><sub>prior</sub></span> 和 <span class="math-inline"><var>D</var><sub>new</sub></span> 两者的方式共有 <span class="math-inline">8 × 2 = 16</span> 种。为什么要相乘？乘法只是枚举并数出花园中所有可能产生全部观测的路径的一条捷径。</p>
+
+      <p>在这个例子中，先前数据和新数据属于同一类型：都是从袋中抽出的弹珠。但一般而言，先前数据与新数据可以属于不同类型。例如，假设弹珠工厂的人告诉你，蓝色弹珠很少。因此，每生产一袋
+        <span class="marble-set" aria-label="3 蓝 1 白"><i class="marble blue"></i><i class="marble blue"></i><i class="marble blue"></i><i class="marble white"></i></span>，他们就生产两袋
+        <span class="marble-set" aria-label="2 蓝 2 白"><i class="marble blue"></i><i class="marble blue"></i><i class="marble white"></i><i class="marble white"></i></span>
+        和三袋
+        <span class="marble-set" aria-label="1 蓝 3 白"><i class="marble blue"></i><i class="marble white"></i><i class="marble white"></i><i class="marble white"></i></span>。他们还确保每袋至少含有一颗蓝色和一颗白色弹珠。于是可以再次更新计数：</p>
+
+      <div class="table-wrap">
+        <table class="count-table update-table">
+          <thead><tr><th scope="col">猜想</th><th scope="col">先验计数</th><th scope="col">工厂计数</th><th scope="col">新计数</th></tr></thead>
+          <tbody>
+            <tr><th scope="row"><span class="marble-set" aria-label="0 蓝 4 白"><i class="marble white"></i><i class="marble white"></i><i class="marble white"></i><i class="marble white"></i></span></th><td>0</td><td>0</td><td>0 × 0 = 0</td></tr>
+            <tr><th scope="row"><span class="marble-set" aria-label="1 蓝 3 白"><i class="marble blue"></i><i class="marble white"></i><i class="marble white"></i><i class="marble white"></i></span></th><td>3</td><td>3</td><td>3 × 3 = 9</td></tr>
+            <tr><th scope="row"><span class="marble-set" aria-label="2 蓝 2 白"><i class="marble blue"></i><i class="marble blue"></i><i class="marble white"></i><i class="marble white"></i></span></th><td>16</td><td>2</td><td>16 × 2 = 32</td></tr>
+            <tr><th scope="row"><span class="marble-set" aria-label="3 蓝 1 白"><i class="marble blue"></i><i class="marble blue"></i><i class="marble blue"></i><i class="marble white"></i></span></th><td>27</td><td>1</td><td>27 × 1 = 27</td></tr>
+            <tr><th scope="row"><span class="marble-set" aria-label="4 蓝 0 白"><i class="marble blue"></i><i class="marble blue"></i><i class="marble blue"></i><i class="marble blue"></i></span></th><td>0</td><td>0</td><td>0 × 0 = 0</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="scroll-hint table-scroll-hint">表格较宽，可横向滚动查看全部列。</p>
+
+      <p>现在，猜想
+        <span class="marble-set" aria-label="2 蓝 2 白"><i class="marble blue"></i><i class="marble blue"></i><i class="marble white"></i><i class="marble white"></i></span>
+        最可信，但只比
+        <span class="marble-set" aria-label="3 蓝 1 白"><i class="marble blue"></i><i class="marble blue"></i><i class="marble blue"></i><i class="marble white"></i></span>
+        好一点。计数相差到什么阈值时，才能放心判定某个猜想是正确的？下一章将专门探索这个问题。</p>
+
+      <aside class="rethinking-box">
+        <h3>再思考：原初无知</h3>
+        <p>若没有任何关于猜想的先前信息，应当采用什么假设？最常见的解法，是在看到数据之前，给每个猜想分配相同的正确方式数。这有时称为<strong>无差别原则</strong>：若没有理由认为某个猜想比另一个更可信，就给予所有猜想相同权重。本书既不采用也不赞同“无知”先验。后续章节会看到，模型结构和科学语境总能提供信息，让我们做得比无知更好。</p>
+        <p>对于本书考察的这类问题，无差别原则所得的推断与主流非贝叶斯方法非常相似；后者大多隐含着对各种可能性的等权处理。例如，典型的非贝叶斯置信区间会对参数可能取得的所有值给予相同权重，不管其中某些值多么不可信。此外，许多非贝叶斯程序也已通过惩罚似然等方法摆脱等权处理。第 7 章还会讨论这一点。</p>
+      </aside>
+    </section>
+
+    <section id="sec-2-1-3">
+      <h3>2.1.3 从计数到概率</h3>
+
+      <p>可以把这套策略理解为遵循一条“诚实无知”的原则：<em>当我们不知道是什么造成数据时，能够以更多方式产生数据的潜在原因更可信。</em>这引导我们去数分叉数据花园中的路径。</p>
+
+      <p>不过，这些计数并不好直接使用，所以几乎总要把它们标准化，转化为概率。为什么计数难用？第一，只有相对大小重要，因此 3、8、9 这些计数本身的绝对大小不包含有价值的信息；它们完全可以是 30、80、90，意义仍然相同。第二，随着数据量增加，计数会迅速变得极大而难以操作。仅有 10 个数据点时，可能序列便已超过一百万条；而我们希望分析含有数千个观测的数据集，显式计数并不现实。</p>
+
+      <p>幸运的是，数学上有办法压缩这一切。具体而言，我们把看到数据后每种可能袋中组成的更新可信程度定义为：</p>
+
+      <div class="equation-block" role="math" aria-label="看到数据后猜想的可信程度，正比于该猜想产生数据的方式数乘以该猜想的先验可信程度">
+        <div>看到 <span class="marble-set data-sequence" aria-label="蓝色、白色、蓝色"><i class="marble blue"></i><i class="marble white"></i><i class="marble blue"></i></span> 后，<span class="marble-set" aria-label="1 蓝 3 白"><i class="marble blue"></i><i class="marble white"></i><i class="marble white"></i><i class="marble white"></i></span> 的可信程度</div>
+        <div class="equation-relation">∝</div>
+        <div><span class="marble-set" aria-label="1 蓝 3 白"><i class="marble blue"></i><i class="marble white"></i><i class="marble white"></i><i class="marble white"></i></span> 产生 <span class="marble-set data-sequence" aria-label="蓝色、白色、蓝色"><i class="marble blue"></i><i class="marble white"></i><i class="marble blue"></i></span> 的方式数</div>
+        <div class="equation-relation">×</div>
+        <div><span class="marble-set" aria-label="1 蓝 3 白"><i class="marble blue"></i><i class="marble white"></i><i class="marble white"></i><i class="marble white"></i></span> 的先验可信程度</div>
+      </div>
+
+      <p>小小的符号 <span class="math-inline">∝</span> 表示“正比于”。为了比较每种袋中组成的可信程度，把 <span class="math-inline"><var>p</var></span> 定义为蓝色弹珠所占比例。对于
+        <span class="marble-set" aria-label="1 蓝 3 白"><i class="marble blue"></i><i class="marble white"></i><i class="marble white"></i><i class="marble white"></i></span>，<span class="math-inline"><var>p</var> = 1/4 = 0.25</span>。再令 <span class="math-inline"><var>D</var><sub>new</sub></span> =
+        <span class="marble-set data-sequence" aria-label="蓝色、白色、蓝色"><i class="marble blue"></i><i class="marble white"></i><i class="marble blue"></i></span>，便可以写成：</p>
+
+      <div class="equation-block compact-equation" role="math" aria-label="看到新数据后 p 的可信程度，正比于 p 产生新数据的方式数乘以 p 的先验可信程度">
+        <div><var>p</var> 在 <var>D</var><sub>new</sub> 之后的可信程度</div>
+        <div class="equation-relation">∝</div>
+        <div><var>p</var> 产生 <var>D</var><sub>new</sub> 的方式数 × <var>p</var> 的先验可信程度</div>
+      </div>
+
+      <p>上式只是说：对于 <span class="math-inline"><var>p</var></span> 的任何可能取值，我们把该值的可信程度判断为与它能够穿过分叉数据花园的方式数成正比。这个表达式概括了上一小节两张表中的计算。</p>
+
+      <p>最后，通过标准化可信程度来构造概率，使所有可能猜想的可信程度之和为 1。标准化只需把 <span class="math-inline"><var>p</var></span> 每个可能取值对应的乘积相加，再用每个乘积除以乘积总和：</p>
+
+      <div class="equation-block normalized-equation" role="math" aria-label="看到新数据后 p 的可信程度，等于 p 产生新数据的方式数乘以 p 的先验可信程度，再除以所有乘积之和">
+        <span><var>p</var> 在 <var>D</var><sub>new</sub> 之后的可信程度 =</span>
+        <span class="fraction"><span><var>p</var> 产生 <var>D</var><sub>new</sub> 的方式数 × <var>p</var> 的先验可信程度</span><span>乘积总和</span></span>
+      </div>
+
+      <p>需要一个完整例子才能真正看懂。再次考虑先前的表格，现在用 <span class="math-inline"><var>p</var></span> 和“可信程度”的定义改写：</p>
+
+      <div class="table-wrap">
+        <table class="count-table probability-table">
+          <thead><tr><th scope="col">可能组成</th><th scope="col"><var>p</var></th><th scope="col">产生数据的<br>方式数</th><th scope="col">可信程度</th></tr></thead>
+          <tbody>
+            <tr><th scope="row"><span class="marble-set" aria-label="0 蓝 4 白"><i class="marble white"></i><i class="marble white"></i><i class="marble white"></i><i class="marble white"></i></span></th><td>0</td><td>0</td><td>0</td></tr>
+            <tr><th scope="row"><span class="marble-set" aria-label="1 蓝 3 白"><i class="marble blue"></i><i class="marble white"></i><i class="marble white"></i><i class="marble white"></i></span></th><td>0.25</td><td>3</td><td>0.15</td></tr>
+            <tr><th scope="row"><span class="marble-set" aria-label="2 蓝 2 白"><i class="marble blue"></i><i class="marble blue"></i><i class="marble white"></i><i class="marble white"></i></span></th><td>0.5</td><td>8</td><td>0.40</td></tr>
+            <tr><th scope="row"><span class="marble-set" aria-label="3 蓝 1 白"><i class="marble blue"></i><i class="marble blue"></i><i class="marble blue"></i><i class="marble white"></i></span></th><td>0.75</td><td>9</td><td>0.45</td></tr>
+            <tr><th scope="row"><span class="marble-set" aria-label="4 蓝 0 白"><i class="marble blue"></i><i class="marble blue"></i><i class="marble blue"></i><i class="marble blue"></i></span></th><td>1</td><td>0</td><td>0</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="scroll-hint table-scroll-hint">表格较宽，可横向滚动查看全部列。</p>
+
+      <p>在 R 中可以快速计算这些可信程度：</p>
+
+      <figure class="code-listing" id="code-2-1">
+        <figcaption>R 代码 2.1</figcaption>
+        <pre><code>ways &lt;- c( 0 , 3 , 8 , 9 , 0 )
+ways/sum(ways)</code></pre>
+        <pre class="code-output" aria-label="R 输出"><code>[1] 0.00 0.15 0.40 0.45 0.00</code></pre>
+      </figure>
+
+      <p><code>ways</code> 中的值就是前面提到的乘积，而 <code>sum(ways)</code> 是本页上方表达式分母中的“乘积总和”。</p>
+
+      <p>这些可信程度也就是<strong>概率</strong>：它们是非负（零或正）实数，且总和为 1。概率能够进行的所有数学运算，也都可以对这些值进行。更具体地说，计算的每个部分在应用概率论中都有直接对应物。这些对应物有一套约定俗成的名称，值得学会，因为以后会一再遇到：</p>
+
+      <ul class="term-definitions">
+        <li>猜想中的蓝色弹珠比例 <span class="math-inline"><var>p</var></span>，通常称为一个<strong>参数值</strong>。它只是给数据的各种可能解释编制索引的一种方式。</li>
+        <li>某个 <span class="math-inline"><var>p</var></span> 值能够产生数据的相对方式数，通常称为<strong>似然</strong>。它来自枚举本来可能出现的全部数据序列，再排除与实际数据不相容的序列。</li>
+        <li>任一特定 <span class="math-inline"><var>p</var></span> 的先验可信程度，通常称为<strong>先验概率</strong>。</li>
+        <li>任一特定 <span class="math-inline"><var>p</var></span> 的新近更新可信程度，通常称为<strong>后验概率</strong>。</li>
+      </ul>
     </section>
   </section>
 
@@ -187,6 +337,6 @@
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 35–40 页已完成翻译、逐页渲染对照和桌面/移动端视觉验收；下一批从 PDF 第 41 页开始。
+    <strong>译稿状态：</strong>PDF 第 35–43 页已完成翻译、逐页渲染对照和桌面/移动端视觉验收；下一批从 PDF 第 44 页开始。
   </aside>
 </article>

@@ -50,5 +50,44 @@
       ".roadmap-list": 1,
       ".endnotes li": 36
     }
+  },
+  "chapter-02": {
+    "required_status": "in_progress",
+    "source_pages": [35, 43],
+    "required_ids": [
+      "fig-2-1",
+      "sec-2-1",
+      "sec-2-1-1",
+      "fig-2-2",
+      "fig-2-3",
+      "fig-2-4",
+      "sec-2-1-2",
+      "sec-2-1-3",
+      "code-2-1",
+      "chapter-02-notes"
+    ],
+    "required_headings": [
+      "小世界与大世界",
+      "2.1 分叉数据的花园",
+      "2.1.1 计算各种可能性",
+      "2.1.2 结合其他信息",
+      "2.1.3 从计数到概率",
+      "尾注"
+    ],
+    "counts": {
+      "section": 5,
+      "figure": 5,
+      "figure img": 4,
+      ".marble-tree svg": 2,
+      ".garden-figure": 3,
+      ".rethinking-box": 3,
+      ".count-table": 4,
+      ".update-table": 2,
+      ".probability-table": 1,
+      ".equation-block": 3,
+      ".code-listing": 1,
+      ".term-definitions li": 4,
+      ".endnotes li": 6
+    }
   }
 }

@@ -94,7 +94,23 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .count-table th, .count-table td { padding: .7rem 1rem; border-bottom: 1px solid var(--line); text-align: center; }
 .count-table thead th { color: var(--blue); font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; font-size: .86rem; }
 .count-table tbody th { font-weight: 400; }
+.update-table, .probability-table { min-width: 38rem; }
 .math-inline { padding-inline: .15rem; white-space: nowrap; font-family: "Times New Roman", serif; }
+.equation-block { margin: 1.7rem auto; padding: 1.15rem; max-width: 42rem; border-block: 1px solid var(--line); background: #fff; text-align: center; font: 1.02rem/1.65 "Times New Roman", "Songti SC", serif; }
+.equation-block > div { margin: .15rem 0; }
+.equation-relation { color: var(--blue); font-size: 1.35rem; line-height: 1.2; }
+.compact-equation { display: flex; flex-wrap: wrap; justify-content: center; gap: .15rem .7rem; align-items: baseline; }
+.normalized-equation { display: flex; flex-wrap: wrap; justify-content: center; gap: .4rem; align-items: center; }
+.fraction { display: inline-flex; flex-direction: column; min-width: min(100%, 27rem); vertical-align: middle; }
+.fraction > span:first-child { padding: 0 .45rem .2rem; border-bottom: 1px solid currentColor; }
+.fraction > span:last-child { padding-top: .1rem; }
+.code-listing { position: relative; margin: 1.5rem 0; border: 1px solid #d9dcf0; border-radius: .4rem; overflow: hidden; background: #f0f1fa; }
+.code-listing figcaption { padding: .45rem .8rem; color: var(--blue); font: 700 .78rem/1.4 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; }
+.code-listing pre { margin: 0; padding: .85rem 1rem; overflow-x: auto; font: .9rem/1.65 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.code-listing .code-output { border-top: 1px solid #d9dcf0; background: #fff; }
+.book-article code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .9em; }
+.term-definitions { margin: 1.5rem 0; padding-left: 1.7rem; }
+.term-definitions li { margin: .75rem 0; padding-left: .25rem; }
 .rethinking-box { margin: 2rem 0; padding: 1.15rem 1.25rem; border: 1px solid #d9dcf0; border-radius: .35rem; background: #f0f1fa; }
 .rethinking-box h3 { margin: 0 0 .45rem; color: var(--blue); font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; font-size: 1rem; }
 .rethinking-box p { margin: 0; font-size: .96rem; line-height: 1.72; }

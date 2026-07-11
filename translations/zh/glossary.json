@@ -105,7 +105,14 @@
     "plausibility": "可信程度",
     "peer review": "同行评议",
     "relative plausibility": "相对可信程度",
-    "Cox theorem": "Cox 定理"
+    "Cox theorem": "Cox 定理",
+    "principle of indifference": "无差别原则",
+    "ignorance prior": "无知先验",
+    "penalized likelihood": "惩罚似然",
+    "parameter value": "参数值",
+    "likelihood": "似然",
+    "prior probability": "先验概率",
+    "posterior probability": "后验概率"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"
