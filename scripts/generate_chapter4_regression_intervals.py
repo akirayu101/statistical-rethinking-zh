@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate deterministic Chinese SVGs for Figures 4.7 through 4.9."""
+"""Generate deterministic Chinese SVGs for Figures 4.7 through 4.10."""
 
 from __future__ import annotations
 
@@ -302,12 +302,96 @@ def generate_figure_49(points: list[tuple[float, float]]) -> None:
     print(f"generated {out}")
 
 
+def generate_figure_410(points: list[tuple[float, float]]) -> None:
+    width, height = 900, 650
+    left, top, plot_w, plot_h = 125, 55, 660, 465
+    xmin, xmax, ymin, ymax = 30.0, 63.0, 134.0, 181.0
+    xbar = sum(x for x, _ in points) / len(points)
+    ybar = sum(y for _, y in points) / len(points)
+    sxx = sum((x - xbar) ** 2 for x, _ in points)
+    slope = sum((x - xbar) * (y - ybar) for x, y in points) / sxx
+    residuals = [y - (ybar + slope * (x - xbar)) for x, y in points]
+    sigma = math.sqrt(sum(value * value for value in residuals) / (len(points) - 2))
+    sd_a = sigma / math.sqrt(len(points))
+    sd_b = sigma / math.sqrt(sxx)
+    weights = [xmin + (xmax - xmin) * index / 100 for index in range(101)]
+
+    def px(value: float) -> float:
+        return left + (value - xmin) / (xmax - xmin) * plot_w
+
+    def py(value: float) -> float:
+        return top + plot_h - (value - ymin) / (ymax - ymin) * plot_h
+
+    def interval_polygon(include_observation_noise: bool) -> str:
+        upper: list[str] = []
+        lower: list[str] = []
+        for weight in weights:
+            mean = ybar + slope * (weight - xbar)
+            variance = sd_a**2 + (weight - xbar) ** 2 * sd_b**2
+            if include_observation_noise:
+                variance += sigma**2
+            half_width = 1.60 * math.sqrt(variance)
+            upper.append(f"{fmt(px(weight))},{fmt(py(mean + half_width))}")
+            lower.append(f"{fmt(px(weight))},{fmt(py(mean - half_width))}")
+        return " ".join(upper + list(reversed(lower)))
+
+    body = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">',
+        "  <title>身高的百分之八十九后验预测区间</title>",
+        "  <desc>身高体重散点图叠加平均身高线、均值的窄相容区间，以及实际身高的宽后验预测区间。</desc>",
+        '  <rect width="100%" height="100%" fill="#ffffff"/>',
+        f'  <clipPath id="prediction-clip"><rect x="{left}" y="{top}" width="{plot_w}" height="{plot_h}"/></clipPath>',
+        f'  <rect x="{left}" y="{top}" width="{plot_w}" height="{plot_h}" fill="#ffffff" stroke="#333630" stroke-width="2"/>',
+        f'  <polygon points="{interval_polygon(True)}" fill="#d9dce2" opacity="0.92" clip-path="url(#prediction-clip)"/>',
+        f'  <polygon points="{interval_polygon(False)}" fill="#aeb4c0" opacity="0.95" clip-path="url(#prediction-clip)"/>',
+    ]
+    for weight, stature in points:
+        body.append(
+            f'  <circle cx="{fmt(px(weight))}" cy="{fmt(py(stature))}" r="3.4" fill="#ffffff" stroke="#5669ef" stroke-width="1.25" opacity="0.67" clip-path="url(#prediction-clip)"/>'
+        )
+    y1 = ybar + slope * (xmin - xbar)
+    y2 = ybar + slope * (xmax - xbar)
+    body.append(
+        f'  <line x1="{fmt(px(xmin))}" y1="{fmt(py(y1))}" x2="{fmt(px(xmax))}" y2="{fmt(py(y2))}" stroke="#1f211d" stroke-width="3" clip-path="url(#prediction-clip)"/>'
+    )
+    for tick in [30, 35, 40, 45, 50, 55, 60]:
+        x = px(tick)
+        body.extend(
+            [
+                f'  <line x1="{fmt(x)}" y1="{top + plot_h}" x2="{fmt(x)}" y2="{top + plot_h + 8}" stroke="#333630"/>',
+                f'  <text x="{fmt(x)}" y="{top + plot_h + 31}" text-anchor="middle" font-family="{FONT}" font-size="17" fill="#30332e">{tick}</text>',
+            ]
+        )
+    for tick in [140, 150, 160, 170, 180]:
+        y = py(tick)
+        body.extend(
+            [
+                f'  <line x1="{left - 8}" y1="{fmt(y)}" x2="{left}" y2="{fmt(y)}" stroke="#333630"/>',
+                f'  <text x="{left - 16}" y="{fmt(y + 6)}" text-anchor="end" font-family="{FONT}" font-size="17" fill="#30332e">{tick}</text>',
+            ]
+        )
+    body.extend(
+        [
+            f'  <text x="{left + plot_w / 2}" y="{top + plot_h + 76}" text-anchor="middle" font-family="{FONT}" font-size="21" font-weight="700" fill="#263f86">体重（千克）</text>',
+            f'  <text x="38" y="{top + plot_h / 2}" transform="rotate(-90 38 {top + plot_h / 2})" text-anchor="middle" font-family="{FONT}" font-size="21" font-weight="700" fill="#263f86">身高（厘米）</text>',
+            f'  <text x="{width / 2}" y="632" text-anchor="middle" font-family="{FONT}" font-size="16" fill="#656963">深灰：μ 的 89% 区间；浅灰：实际身高的 89% 后验预测区间</text>',
+            "</svg>",
+            "",
+        ]
+    )
+    out = MEDIA / "chapter-04-height-prediction-interval.svg"
+    out.write_text("\n".join(body), encoding="utf-8")
+    print(f"generated {out}")
+
+
 def main() -> int:
     MEDIA.mkdir(parents=True, exist_ok=True)
     points = height_weight_data()
     generate_figure_47(points)
     generate_figure_48()
     generate_figure_49(points)
+    generate_figure_410(points)
     return 0
 
 

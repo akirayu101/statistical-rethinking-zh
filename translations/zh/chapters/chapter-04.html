@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-04" data-source-pages="89-127">
+<article class="book-article" data-chapter="chapter-04" data-source-pages="89-130">
   <header class="chapter-header">
     <p class="eyebrow">第四章</p>
     <h1>地心模型</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 89–127 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 89–130 页</p>
   </header>
 
   <p>历史对托勒密并不宽厚。克劳狄乌斯·托勒密（约公元 90 年生，168 年卒）是埃及数学家和天文学家，最著名的成就是太阳系地心模型。今天，科学家若想嘲讽某人，有时会把他比作地心模型的拥护者。但托勒密是位天才。他描述行星运动的数学模型（<a href="#fig-4-1">图 4.1</a>）极其准确。为了达到这种精度，模型采用了一种叫作<strong>本轮</strong>的装置，也就是圆上套圆。甚至还能有“本轮上的本轮”：圆上套圆再套圆。只要在适当位置放置足够多的本轮，托勒密模型的预测精度就能超过此前任何人。因此，这套模型沿用了一千多年。托勒密和许多与他相似的人历经数百年艰苦推演，在没有计算机帮助的条件下解决了这一切。任何人被比作托勒密，都应该感到受宠若惊。</p>
@@ -1405,8 +1405,121 @@ shade( mu.HPDI , weight.seq )
 shade( height.PI , weight.seq )</code></pre>
         </figure>
 
-        <p class="continuation-note">图 4.10 与预测区间的后续说明将在原书 PDF 第 128 页继续。</p>
+        <figure class="book-figure prediction-interval-figure" id="fig-4-10">
+          <div class="figure-scroll" tabindex="0" aria-label="可横向滚动的身高后验预测区间图">
+            <img src="/media/chapter-04-height-prediction-interval.svg" alt="身高体重散点图叠加平均身高线、均值的窄相容区间和实际身高的宽后验预测区间">
+          </div>
+          <p class="scroll-hint">图较宽，可横向滚动查看完整散点、均值区间与预测区间。</p>
+          <figcaption><strong>图 4.10：</strong>身高随体重变化的 89% 预测区间。实线是每个体重值对应的平均身高线。两块阴影区域表示不同的 89% 可信区域：紧贴直线的窄区间是 <span class="math-inline"><var>μ</var></span> 的分布；较宽区域表示在每个体重值上，模型预期能包含总体中 89% 实际身高的范围。</figcaption>
+        </figure>
+
+        <p>上面的代码用到前几节计算的若干对象；如果需要，请返回并执行那些代码。</p>
+
+        <p><a href="#fig-4-10">图 4.10</a>展示了结果。图中的宽阴影区域，表示模型预期在每个体重值上能包含总体中 89% 实际身高的范围。89% 这个数没有任何特殊之处。也可以画出 67% 和 97% 等其他百分比的边界——它们同样都是素数——并叠加到图上。这样能看到更多预测身高分布的形状。把它留作读者练习：例如回到前面的代码，在 <code>PI</code> 调用中加入 <code>prob=0.67</code>，就会得到 67% 区间，而不是 89% 区间。</p>
+
+        <p>注意，宽阴影区的边缘略显粗糙。这是抽样高斯值尾部的模拟方差。如果实在介意，可以增加后验分布的抽样数量。<code>sim.height</code> 的可选参数 <code>n</code> 控制样本数。例如：</p>
+
+        <figure class="code-listing" id="code-4-62">
+          <figcaption>R 代码 4.62</figcaption>
+          <pre><code>sim.height &lt;- sim( m4.3 , data=list(weight=weight.seq) , n=1e4 )
+height.PI &lt;- apply( sim.height , 2 , PI , prob=0.89 )</code></pre>
+        </figure>
+
+        <p>再次运行绘图代码，就会看到阴影边界稍微变平滑。对于极端百分位数，可能很难消除全部粗糙。所幸，除了美观之外，这几乎没有影响；而且它还能提醒我们，所有统计推断都是近似的。能把期望值算到小数点后第 10 位，并不意味着推断也精确到小数点后第 10 位。</p>
+
+        <aside class="rethinking-box" id="rethinking-two-uncertainties">
+          <h3>再思考：两种不确定性</h3>
+
+          <p>在前面的过程中，同时遇到了参数值的不确定性与抽样过程的不确定性。两者是不同概念，尽管处理方式大致相同，并最终在后验预测模拟中混合起来。后验分布，是对参数值所有可能组合的相对可信程度进行排序。身高这类模拟结果的分布，则包含某个生成高斯随机变量的过程所带来的抽样变异。这样的抽样变异仍然是模型假设，并不比后验分布更客观或更不客观。</p>
+
+          <p>两种不确定性至少有时都很重要，但必须把它们分清，因为它们依赖不同的模型假设。此外，也可以把高斯似然看成纯粹的认识论假设——用于估计变量均值与方差的工具——而不是关于未来数据会是什么样子的本体论假设。在这种情况下，模拟结果未必完全合理。</p>
+        </aside>
+
+        <aside class="overthinking-box" id="overthinking-manual-sim">
+          <h3>过度思考：自己实现 sim</h3>
+
+          <p>与 <code>link</code> 一样，了解一点 <code>sim</code> 的运作方式很有用。每个像 <code>dnorm</code> 这样的分布函数，都有一个配套的模拟函数。高斯分布的配套函数是 <code>rnorm</code>，它模拟从高斯分布抽样。这里希望 R 对每一组样本模拟一个身高，并对每个体重值重复这项操作。下面的代码可以做到：</p>
+
+          <figure class="code-listing" id="code-4-63">
+            <figcaption>R 代码 4.63</figcaption>
+            <pre><code>post &lt;- extract.samples(m4.3)
+weight.seq &lt;- 25:70
+sim.height &lt;- sapply( weight.seq , function(weight)
+    rnorm(
+        n=nrow(post) ,
+        mean=post$a + post$b*( weight - xbar ) ,
+        sd=post$sigma ) )
+height.PI &lt;- apply( sim.height , 2 , PI , prob=0.89 )</code></pre>
+          </figure>
+
+          <p><code>height.PI</code> 的值将与正文计算并显示在<a href="#fig-4-10">图 4.10</a>中的值几乎完全相同。</p>
+        </aside>
       </section>
+    </section>
+  </section>
+
+  <section id="sec-4-5">
+    <h2>4.5 从直线到曲线</h2>
+
+    <p>下一章会看到，怎样用线性模型构造包含多个预测变量的回归。不过在那之前，先了解怎样把结果建模为单个预测变量的曲线函数，会很有帮助。到目前为止的模型都假设用直线描述关系；但除了简单之外，直线并没有什么特殊之处。</p>
+
+    <p>这里考虑两种常见方法，它们都使用线性回归的基本思路来构造曲线。第一种是<strong>多项式回归</strong>，第二种是 <strong>B 样条</strong>。两种方法都把单个预测变量转换成多个变量，再用参数为每个变量赋予权重，不过样条具有一些明显优势。两者的目标都不远超过描述一个变量与另一个变量之间的函数关系。下一章开始会更多讨论的因果推断，需要的还不止这些。</p>
+
+    <section id="sec-4-5-1">
+      <h3>4.5.1 多项式回归</h3>
+
+      <p>多项式回归把变量的幂——平方和立方——作为额外预测变量。这是构造曲线关联的一种简便方法。多项式回归非常常见，理解其工作方式也会为后面的模型搭好脚手架。下面使用完整的 !Kung 数据，而不再只用成年人，逐步考察一个例子：</p>
+
+      <figure class="code-listing" id="code-4-64">
+        <figcaption>R 代码 4.64</figcaption>
+        <pre><code>library(rethinking)
+data(Howell1)
+d &lt;- Howell1
+str(d)</code></pre>
+        <pre class="code-output"><code>'data.frame': 544 obs. of 4 variables:
+ $ height: num 152 140 137 157 145 ...
+ $ weight: num 47.8 36.5 31.9 53 41.3 ...
+ $ age   : num 63 63 65 41 51 35 32 27 19 54 ...
+ $ male  : int 1 0 0 1 0 1 0 1 0 1 ...</code></pre>
+      </figure>
+
+      <p>把 <code>height</code> 对 <code>weight</code> 作图。由于现在纳入了非成年人，两者关系明显呈曲线。</p>
+
+      <p>最常见的多项式回归，是均值的抛物线模型：</p>
+
+      <div class="equation-block compact-equation" id="eq-4-parabolic-mean">
+        <span><var>μ</var><sub>i</sub></span>
+        <span>=</span>
+        <span><var>α</var> + <var>β</var><sub>1</sub><var>x</var><sub>i</sub> + <var>β</var><sub>2</sub><var>x</var><sub>i</sub><sup>2</sup></span>
+      </div>
+
+      <p>上式是一个抛物线（二阶）多项式。<span class="math-inline"><var>α</var> + <var>β</var><sub>1</sub><var>x</var><sub>i</sub></span> 部分，与线性回归中 <span class="math-inline"><var>x</var></span> 的线性函数相同，只是在参数名上添加了一个小小的下标“1”，用来与新参数区分。新增项使用 <span class="math-inline"><var>x</var><sub>i</sub></span> 的平方构造抛物线，而不是完全笔直的线。新参数 <span class="math-inline"><var>β</var><sub>2</sub></span> 衡量关系的曲率。</p>
+
+      <p>把这类模型拟合到数据很容易，解释却可能很难。先从简单部分开始，拟合身高对体重的抛物线模型。第一步是<strong>标准化</strong>预测变量。前面的例子已经这样做过，而处理多项式模型时尤其有帮助。当预测变量包含很大的数值时，有时会出现数值故障；即使知名统计软件也可能受影响，产生错误估计。这类问题在多项式回归中很常见，因为大数的平方或立方会变得极其庞大。标准化能在很大程度上解决这个问题，应当成为默认做法。</p>
+
+      <p>要定义抛物线模型，只需修改 <span class="math-inline"><var>μ</var><sub>i</sub></span> 的定义。模型如下：</p>
+
+      <div class="equation-block polynomial-model-map" id="eq-4-polynomial-model-code-map">
+        <div><span><var>h</var><sub>i</sub> ∼ Normal(<var>μ</var><sub>i</sub>, <var>σ</var>)</span><code>height ~ dnorm(mu,sigma)</code></div>
+        <div><span><var>μ</var><sub>i</sub> = <var>α</var> + <var>β</var><sub>1</sub><var>x</var><sub>i</sub> + <var>β</var><sub>2</sub><var>x</var><sub>i</sub><sup>2</sup></span><code>mu &lt;- a + b1*weight.s + b2*weight.s^2</code></div>
+        <div><span><var>α</var> ∼ Normal(178, 20)</span><code>a ~ dnorm(178,20)</code></div>
+        <div><span><var>β</var><sub>1</sub> ∼ Log-Normal(0, 1)</span><code>b1 ~ dlnorm(0,1)</code></div>
+        <div><span><var>β</var><sub>2</sub> ∼ Normal(0, 1)</span><code>b2 ~ dnorm(0,1)</code></div>
+        <div><span><var>σ</var> ∼ Uniform(0, 50)</span><code>sigma ~ dunif(0,50)</code></div>
+      </div>
+
+      <p>这里令人困惑的是为 <span class="math-inline"><var>β</var><sub>2</sub></span>——<span class="math-inline"><var>x</var></span> 平方项的参数——指定先验。与 <span class="math-inline"><var>β</var><sub>1</sub></span> 不同，不希望把它限制为正值。章末习题会使用先验预测模拟来理解原因。一般来说，很难为多项式参数设定现实先验；这也是应避免多项式模型的另一个理由。</p>
+
+      <p>近似后验很直接，只需修改 <code>mu</code> 的定义，使其同时包含线性项和二次项。不过通常最好预先处理变量转换。因此，下面还把 <code>weight_s</code> 的平方构造为单独变量：</p>
+
+      <figure class="code-listing" id="code-4-65">
+        <figcaption>R 代码 4.65</figcaption>
+        <pre><code>d$weight_s &lt;- ( d$weight - mean(d$weight) )/sd(d$weight)
+d$weight_s2 &lt;- d$weight_s^2
+m4.5 &lt;- quap(</code></pre>
+      </figure>
+
+      <p class="continuation-note">代码 4.65 的模型定义与多项式回归后续说明将在原书 PDF 第 131 页继续。</p>
     </section>
   </section>
 
@@ -1428,6 +1541,6 @@ shade( height.PI , weight.seq )</code></pre>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 89–127 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 128 页继续。
+    <strong>译稿状态：</strong>PDF 第 89–130 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 131 页继续。
   </aside>
 </article>

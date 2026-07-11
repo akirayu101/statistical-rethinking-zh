@@ -384,7 +384,18 @@
     "conditional on the model": "以模型为条件",
     "prediction interval": "预测区间",
     "posterior prediction interval": "后验预测区间",
-    "observable outcome": "可观测结果"
+    "observable outcome": "可观测结果",
+    "parameter-value uncertainty": "参数值不确定性",
+    "sampling-process uncertainty": "抽样过程不确定性",
+    "posterior predictive simulation": "后验预测模拟",
+    "epistemological assumption": "认识论假设",
+    "ontological assumption": "本体论假设",
+    "polynomial regression": "多项式回归",
+    "B-spline": "B 样条",
+    "parabolic model": "抛物线模型",
+    "standardization": "标准化",
+    "quadratic term": "二次项",
+    "variable transformation": "变量转换"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"

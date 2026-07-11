@@ -108,6 +108,7 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .regression-line-clouds-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
 .mean-height-density-figure .figure-scroll img { display: block; width: 45rem; max-width: none; height: auto; margin: 0 auto; }
 .mean-interval-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
+.prediction-interval-figure .figure-scroll img { display: block; width: 45rem; max-width: none; height: auto; margin: 0 auto; }
 .gaussian-density-equation { display: flex; flex-wrap: wrap; justify-content: center; gap: .35rem; align-items: center; }
 .gaussian-density-equation .fraction { min-width: 5.5rem; }
 .gaussian-precision-equation { display: flex; flex-wrap: wrap; justify-content: center; gap: .45rem; align-items: center; }
@@ -126,6 +127,9 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .quap-formula-map { display: grid; gap: .55rem; }
 .quap-formula-map > div { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1rem; align-items: baseline; }
 .quap-formula-map code { justify-self: start; font-size: .9em; }
+.polynomial-model-map { display: grid; gap: .55rem; }
+.polynomial-model-map > div { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1rem; align-items: baseline; }
+.polynomial-model-map code { justify-self: start; font-size: .9em; }
 .source-erratum { margin: -.45rem auto 1.4rem !important; padding: .7rem .9rem; max-width: 40rem; border-left: .22rem solid #b77725; background: #fff8eb; color: #5f4a2d; font-size: .9rem; }
 .linear-questions { margin: 1.5rem 0; padding: 1rem 1rem 1rem 3.2rem; border: 1px solid var(--line); border-radius: .35rem; background: #fff; }
 .linear-questions li { margin: .75rem 0; padding-left: .25rem; }
@@ -239,4 +243,5 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
   .scroll-hint { display: block; }
   .marble-conjectures { grid-template-columns: 1fr; }
   .quap-formula-map > div { grid-template-columns: 1fr; gap: .3rem; }
+  .polynomial-model-map > div { grid-template-columns: 1fr; gap: .3rem; }
 }
