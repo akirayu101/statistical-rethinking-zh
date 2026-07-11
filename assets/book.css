@@ -93,6 +93,7 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .learning-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
 .bayes-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
 .grid-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
+.quadratic-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
 .observation-sequence { display: flex; justify-content: center; gap: .75rem; margin: 1.5rem auto !important; padding: .75rem 1rem; max-width: 28rem; border-block: 1px solid var(--line); background: #fff; font: 700 1.1rem/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: .04em; }
 .model-loop { margin: 1.5rem 0; padding: 1rem 1rem 1rem 3.2rem; border-left: .25rem solid var(--blue); background: #f3f5fb; }
 .model-loop li { margin: .55rem 0; padding-left: .25rem; }
@@ -106,6 +107,7 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .count-table thead th { color: var(--blue); font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; font-size: .86rem; }
 .count-table tbody th { font-weight: 400; }
 .update-table, .probability-table { min-width: 38rem; }
+.precision-table { min-width: 32rem; }
 .math-inline { padding-inline: .15rem; white-space: nowrap; font-family: "Times New Roman", serif; }
 .equation-block { margin: 1.7rem auto; padding: 1.15rem; max-width: 42rem; border-block: 1px solid var(--line); background: #fff; text-align: center; font: 1.02rem/1.65 "Times New Roman", "Songti SC", serif; }
 .equation-block > div { margin: .15rem 0; }

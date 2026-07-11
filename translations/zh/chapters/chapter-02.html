@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-02" data-source-pages="35-58">
+<article class="book-article" data-chapter="chapter-02" data-source-pages="35-61">
   <header class="chapter-header">
     <p class="eyebrow">第二章</p>
     <h1>小世界与大世界</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 35–58 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 35–61 页</p>
   </header>
 
   <p>1492 年，Cristoforo Colombo（Christopher Columbus，中文常译“哥伦布”）那次声名狼藉的向西航行开始时，他相信地球是球形的。在这一点上，他和当时大多数受过教育的人一样。与大多数人不同的是，他还相信地球比实际小得多：赤道周长只有 30,000 公里，而不是真实的 40,000 公里（图 2.1）。<sup><a href="#note-37" aria-label="尾注 37">37</a></sup>这是欧洲历史上影响最为深远的错误之一。</p>
@@ -773,6 +773,117 @@ prior &lt;- exp( -5*abs( p_grid - 0.5 ) )</code></pre>
       </ol>
 
       <p>为了计算地球仪投掷数据的二次近似，将使用 <code>rethinking</code> 包中的工具 <code>quap</code>。本书前半部分会频繁使用 <code>quap</code>。它是一种灵活的模型拟合工具，可以指定大量不同的“回归”模型，因此现在就值得试用；后面还会对它形成更深入的理解。</p>
+
+      <p>计算地球仪投掷数据的二次近似：</p>
+
+      <figure class="code-listing" id="code-2-6">
+        <figcaption>R 代码 2.6</figcaption>
+        <pre><code>library(rethinking)
+
+globe.qa &lt;- quap(
+  alist(
+    W ~ dbinom( W+L , p ) , # binomial likelihood
+    p ~ dunif(0,1)           # uniform prior
+  ) ,
+  data=list(W=6,L=3) )
+
+# display summary of quadratic approximation
+precis( globe.qa )</code></pre>
+      </figure>
+      <p class="scroll-hint code-scroll-hint">代码较宽，可横向滚动查看完整行。</p>
+
+      <p>使用 <code>quap</code> 时，需要提供一个<strong>公式</strong>和一份数据列表。公式定义数据概率和先验。第 4 章会更详细地介绍这些公式。先看输出：</p>
+
+      <div class="table-wrap">
+        <table class="count-table precision-table" id="precis-2-6">
+          <thead><tr><th scope="col">参数</th><th scope="col">Mean</th><th scope="col">StdDev</th><th scope="col">5.5%</th><th scope="col">94.5%</th></tr></thead>
+          <tbody><tr><th scope="row"><var>p</var></th><td>0.67</td><td>0.16</td><td>0.42</td><td>0.92</td></tr></tbody>
+        </table>
+      </div>
+      <p class="scroll-hint table-scroll-hint">表格较宽，可横向滚动查看全部列。</p>
+
+      <p><code>precis</code> 函数给出二次近似的简短摘要。本例显示 <span class="math-inline"><var>p</var> = 0.67</span> 的后验均值，列名为 “Mean”；曲率转换后的量标为 “StdDev”，即<strong>标准差</strong>。这个值是后验分布的标准差，而均值就是其峰值。最后两个值给出 89% 百分位区间，下一章会学到更多。可以把这种近似读作：<em>假设后验为高斯分布，它在 0.67 处达到最大值，标准差为 0.16。</em></p>
+
+      <p>由于已经知道后验，可以比较近似有多好。这里使用基于 <code>dbeta</code> 的解析方法。我不会解释这项计算，但它保证得到没有近似误差的精确答案。几乎所有贝叶斯推断数学教材都能找到相关说明与推导。</p>
+
+      <figure class="code-listing" id="code-2-7">
+        <figcaption>R 代码 2.7</figcaption>
+        <pre><code># analytical calculation
+W &lt;- 6
+L &lt;- 3
+curve( dbeta( x , W+1 , L+1 ) , from=0 , to=1 )
+
+# quadratic approximation
+curve( dnorm( x , 0.67 , 0.16 ) , lty=2 , add=TRUE )</code></pre>
+      </figure>
+      <p class="scroll-hint code-scroll-hint">代码较宽，可横向滚动查看完整行。</p>
+
+      <p>图 2.8 左图展示这两条曲线。蓝色实线是解析后验，深色虚线是二次近似。近似在左侧表现尚可，右侧却相当糟；它甚至给 <span class="math-inline"><var>p</var> = 1</span> 分配了正概率，而我们知道这不可能，因为至少观测到一次陆地。</p>
+
+      <p>不过，随着数据量增加，二次近似会变好。图 2.8 中图把样本量加倍为 <span class="math-inline"><var>n</var> = 18</span> 次投掷，同时保持相同的水域比例，所以后验众数仍在同一位置。此时近似更好了，虽仍不算完美。右图把数据量增至四倍，两条曲线已经几乎相同。</p>
+
+      <figure class="book-figure quadratic-figure" id="fig-2-8">
+        <div class="figure-scroll" tabindex="0" aria-label="可横向滚动的三种样本量二次近似准确度比较图">
+          <img src="/media/chapter-02-quadratic-accuracy.svg" alt="三个面板比较九、十八和三十六次投掷时的精确后验与二次近似，样本越多两条曲线越接近">
+        </div>
+        <p class="scroll-hint">图较宽，可横向滚动比较三种样本量。</p>
+        <figcaption><strong>图 2.8：</strong>二次近似的准确度。每个面板都用蓝色实线绘制精确后验，以深色虚线绘制二次近似。左：<span class="math-inline"><var>n</var> = 9</span>、<span class="math-inline"><var>w</var> = 6</span>。中：数据量加倍且水域比例相同，<span class="math-inline"><var>n</var> = 18</span>、<span class="math-inline"><var>w</var> = 12</span>。右：数据量增至四倍，<span class="math-inline"><var>n</var> = 36</span>、<span class="math-inline"><var>w</var> = 24</span>。</figcaption>
+      </figure>
+
+      <p>二次近似随数据量增加而改善，是非常常见的现象。这正是许多经典统计程序对小样本感到不安的原因之一：它们使用二次近似或其他近似，而这些近似只在数据无限多时才被证明安全。显然，数据少于无限时它们往往也有用；但近似随样本量增长而改善的速度，会因具体细节大不相同。在某些模型中，即使有数千个样本，二次近似仍可能很糟。</p>
+
+      <p>在贝叶斯语境中使用二次近似，也会带来同样的担忧。但如果心存疑虑，总能改用其他算法。事实上，网格近似很适合小样本，因为此时模型必然较简单，计算也相当快。还可以使用下一小节介绍的 MCMC。</p>
+
+      <aside class="rethinking-box">
+        <h3>再思考：最大似然估计</h3>
+        <p>二次近似在使用均匀先验或数据量很大时，往往等价于<strong>最大似然估计</strong>（MLE）及其<strong>标准误</strong>。MLE 是一种非常常见的非贝叶斯参数估计。贝叶斯近似与常见非贝叶斯估计量的这种对应既是祝福，也是诅咒。</p>
+        <p>它是祝福，因为可以用贝叶斯语言重新解释大量已经发表的非贝叶斯模型拟合；它也是诅咒，因为最大似然估计有一些奇怪缺点，二次近似也可能继承。后续章节会继续探索。</p>
+      </aside>
+
+      <aside class="overthinking-box">
+        <h3>过度思考：海森矩阵来了</h3>
+        <p>有时，多了解一点二次近似如何计算会有帮助，尤其因为近似有时会失败。失败时，你很可能看到一条令人困惑、提到“Hessian”的错误信息。学过世界史的人也许知道，Hessians 是 18 世纪英国雇佣的德国雇佣兵，任务之一是与美国革命者 George Washington 作战。这些雇佣兵得名于今天德国中部的 Hessen 地区。</p>
+        <p>这里关心的 Hessian 与雇佣兵几乎无关；它得名于数学家 Ludwig Otto Hesse（1811–1874）。<strong>海森矩阵</strong>是由二阶导数组成的方阵。它在数学中用途很多；在二次近似中，元素是后验概率对数相对于各参数的二阶导数。</p>
+        <p>这些导数足以描述高斯分布，因为高斯分布的对数就是抛物线。抛物线没有高于二阶的导数，所以只要知道抛物线中心（后验众数）及其二阶导数，便知道它的一切。事实上，高斯分布对数相对于结果的二阶导数，与标准差平方的倒数成正比，也就是它的“精度”。因此，知道标准差就知道其全部形状。</p>
+        <p>标准差通常由海森矩阵计算，因此计算海森矩阵几乎总是必要步骤。但计算有时会出错，魔像会在尝试计算时噎住。此时还有若干选择，并非希望尽失。现在只需认得这个术语，并把它与“尝试寻找二次近似的标准差”联系起来。</p>
+      </aside>
+    </section>
+
+    <section id="sec-2-4-5">
+      <h3>2.4.5 马尔可夫链蒙特卡洛</h3>
+
+      <p>很多重要模型类型——例如多层（混合效应）模型——并不总能从网格近似或二次近似中得到满意结果。这类模型可能包含数百、数千甚至数万个参数。网格近似在这里通常会失败，因为耗时太久：还没算完网格，太阳都熄灭了。若一切条件恰到好处，特殊形式的二次近似也许可行；但通常总有地方不对。</p>
+
+      <p>此外，多层模型并不总允许把后验分布写成单个统一函数。这意味着，寻找 MAP 时要最大化的函数并不已知，而必须分块计算。</p>
+
+      <p>因此，出现了各种反直觉的模型拟合技术。其中最流行的是<strong>马尔可夫链蒙特卡洛</strong>（MCMC）：一族能够处理高度复杂模型的条件化引擎。可以说，MCMC 对 20 世纪 90 年代开始的贝叶斯数据分析复兴负有主要责任。MCMC 本身比 90 年代更古老，廉价计算能力却不是，所以还要感谢工程师。本书后面的第 9 章会用简单、精确的 MCMC 模型拟合例子帮助理解这项技术。</p>
+
+      <p>MCMC 的概念挑战来自它极不直观的策略。它不尝试直接计算或近似后验分布，只是从后验中抽取样本。最终得到一组参数值，这些值出现的频率对应后验可信程度；再用样本直方图便可构造后验图像。</p>
+
+      <p>我们几乎总是直接使用这些样本，而不是先从它们构造某种数学估计。样本在许多方面比拥有后验本身更方便，因为更容易用它们思考。因此，下一章就会转向“用样本思考”。</p>
+
+      <aside class="overthinking-box" id="overthinking-mcmc-globe">
+        <h3>过度思考：蒙特卡洛地球仪投掷</h3>
+        <p>如果迫不及待想看 MCMC 实际运行，地球仪投掷模型的一条可用马尔可夫链并不需要很多代码。下面的 R 代码就够了：</p>
+
+        <figure class="code-listing" id="code-2-8">
+          <figcaption>R 代码 2.8</figcaption>
+          <pre><code>n_samples &lt;- 1000
+p &lt;- rep( NA , n_samples )
+p[1] &lt;- 0.5
+W &lt;- 6
+L &lt;- 3
+for ( i in 2:n_samples ) {
+  p_new &lt;- rnorm( 1 , p[i-1] , 0.1 )
+  if ( p_new &lt; 0 ) p_new &lt;- abs( p_new )
+  if ( p_new &gt; 1 ) p_new &lt;- 2 - p_new
+  q0 &lt;- dbinom( W , W+L , p[i-1] )
+  q1 &lt;- dbinom( W , W+L , p_new )
+  p[i] &lt;- ifelse( runif(1) &lt; q1/q0 , p_new , p[i-1] )
+}</code></pre>
+        </figure>
+        <p class="scroll-hint code-scroll-hint">代码较宽，可横向滚动查看完整行。</p>
+      </aside>
     </section>
   </section>
 
@@ -795,6 +906,6 @@ prior &lt;- exp( -5*abs( p_grid - 0.5 ) )</code></pre>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 35–58 页已完成翻译、逐页渲染对照和桌面/移动端视觉验收；下一批从 PDF 第 59 页开始。
+    <strong>译稿状态：</strong>PDF 第 35–61 页已完成翻译、逐页渲染对照和桌面/移动端视觉验收；下一批从 PDF 第 62 页开始。
   </aside>
 </article>

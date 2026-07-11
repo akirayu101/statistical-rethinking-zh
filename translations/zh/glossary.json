@@ -162,7 +162,21 @@
     "Gaussian approximation": "高斯近似",
     "optimization algorithm": "优化算法",
     "curvature": "曲率",
-    "log-posterior": "对数后验"
+    "log-posterior": "对数后验",
+    "formula": "公式",
+    "standard deviation": "标准差",
+    "percentile interval": "百分位区间",
+    "analytical solution": "解析解",
+    "maximum likelihood estimate": "最大似然估计",
+    "standard error": "标准误",
+    "Hessian": "海森矩阵",
+    "second derivative": "二阶导数",
+    "precision": "精度",
+    "multilevel model": "多层模型",
+    "mixed-effects model": "混合效应模型",
+    "MAP": "最大后验",
+    "Markov chain": "马尔可夫链",
+    "histogram": "直方图"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"
