@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="820" viewBox="0 0 1200 820" role="img">
+  <title>从完整后验模拟预测</title>
+  <desc>顶部为水域比例后验，中部为九个参数值对应的抽样分布，底部为按后验概率加权合成的后验预测分布。</desc>
+  <rect width="100%" height="100%" fill="#ffffff"/>
+  <text x="32" y="45" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="20" font-weight="700" fill="#263f86">后验概率</text>
+  <rect x="150" y="65" width="930" height="175" fill="#fff" stroke="#363934" stroke-width="1.3"/>
+  <path d="M150 240 L152.32 240 L154.65 240 L156.97 240 L159.3 240 L161.62 240 L163.95 240 L166.28 240 L168.6 240 L170.93 240 L173.25 240 L175.57 240 L177.9 240 L180.22 240 L182.55 240 L184.88 240 L187.2 240 L189.53 240 L191.85 240 L194.18 240 L196.5 240 L198.82 240 L201.15 240 L203.47 240 L205.8 240 L208.12 240 L210.45 240 L212.78 240 L215.1 240 L217.43 239.99 L219.75 239.99 L222.07 239.99 L224.4 239.99 L226.72 239.99 L229.05 239.99 L231.38 239.98 L233.7 239.98 L236.03 239.98 L238.35 239.97 L240.68 239.97 L243 239.96 L245.32 239.96 L247.65 239.95 L249.97 239.94 L252.3 239.94 L254.62 239.93 L256.95 239.92 L259.27 239.91 L261.6 239.89 L263.93 239.88 L266.25 239.87 L268.57 239.85 L270.9 239.84 L273.23 239.82 L275.55 239.8 L277.88 239.78 L280.2 239.75 L282.52 239.73 L284.85 239.7 L287.18 239.67 L289.5 239.64 L291.82 239.6 L294.15 239.57 L296.48 239.53 L298.8 239.49 L301.12 239.44 L303.45 239.39 L305.77 239.34 L308.1 239.29 L310.43 239.23 L312.75 239.17 L315.07 239.1 L317.4 239.03 L319.73 238.96 L322.05 238.88 L324.38 238.79 L326.7 238.71 L329.02 238.61 L331.35 238.52 L333.68 238.41 L336 238.3 L338.32 238.19 L340.65 238.07 L342.98 237.94 L345.3 237.81 L347.62 237.67 L349.95 237.53 L352.27 237.37 L354.6 237.22 L356.93 237.05 L359.25 236.87 L361.57 236.69 L363.9 236.5 L366.23 236.3 L368.55 236.1 L370.88 235.88 L373.2 235.66 L375.52 235.43 L377.85 235.18 L380.18 234.93 L382.5 234.67 L384.82 234.4 L387.15 234.12 L389.48 233.82 L391.8 233.52 L394.12 233.21 L396.45 232.88 L398.77 232.55 L401.1 232.2 L403.43 231.84 L405.75 231.47 L408.07 231.09 L410.4 230.69 L412.73 230.28 L415.05 229.86 L417.38 229.43 L419.7 228.98 L422.02 228.52 L424.35 228.05 L426.68 227.56 L429 227.06 L431.32 226.54 L433.65 226.01 L435.98 225.47 L438.3 224.91 L440.62 224.34 L442.95 223.75 L445.27 223.15 L447.6 222.53 L449.93 221.89 L452.25 221.24 L454.57 220.58 L456.9 219.9 L459.23 219.2 L461.55 218.49 L463.88 217.76 L466.2 217.02 L468.52 216.25 L470.85 215.48 L473.18 214.68 L475.5 213.87 L477.82 213.05 L480.15 212.2 L482.48 211.35 L484.8 210.47 L487.12 209.58 L489.45 208.67 L491.77 207.74 L494.1 206.8 L496.43 205.84 L498.75 204.86 L501.07 203.87 L503.4 202.86 L505.73 201.84 L508.05 200.8 L510.38 199.74 L512.7 198.67 L515.02 197.58 L517.35 196.47 L519.67 195.35 L522 194.21 L524.33 193.06 L526.65 191.89 L528.98 190.71 L531.3 189.51 L533.62 188.3 L535.95 187.07 L538.27 185.83 L540.6 184.58 L542.92 183.31 L545.25 182.02 L547.58 180.73 L549.9 179.42 L552.23 178.09 L554.55 176.76 L556.88 175.41 L559.2 174.05 L561.52 172.68 L563.85 171.3 L566.17 169.91 L568.5 168.5 L570.83 167.09 L573.15 165.67 L575.48 164.24 L577.8 162.79 L580.12 161.34 L582.45 159.89 L584.77 158.42 L587.1 156.95 L589.42 155.47 L591.75 153.99 L594.08 152.5 L596.4 151 L598.73 149.5 L601.05 148 L603.38 146.49 L605.7 144.98 L608.02 143.47 L610.35 141.95 L612.67 140.44 L615 138.92 L617.33 137.41 L619.65 135.89 L621.98 134.38 L624.3 132.86 L626.62 131.36 L628.95 129.85 L631.27 128.35 L633.6 126.85 L635.92 125.35 L638.25 123.87 L640.58 122.39 L642.9 120.91 L645.23 119.45 L647.55 117.99 L649.88 116.54 L652.2 115.1 L654.52 113.67 L656.85 112.26 L659.17 110.85 L661.5 109.46 L663.83 108.08 L666.15 106.72 L668.48 105.37 L670.8 104.04 L673.12 102.72 L675.45 101.43 L677.77 100.15 L680.1 98.88 L682.42 97.64 L684.75 96.42 L687.08 95.22 L689.4 94.04 L691.73 92.88 L694.05 91.75 L696.38 90.64 L698.7 89.55 L701.02 88.49 L703.35 87.46 L705.67 86.45 L708 85.47 L710.33 84.52 L712.65 83.6 L714.98 82.7 L717.3 81.84 L719.62 81.01 L721.95 80.21 L724.27 79.44 L726.6 78.7 L728.92 78 L731.25 77.33 L733.58 76.7 L735.9 76.1 L738.23 75.54 L740.55 75.02 L742.88 74.53 L745.2 74.08 L747.52 73.66 L749.85 73.29 L752.17 72.95 L754.5 72.66 L756.83 72.4 L759.15 72.19 L761.48 72.01 L763.8 71.88 L766.12 71.79 L768.45 71.74 L770.77 71.73 L773.1 71.77 L775.42 71.85 L777.75 71.97 L780.08 72.13 L782.4 72.34 L784.73 72.59 L787.05 72.89 L789.38 73.23 L791.7 73.62 L794.02 74.05 L796.35 74.53 L798.67 75.05 L801 75.61 L803.33 76.22 L805.65 76.87 L807.98 77.57 L810.3 78.32 L812.62 79.1 L814.95 79.94 L817.27 80.81 L819.6 81.73 L821.92 82.7 L824.25 83.7 L826.58 84.75 L828.9 85.85 L831.23 86.98 L833.55 88.16 L835.88 89.38 L838.2 90.64 L840.52 91.94 L842.85 93.28 L845.17 94.66 L847.5 96.08 L849.83 97.54 L852.15 99.04 L854.48 100.57 L856.8 102.14 L859.12 103.75 L861.45 105.38 L863.77 107.06 L866.1 108.76 L868.42 110.5 L870.75 112.27 L873.08 114.07 L875.4 115.9 L877.73 117.76 L880.05 119.65 L882.38 121.56 L884.7 123.5 L887.02 125.46 L889.35 127.44 L891.67 129.44 L894 131.47 L896.33 133.51 L898.65 135.58 L900.98 137.65 L903.3 139.75 L905.62 141.86 L907.95 143.98 L910.27 146.11 L912.6 148.25 L914.92 150.39 L917.25 152.55 L919.58 154.71 L921.9 156.87 L924.23 159.04 L926.55 161.21 L928.88 163.37 L931.2 165.53 L933.52 167.69 L935.85 169.85 L938.17 171.99 L940.5 174.13 L942.83 176.25 L945.15 178.37 L947.48 180.47 L949.8 182.55 L952.12 184.62 L954.45 186.66 L956.77 188.69 L959.1 190.7 L961.42 192.68 L963.75 194.64 L966.08 196.57 L968.4 198.47 L970.73 200.34 L973.05 202.18 L975.38 203.99 L977.7 205.77 L980.02 207.51 L982.35 209.21 L984.67 210.87 L987 212.5 L989.33 214.08 L991.65 215.62 L993.98 217.12 L996.3 218.58 L998.62 219.99 L1000.95 221.35 L1003.27 222.67 L1005.6 223.93 L1007.92 225.15 L1010.25 226.32 L1012.58 227.44 L1014.9 228.52 L1017.23 229.54 L1019.55 230.5 L1021.88 231.42 L1024.2 232.29 L1026.53 233.1 L1028.85 233.87 L1031.17 234.58 L1033.5 235.24 L1035.83 235.86 L1038.15 236.42 L1040.47 236.94 L1042.8 237.41 L1045.12 237.83 L1047.45 238.21 L1049.78 238.54 L1052.1 238.84 L1054.42 239.09 L1056.75 239.31 L1059.08 239.49 L1061.4 239.63 L1063.72 239.75 L1066.05 239.84 L1068.38 239.91 L1070.7 239.95 L1073.03 239.98 L1075.35 239.99 L1077.67 240 L1080 240" fill="none" stroke="#30332e" stroke-width="2.4"/>
+  <line x1="150" y1="240" x2="150" y2="248" stroke="#363934"/>
+  <text x="150" y="269" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="14" fill="#30332e">0</text>
+  <line x1="615" y1="240" x2="615" y2="248" stroke="#363934"/>
+  <text x="615" y="269" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="14" fill="#30332e">0.5</text>
+  <line x1="1080" y1="240" x2="1080" y2="248" stroke="#363934"/>
+  <text x="1080" y="269" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="14" fill="#30332e">1</text>
+  <text x="600.0" y="297" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" fill="#30332e">水域概率</text>
+  <text x="32" y="325" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="20" font-weight="700" fill="#263f86">抽样分布</text>
+  <line x1="243" y1="239.96" x2="120" y2="355" stroke="#59605a" stroke-width="0.8" opacity="0.65"/>
+  <line x1="243" y1="240" x2="243" y2="239.96" stroke="#263f86" stroke-width="0.8"/>
+  <circle cx="243" cy="239.96" r="3" fill="#263f86"/>
+  <rect x="72" y="355" width="96" height="105" fill="#fff" stroke="#363934" stroke-width="1.1"/>
+  <text x="120" y="346" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="14" font-weight="700" fill="#30332e">p = 0.1</text>
+  <rect x="78.81" y="363" width="4.99" height="90" fill="#6670ee" opacity="0.8"/>
+  <rect x="87.41" y="363" width="4.99" height="90" fill="#6670ee" opacity="0.8"/>
+  <rect x="96.01" y="413" width="4.99" height="40" fill="#6670ee" opacity="0.8"/>
+  <rect x="104.61" y="442.63" width="4.99" height="10.37" fill="#6670ee" opacity="0.8"/>
+  <rect x="113.21" y="451.27" width="4.99" height="1.73" fill="#6670ee" opacity="0.8"/>
+  <rect x="121.81" y="452.81" width="4.99" height="0.19" fill="#6670ee" opacity="0.8"/>
+  <rect x="130.41" y="452.99" width="4.99" height="0.01" fill="#6670ee" opacity="0.8"/>
+  <rect x="139.01" y="453" width="4.99" height="0" fill="#6670ee" opacity="0.8"/>
+  <rect x="147.61" y="453" width="4.99" height="0" fill="#6670ee" opacity="0.8"/>
+  <rect x="156.21" y="453" width="4.99" height="0" fill="#6670ee" opacity="0.8"/>
+  <line x1="336" y1="238.3" x2="240" y2="355" stroke="#59605a" stroke-width="0.84" opacity="0.65"/>
+  <line x1="336" y1="240" x2="336" y2="238.3" stroke="#263f86" stroke-width="0.84"/>
+  <circle cx="336" cy="238.3" r="3" fill="#263f86"/>
+  <rect x="192" y="355" width="96" height="105" fill="#fff" stroke="#363934" stroke-width="1.1"/>
+  <text x="240" y="346" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="14" font-weight="700" fill="#30332e">p = 0.2</text>
+  <rect x="198.81" y="413" width="4.99" height="40" fill="#6670ee" opacity="0.8"/>
+  <rect x="207.41" y="363" width="4.99" height="90" fill="#6670ee" opacity="0.8"/>
+  <rect x="216.01" y="363" width="4.99" height="90" fill="#6670ee" opacity="0.8"/>
+  <rect x="224.61" y="400.5" width="4.99" height="52.5" fill="#6670ee" opacity="0.8"/>
+  <rect x="233.21" y="433.31" width="4.99" height="19.69" fill="#6670ee" opacity="0.8"/>
+  <rect x="241.81" y="448.08" width="4.99" height="4.92" fill="#6670ee" opacity="0.8"/>
+  <rect x="250.41" y="452.18" width="4.99" height="0.82" fill="#6670ee" opacity="0.8"/>
+  <rect x="259.01" y="452.91" width="4.99" height="0.09" fill="#6670ee" opacity="0.8"/>
+  <rect x="267.61" y="452.99" width="4.99" height="0.01" fill="#6670ee" opacity="0.8"/>
+  <rect x="276.21" y="453" width="4.99" height="0" fill="#6670ee" opacity="0.8"/>
+  <line x1="429" y1="227.06" x2="360" y2="355" stroke="#59605a" stroke-width="1.13" opacity="0.65"/>
+  <line x1="429" y1="240" x2="429" y2="227.06" stroke="#263f86" stroke-width="1.13"/>
+  <circle cx="429" cy="227.06" r="3" fill="#263f86"/>
+  <rect x="312" y="355" width="96" height="105" fill="#fff" stroke="#363934" stroke-width="1.1"/>
+  <text x="360" y="346" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="14" font-weight="700" fill="#30332e">p = 0.3</text>
+  <rect x="318.81" y="439.39" width="4.99" height="13.61" fill="#6670ee" opacity="0.8"/>
+  <rect x="327.41" y="400.5" width="4.99" height="52.5" fill="#6670ee" opacity="0.8"/>
+  <rect x="336.01" y="363" width="4.99" height="90" fill="#6670ee" opacity="0.8"/>
+  <rect x="344.61" y="363" width="4.99" height="90" fill="#6670ee" opacity="0.8"/>
+  <rect x="353.21" y="395.14" width="4.99" height="57.86" fill="#6670ee" opacity="0.8"/>
+  <rect x="361.81" y="428.2" width="4.99" height="24.8" fill="#6670ee" opacity="0.8"/>
+  <rect x="370.41" y="445.92" width="4.99" height="7.08" fill="#6670ee" opacity="0.8"/>
+  <rect x="379.01" y="451.7" width="4.99" height="1.3" fill="#6670ee" opacity="0.8"/>
+  <rect x="387.61" y="452.86" width="4.99" height="0.14" fill="#6670ee" opacity="0.8"/>
+  <rect x="396.21" y="452.99" width="4.99" height="0.01" fill="#6670ee" opacity="0.8"/>
+  <line x1="522" y1="194.21" x2="480" y2="355" stroke="#59605a" stroke-width="1.95" opacity="0.65"/>
+  <line x1="522" y1="240" x2="522" y2="194.21" stroke="#263f86" stroke-width="1.95"/>
+  <circle cx="522" cy="194.21" r="3" fill="#263f86"/>
+  <rect x="432" y="355" width="96" height="105" fill="#fff" stroke="#363934" stroke-width="1.1"/>
+  <text x="480" y="346" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="14" font-weight="700" fill="#30332e">p = 0.4</text>
+  <rect x="438.81" y="449.38" width="4.99" height="3.62" fill="#6670ee" opacity="0.8"/>
+  <rect x="447.41" y="431.3" width="4.99" height="21.7" fill="#6670ee" opacity="0.8"/>
+  <rect x="456.01" y="395.14" width="4.99" height="57.86" fill="#6670ee" opacity="0.8"/>
+  <rect x="464.61" y="363" width="4.99" height="90" fill="#6670ee" opacity="0.8"/>
+  <rect x="473.21" y="363" width="4.99" height="90" fill="#6670ee" opacity="0.8"/>
+  <rect x="481.81" y="393" width="4.99" height="60" fill="#6670ee" opacity="0.8"/>
+  <rect x="490.41" y="426.33" width="4.99" height="26.67" fill="#6670ee" opacity="0.8"/>
+  <rect x="499.01" y="445.38" width="4.99" height="7.62" fill="#6670ee" opacity="0.8"/>
+  <rect x="507.61" y="451.73" width="4.99" height="1.27" fill="#6670ee" opacity="0.8"/>
+  <rect x="516.21" y="452.91" width="4.99" height="0.09" fill="#6670ee" opacity="0.8"/>
+  <line x1="615" y1="138.92" x2="600" y2="355" stroke="#59605a" stroke-width="3.34" opacity="0.65"/>
+  <line x1="615" y1="240" x2="615" y2="138.92" stroke="#263f86" stroke-width="3.34"/>
+  <circle cx="615" cy="138.92" r="3" fill="#263f86"/>
+  <rect x="552" y="355" width="96" height="105" fill="#fff" stroke="#363934" stroke-width="1.1"/>
+  <text x="600" y="346" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="14" font-weight="700" fill="#30332e">p = 0.5</text>
+  <rect x="558.81" y="452.29" width="4.99" height="0.71" fill="#6670ee" opacity="0.8"/>
+  <rect x="567.41" y="446.57" width="4.99" height="6.43" fill="#6670ee" opacity="0.8"/>
+  <rect x="576.01" y="427.29" width="4.99" height="25.71" fill="#6670ee" opacity="0.8"/>
+  <rect x="584.61" y="393" width="4.99" height="60" fill="#6670ee" opacity="0.8"/>
+  <rect x="593.21" y="363" width="4.99" height="90" fill="#6670ee" opacity="0.8"/>
+  <rect x="601.81" y="363" width="4.99" height="90" fill="#6670ee" opacity="0.8"/>
+  <rect x="610.41" y="393" width="4.99" height="60" fill="#6670ee" opacity="0.8"/>
+  <rect x="619.01" y="427.29" width="4.99" height="25.71" fill="#6670ee" opacity="0.8"/>
+  <rect x="627.61" y="446.57" width="4.99" height="6.43" fill="#6670ee" opacity="0.8"/>
+  <rect x="636.21" y="452.29" width="4.99" height="0.71" fill="#6670ee" opacity="0.8"/>
+  <line x1="708" y1="85.47" x2="720" y2="355" stroke="#59605a" stroke-width="4.69" opacity="0.65"/>
+  <line x1="708" y1="240" x2="708" y2="85.47" stroke="#263f86" stroke-width="4.69"/>
+  <circle cx="708" cy="85.47" r="3" fill="#263f86"/>
+  <rect x="672" y="355" width="96" height="105" fill="#fff" stroke="#363934" stroke-width="1.1"/>
+  <text x="720" y="346" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="14" font-weight="700" fill="#30332e">p = 0.6</text>
+  <rect x="678.81" y="452.91" width="4.99" height="0.09" fill="#6670ee" opacity="0.8"/>
+  <rect x="687.41" y="451.73" width="4.99" height="1.27" fill="#6670ee" opacity="0.8"/>
+  <rect x="696.01" y="445.38" width="4.99" height="7.62" fill="#6670ee" opacity="0.8"/>
+  <rect x="704.61" y="426.33" width="4.99" height="26.67" fill="#6670ee" opacity="0.8"/>
+  <rect x="713.21" y="393" width="4.99" height="60" fill="#6670ee" opacity="0.8"/>
+  <rect x="721.81" y="363" width="4.99" height="90" fill="#6670ee" opacity="0.8"/>
+  <rect x="730.41" y="363" width="4.99" height="90" fill="#6670ee" opacity="0.8"/>
+  <rect x="739.01" y="395.14" width="4.99" height="57.86" fill="#6670ee" opacity="0.8"/>
+  <rect x="747.61" y="431.3" width="4.99" height="21.7" fill="#6670ee" opacity="0.8"/>
+  <rect x="756.21" y="449.38" width="4.99" height="3.62" fill="#6670ee" opacity="0.8"/>
+  <line x1="801" y1="75.61" x2="840" y2="355" stroke="#59605a" stroke-width="4.93" opacity="0.65"/>
+  <line x1="801" y1="240" x2="801" y2="75.61" stroke="#263f86" stroke-width="4.93"/>
+  <circle cx="801" cy="75.61" r="3" fill="#263f86"/>
+  <rect x="792" y="355" width="96" height="105" fill="#fff" stroke="#363934" stroke-width="1.1"/>
+  <text x="840" y="346" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="14" font-weight="700" fill="#30332e">p = 0.7</text>
+  <rect x="798.81" y="452.99" width="4.99" height="0.01" fill="#6670ee" opacity="0.8"/>
+  <rect x="807.41" y="452.86" width="4.99" height="0.14" fill="#6670ee" opacity="0.8"/>
+  <rect x="816.01" y="451.7" width="4.99" height="1.3" fill="#6670ee" opacity="0.8"/>
+  <rect x="824.61" y="445.92" width="4.99" height="7.08" fill="#6670ee" opacity="0.8"/>
+  <rect x="833.21" y="428.2" width="4.99" height="24.8" fill="#6670ee" opacity="0.8"/>
+  <rect x="841.81" y="395.14" width="4.99" height="57.86" fill="#6670ee" opacity="0.8"/>
+  <rect x="850.41" y="363" width="4.99" height="90" fill="#6670ee" opacity="0.8"/>
+  <rect x="859.01" y="363" width="4.99" height="90" fill="#6670ee" opacity="0.8"/>
+  <rect x="867.61" y="400.5" width="4.99" height="52.5" fill="#6670ee" opacity="0.8"/>
+  <rect x="876.21" y="439.39" width="4.99" height="13.61" fill="#6670ee" opacity="0.8"/>
+  <line x1="894" y1="131.47" x2="960" y2="355" stroke="#59605a" stroke-width="3.53" opacity="0.65"/>
+  <line x1="894" y1="240" x2="894" y2="131.47" stroke="#263f86" stroke-width="3.53"/>
+  <circle cx="894" cy="131.47" r="3" fill="#263f86"/>
+  <rect x="912" y="355" width="96" height="105" fill="#fff" stroke="#363934" stroke-width="1.1"/>
+  <text x="960" y="346" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="14" font-weight="700" fill="#30332e">p = 0.8</text>
+  <rect x="918.81" y="453" width="4.99" height="0" fill="#6670ee" opacity="0.8"/>
+  <rect x="927.41" y="452.99" width="4.99" height="0.01" fill="#6670ee" opacity="0.8"/>
+  <rect x="936.01" y="452.91" width="4.99" height="0.09" fill="#6670ee" opacity="0.8"/>
+  <rect x="944.61" y="452.18" width="4.99" height="0.82" fill="#6670ee" opacity="0.8"/>
+  <rect x="953.21" y="448.08" width="4.99" height="4.92" fill="#6670ee" opacity="0.8"/>
+  <rect x="961.81" y="433.31" width="4.99" height="19.69" fill="#6670ee" opacity="0.8"/>
+  <rect x="970.41" y="400.5" width="4.99" height="52.5" fill="#6670ee" opacity="0.8"/>
+  <rect x="979.01" y="363" width="4.99" height="90" fill="#6670ee" opacity="0.8"/>
+  <rect x="987.61" y="363" width="4.99" height="90" fill="#6670ee" opacity="0.8"/>
+  <rect x="996.21" y="413" width="4.99" height="40" fill="#6670ee" opacity="0.8"/>
+  <line x1="987" y1="212.5" x2="1080" y2="355" stroke="#59605a" stroke-width="1.49" opacity="0.65"/>
+  <line x1="987" y1="240" x2="987" y2="212.5" stroke="#263f86" stroke-width="1.49"/>
+  <circle cx="987" cy="212.5" r="3" fill="#263f86"/>
+  <rect x="1032" y="355" width="96" height="105" fill="#fff" stroke="#363934" stroke-width="1.1"/>
+  <text x="1080" y="346" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="14" font-weight="700" fill="#30332e">p = 0.9</text>
+  <rect x="1038.81" y="453" width="4.99" height="0" fill="#6670ee" opacity="0.8"/>
+  <rect x="1047.41" y="453" width="4.99" height="0" fill="#6670ee" opacity="0.8"/>
+  <rect x="1056.01" y="453" width="4.99" height="0" fill="#6670ee" opacity="0.8"/>
+  <rect x="1064.61" y="452.99" width="4.99" height="0.01" fill="#6670ee" opacity="0.8"/>
+  <rect x="1073.21" y="452.81" width="4.99" height="0.19" fill="#6670ee" opacity="0.8"/>
+  <rect x="1081.81" y="451.27" width="4.99" height="1.73" fill="#6670ee" opacity="0.8"/>
+  <rect x="1090.41" y="442.63" width="4.99" height="10.37" fill="#6670ee" opacity="0.8"/>
+  <rect x="1099.01" y="413" width="4.99" height="40" fill="#6670ee" opacity="0.8"/>
+  <rect x="1107.61" y="363" width="4.99" height="90" fill="#6670ee" opacity="0.8"/>
+  <rect x="1116.21" y="363" width="4.99" height="90" fill="#6670ee" opacity="0.8"/>
+  <text x="32" y="570" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="20" font-weight="700" fill="#263f86">后验预测分布</text>
+  <rect x="365" y="590" width="470" height="145" fill="#fff" stroke="#363934" stroke-width="1.3"/>
+  <line x1="120" y1="460" x2="600.0" y2="590" stroke="#59605a" stroke-width="0.8" opacity="0.45"/>
+  <line x1="240" y1="460" x2="600.0" y2="590" stroke="#59605a" stroke-width="0.84" opacity="0.45"/>
+  <line x1="360" y1="460" x2="600.0" y2="590" stroke="#59605a" stroke-width="1.13" opacity="0.45"/>
+  <line x1="480" y1="460" x2="600.0" y2="590" stroke="#59605a" stroke-width="1.95" opacity="0.45"/>
+  <line x1="600" y1="460" x2="600.0" y2="590" stroke="#59605a" stroke-width="3.34" opacity="0.45"/>
+  <line x1="720" y1="460" x2="600.0" y2="590" stroke="#59605a" stroke-width="4.69" opacity="0.45"/>
+  <line x1="840" y1="460" x2="600.0" y2="590" stroke="#59605a" stroke-width="4.93" opacity="0.45"/>
+  <line x1="960" y1="460" x2="600.0" y2="590" stroke="#59605a" stroke-width="3.53" opacity="0.45"/>
+  <line x1="1080" y1="460" x2="600.0" y2="590" stroke="#59605a" stroke-width="1.49" opacity="0.45"/>
+  <rect x="386.37" y="723.51" width="25.87" height="1.49" fill="#263f86" opacity="1"/>
+  <rect x="430.97" y="717.19" width="25.87" height="7.81" fill="#263f86" opacity="1"/>
+  <rect x="475.57" y="702.27" width="25.87" height="22.73" fill="#263f86" opacity="1"/>
+  <rect x="520.17" y="677.27" width="25.87" height="47.73" fill="#263f86" opacity="1"/>
+  <rect x="564.77" y="645.45" width="25.87" height="79.55" fill="#263f86" opacity="1"/>
+  <rect x="609.37" y="615.62" width="25.87" height="109.38" fill="#263f86" opacity="1"/>
+  <rect x="653.97" y="600" width="25.87" height="125" fill="#263f86" opacity="1"/>
+  <rect x="698.57" y="608.93" width="25.87" height="116.07" fill="#263f86" opacity="1"/>
+  <rect x="743.17" y="643.75" width="25.87" height="81.25" fill="#263f86" opacity="1"/>
+  <rect x="787.77" y="691.15" width="25.87" height="33.85" fill="#263f86" opacity="1"/>
+  <text x="399.3" y="759" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="13" fill="#30332e">0</text>
+  <text x="443.9" y="759" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="13" fill="#30332e">1</text>
+  <text x="488.5" y="759" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="13" fill="#30332e">2</text>
+  <text x="533.1" y="759" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="13" fill="#30332e">3</text>
+  <text x="577.7" y="759" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="13" fill="#30332e">4</text>
+  <text x="622.3" y="759" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="13" fill="#30332e">5</text>
+  <text x="666.9" y="759" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="13" fill="#30332e">6</text>
+  <text x="711.5" y="759" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="13" fill="#30332e">7</text>
+  <text x="756.1" y="759" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="13" fill="#30332e">8</text>
+  <text x="800.7" y="759" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="13" fill="#30332e">9</text>
+  <text x="600.0" y="790" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" fill="#30332e">水域样本数</text>
+</svg>

@@ -220,7 +220,16 @@
     "power analysis": "功效分析",
     "forecasting": "预测",
     "generative": "生成式",
-    "dummy data": "虚拟数据"
+    "dummy data": "虚拟数据",
+    "sampling distribution": "抽样分布",
+    "retrodiction": "回溯预测",
+    "model adequacy": "模型充分性",
+    "implied prediction": "隐含预测",
+    "empirical expectation": "经验预期",
+    "observation uncertainty": "观测不确定性",
+    "parameter uncertainty": "参数不确定性",
+    "uncertainty propagation": "不确定性传播",
+    "overconfidence": "过度自信"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"

@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-03" data-source-pages="65-79">
+<article class="book-article" data-chapter="chapter-03" data-source-pages="65-82">
   <header class="chapter-header">
     <p class="eyebrow">第三章</p>
     <h1>从想象中采样</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 65–79 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 65–82 页</p>
   </header>
 
   <p>许多贝叶斯统计教材都用医学检测情境来介绍<strong>后验推断</strong>。沿用常见例子的结构，假设有一种血液检测，能在 95% 的情况下正确检出吸血鬼。用更精确的数学记号表示，就是 <span class="math-inline">Pr(检测阳性 | 吸血鬼) = 0.95</span>。这项检测非常准确，几乎总能抓住真正的吸血鬼。</p>
@@ -513,6 +513,81 @@ simplehist( dummy_w , xlab="dummy water count" )</code></pre>
 
       <p>这就是观测的基本模拟。它有什么用？这些样本有许多用途。本章会用它们检查模型的隐含预测；但要做到这一点，还必须把它们与后验分布样本结合起来。这就是下一步。</p>
     </section>
+
+    <aside class="rethinking-box" id="rethinking-sampling-distributions">
+      <h3>再思考：抽样分布</h3>
+      <p>许多读者可能已经见过模拟观测。<strong>抽样分布</strong>是常见非贝叶斯统计传统的基础；在这些方法中，关于参数的推断通过抽样分布完成。本书绝不会直接通过抽样分布推断参数。后验分布不是抽样得到的，而是逻辑推导出来的；随后可以像本章前面那样，从后验中抽样以辅助推断。</p>
+      <p>无论哪种情况，“抽样”都不是物理行为；它只是一种数学装置，而且只产生小世界（第 2 章）数字。</p>
+    </aside>
+
+    <section id="sec-3-3-2">
+      <h3>3.3.2 模型检查</h3>
+
+      <p><strong>模型检查</strong>意味着：（1）确认模型拟合正确运行；（2）针对某个目的评估模型是否足够。贝叶斯模型始终是生成式的，既能从观测估计参数，也能模拟观测。因此，一旦用数据对模型完成条件化，就可以通过模拟考察模型的经验预期。</p>
+
+      <section id="sec-3-3-2-1">
+        <h4>3.3.2.1 软件工作正常吗？</h4>
+
+        <p>最简单的情况下，可以检查隐含预测是否与拟合模型所用的数据相对应，从而判断软件是否正常工作。也可以把这些隐含预测称为<strong>回溯预测</strong>，因为它们询问模型能多好地重现用来教育它的数据。既不期待、也不希望完全匹配；但若毫无对应关系，软件很可能出了问题。</p>
+
+        <p>没有办法真正确定软件工作完全正确。即使回溯预测与观测数据相符，也可能存在细微错误。开始处理多层模型后，还必须预期回溯预测与观测之间出现某种特定的不对应模式。虽然没有完美办法保证软件无误，这里推荐的简单检查却经常能抓住愚蠢错误——每个人偶尔都会犯的那种。</p>
+
+        <p>地球仪投掷分析的软件实现足够简单，可以用解析结果检查。因此，我们直接转向考虑模型是否足够。</p>
+      </section>
+
+      <section id="sec-3-3-2-2">
+        <h4>3.3.2.2 模型足够吗？</h4>
+
+        <p>确认软件正确工作、后验分布无误后，还应该寻找数据中没有被模型预期良好描述的方面。目标不是检验模型假设是否“真实”，因为所有模型都是错的；而是准确评估模型怎样未能描述数据，把这当作理解、修订和改进模型的路径。</p>
+
+        <p>所有模型都会在某些方面失败，所以必须运用自己和同事的判断，决定某项失败是否重要。很少有科学家只想制造重新描述现有样本、除此之外什么也不做的模型，所以不完美的预测（回溯预测）并不是坏事。通常我们希望预测未来观测，或者理解得足够深入，从而能有用地拨弄世界。第 6 章会再次讨论这些问题。</p>
+
+        <p>现在，需要学习怎样把上一节的模拟观测抽样，与后验分布的参数抽样结合起来。使用完整后验分布，而不是从中取出的某个点估计，应当表现更好。为什么？因为整个后验包含大量不确定性信息。抽出单个参数值再进行计算，会丢失这些信息；信息损失会导致过度自信。</p>
+
+        <p>用地球仪投掷模型的模拟观测来做一些基本模型检查。本例的观测，是地球仪若干次投掷中的水域次数。模型的隐含预测存在两种不确定性，了解两者都很重要。</p>
+
+        <p>第一种是<strong>观测不确定性</strong>。参数 <span class="math-inline"><var>p</var></span> 每一个不同取值，都对应模型所预期的一种独特观测模式。这些模式就是上一章探索的分叉数据花园，也是上一节抽样的对象。预测观测存在不确定性，因为即使完全确定 <span class="math-inline"><var>p</var></span>，也无法确定下一次地球仪投掷结果（除非 <span class="math-inline"><var>p</var> = 0</span> 或 <span class="math-inline"><var>p</var> = 1</span>）。</p>
+
+        <p>第二种是关于 <span class="math-inline"><var>p</var></span> 的<strong>参数不确定性</strong>。<span class="math-inline"><var>p</var></span> 的后验分布体现了这种不确定性；既然 <span class="math-inline"><var>p</var></span> 不确定，一切依赖它的事物也都不确定。评估模型告诉我们什么结果时，<span class="math-inline"><var>p</var></span> 的不确定性会与抽样变异相互作用。</p>
+
+        <p>评估隐含预测时，我们希望传播参数不确定性，也就是把它向前传递。只需在计算预测的同时，对 <span class="math-inline"><var>p</var></span> 的后验密度求平均。<span class="math-inline"><var>p</var></span> 每个可能取值都隐含一种结果分布；如果为每个 <span class="math-inline"><var>p</var></span> 计算结果的抽样分布，再用各取值的后验概率把所有预测分布加权平均，就会得到<strong>后验预测分布</strong>。</p>
+
+        <p>图 3.6 展示了这项平均。顶部是后验分布，竖线突出 9 个不同参数值。中间一排显示每个参数值特有的隐含观测分布。对任意 <span class="math-inline"><var>p</var></span>，观测都并不确定，但会随它移动。底部把 <span class="math-inline"><var>p</var></span> 所有取值的抽样分布合并起来，利用各自后验概率计算从 0 到 9 次水域的每种可能观测的加权平均频率。</p>
+
+        <p>所得分布用于预测，却纳入了参数 <span class="math-inline"><var>p</var></span> 的后验分布所体现的全部不确定性，因此是诚实的。模型虽然很好地预测了数据——最可能的观测确实就是实际观测——预测仍然相当分散。</p>
+
+        <p>如果只用单个参数值计算隐含预测，比如后验峰值处最可能的取值，就会产生过度自信的预测分布：它比图 3.6 的后验预测分布更窄，更像中间一排 <span class="math-inline"><var>p</var> = 0.6</span> 的抽样分布。这种过度自信通常让人误以为模型与数据比实际更加相容——预测会更紧密地聚集在观测周围。这种幻觉源自丢弃参数不确定性。</p>
+
+        <figure class="book-figure posterior-predictive-figure" id="fig-3-6">
+          <div class="figure-scroll" tabindex="0" aria-label="可横向滚动的后验预测分布三层示意图">
+            <img src="/media/chapter-03-posterior-predictive.svg" alt="顶部后验分布连接九个参数值的抽样分布，底部为加权合成的后验预测分布">
+          </div>
+          <p class="scroll-hint">图较宽，可横向滚动查看三层结构。</p>
+          <figcaption><strong>图 3.6：</strong>从完整后验模拟预测。顶部：熟悉的地球仪投掷数据后验，竖线标出 9 个示例参数值，后验概率越大线越粗。中间：每个参数值都隐含一种独特的预测抽样分布。底部：合并所有参数值（不只是图示的 9 个）的模拟观测分布，并按各自后验概率加权，得到后验预测分布；它把参数不确定性传播成预测不确定性。</figcaption>
+        </figure>
+
+        <p>实际怎样计算？要为单个 <span class="math-inline"><var>p</var></span>（例如 <span class="math-inline"><var>p</var> = 0.6</span>）模拟预测观测，可以用 <code>rbinom</code> 生成随机二项样本：</p>
+
+        <figure class="code-listing" id="code-3-25">
+          <figcaption>R 代码 3.25</figcaption>
+          <pre><code>w &lt;- rbinom( 1e4 , size=9 , prob=0.6 )</code></pre>
+        </figure>
+
+        <p>这会在假设 <span class="math-inline"><var>p</var> = 0.6</span> 下，生成 10,000（<code>1e4</code>）个由 9 次地球仪投掷（<code>size=9</code>）组成的模拟预测。预测保存为水域次数，理论最小值是 0，最大值是 9。可以使用 <code>rethinking</code> 包中的 <code>simplehist(w)</code>，得到整洁的模拟结果直方图。</p>
+
+        <p>要把参数不确定性传播到这些预测中，只需把 0.6 替换为后验样本：</p>
+
+        <figure class="code-listing" id="code-3-26">
+          <figcaption>R 代码 3.26</figcaption>
+          <pre><code>w &lt;- rbinom( 1e4 , size=9 , prob=samples )</code></pre>
+        </figure>
+
+        <p>这里的 <code>samples</code> 是前面小节使用的同一组后验随机样本。每个抽到的参数值都会生成一个随机二项观测。由于参数值按后验概率成比例出现，得到的模拟观测也就对后验完成了平均。可以像处理后验样本一样处理这些模拟观测，用相同程序计算区间和点统计量。绘图后会得到图 3.6 底部的分布。</p>
+
+        <p>本例中，模拟模型预测与观测数据相当一致：实际的 6 次水域正好位于模拟分布中央。</p>
+        <p class="continuation-note">此段将在原书 PDF 第 83 页继续。</p>
+      </section>
+    </section>
   </section>
 
   <section class="endnotes" id="chapter-03-notes" role="doc-endnotes">
@@ -535,6 +610,6 @@ simplehist( dummy_w , xlab="dummy water count" )</code></pre>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 65–79 页已完成翻译、逐页渲染对照和桌面/移动端视觉验收；下一批从 PDF 第 80 页继续。
+    <strong>译稿状态：</strong>PDF 第 65–82 页已完成翻译、逐页核对、阶段契约和桌面/移动端视觉验收。下一批从 PDF 第 83 页继续。
   </aside>
 </article>
