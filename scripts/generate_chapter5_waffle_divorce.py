@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate deterministic Chinese SVGs for Figures 5.1 and 5.2."""
+"""Generate deterministic Chinese SVGs for Chapter 5 figures."""
 
 from __future__ import annotations
 
@@ -64,6 +64,38 @@ WA,6.72,25.9,21.4,10.0,0,0
 WV,1.85,25.0,22.2,10.9,4,1
 WI,5.69,26.3,17.2,8.3,0,0
 WY,0.56,24.2,30.7,10.3,0,0
+"""
+
+MILK_DATA = """kcal,mass,neocortex
+0.49,1.95,55.16
+0.51,2.09,
+0.46,2.51,
+0.48,1.62,
+0.60,2.19,
+0.47,5.25,64.54
+0.56,5.37,64.54
+0.89,2.51,67.64
+0.91,0.71,
+0.92,0.68,68.85
+0.80,0.12,58.85
+0.46,0.47,61.69
+0.71,0.32,60.32
+0.71,0.60,
+0.73,3.47,
+0.68,1.55,69.97
+0.72,7.08,
+0.97,3.24,70.41
+0.79,7.94,
+0.84,12.30,73.40
+0.48,7.59,
+0.62,5.37,67.53
+0.51,10.72,
+0.54,35.48,71.26
+0.49,79.43,72.60
+0.53,97.72,
+0.48,40.74,70.24
+0.55,33.11,76.30
+0.71,54.95,75.49
 """
 
 
@@ -529,8 +561,175 @@ def counterfactual_figures(data: list[dict[str, float | str]]) -> dict[str, str]
     }
 
 
+def milk_rows() -> list[dict[str, float]]:
+    raw = list(csv.DictReader(io.StringIO(MILK_DATA)))
+
+    def sample_stats(values: list[float]) -> tuple[float, float]:
+        mean = sum(values) / len(values)
+        sd = math.sqrt(sum((value - mean) ** 2 for value in values) / (len(values) - 1))
+        return mean, sd
+
+    kcal = [float(row["kcal"]) for row in raw]
+    log_mass = [math.log(float(row["mass"])) for row in raw]
+    neocortex = [float(row["neocortex"]) for row in raw if row["neocortex"]]
+    kcal_mean, kcal_sd = sample_stats(kcal)
+    mass_mean, mass_sd = sample_stats(log_mass)
+    neo_mean, neo_sd = sample_stats(neocortex)
+    result: list[dict[str, float]] = []
+    for row in raw:
+        if not row["neocortex"]:
+            continue
+        result.append(
+            {
+                "K": (float(row["kcal"]) - kcal_mean) / kcal_sd,
+                "N": (float(row["neocortex"]) - neo_mean) / neo_sd,
+                "M": (math.log(float(row["mass"])) - mass_mean) / mass_sd,
+            }
+        )
+    return result
+
+
+def milk_prior_figure() -> str:
+    width, height = 1200, 620
+    body = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">',
+        "  <title>第一版灵长类乳汁模型的先验预测分布</title>",
+        "  <desc>左图的模糊先验产生大量不合理回归线；右图收紧截距和斜率先验后，回归线大多停留在可观测空间。</desc>",
+        '  <rect width="100%" height="100%" fill="#fff"/>',
+        '  <defs><clipPath id="milk-prior-left"><rect x="105" y="105" width="430" height="390"/></clipPath><clipPath id="milk-prior-right"><rect x="690" y="105" width="430" height="390"/></clipPath></defs>',
+    ]
+
+    def panel(x: float, *, a_sd: float, b_sd: float, clip_id: str, seed: int) -> None:
+        top, panel_w, panel_h = 105, 430, 390
+
+        def px(value: float) -> float:
+            return x + (value + 2) / 4 * panel_w
+
+        def py(value: float) -> float:
+            return top + panel_h - (value + 2) / 4 * panel_h
+
+        body.extend(
+            [
+                f'  <text x="{x + panel_w / 2}" y="42" text-anchor="middle" font-family="{FONT}" font-size="20" font-weight="700" fill="#263f86">a ∼ Normal(0, {a_sd:g})</text>',
+                f'  <text x="{x + panel_w / 2}" y="70" text-anchor="middle" font-family="{FONT}" font-size="20" font-weight="700" fill="#263f86">bN ∼ Normal(0, {b_sd:g})</text>',
+                f'  <rect x="{x}" y="{top}" width="{panel_w}" height="{panel_h}" fill="#fff" stroke="#343732" stroke-width="1.5"/>',
+            ]
+        )
+        rng = random.Random(seed)
+        for _ in range(50):
+            intercept = rng.gauss(0, a_sd)
+            slope = rng.gauss(0, b_sd)
+            body.append(
+                f'  <line x1="{fmt(px(-2))}" y1="{fmt(py(intercept - 2 * slope))}" x2="{fmt(px(2))}" y2="{fmt(py(intercept + 2 * slope))}" stroke="#303330" stroke-width="1.8" opacity="0.38" clip-path="url(#{clip_id})"/>'
+            )
+        for tick in [-2, -1, 0, 1, 2]:
+            body.extend(
+                [
+                    f'  <text x="{fmt(px(tick))}" y="523" text-anchor="middle" font-family="{FONT}" font-size="15" fill="#30332e">{tick}</text>',
+                    f'  <text x="{x - 14}" y="{fmt(py(tick) + 5)}" text-anchor="end" font-family="{FONT}" font-size="15" fill="#30332e">{tick}</text>',
+                ]
+            )
+        body.extend(
+            [
+                f'  <text x="{x + panel_w / 2}" y="560" text-anchor="middle" font-family="{FONT}" font-size="18" font-weight="700" fill="#263f86">新皮层百分比（标准化）</text>',
+                f'  <text x="{x - 62}" y="{top + panel_h / 2}" transform="rotate(-90 {x - 62} {top + panel_h / 2})" text-anchor="middle" font-family="{FONT}" font-size="18" font-weight="700" fill="#263f86">每克乳汁千卡（标准化）</text>',
+            ]
+        )
+
+    panel(105, a_sd=1, b_sd=1, clip_id="milk-prior-left", seed=551)
+    panel(690, a_sd=0.2, b_sd=0.5, clip_id="milk-prior-right", seed=552)
+    body.extend(["</svg>", ""])
+    return "\n".join(body)
+
+
+def milk_relationship_figure(data: list[dict[str, float]]) -> str:
+    width, height = 1200, 1000
+    body = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">',
+        "  <title>灵长类乳汁能量、新皮层与雌性体重</title>",
+        "  <desc>上排是乳汁能量分别对新皮层百分比和对数体重的简单回归；下排在同时控制另一预测变量时显示更强的反向关系。</desc>",
+        '  <rect width="100%" height="100%" fill="#fff"/>',
+    ]
+    ns = [row["N"] for row in data]
+    ms = [row["M"] for row in data]
+    ks = [row["K"] for row in data]
+    n_mean, m_mean, k_mean = (sum(values) / len(values) for values in (ns, ms, ks))
+    snn = sum((value - n_mean) ** 2 for value in ns)
+    smm = sum((value - m_mean) ** 2 for value in ms)
+    snm = sum((n - n_mean) * (m - m_mean) for n, m in zip(ns, ms))
+    snk = sum((n - n_mean) * (k - k_mean) for n, k in zip(ns, ks))
+    smk = sum((m - m_mean) * (k - k_mean) for m, k in zip(ms, ks))
+    determinant = snn * smm - snm * snm
+    b_n = (snk * smm - smk * snm) / determinant
+    b_m = (smk * snn - snk * snm) / determinant
+    intercept = k_mean - b_n * n_mean - b_m * m_mean
+    residuals = [k - intercept - b_n * n - b_m * m for n, m, k in zip(ns, ms, ks)]
+    residual_var = sum(value * value for value in residuals) / (len(data) - 3)
+
+    def panel(
+        xs: list[float], *, x: float, y: float, x_range: tuple[float, float],
+        x_label: str, title: str = "", points: bool, simple: bool,
+        multi_slope: float = 0, other_zero: float = 0, inverse_diag: float = 0,
+    ) -> None:
+        panel_w, panel_h = 430, 330
+        y_range = (-1.3, 2.1)
+
+        def px(value: float) -> float:
+            return x + (value - x_range[0]) / (x_range[1] - x_range[0]) * panel_w
+
+        def py(value: float) -> float:
+            return y + panel_h - (value - y_range[0]) / (y_range[1] - y_range[0]) * panel_h
+
+        grid = [x_range[0] + (x_range[1] - x_range[0]) * index / 120 for index in range(121)]
+        clip_id = f"milk-panel-{int(x)}-{int(y)}"
+        if simple:
+            means, lower, upper = regression_band(xs, ks, grid)
+        else:
+            means = [intercept + multi_slope * value + other_zero for value in grid]
+            half = [1.70 * math.sqrt(residual_var * (1 / len(data) + (value - sum(xs) / len(xs)) ** 2 * inverse_diag)) for value in grid]
+            lower = [mean - spread for mean, spread in zip(means, half)]
+            upper = [mean + spread for mean, spread in zip(means, half)]
+        polygon = [(px(value), py(bound)) for value, bound in zip(grid, upper)] + list(
+            reversed([(px(value), py(bound)) for value, bound in zip(grid, lower)])
+        )
+        if title:
+            body.append(f'  <text x="{x + panel_w / 2}" y="{y - 20}" text-anchor="middle" font-family="{FONT}" font-size="19" font-weight="700" fill="#263f86">{title}</text>')
+        body.extend(
+            [
+                f'  <defs><clipPath id="{clip_id}"><rect x="{x}" y="{y}" width="{panel_w}" height="{panel_h}"/></clipPath></defs>',
+                f'  <rect x="{x}" y="{y}" width="{panel_w}" height="{panel_h}" fill="#fff" stroke="#343732" stroke-width="1.5"/>',
+                f'  <polygon points="{point_string(polygon)}" fill="#cfd2d5" opacity="0.82" clip-path="url(#{clip_id})"/>',
+                f'  <polyline points="{point_string([(px(value), py(mean)) for value, mean in zip(grid, means)])}" fill="none" stroke="#242724" stroke-width="3" clip-path="url(#{clip_id})"/>',
+            ]
+        )
+        if points:
+            for value, outcome in zip(xs, ks):
+                body.append(f'  <circle cx="{fmt(px(value))}" cy="{fmt(py(outcome))}" r="4.8" fill="#fff" stroke="#6670ee" stroke-width="2"/>')
+        for tick in [-2, -1, 0, 1, 2]:
+            if x_range[0] <= tick <= x_range[1]:
+                body.append(f'  <text x="{fmt(px(tick))}" y="{y + panel_h + 27}" text-anchor="middle" font-family="{FONT}" font-size="14" fill="#30332e">{tick}</text>')
+            if y_range[0] <= tick <= y_range[1]:
+                body.append(f'  <text x="{x - 13}" y="{fmt(py(tick) + 5)}" text-anchor="end" font-family="{FONT}" font-size="14" fill="#30332e">{tick}</text>')
+        body.extend(
+            [
+                f'  <text x="{x + panel_w / 2}" y="{y + panel_h + 61}" text-anchor="middle" font-family="{FONT}" font-size="18" font-weight="700" fill="#263f86">{x_label}</text>',
+                f'  <text x="{x - 58}" y="{y + panel_h / 2}" transform="rotate(-90 {x - 58} {y + panel_h / 2})" text-anchor="middle" font-family="{FONT}" font-size="18" font-weight="700" fill="#263f86">每克乳汁千卡（标准化）</text>',
+            ]
+        )
+
+    panel(ns, x=105, y=55, x_range=(-2.2, 1.7), x_label="新皮层百分比（标准化）", points=True, simple=True)
+    panel(ms, x=690, y=55, x_range=(-2.3, 1.9), x_label="对数体重（标准化）", points=True, simple=True)
+    panel(ns, x=105, y=570, x_range=(-2.2, 1.7), x_label="新皮层百分比（标准化）", title="反事实：保持 M = 0", points=False, simple=False, multi_slope=b_n, other_zero=0, inverse_diag=smm / determinant)
+    panel(ms, x=690, y=570, x_range=(-2.3, 1.9), x_label="对数体重（标准化）", title="反事实：保持 N = 0", points=False, simple=False, multi_slope=b_m, other_zero=0, inverse_diag=snn / determinant)
+    body.extend(["</svg>", ""])
+    return "\n".join(body)
+
+
 def main() -> int:
     data = rows()
+    milk = milk_rows()
     MEDIA.mkdir(parents=True, exist_ok=True)
     outputs = {
         MEDIA / "chapter-05-waffle-divorce.svg": waffle_figure(data),
@@ -538,6 +737,8 @@ def main() -> int:
         MEDIA / "chapter-05-prior-regression-lines.svg": prior_lines_figure(),
         MEDIA / "chapter-05-residual-diagnostics.svg": residual_diagnostics_figure(data),
         MEDIA / "chapter-05-posterior-predictive.svg": posterior_predictive_figure(data),
+        MEDIA / "chapter-05-milk-priors.svg": milk_prior_figure(),
+        MEDIA / "chapter-05-milk-relationships.svg": milk_relationship_figure(milk),
     }
     outputs.update({MEDIA / name: content for name, content in counterfactual_figures(data).items()})
     for path, content in outputs.items():

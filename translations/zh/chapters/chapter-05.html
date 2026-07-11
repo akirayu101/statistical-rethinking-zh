@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-05" data-source-pages="143-166">
+<article class="book-article" data-chapter="chapter-05" data-source-pages="143-169">
   <header class="chapter-header">
     <p class="eyebrow">第五章</p>
     <h1>多变量与虚假华夫饼</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 143–166 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 143–169 页</p>
   </header>
 
   <p>在北美——即便不算全世界——最可靠的华夫饼来源之一，是华夫饼屋（Waffle House）餐厅。华夫饼屋几乎总在营业，哪怕飓风刚刚过境也不例外。多数门店都投入资金做好灾害准备，其中包括自备发电机。因此，美国灾害救援机构联邦紧急事务管理署（FEMA）会非正式地把华夫饼屋当作衡量灾情严重程度的指标。<sup id="note-77-ref"><a href="#note-77">77</a></sup> 如果华夫饼屋关门了，那就是严重事件。</p>
@@ -845,7 +845,90 @@ plot( NULL , xlim=xseq , ylim=xseq )
 for ( i in 1:50 ) lines( xseq , mu[i,] , col=col.alpha("black",0.3) )</code></pre>
     </figure>
 
-    <p class="continuation-note">先验预测图、修订先验与乳汁模型后验将在原书 PDF 第 167 页继续。</p>
+    <figure class="book-figure milk-priors-figure" id="fig-5-8">
+      <div class="figure-scroll" tabindex="0" aria-label="可横向滚动的两组乳汁模型先验预测回归线">
+        <img src="/media/chapter-05-milk-priors.svg" alt="左图的模糊先验产生大量不合理回归线，右图收紧截距和斜率先验后，回归线主要停留在可观测空间">
+      </div>
+      <p class="scroll-hint">图较宽，可横向滚动比较两组先验预测。</p>
+      <figcaption><strong>图 5.8：</strong>第一版灵长类乳汁模型 <code>m5.5</code> 的先验预测分布。每幅图都为两个变量显示正负 2 个标准差的范围。左：模糊的首次尝试；这些先验显然很荒唐。右：稍微没那么荒唐的先验，至少停留在观测值的潜在空间内。</figcaption>
+    </figure>
+
+    <p>结果见<a href="#fig-5-8">图 5.8</a>左侧。两个变量都显示正负 2 个标准差的范围，也就是结果空间的大部分。这些直线太疯狂了。和之前的例子一样，我们可以做得更好：一方面收紧 <span class="math-inline"><var>α</var></span> 的先验，让它更靠近零；另一方面也收紧斜率 <span class="math-inline"><var>β</var><sub>N</sub></span>。两个变量都已标准化，因此当预测变量为零时，结果的期望值也应为零。斜率先验同样需要稍微收紧，避免它经常生成强得不可能的关系。下面是一种尝试：</p>
+
+    <figure class="code-listing" id="code-5-34">
+      <figcaption>R 代码 5.34</figcaption>
+      <pre><code>m5.5 &lt;- quap(
+    alist(
+        K ~ dnorm( mu , sigma ) ,
+        mu &lt;- a + bN*N ,
+        a ~ dnorm( 0 , 0.2 ) ,
+        bN ~ dnorm( 0 , 0.5 ) ,
+        sigma ~ dexp( 1 )
+    ) , data=dcc )</code></pre>
+    </figure>
+
+    <p>把这些先验画出来，就会得到<a href="#fig-5-8">图 5.8</a>右侧的结果。它们依然很模糊，但至少回归线留在了可观测数据的高概率区域内。</p>
+
+    <p>现在查看后验：</p>
+
+    <figure class="code-listing" id="code-5-35">
+      <figcaption>R 代码 5.35</figcaption>
+      <pre><code>precis( m5.5 )</code></pre>
+      <pre class="code-output"><code>       mean   sd  5.5% 94.5%
+a      0.04 0.15 -0.21  0.29
+bN     0.13 0.22 -0.22  0.49
+sigma  1.00 0.16  0.74  1.26</code></pre>
+    </figure>
+
+    <p>从这份摘要大概能看出，这种关联既不强，也不精确。标准差几乎是后验均值的两倍。不过，像往常一样，把它画出来会容易理解得多。数字表格是魔像的语言，而我们不是魔像。画出预测均值与均值的 89% 相容区间，就能更清楚地看到这一点：</p>
+
+    <figure class="code-listing" id="code-5-36">
+      <figcaption>R 代码 5.36</figcaption>
+      <pre><code>xseq &lt;- seq( from=min(dcc$N)-0.15 , to=max(dcc$N)+0.15 , length.out=30 )
+mu &lt;- link( m5.5 , data=list(N=xseq) )
+mu_mean &lt;- apply(mu,2,mean)
+mu_PI &lt;- apply(mu,2,PI)
+plot( K ~ N , data=dcc )
+lines( xseq , mu_mean , lwd=2 )
+shade( mu_PI , xseq )</code></pre>
+    </figure>
+
+    <p>这幅图位于<a href="#fig-5-9">图 5.9</a>左上角。后验均值线呈弱正向趋势，但极不精确。在这个模型和这些数据下，许多轻微的正斜率与负斜率都可信。</p>
+
+    <p>现在考虑另一个预测变量：成年雌性体重，即数据框中的 <code>mass</code>。这次同样把体重的对数 <code>log(mass)</code> 用作预测变量。为什么使用体重对数，而不是以千克计的原始体重？体重这类尺度测量往往按数量级与其他变量相关。对测量值取对数，会把它转换为数量级。因此，在这里使用体重对数，相当于说我们怀疑母体体重的数量级与乳汁能量呈线性关系。</p>
+
+    <p>下面建立一个相似模型，但考察千卡与体重之间的二元关系：</p>
+
+    <figure class="code-listing" id="code-5-37">
+      <figcaption>R 代码 5.37</figcaption>
+      <pre><code>m5.6 &lt;- quap(
+    alist(
+        K ~ dnorm( mu , sigma ) ,
+        mu &lt;- a + bM*M ,
+        a ~ dnorm( 0 , 0.2 ) ,
+        bM ~ dnorm( 0 , 0.5 ) ,
+        sigma ~ dexp( 1 )
+    ) , data=dcc )
+precis(m5.6)</code></pre>
+      <pre class="code-output"><code>       mean   sd  5.5% 94.5%
+a      0.05 0.15 -0.20  0.29
+bM    -0.28 0.19 -0.59  0.03
+sigma  0.95 0.16  0.70  1.20</code></pre>
+    </figure>
+
+    <p>对数体重与千卡负相关。这种影响似乎比新皮层百分比的影响更强，尽管方向相反。不过，它依然很不确定；宽广的区间同时容许从较弱到较强的多种关系。这个回归显示在<a href="#fig-5-9">图 5.9</a>右上角。</p>
+
+    <figure class="book-figure milk-relationships-figure" id="fig-5-9">
+      <div class="figure-scroll" tabindex="0" aria-label="可横向滚动的乳汁能量、新皮层百分比与对数体重四面板图">
+        <img src="/media/chapter-05-milk-relationships.svg" alt="上排两个简单二元回归显示弱关联，下排同时纳入新皮层和体重后显示更强的正负关联">
+      </div>
+      <p class="scroll-hint">图较宽，可横向滚动比较四个面板。</p>
+      <figcaption><strong>图 5.9：</strong>灵长类的乳汁能量与新皮层。上排两个面板把每克乳汁千卡 <span class="math-inline"><var>K</var></span> 分别对新皮层百分比 <span class="math-inline"><var>N</var></span>（左）和雌性对数体重 <span class="math-inline"><var>M</var></span>（右）做简单二元回归，显示的关联都很弱。下排把新皮层百分比 <span class="math-inline"><var>N</var></span> 与对数体重 <span class="math-inline"><var>M</var></span> 同时纳入模型，显示出更强的关联。</figcaption>
+    </figure>
+
+    <p>请修改绘制同一幅图左上角的代码，确保自己理解怎样完成它。</p>
+
+    <p class="continuation-note">同时纳入新皮层与体重的多元模型及被掩盖关系的解释将在原书 PDF 第 170 页继续。</p>
   </section>
 
   <section class="endnotes" id="chapter-05-notes" role="doc-endnotes">
@@ -861,6 +944,6 @@ for ( i in 1:50 ) lines( xseq , mu[i,] , col=col.alpha("black",0.3) )</code></pr
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 143–166 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 167 页继续。
+    <strong>译稿状态：</strong>PDF 第 143–169 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 170 页继续。
   </aside>
 </article>

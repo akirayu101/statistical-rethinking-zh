@@ -508,7 +508,13 @@
     "energetic milk": "高能量乳汁",
     "complete case analysis": "完整案例分析",
     "missing value": "缺失值",
-    "scientifically reasonable prior": "科学上合理的先验"
+    "scientifically reasonable prior": "科学上合理的先验",
+    "vague prior": "模糊先验",
+    "high-probability region": "高概率区域",
+    "golem speak": "魔像的语言",
+    "adult female body mass": "成年雌性体重",
+    "log body mass": "对数体重",
+    "scaling measurement": "尺度测量"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"
