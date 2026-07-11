@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-04" data-source-pages="89-124">
+<article class="book-article" data-chapter="chapter-04" data-source-pages="89-127">
   <header class="chapter-header">
     <p class="eyebrow">第四章</p>
     <h1>地心模型</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 89–124 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 89–127 页</p>
   </header>
 
   <p>历史对托勒密并不宽厚。克劳狄乌斯·托勒密（约公元 90 年生，168 年卒）是埃及数学家和天文学家，最著名的成就是太阳系地心模型。今天，科学家若想嘲讽某人，有时会把他比作地心模型的拥护者。但托勒密是位天才。他描述行星运动的数学模型（<a href="#fig-4-1">图 4.1</a>）极其准确。为了达到这种精度，模型采用了一种叫作<strong>本轮</strong>的装置，也就是圆上套圆。甚至还能有“本轮上的本轮”：圆上套圆再套圆。只要在适当位置放置足够多的本轮，托勒密模型的预测精度就能超过此前任何人。因此，这套模型沿用了一千多年。托勒密和许多与他相似的人历经数百年艰苦推演，在没有计算机帮助的条件下解决了这一切。任何人被比作托勒密，都应该感到受宠若惊。</p>
@@ -1287,7 +1287,125 @@ mu.mean &lt;- apply( mu , 2 , mean )
 mu.PI &lt;- apply( mu , 2 , PI , prob=0.89 )</code></pre>
         </figure>
 
-        <p class="continuation-note">图 4.9、区间绘制代码与本节后续说明将在原书 PDF 第 125 页继续。</p>
+        <figure class="book-figure mean-interval-figure" id="fig-4-9">
+          <div class="figure-scroll" tabindex="0" aria-label="可横向滚动的平均身高后验样本与相容区间双面板图">
+            <img src="/media/chapter-04-mean-height-interval.svg" alt="左图按体重绘制平均身高后验样本，右图在原始身高体重数据上叠加后验均值线和百分之八十九相容区间">
+          </div>
+          <p class="scroll-hint">图较宽，可横向滚动比较后验样本分布与汇总区间。</p>
+          <figcaption><strong>图 4.9：</strong>左图是在每个体重值上，<span class="math-inline"><var>μ</var></span> 分布的前 100 个值。右图再次显示 !Kung 身高数据，阴影区域表示均值的 89% 相容区间。请把该区域与左图的蓝色点分布比较。</figcaption>
+        </figure>
+
+        <p>可以把 <code>apply(mu,2,mean)</code> 读作：计算矩阵 <code>mu</code> 每一列（维度“2”）的均值。现在，<code>mu.mean</code> 包含每个体重值上的平均 <span class="math-inline"><var>μ</var></span>，<code>mu.PI</code> 则包含每个体重值上的 89% 下界和上界。务必查看 <code>mu.mean</code> 与 <code>mu.PI</code> 的内部内容，让它们不再神秘。它们只是对 <code>mu</code> 中各个分布的不同汇总，而每一列对应不同体重值。这些汇总终究只是汇总；真正的“估计”是整个分布。</p>
+
+        <p>只需几行 R 代码，就能把这些汇总叠加到数据上：</p>
+
+        <figure class="code-listing" id="code-4-57">
+          <figcaption>R 代码 4.57</figcaption>
+          <pre><code># plot raw data
+# fading out points to make line and interval more visible
+plot( height ~ weight , data=d2 , col=col.alpha(rangi2,0.5) )
+
+# plot the MAP line, aka the mean mu for each weight
+lines( weight.seq , mu.mean )
+
+# plot a shaded region for 89% PI
+shade( mu.PI , weight.seq )</code></pre>
+        </figure>
+
+        <p>结果见<a href="#fig-4-9">图 4.9</a>右侧。</p>
+
+        <p>采用这种方法，可以为相当复杂的模型、针对任意选定数据，推导并绘制后验预测均值和区间。确实也能用解析公式计算这类区间。我以前尝试过教授这种解析方法，但每次都以灾难告终。部分原因或许是我教得不好；另一部分原因是，大多数社会科学家与自然科学家接受的概率论训练不多，一见到 <span class="math-inline"><var>R</var></span> 便十分紧张。我确信，只要付出足够努力，他们都能学会这些数学。不过，他们也都能很快学会生成并汇总后验分布的样本。</p>
+
+        <p>所以，尽管数学方法更加优雅，理解数学也能带来一些额外洞见，本书展示的拟经验方法却极其灵活，能让更广泛的科学家从统计建模中获得洞见。再次强调，当第 9 章开始使用 MCMC 估计模型时，这实际上是唯一可用的方法，因此现在值得学会。</p>
+
+        <p>总结一下，从拟合模型的后验生成预测与区间，可以遵循以下步骤：</p>
+
+        <ol class="posterior-interval-recipe">
+          <li>使用 <code>link</code> 生成 <span class="math-inline"><var>μ</var></span> 的后验值分布。<code>link</code> 默认使用原始数据，因此若要沿新的横轴值绘制后验预测，必须把这些值的列表传给它。</li>
+          <li>使用 <code>mean</code> 或 <code>PI</code> 等汇总函数，为预测变量的每个值求出 <span class="math-inline"><var>μ</var></span> 的均值、下界和上界。</li>
+          <li>最后，用 <code>lines</code>、<code>shade</code> 等绘图函数画出直线与区间。也可以绘制预测分布，或继续对它们做数值计算；完全由你决定。</li>
+        </ol>
+
+        <p>这套步骤适用于本书拟合的每个模型。只要了解模型结构——参数怎样与数据联系——就能用后验样本描述模型行为的任意方面。</p>
+
+        <aside class="rethinking-box" id="rethinking-overconfident-intervals">
+          <h3>再思考：过度自信的置信区间</h3>
+
+          <p><a href="#fig-4-9">图 4.9</a>中回归线的置信区间紧贴 MAP 线。这说明，作为平均体重函数的平均身高几乎没有多少不确定性。但必须记住，这些推断始终以模型为条件。即使是很糟糕的模型，也可能产生非常狭窄的置信区间。可以把<a href="#fig-4-9">图 4.9</a>中的回归线理解为：<em>在假设身高与体重由直线联系的条件下，这是最可信的直线，而这些是它的可信边界。</em></p>
+        </aside>
+
+        <aside class="overthinking-box" id="overthinking-link-internals">
+          <h3>过度思考：link 怎样工作</h3>
+
+          <p><code>link</code> 函数其实并不复杂。它只是使用拟合模型时提供的公式计算线性模型值，并对后验分布的每个样本、数据中的每个案例重复这项操作。无论模型怎样、采用什么拟合方法，都可以自己执行这些步骤，取得相同结果。对 <code>m4.3</code> 来说，代码如下：</p>
+
+          <figure class="code-listing" id="code-4-58">
+            <figcaption>R 代码 4.58</figcaption>
+            <pre><code>post &lt;- extract.samples(m4.3)
+mu.link &lt;- function(weight) post$a + post$b*( weight - xbar )
+weight.seq &lt;- seq( from=25 , to=70 , by=1 )
+mu &lt;- sapply( weight.seq , mu.link )
+mu.mean &lt;- apply( mu , 2 , mean )
+mu.CI &lt;- apply( mu , 2 , PI , prob=0.89 )</code></pre>
+          </figure>
+
+          <p>考虑到模拟方差，<code>mu.mean</code> 与 <code>mu.CI</code> 的值应当同使用 <code>link</code> 自动得到的结果非常相似。</p>
+
+          <p>了解这种手工方法，对（1）理解和（2）获得强大能力都有帮助。无论面对什么模型，都可以用这套方法为模型的任意组成部分生成后验预测。<code>link</code> 之类自动化工具能节省力气，却永远不及自己编写的代码灵活。</p>
+        </aside>
+      </section>
+
+      <section id="sec-4-4-3-5">
+        <h4>4.4.3.5 预测区间</h4>
+
+        <p>下面逐步生成实际身高的 89% 预测区间，而不再只处理平均身高 <span class="math-inline"><var>μ</var></span>。这意味着还要纳入标准差 <span class="math-inline"><var>σ</var></span> 及其不确定性。回忆一下，这里的统计模型第一行是：</p>
+
+        <div class="equation-block compact-equation" id="eq-4-height-observation-model">
+          <span><var>h</var><sub>i</sub></span>
+          <span>∼</span>
+          <span>Normal(<var>μ</var><sub>i</sub>, <var>σ</var>)</span>
+        </div>
+
+        <p>到目前为止，只是用后验样本来可视化 <span class="math-inline"><var>μ</var><sub>i</sub></span>——均值的线性模型——中的不确定性。但身高的实际预测还取决于第一行中的分布。该行的高斯分布说明，模型预期观测身高分布在 <span class="math-inline"><var>μ</var></span> 周围，而不是正好落在 <span class="math-inline"><var>μ</var></span> 上；围绕 <span class="math-inline"><var>μ</var></span> 的离散由 <span class="math-inline"><var>σ</var></span> 控制。这些都表明，必须以某种方式把 <span class="math-inline"><var>σ</var></span> 纳入预测。</p>
+
+        <p>方法如下：设想模拟身高。对于每个不同体重值，从一个高斯分布抽样；这个分布使用该体重对应的正确均值 <span class="math-inline"><var>μ</var></span>，同时使用从同一个后验分布抽出的正确 <span class="math-inline"><var>σ</var></span>。如果对每个后验样本、每个感兴趣的体重值都这样做，就会得到一组模拟身高；它们同时体现后验中的不确定性和身高高斯分布中的不确定性。<code>sim</code> 工具可以完成这项工作：</p>
+
+        <figure class="code-listing" id="code-4-59">
+          <figcaption>R 代码 4.59</figcaption>
+          <pre><code>sim.height &lt;- sim( m4.3 , data=list(weight=weight.seq) )
+str(sim.height)</code></pre>
+          <pre class="code-output"><code> num [1:1000, 1:46] 140 131 136 137 142 ...</code></pre>
+        </figure>
+
+        <p>这个矩阵很像前面的 <code>mu</code>，但它包含的是模拟身高，而不是可信平均身高 <span class="math-inline"><var>μ</var></span> 的分布。</p>
+
+        <p>可以像汇总 <span class="math-inline"><var>μ</var></span> 的分布一样，使用 <code>apply</code> 汇总这些模拟身高：</p>
+
+        <figure class="code-listing" id="code-4-60">
+          <figcaption>R 代码 4.60</figcaption>
+          <pre><code>height.PI &lt;- apply( sim.height , 2 , PI , prob=0.89 )</code></pre>
+        </figure>
+
+        <p>现在，<code>height.PI</code> 包含 <code>weight.seq</code> 各个体重值上，可观测身高（按模型定义）的 89% 后验预测区间。</p>
+
+        <p>最后把目前构造的所有内容画在一起：（1）平均线，（2）89% 可信 <span class="math-inline"><var>μ</var></span> 的阴影区域，以及（3）模型预期的模拟身高边界。</p>
+
+        <figure class="code-listing" id="code-4-61">
+          <figcaption>R 代码 4.61</figcaption>
+          <pre><code># plot raw data
+plot( height ~ weight , d2 , col=col.alpha(rangi2,0.5) )
+
+# draw MAP line
+lines( weight.seq , mu.mean )
+
+# draw HPDI region for line
+shade( mu.HPDI , weight.seq )
+
+# draw PI region for simulated heights
+shade( height.PI , weight.seq )</code></pre>
+        </figure>
+
+        <p class="continuation-note">图 4.10 与预测区间的后续说明将在原书 PDF 第 128 页继续。</p>
       </section>
     </section>
   </section>
@@ -1310,6 +1428,6 @@ mu.PI &lt;- apply( mu , 2 , PI , prob=0.89 )</code></pre>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 89–124 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 125 页继续。
+    <strong>译稿状态：</strong>PDF 第 89–127 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 128 页继续。
   </aside>
 </article>

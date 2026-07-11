@@ -376,7 +376,15 @@
     "posterior distribution of the mean": "均值的后验分布",
     "link function": "link 函数",
     "posterior regression line": "后验回归线",
-    "prediction sequence": "预测序列"
+    "prediction sequence": "预测序列",
+    "posterior prediction mean": "后验预测均值",
+    "analytical formula": "解析公式",
+    "pseudo-empirical approach": "拟经验方法",
+    "predictor variable": "预测变量",
+    "conditional on the model": "以模型为条件",
+    "prediction interval": "预测区间",
+    "posterior prediction interval": "后验预测区间",
+    "observable outcome": "可观测结果"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"
