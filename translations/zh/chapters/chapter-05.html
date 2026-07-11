@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-05" data-source-pages="143-178">
+<article class="book-article" data-chapter="chapter-05" data-source-pages="143-180">
   <header class="chapter-header">
     <p class="eyebrow">第五章</p>
     <h1>多变量与虚假华夫饼</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 143–178 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 143–180 页</p>
   </header>
 
   <p>在北美——即便不算全世界——最可靠的华夫饼来源之一，是华夫饼屋（Waffle House）餐厅。华夫饼屋几乎总在营业，哪怕飓风刚刚过境也不例外。多数门店都投入资金做好灾害准备，其中包括自备发电机。因此，美国灾害救援机构联邦紧急事务管理署（FEMA）会非正式地把华夫饼屋当作衡量灾情严重程度的指标。<sup id="note-77-ref"><a href="#note-77">77</a></sup> 如果华夫饼屋关门了，那就是严重事件。</p>
@@ -1282,7 +1282,28 @@ d$house &lt;- sample( rep(1:4,each=8) , size=nrow(d) )</code></pre></figure>
 
   <section id="sec-5-4"><h2>5.4 总结</h2><p>本章介绍了多元回归：构造描述性模型，表达某项测量的均值怎样与多个预测变量关联。多元回归的核心问题是：当已经知道其他预测变量后，再知道每个预测变量有何价值？这个问题隐含两点：（1）关注预测变量对描述当前样本的价值，而不是预测未来样本；（2）假设每个预测变量的价值不依赖其他预测变量的取值。后续各章会面对这两个问题。但在此之前，下一章将看到：加入预测变量制造的问题可以和它解决的问题一样多。</p></section>
 
-  <section id="sec-5-5"><h2>5.5 习题</h2><div class="exercise-group" id="chapter-05-exercises-easy"><h3>简单题</h3><p class="continuation-note">第 5 章习题将在原书 PDF 第 179 页开始。</p></div></section>
+  <section id="sec-5-5">
+    <h2>5.5 习题</h2>
+    <div class="exercise-group" id="chapter-05-exercises-easy">
+      <h3>简单题</h3>
+      <article class="exercise" id="exercise-5e1"><h4>5E1</h4><p>下面哪些线性模型属于多元线性回归？</p><ol><li><span class="math-inline"><var>μ</var><sub>i</sub> = <var>α</var> + <var>βx</var><sub>i</sub></span></li><li><span class="math-inline"><var>μ</var><sub>i</sub> = <var>β</var><sub>x</sub><var>x</var><sub>i</sub> + <var>β</var><sub>z</sub><var>z</var><sub>i</sub></span></li><li><span class="math-inline"><var>μ</var><sub>i</sub> = <var>α</var> + <var>β</var>(<var>x</var><sub>i</sub> − <var>z</var><sub>i</sub>)</span></li><li><span class="math-inline"><var>μ</var><sub>i</sub> = <var>α</var> + <var>β</var><sub>x</sub><var>x</var><sub>i</sub> + <var>β</var><sub>z</sub><var>z</var><sub>i</sub></span></li></ol></article>
+      <article class="exercise" id="exercise-5e2"><h4>5E2</h4><p>写出一个多元回归来评估这项主张：动物多样性与纬度线性相关，但只有在控制植物多样性后才如此。只需写出模型定义。</p></article>
+      <article class="exercise" id="exercise-5e3"><h4>5E3</h4><p>写出一个多元回归来评估这项主张：资金数额和实验室规模单独看都不是博士毕业耗时的良好预测变量；但把二者放在一起时，都与毕业耗时正相关。写出模型定义，并指出每个斜率参数应位于零的哪一侧。</p></article>
+      <article class="exercise" id="exercise-5e4"><h4>5E4</h4><p>假设只有一个类别预测变量，共有 A、B、C、D 四个水平。令 <span class="math-inline"><var>A</var><sub>i</sub></span> 为指示变量：个案 <span class="math-inline"><var>i</var></span> 属于 A 类时取 1；其他类别同理定义 <span class="math-inline"><var>B</var><sub>i</sub></span>、<span class="math-inline"><var>C</var><sub>i</sub></span>、<span class="math-inline"><var>D</var><sub>i</sub></span>。下面哪些线性模型是在回归中纳入该类别变量的推断等价方式？若可以从一个模型的后验分布计算出另一个模型的后验分布，就称二者推断等价。</p><ol><li><span class="math-inline"><var>μ</var><sub>i</sub> = <var>α</var> + <var>β</var><sub>A</sub><var>A</var><sub>i</sub> + <var>β</var><sub>B</sub><var>B</var><sub>i</sub> + <var>β</var><sub>D</sub><var>D</var><sub>i</sub></span></li><li><span class="math-inline"><var>μ</var><sub>i</sub> = <var>α</var> + <var>β</var><sub>A</sub><var>A</var><sub>i</sub> + <var>β</var><sub>B</sub><var>B</var><sub>i</sub> + <var>β</var><sub>C</sub><var>C</var><sub>i</sub> + <var>β</var><sub>D</sub><var>D</var><sub>i</sub></span></li><li><span class="math-inline"><var>μ</var><sub>i</sub> = <var>α</var> + <var>β</var><sub>B</sub><var>B</var><sub>i</sub> + <var>β</var><sub>C</sub><var>C</var><sub>i</sub> + <var>β</var><sub>D</sub><var>D</var><sub>i</sub></span></li><li><span class="math-inline"><var>μ</var><sub>i</sub> = <var>α</var><sub>A</sub><var>A</var><sub>i</sub> + <var>α</var><sub>B</sub><var>B</var><sub>i</sub> + <var>α</var><sub>C</sub><var>C</var><sub>i</sub> + <var>α</var><sub>D</sub><var>D</var><sub>i</sub></span></li><li><span class="math-inline"><var>μ</var><sub>i</sub> = <var>α</var><sub>A</sub>(1 − <var>B</var><sub>i</sub> − <var>C</var><sub>i</sub> − <var>D</var><sub>i</sub>) + <var>α</var><sub>B</sub><var>B</var><sub>i</sub> + <var>α</var><sub>C</sub><var>C</var><sub>i</sub> + <var>α</var><sub>D</sub><var>D</var><sub>i</sub></span></li></ol></article>
+    </div>
+    <div class="exercise-group" id="chapter-05-exercises-medium"><h3>中等题</h3>
+      <article class="exercise" id="exercise-5m1"><h4>5M1</h4><p>自行构造一个虚假相关的例子。结果变量应与两个预测变量都相关；但把两个预测变量同时放入模型后，结果与其中一个预测变量的相关应大多消失，或至少大幅减弱。</p></article>
+      <article class="exercise" id="exercise-5m2"><h4>5M2</h4><p>自行构造一个被掩盖关系的例子。结果变量应与两个预测变量都相关，但方向相反；两个预测变量之间也应相关。</p></article>
+      <article class="exercise" id="exercise-5m3"><h4>5M3</h4><p>有时会观察到，火灾风险的最佳预测变量是消防员的存在：消防员较多的州和地方，火灾也更多。消防员大概不会引起火灾；但这并不是虚假相关，而是火灾导致了消防员。请在离婚与结婚数据中思考同样的因果倒置：高离婚率怎样可能导致更高结婚率？能否想出一种用多元回归评估这种关系的方法？</p></article>
+      <article class="exercise" id="exercise-5m4"><h4>5M4</h4><p>在离婚数据中，摩门教徒（耶稣基督后期圣徒教会成员，LDS）人数较多的州，离婚率远低于回归模型的预期。查找各州 LDS 人口列表，把这些数值作为预测变量，并用结婚率、结婚年龄中位数和 LDS 人口百分比（可能需标准化）预测离婚率。可以考虑对原始 LDS 百分比做变量转换。</p></article>
+      <article class="exercise" id="exercise-5m5"><h4>5M5</h4><p>推理多重因果假说的一种方法，是设想预测变量影响结果的具体机制。例如，有人认为汽油价格与较低肥胖率正相关。汽油价格至少可能通过两种重要机制降低肥胖：第一，减少驾车并增加运动；第二，减少驾车，继而减少外出就餐和巨量餐厅食物的摄入。假设可以获得任何需要的预测数据，请概述一个或多个能处理这两种机制的多元回归。</p></article>
+    </div>
+    <div class="exercise-group" id="chapter-05-exercises-hard"><h3>困难题</h3><p>下面三题都使用 <code>rethinking</code> 包中的同一数据集 <code>data(foxes)</code>。<sup id="note-84-ref"><a href="#note-84">84</a></sup> 城市赤狐（<em>Vulpes vulpes</em>）很善于利用人类栖息地。城市赤狐结群活动并保卫领地，因此数据还包括栖息地质量和种群密度。数据框有五列：</p><ol class="fox-variables"><li><code>group</code>：个体所属社会群体的编号</li><li><code>avgfood</code>：领地内平均可用食物量</li><li><code>groupsize</code>：社会群体中的赤狐数量</li><li><code>area</code>：领地面积</li><li><code>weight</code>：个体体重</li></ol>
+      <article class="exercise" id="exercise-5h1"><h4>5H1</h4><p>使用 <code>quap</code> 拟合两个二元高斯回归：（1）体重是领地面积 <code>area</code> 的线性函数；（2）体重是 <code>groupsize</code> 的线性函数。绘制回归结果，显示 MAP 回归线与均值的 95% 区间。哪个变量对预测赤狐体重重要吗？</p></article>
+      <article class="exercise" id="exercise-5h2"><h4>5H2</h4><p>现在拟合多元线性回归，以 <code>weight</code> 为结果，同时把 <code>area</code> 与 <code>groupsize</code> 作为预测变量。分别绘制每个预测变量的模型预测，同时把另一个预测变量固定在其均值。这个模型怎样判断两个变量的重要性？为什么结果与上一题不同？</p></article>
+      <article class="exercise" id="exercise-5h3"><h4>5H3</h4><p>最后考虑 <code>avgfood</code>。再拟合两个多元回归：（1）体重是 <code>avgfood</code> 与 <code>groupsize</code> 的加性函数；（2）体重是 <code>avgfood</code>、<code>groupsize</code> 与 <code>area</code> 三者的加性函数。把结果与前两题的模型比较。（a）<code>avgfood</code> 与 <code>area</code> 哪个是更好的体重预测变量？若必须二选一纳入模型，会选哪个？请用自选表格或图形支持判断。（b）当 <code>avgfood</code> 与 <code>area</code> 同时进入模型时，它们的效应会比各自单独进入模型时更弱、更接近零，标准误也更大。请解释这一结果。</p></article>
+    </div>
+  </section>
 
   <section class="endnotes" id="chapter-05-notes" role="doc-endnotes">
     <h2>尾注</h2>
@@ -1294,10 +1315,11 @@ d$house &lt;- sample( rep(1:4,each=8) , size=nrow(d) )</code></pre></figure>
       <li id="note-81">参见 Freckleton（2002）。 <a class="backref" href="#note-81-ref" aria-label="返回正文">↩</a></li>
       <li id="note-82">数据来自 Hinde 和 Milligan（2011）的表 2。 <a class="backref" href="#note-82-ref" aria-label="返回正文">↩</a></li>
       <li id="note-83">参见 Gelman 与 Stern（2006）关于“显著”和“不显著”之差本身未必显著的讨论。 <a class="backref" href="#note-83-ref" aria-label="返回正文">↩</a></li>
+      <li id="note-84">这些数据改编自 Grafen 和 Hails（2002）中的示例。 <a class="backref" href="#note-84-ref" aria-label="返回正文">↩</a></li>
     </ol>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 143–178 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 179 页继续。
+    <strong>译稿状态：</strong>PDF 第 143–180 页整章已完成翻译、逐页核对、结构契约及桌面/移动端视觉验收。
   </aside>
 </article>

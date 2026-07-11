@@ -529,7 +529,12 @@
     "taxonomic clade": "分类学类群",
     "index value": "索引值",
     "statistical significance": "统计显著性",
-    "accepting the null hypothesis": "接受零假设"
+    "accepting the null hypothesis": "接受零假设",
+    "inferentially equivalent": "推断等价",
+    "causal reversal": "因果倒置",
+    "territory size": "领地面积",
+    "habitat quality": "栖息地质量",
+    "population density": "种群密度"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"

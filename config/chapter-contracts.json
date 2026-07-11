@@ -691,8 +691,8 @@
     }
   },
   "chapter-05": {
-    "required_status": "in_progress",
-    "source_pages": [143, 178],
+    "required_status": "verified",
+    "source_pages": [143, 180],
     "required_ids": [
       "fig-5-1",
       "rethinking-causal-inference",
@@ -807,6 +807,20 @@
       "sec-5-4",
       "sec-5-5",
       "chapter-05-exercises-easy",
+      "exercise-5e1",
+      "exercise-5e2",
+      "exercise-5e3",
+      "exercise-5e4",
+      "chapter-05-exercises-medium",
+      "exercise-5m1",
+      "exercise-5m2",
+      "exercise-5m3",
+      "exercise-5m4",
+      "exercise-5m5",
+      "chapter-05-exercises-hard",
+      "exercise-5h1",
+      "exercise-5h2",
+      "exercise-5h3",
       "chapter-05-notes",
       "note-77",
       "note-78",
@@ -814,7 +828,8 @@
       "note-80",
       "note-81",
       "note-82",
-      "note-83"
+      "note-83",
+      "note-84"
     ],
     "required_headings": [
       "多变量与虚假华夫饼",
@@ -845,6 +860,8 @@
       "5.4 总结",
       "5.5 习题",
       "简单题",
+      "中等题",
+      "困难题",
       "尾注"
     ],
     "counts": {
@@ -897,8 +914,11 @@
       ".milk-variables dd": 3,
       ".category-examples": 1,
       ".category-examples li": 3,
-      ".exercise-group": 1,
-      ".endnotes li": 7
+      ".exercise-group": 3,
+      ".exercise": 12,
+      ".fox-variables": 1,
+      ".fox-variables li": 5,
+      ".endnotes li": 8
     }
   }
 }
