@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-04" data-source-pages="89-139">
+<article class="book-article" data-chapter="chapter-04" data-source-pages="89-142">
   <header class="chapter-header">
     <p class="eyebrow">第四章</p>
     <h1>地心模型</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 89–139 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 89–142 页</p>
   </header>
 
   <p>历史对托勒密并不宽厚。克劳狄乌斯·托勒密（约公元 90 年生，168 年卒）是埃及数学家和天文学家，最著名的成就是太阳系地心模型。今天，科学家若想嘲讽某人，有时会把他比作地心模型的拥护者。但托勒密是位天才。他描述行星运动的数学模型（<a href="#fig-4-1">图 4.1</a>）极其准确。为了达到这种精度，模型采用了一种叫作<strong>本轮</strong>的装置，也就是圆上套圆。甚至还能有“本轮上的本轮”：圆上套圆再套圆。只要在适当位置放置足够多的本轮，托勒密模型的预测精度就能超过此前任何人。因此，这套模型沿用了一千多年。托勒密和许多与他相似的人历经数百年艰苦推演，在没有计算机帮助的条件下解决了这一切。任何人被比作托勒密，都应该感到受宠若惊。</p>
@@ -1836,9 +1836,143 @@ shade( mu_PI , d2$year , col=col.alpha("black",0.5) )</code></pre>
         <h4>4E2</h4>
         <p>在上面的模型定义中，后验分布里有多少个参数？</p>
       </div>
+
+      <div class="exercise" id="exercise-4e3">
+        <h4>4E3</h4>
+        <p>利用上面的模型定义，写出包含恰当似然与先验的贝叶斯定理形式。</p>
+      </div>
+
+      <div class="exercise" id="exercise-4e4">
+        <h4>4E4</h4>
+        <p>在下面的模型定义中，哪一行是线性模型？</p>
+        <div class="equation-block model-system-equation" id="eq-4-practice-e4-model">
+          <div><var>y</var><sub>i</sub> ∼ Normal(<var>μ</var>, <var>σ</var>)</div>
+          <div><var>μ</var><sub>i</sub> = <var>α</var> + <var>βx</var><sub>i</sub></div>
+          <div><var>α</var> ∼ Normal(0, 10)</div>
+          <div><var>β</var> ∼ Normal(0, 1)</div>
+          <div><var>σ</var> ∼ Exponential(2)</div>
+        </div>
+      </div>
+
+      <div class="exercise" id="exercise-4e5">
+        <h4>4E5</h4>
+        <p>在紧邻上方的模型定义中，后验分布里有多少个参数？</p>
+      </div>
     </div>
 
-    <p class="continuation-note">其余简单题、中等题与困难题将在原书 PDF 第 140 页继续。</p>
+    <div class="practice-group" aria-labelledby="practice-4-medium">
+      <h3 id="practice-4-medium">中等题</h3>
+
+      <div class="exercise" id="exercise-4m1">
+        <h4>4M1</h4>
+        <p>对于下面的模型定义，从先验（而不是后验）模拟观测值 <span class="math-inline"><var>y</var></span>。</p>
+        <div class="equation-block model-system-equation" id="eq-4-practice-m1-model">
+          <div><var>y</var><sub>i</sub> ∼ Normal(<var>μ</var>, <var>σ</var>)</div>
+          <div><var>μ</var> ∼ Normal(0, 10)</div>
+          <div><var>σ</var> ∼ Exponential(1)</div>
+        </div>
+      </div>
+
+      <div class="exercise" id="exercise-4m2">
+        <h4>4M2</h4>
+        <p>把紧邻上方的模型翻译成一个 <code>quap</code> 公式。</p>
+      </div>
+
+      <div class="exercise" id="exercise-4m3">
+        <h4>4M3</h4>
+        <p>把下面的 <code>quap</code> 模型公式翻译成数学模型定义。</p>
+        <figure class="code-listing" id="code-4-practice-m3">
+          <figcaption>习题代码</figcaption>
+          <pre><code>flist &lt;- alist(
+    y ~ dnorm( mu , sigma ),
+    mu &lt;- a + b*x,
+    a ~ dnorm( 0 , 10 ),
+    b ~ dunif( 0 , 1 ),
+    sigma ~ dexp( 1 )
+)</code></pre>
+        </figure>
+      </div>
+
+      <div class="exercise" id="exercise-4m4">
+        <h4>4M4</h4>
+        <p>对一组学生连续 3 年每年测量身高。第三年结束后，你想拟合一个以年份为预测变量、预测身高的线性回归。请使用任意变量名和你选择的先验，写出这个回归的数学模型定义，并准备好为你的先验选择辩护。</p>
+      </div>
+
+      <div class="exercise" id="exercise-4m5">
+        <h4>4M5</h4>
+        <p>现在假设我提醒你，每个学生每年都长高了。这项信息会让你改变先验选择吗？怎样改变？</p>
+      </div>
+
+      <div class="exercise" id="exercise-4m6">
+        <h4>4M6</h4>
+        <p>现在假设我告诉你，同龄学生之间的身高方差从不超过 64 cm。这会怎样促使你修订先验？</p>
+      </div>
+    </div>
+
+    <div class="practice-group" aria-labelledby="practice-4-hard">
+      <h3 id="practice-4-hard">困难题</h3>
+
+      <div class="exercise" id="exercise-4h1">
+        <h4>4H1</h4>
+        <p>下面列出的体重记录于 !Kung 人口普查，但这些人的身高没有记录。请为每个人给出预测身高和 89% 区间。也就是说，使用基于模型的预测填完下表。</p>
+        <div class="table-wrap">
+          <table class="count-table prediction-practice-table" id="table-4h1-predictions">
+            <thead>
+              <tr><th scope="col">个体</th><th scope="col">体重</th><th scope="col">预期身高</th><th scope="col">89% 区间</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">1</th><td>46.95</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+              <tr><th scope="row">2</th><td>43.72</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+              <tr><th scope="row">3</th><td>64.78</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+              <tr><th scope="row">4</th><td>32.59</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+              <tr><th scope="row">5</th><td>54.63</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="exercise" id="exercise-4h2">
+        <h4>4H2</h4>
+        <p>从 <code>Howell1</code> 数据中选出年龄小于 18 岁的全部行。如果操作正确，得到的新数据框应有 192 行。</p>
+        <ol class="exercise-options" type="a">
+          <li>使用 <code>quap</code> 对这些数据拟合线性回归。展示并解释估计结果。体重每增加 10 个单位，模型预测儿童会长高多少？</li>
+          <li>绘制原始数据，纵轴为身高，横轴为体重。叠加 MAP 回归线和均值的 89% 区间，再叠加预测身高的 89% 区间。</li>
+          <li>模型拟合的哪些方面令你担忧？说明你会改变哪些假设（如果有）来改进模型。无须编写新代码；只需解释模型看来在哪些方面表现不好，以及你推测什么样的模型会更好。</li>
+        </ol>
+      </div>
+
+      <div class="exercise" id="exercise-4h3">
+        <h4>4H3</h4>
+        <p>假设你的一位研究异速生长的同事瞥见了上面的习题。他惊呼：“那太可笑了。人人都知道，只有体重的对数才随身高成比例变化！”让我们采纳这位同事的建议，看看会发生什么。</p>
+        <ol class="exercise-options" type="a">
+          <li>
+            <p>对身高（cm）和体重自然对数（log-kg）之间的关系建模。使用完整的 <code>Howell1</code> 数据框，即成人与未成年人全部 544 行。用二次近似拟合下面的模型：</p>
+            <div class="equation-block model-system-equation" id="eq-4-practice-h3-model">
+              <div><var>h</var><sub>i</sub> ∼ Normal(<var>μ</var><sub>i</sub>, <var>σ</var>)</div>
+              <div><var>μ</var><sub>i</sub> = <var>α</var> + <var>β</var> log(<var>w</var><sub>i</sub>)</div>
+              <div><var>α</var> ∼ Normal(178, 20)</div>
+              <div><var>β</var> ∼ Log-Normal(0, 1)</div>
+              <div><var>σ</var> ∼ Uniform(0, 50)</div>
+            </div>
+            <p>其中 <span class="math-inline"><var>h</var><sub>i</sub></span> 是个体 <span class="math-inline"><var>i</var></span> 的身高，<span class="math-inline"><var>w</var><sub>i</sub></span> 是个体 <span class="math-inline"><var>i</var></span> 的体重（kg）。R 中计算自然对数的函数就是 <code>log</code>。你能解释所得估计吗？</p>
+          </li>
+          <li>
+            <p>从下面这幅图开始：</p>
+            <figure class="code-listing" id="code-4-80">
+              <figcaption>R 代码 4.80</figcaption>
+              <pre><code>plot( height ~ weight , data=Howell1 ,
+    col=col.alpha(rangi2,0.4) )</code></pre>
+            </figure>
+            <p>然后使用（a）中模型二次近似后验的样本，在图上叠加：（1）作为体重函数的预测平均身高；（2）均值的 97% 区间；（3）预测身高的 97% 区间。</p>
+          </li>
+        </ol>
+      </div>
+
+      <div class="exercise" id="exercise-4h4">
+        <h4>4H4</h4>
+        <p>绘制本章多项式回归模型的先验预测分布。可以修改绘制线性回归先验预测分布的代码。你能否修改 <span class="math-inline"><var>α</var></span>、<span class="math-inline"><var>β</var><sub>1</sub></span> 和 <span class="math-inline"><var>β</var><sub>2</sub></span> 的先验分布，使先验预测留在生物学上合理的结果空间内？也就是说，不要尝试手工拟合数据；但在看到这些具体数据之前，确实要设法让曲线与你对身高和体重的知识一致。</p>
+      </div>
+    </div>
   </section>
 
   <section class="endnotes" id="chapter-04-notes" role="doc-endnotes">
@@ -1861,6 +1995,6 @@ shade( mu_PI , d2$year , col=col.alpha("black",0.5) )</code></pre>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 89–139 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 140 页继续。
+    <strong>译稿状态：</strong>PDF 第 89–142 页整章完成；结构契约、逐页对照、桌面与移动端全章验收均通过。第 142 页为空白保留页。
   </aside>
 </article>

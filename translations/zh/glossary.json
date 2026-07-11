@@ -422,7 +422,11 @@
     "parameter vector": "参数向量",
     "sum linear predictor": "求和线性预测变量",
     "simple linear regression": "简单线性回归",
-    "start list": "初始值列表"
+    "start list": "初始值列表",
+    "allometry": "异速生长",
+    "natural logarithm": "自然对数",
+    "expected height": "预期身高",
+    "biologically reasonable outcome space": "生物学上合理的结果空间"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"
