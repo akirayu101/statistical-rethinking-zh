@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-04" data-source-pages="89-109">
+<article class="book-article" data-chapter="chapter-04" data-source-pages="89-112">
   <header class="chapter-header">
     <p class="eyebrow">第四章</p>
     <h1>地心模型</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 89–109 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 89–112 页</p>
   </header>
 
   <p>历史对托勒密并不宽厚。克劳狄乌斯·托勒密（约公元 90 年生，168 年卒）是埃及数学家和天文学家，最著名的成就是太阳系地心模型。今天，科学家若想嘲讽某人，有时会把他比作地心模型的拥护者。但托勒密是位天才。他描述行星运动的数学模型（<a href="#fig-4-1">图 4.1</a>）极其准确。为了达到这种精度，模型采用了一种叫作<strong>本轮</strong>的装置，也就是圆上套圆。甚至还能有“本轮上的本轮”：圆上套圆再套圆。只要在适当位置放置足够多的本轮，托勒密模型的预测精度就能超过此前任何人。因此，这套模型沿用了一千多年。托勒密和许多与他相似的人历经数百年艰苦推演，在没有计算机帮助的条件下解决了这一切。任何人被比作托勒密，都应该感到受宠若惊。</p>
@@ -723,10 +723,114 @@ head(post)</code></pre>
 2 154.0347 7.771255
 3 154.9157 7.822178
 4 154.4252 7.530331
-5 154.5307 7.655490</code></pre>
+5 154.5307 7.655490
+6 155.1772 7.974603</code></pre>
       </figure>
 
-      <p class="continuation-note">代码 4.34 的输出与说明将在原书 PDF 第 110 页继续。</p>
+      <p>最终会得到一个名为 <code>post</code> 的数据框，它有 10,000（<code>1e4</code>）行、两列：一列是 <span class="math-inline"><var>μ</var></span>，一列是 <span class="math-inline"><var>σ</var></span>。每个值都是后验样本，因此每一列的均值和标准差会非常接近前面的 MAP 值。可以汇总样本来验证：</p>
+
+      <figure class="code-listing" id="code-4-35">
+        <figcaption>R 代码 4.35</figcaption>
+        <pre><code>precis(post)</code></pre>
+        <pre class="code-output"><code>quap posterior: 10000 samples from m4.1
+         mean   sd   5.5% 94.5%     histogram
+mu     154.61 0.41 153.95 155.27     ▁▁▁▅▇▂▁▁
+sigma    7.72 0.29   7.26   8.18 ▁▁▁▂▅▇▇▃▁▁▁▁</code></pre>
+      </figure>
+
+      <p>把这些值与 <code>precis(m4.1)</code> 的输出比较。还可以使用 <code>plot(post)</code>，看看它们与<a href="#fig-4-4">图 4.4</a>（原书第 88 页）中的网格近似样本有多相似。</p>
+
+      <p>这些样本还保留了 <span class="math-inline"><var>μ</var></span> 与 <span class="math-inline"><var>σ</var></span> 之间的协方差。眼下这几乎无关紧要，因为在本模型中两者完全不协变。但一旦向模型加入预测变量，协方差就会变得非常重要。</p>
+
+      <aside class="overthinking-box" id="overthinking-multivariate-sampling">
+        <h3>过度思考：多元抽样的内部机制</h3>
+
+        <p><code>extract.samples</code> 是一个便利函数。它只是执行一种简单模拟，与第 3 章末尾做过的模拟同类。下面窥视一下发动机：真正干活的是 <code>rnorm</code> 的多维版本 <code>mvrnorm</code>。函数 <code>rnorm</code> 模拟随机高斯值，而 <code>mvrnorm</code> 模拟多元高斯值的随机向量。要直接完成 <code>extract.samples</code> 所做的工作，可以这样使用：</p>
+
+        <figure class="code-listing" id="code-4-36">
+          <figcaption>R 代码 4.36</figcaption>
+          <pre><code>library(MASS)
+post &lt;- mvrnorm( n=1e4 , mu=coef(m4.1) , Sigma=vcov(m4.1) )</code></pre>
+        </figure>
+
+        <p>通常不需要像这样直接使用 <code>mvrnorm</code>，但有时会想模拟多元高斯结果；那时就需要直接调用它。当然，稍微了解机器怎样运转总是好事。稍后还会处理无法用这种方式正确近似的后验分布。</p>
+      </aside>
+    </section>
+  </section>
+
+  <section id="sec-4-4">
+    <h2>4.4 线性预测</h2>
+
+    <p>上面建立的是成年人群身高的高斯模型，但它其实没有通常那种“回归”的感觉。我们通常关心的是怎样把一个结果与另一个变量——预测变量——联系起来建模。如果预测变量与结果变量存在任何统计关联，就可以用它预测结果。当预测变量以特定方式嵌入模型时，就得到了线性回归。</p>
+
+    <p>现在来考察这些卡拉哈里采集狩猎者的身高（结果变量）怎样与体重（预测变量）协变。我知道，这并不是最激动人心的科学问题。不过，这是一个容易上手的关系；如果它显得乏味，只是因为你脑中还没有关于生长和生活史的理论。有了理论，它就会令人兴奋。稍后从更具因果性的角度重新审视这个例子时，我们会尝试增添一些这样的兴奋。眼下只请专注于估计两个变量之间关联的操作机制。</p>
+
+    <p>先把身高和体重相互作图，感受它们协变的强弱：</p>
+
+    <figure class="code-listing" id="code-4-37">
+      <figcaption>R 代码 4.37</figcaption>
+      <pre><code>plot( d2$height ~ d2$weight )</code></pre>
+    </figure>
+
+    <p>书中没有展示结果图；你确实应该亲自画出来。看到图后，就会发现关系十分明显：知道一个人的体重，有助于预测其身高。</p>
+
+    <p>若想把这条模糊观察变成更精确的定量模型，让体重值与可信的身高值联系起来，还需要一些技术。怎样把上一节的高斯模型扩展为包含预测变量的模型？</p>
+
+    <aside class="rethinking-box" id="rethinking-regression">
+      <h3>再思考：什么是“回归”？</h3>
+
+      <p>许多不同类型的模型都叫作“回归”。这个术语如今泛指：使用一个或多个预测变量，对一个或多个结果变量的分布建模。不过，它最初的用法源自人类学家弗朗西斯·高尔顿（Francis Galton，1822–1911）的一项观察：高个和矮个男性的儿子往往更接近人群平均值，因此称为<strong>向均值回归</strong>。<sup><a id="note-73-ref" href="#note-73" aria-label="尾注 73">73</a></sup></p>
+
+      <p>向均值回归的因果原因多种多样。就身高而言，因果解释是群体遗传学基础中的关键一环。不过，只要把个体测量值归入同一个分布，这种现象就会在统计上出现：每项测量彼此提供信息，从而产生<strong>收缩</strong>。在高尔顿身高数据的语境中，只凭父亲身高预测每个儿子的身高是愚蠢的；更好的做法是利用父亲群体。这样得到的儿子身高预测会与各自父亲相似，但会向总体均值“收缩”。这类预测通常更好。同样的回归/收缩现象也适用于更高抽象层级，并构成多层模型（第 13 章）的一个基础。</p>
+    </aside>
+
+    <section id="sec-4-4-1">
+      <h3>4.4.1 线性模型策略</h3>
+
+      <p>策略是把高斯分布的均值参数 <span class="math-inline"><var>μ</var></span> 变成预测变量以及我们新构造的其他参数的线性函数。这种策略常简称为<strong>线性模型</strong>。线性模型策略指示魔像假定：预测变量与结果均值之间存在恒定、可加的关系。随后，魔像计算这条恒定关系的后验分布。</p>
+
+      <p>回想一下，这意味着机器会考虑参数值的每一种可能组合。在线性模型中，一些参数现在表示结果均值 <span class="math-inline"><var>μ</var></span> 与其他某个变量取值之间的关联强度。对于每一组取值，机器都会计算后验概率；在给定模型和数据的条件下，它衡量相对可信程度。因此，后验分布会按照逻辑可信程度，为无穷多组可能的参数值排序。由此，在给定编入模型的假设下，后验分布为各种可能的关联强度提供相对可信程度。我们对魔像说：“考虑把一个变量与另一个变量联系起来的所有直线。给定这些数据，按可信程度为所有直线排序。”魔像则用一个后验分布回答。</p>
+
+      <p>下面看看只有一个预测变量的最简单情形。多个预测变量要到下一章再面对。先回顾基本高斯模型：</p>
+
+      <div class="equation-block annotated-model-equation basic-gaussian-recap" id="eq-4-basic-gaussian-recap">
+        <div><span>hᵢ ∼ Normal(μ, σ)</span><span class="equation-label">[似然]</span></div>
+        <div><span>μ ∼ Normal(178, 20)</span><span class="equation-label">[μ 先验]</span></div>
+        <div><span>σ ∼ Uniform(0, 50)</span><span class="equation-label">[σ 先验]</span></div>
+      </div>
+
+      <p>现在怎样把体重放进身高的高斯模型？用 <span class="math-inline"><var>x</var></span> 表示体重测量列 <code>d2$weight</code>，再用 <span class="math-inline"><var>x̄</var></span>（读作“x bar”）表示 <span class="math-inline"><var>x</var></span> 值的平均数。现在得到预测变量 <span class="math-inline"><var>x</var></span>，它是一列与 <span class="math-inline"><var>h</var></span> 等长的测量。为了把体重放进模型，要把均值 <span class="math-inline"><var>μ</var></span> 定义成 <span class="math-inline"><var>x</var></span> 值的函数。形式如下，随后逐行解释：</p>
+
+      <div class="equation-block annotated-model-equation linear-height-model-equation" id="eq-4-height-weight-linear-model">
+        <div><span>hᵢ ∼ Normal(μᵢ, σ)</span><span class="equation-label">[似然]</span></div>
+        <div><span>μᵢ = α + β(xᵢ − x̄)</span><span class="equation-label">[线性模型]</span></div>
+        <div><span>α ∼ Normal(178, 20)</span><span class="equation-label">[α 先验]</span></div>
+        <div><span>β ∼ Normal(0, 10)</span><span class="equation-label">[β 先验]</span></div>
+        <div><span>σ ∼ Uniform(0, 50)</span><span class="equation-label">[σ 先验]</span></div>
+      </div>
+
+      <p>同样，我在右侧给每一行标出了它编码的定义类型。下面逐一讨论。</p>
+
+      <section id="sec-4-4-1-1">
+        <h4>4.4.1.1 数据的概率</h4>
+
+        <p>先只看观测身高的概率，也就是模型第一行。它几乎与之前完全相同，只是现在 <span class="math-inline"><var>μ</var></span> 和 <span class="math-inline"><var>h</var></span> 一样，也多了一个小下标 <span class="math-inline"><var>i</var></span>。可以把 <span class="math-inline">hᵢ</span> 读作“每个 <span class="math-inline"><var>h</var></span>”，把 <span class="math-inline">μᵢ</span> 读作“每个 <span class="math-inline"><var>μ</var></span>”。均值 <span class="math-inline"><var>μ</var></span> 现在取决于第 <span class="math-inline"><var>i</var></span> 行的独特值，所以 <span class="math-inline">μᵢ</span> 上的小 <span class="math-inline"><var>i</var></span> 表明均值取决于所在行。</p>
+      </section>
+
+      <section id="sec-4-4-1-2">
+        <h4>4.4.1.2 线性模型</h4>
+
+        <p>均值 <span class="math-inline"><var>μ</var></span> 不再是需要估计的参数。相反，正如模型第二行所示，<span class="math-inline">μᵢ</span> 由其他参数 <span class="math-inline"><var>α</var></span>、<span class="math-inline"><var>β</var></span> 以及观测变量 <span class="math-inline"><var>x</var></span> 构造出来。这一行不是随机关系——其中没有 <span class="math-inline">∼</span>，而是 <span class="math-inline">=</span>——因为 <span class="math-inline">μᵢ</span> 的定义是确定性的。也就是说，一旦知道 <span class="math-inline"><var>α</var></span>、<span class="math-inline"><var>β</var></span> 和 <span class="math-inline">xᵢ</span>，就能确定无疑地知道 <span class="math-inline">μᵢ</span>。</p>
+
+        <p><span class="math-inline">xᵢ</span> 只是第 <span class="math-inline"><var>i</var></span> 行的体重值，与同一行的身高值 <span class="math-inline">hᵢ</span> 指向同一个人。参数 <span class="math-inline"><var>α</var></span> 和 <span class="math-inline"><var>β</var></span> 则更神秘。它们从哪里来？是我们造出来的。参数 <span class="math-inline"><var>μ</var></span> 和 <span class="math-inline"><var>σ</var></span> 是描述高斯分布的必要且充分条件；<span class="math-inline"><var>α</var></span> 和 <span class="math-inline"><var>β</var></span> 却是我们发明来操纵 <span class="math-inline"><var>μ</var></span> 的装置，使它能在数据的不同案例之间系统变化。</p>
+
+        <p>随着技能提升，你会构造出各种参数。理解这些人为构造参数的一种方式，是把它们视为<strong>学习目标</strong>。每个参数都是后验分布必须描述的事物。因此，当你想了解数据的某个方面时，就为它发明一个参数，借此向魔像提问。继续学习后，这一点会越来越清楚。在当前语境中，模型定义的第二行就是：</p>
+
+        <div class="equation-block linear-mean-equation" id="eq-4-linear-mean">μᵢ = α + β(xᵢ − x̄)</div>
+
+        <p>它告诉回归魔像：你正在询问关于结果均值的两个问题。</p>
+        <p class="continuation-note">这两个问题将在原书 PDF 第 113 页继续。</p>
+      </section>
     </section>
   </section>
 
@@ -742,10 +846,11 @@ head(post)</code></pre>
       <li id="note-70">参见 Jaynes（2003）第 21–22 页；该书索引还列出这一概念在各种统计论证中的其他用例。 <a class="backref" href="#note-70-ref" aria-label="返回正文">↩</a></li>
       <li id="note-71">参见 Jaynes（1986）关于“左撇子袋鼠偏好哪种啤酒”的有趣例子；这篇论文还有一份 1996 年更新版可在线获取。 <a class="backref" href="#note-71-ref" aria-label="返回正文">↩</a></li>
       <li id="note-72">策略仍是前面（原书第 40 页）的网格近似，不过现在有两个维度，麻烦会按几何意义迅速增长。算法虽然不透明，所幸很短，可以看成六条命令。前两行分别设定要计算的 <span class="math-inline"><var>μ</var></span>、<span class="math-inline"><var>σ</var></span> 范围和网格点数；第三行把选定值展开为所有组合的矩阵，存入数据框 <code>post</code>。第四条命令计算每组 <span class="math-inline"><var>μ</var>, <var>σ</var></span> 的对数似然：<code>sapply</code> 把 <code>post</code> 每一行的组合传给函数，计算每个观测身高的对数似然并求和。必须在对数尺度上计算，否则舍入误差会很快把全部后验概率变成零。第五条命令把对数先验加到对数似然上，等价于在原尺度把先验与似然相乘。最后，从对数概率返回概率尺度时仍面临舍入问题；直接使用 <code>exp(post$prod)</code> 会得到全零向量。代码先用最大对数乘积缩放全部值，避免这个问题。因此，<code>post$prob</code> 中不是精确概率，而是相对后验概率；对后续用途已经足够。 <a class="backref" href="#note-72-ref" aria-label="返回正文">↩</a></li>
+      <li id="note-73">高尔顿关于这一主题最容易理解的文字，已重印为 Galton（1989）。 <a class="backref" href="#note-73-ref" aria-label="返回正文">↩</a></li>
     </ol>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 89–109 页已完成翻译、逐页核对、阶段契约和桌面/移动端视觉验收。下一批从 PDF 第 110 页继续。
+    <strong>译稿状态：</strong>PDF 第 89–112 页已完成翻译、逐页核对、阶段契约和桌面/移动端视觉验收。下一批从 PDF 第 113 页继续。
   </aside>
 </article>

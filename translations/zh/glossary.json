@@ -320,7 +320,20 @@
     "variance-covariance matrix": "方差-协方差矩阵",
     "correlation matrix": "相关矩阵",
     "variance vector": "方差向量",
-    "correlated change": "相关变化"
+    "correlated change": "相关变化",
+    "multivariate sampling": "多元抽样",
+    "multivariate Gaussian outcome": "多元高斯结果",
+    "outcome variable": "结果变量",
+    "linear prediction": "线性预测",
+    "linear model": "线性模型",
+    "regression": "回归",
+    "regression to the mean": "向均值回归",
+    "shrinkage": "收缩",
+    "strength of association": "关联强度",
+    "additive relationship": "可加关系",
+    "learning target": "学习目标",
+    "made-up parameter": "人为构造参数",
+    "population genetics": "群体遗传学"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"
