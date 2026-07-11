@@ -229,7 +229,13 @@
     "observation uncertainty": "观测不确定性",
     "parameter uncertainty": "参数不确定性",
     "uncertainty propagation": "不确定性传播",
-    "overconfidence": "过度自信"
+    "overconfidence": "过度自信",
+    "posterior predictive check": "后验预测检查",
+    "model misspecification": "模型设定偏误",
+    "run length": "连续段长度",
+    "number of switches": "切换次数",
+    "tail-area probability": "尾部面积概率",
+    "flat prior": "均匀先验"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"
