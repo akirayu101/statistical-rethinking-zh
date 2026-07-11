@@ -333,7 +333,19 @@
     "additive relationship": "可加关系",
     "learning target": "学习目标",
     "made-up parameter": "人为构造参数",
-    "population genetics": "群体遗传学"
+    "population genetics": "群体遗传学",
+    "intercept": "截距",
+    "slope": "斜率",
+    "rate of change in expectation": "期望变化率",
+    "nonlinear regression": "非线性回归",
+    "substantive theory": "实质理论",
+    "dimensionless analysis": "无量纲分析",
+    "unitless ratio": "无单位比值",
+    "log-normal distribution": "对数正态分布",
+    "positive relationship": "正向关系",
+    "structural feature": "结构特征",
+    "conservative prior": "保守先验",
+    "prior choice": "先验选择"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"

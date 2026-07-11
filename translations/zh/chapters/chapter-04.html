@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-04" data-source-pages="89-112">
+<article class="book-article" data-chapter="chapter-04" data-source-pages="89-115">
   <header class="chapter-header">
     <p class="eyebrow">第四章</p>
     <h1>地心模型</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 89–112 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 89–115 页</p>
   </header>
 
   <p>历史对托勒密并不宽厚。克劳狄乌斯·托勒密（约公元 90 年生，168 年卒）是埃及数学家和天文学家，最著名的成就是太阳系地心模型。今天，科学家若想嘲讽某人，有时会把他比作地心模型的拥护者。但托勒密是位天才。他描述行星运动的数学模型（<a href="#fig-4-1">图 4.1</a>）极其准确。为了达到这种精度，模型采用了一种叫作<strong>本轮</strong>的装置，也就是圆上套圆。甚至还能有“本轮上的本轮”：圆上套圆再套圆。只要在适当位置放置足够多的本轮，托勒密模型的预测精度就能超过此前任何人。因此，这套模型沿用了一千多年。托勒密和许多与他相似的人历经数百年艰苦推演，在没有计算机帮助的条件下解决了这一切。任何人被比作托勒密，都应该感到受宠若惊。</p>
@@ -829,7 +829,117 @@ post &lt;- mvrnorm( n=1e4 , mu=coef(m4.1) , Sigma=vcov(m4.1) )</code></pre>
         <div class="equation-block linear-mean-equation" id="eq-4-linear-mean">μᵢ = α + β(xᵢ − x̄)</div>
 
         <p>它告诉回归魔像：你正在询问关于结果均值的两个问题。</p>
-        <p class="continuation-note">这两个问题将在原书 PDF 第 113 页继续。</p>
+
+        <ol class="linear-questions">
+          <li><strong>当 <span class="math-inline">xᵢ = x̄</span> 时，期望身高是多少？</strong>参数 <span class="math-inline"><var>α</var></span> 回答这个问题，因为当 <span class="math-inline">xᵢ = x̄</span> 时，<span class="math-inline">μᵢ = α</span>。因此，<span class="math-inline"><var>α</var></span> 常被称为<strong>截距</strong>。不过，不应从某条抽象直线出发思考，而应思考它对于可观测变量的意义。</li>
+          <li><strong>当 <span class="math-inline">xᵢ</span> 改变 1 个单位时，期望身高改变多少？</strong>参数 <span class="math-inline"><var>β</var></span> 回答这个问题。它常被称为“斜率”，同样源于那条抽象直线。更好的理解是：把它看成期望的变化率。</li>
+        </ol>
+
+        <p>这两个参数共同要求魔像找到一条连接 <span class="math-inline"><var>x</var></span> 与 <span class="math-inline"><var>h</var></span> 的直线：当 <span class="math-inline">xᵢ = x̄</span> 时，它穿过 <span class="math-inline"><var>α</var></span>，斜率为 <span class="math-inline"><var>β</var></span>。魔像非常擅长这项任务；但它是不是一个好问题，仍要由你保证。</p>
+
+        <aside class="rethinking-box" id="rethinking-linear-models-not-natural">
+          <h3>再思考：线性模型并不特殊，也不天然</h3>
+
+          <p>线性模型其实没有任何特殊之处。你完全可以为 <span class="math-inline"><var>α</var></span>、<span class="math-inline"><var>β</var></span> 与 <span class="math-inline"><var>μ</var></span> 选择另一种关系。例如，下面就是一个完全合法的 <span class="math-inline">μᵢ</span> 定义：</p>
+
+          <div class="equation-block nonlinear-mean-equation" id="eq-4-nonlinear-mean">μᵢ = α exp(−βxᵢ)</div>
+
+          <p>它没有定义线性回归，却确实定义了回归模型。我们采用的线性关系只是一种惯例，没有任何规则要求必须使用它。在生态学和人口学等领域，经常会使用来自理论的 <span class="math-inline"><var>μ</var></span> 函数形式，而不是线性模型的地心主义。由实质理论构建的模型，可能大幅胜过描述同一现象的线性模型。<sup><a id="note-74-ref" href="#note-74" aria-label="尾注 74">74</a></sup>本书稍后会回到这一点。</p>
+        </aside>
+
+        <aside class="overthinking-box" id="overthinking-units-regression">
+          <h3>过度思考：单位与回归模型</h3>
+
+          <p>受过传统物理科学训练的读者，知道怎样在这类方程中追踪单位。为方便这些读者，下面再次写出模型（为简洁起见省略先验），并为每个符号添加单位：</p>
+
+          <div class="equation-block units-regression-equation" id="eq-4-units-regression">
+            <div>hᵢ [cm] ∼ Normal(μᵢ [cm], σ [cm])</div>
+            <div>μᵢ [cm] = α [cm] + β [cm/kg] (xᵢ [kg] − x̄ [kg])</div>
+          </div>
+
+          <p>可以看出，为了让均值 <span class="math-inline">μᵢ</span> 的单位是厘米，<span class="math-inline"><var>β</var></span> 必须具有厘米/千克的单位。标注单位澄清了一项事实：像 <span class="math-inline"><var>β</var></span> 这样的参数是一种<strong>变化率</strong>——每千克多少厘米。还有一种称为<strong>无量纲分析</strong>的传统，主张把变量构造成没有单位的比值。例如在这里，可以用身高除以某个参考身高，消去单位。测量尺度是人类任意构造的，有时无量纲分析更自然，也更具一般性。</p>
+        </aside>
+      </section>
+
+      <section id="sec-4-4-1-3">
+        <h4>4.4.1.3 先验</h4>
+
+        <p>模型剩余几行定义未观测变量的分布。这些变量通常称为参数，它们的分布称为先验。这里有三个参数：<span class="math-inline"><var>α</var></span>、<span class="math-inline"><var>β</var></span> 和 <span class="math-inline"><var>σ</var></span>。<span class="math-inline"><var>α</var></span> 和 <span class="math-inline"><var>σ</var></span> 的先验已经见过，只不过那时 <span class="math-inline"><var>α</var></span> 还叫作 <span class="math-inline"><var>μ</var></span>。</p>
+
+        <p><span class="math-inline"><var>β</var></span> 的先验值得解释。为什么使用均值为零的高斯先验？这个先验在零以下和零以上放置了同样多的概率；当 <span class="math-inline"><var>β</var> = 0</span> 时，体重与身高没有关系。要弄清这个先验蕴含什么，必须模拟先验预测分布；没有其他可靠的理解方式。</p>
+
+        <p>目标是只使用先验，从模型中模拟身高。先考虑一个要覆盖的体重取值范围；观测体重的范围就很好。然后要模拟许多条由 <span class="math-inline"><var>α</var></span> 和 <span class="math-inline"><var>β</var></span> 先验共同蕴含的直线。下面设置随机种子，使结果可以精确复现：</p>
+
+        <figure class="code-listing" id="code-4-38">
+          <figcaption>R 代码 4.38</figcaption>
+          <pre><code>set.seed(2971)
+N &lt;- 100                   # 100 lines
+a &lt;- rnorm( N , 178 , 20 )
+b &lt;- rnorm( N , 0 , 10 )</code></pre>
+        </figure>
+
+        <p>现在有了 100 对 <span class="math-inline"><var>α</var></span> 与 <span class="math-inline"><var>β</var></span> 值。接着绘制这些直线：</p>
+
+        <figure class="code-listing" id="code-4-39">
+          <figcaption>R 代码 4.39</figcaption>
+          <pre><code>plot( NULL , xlim=range(d2$weight) , ylim=c(-100,400) ,
+    xlab="weight" , ylab="height" )
+abline( h=0 , lty=2 )
+abline( h=272 , lty=1 , lwd=0.5 )
+mtext( "b ~ dnorm(0,10)" )
+xbar &lt;- mean(d2$weight)
+for ( i in 1:N ) curve( a[i] + b[i]*(x - xbar) ,
+    from=min(d2$weight) , to=max(d2$weight) , add=TRUE ,
+    col=col.alpha("black",0.2) )</code></pre>
+        </figure>
+
+        <figure class="book-figure height-weight-prior-figure" id="fig-4-5">
+          <div class="figure-scroll" tabindex="0" aria-label="可横向滚动的身高体重先验预测双面板图">
+            <img src="/media/chapter-04-height-weight-priors.svg" alt="左图的正态斜率先验产生大量荒谬关系，右图的对数正态斜率先验主要产生合理正关系">
+          </div>
+          <p class="scroll-hint">图较宽，可横向滚动查看两种斜率先验产生的全部关系线。</p>
+          <figcaption><strong>图 4.5：</strong>身高与体重模型的先验预测模拟。左：使用 <span class="math-inline"><var>β</var> ∼ Normal(0, 10)</span> 先验的模拟。右：使用更合理的 <span class="math-inline">log(<var>β</var>) ∼ Normal(0, 1)</span> 先验。</figcaption>
+        </figure>
+
+        <p>结果显示在<a href="#fig-4-5">图 4.5</a>。作为参照，图中加入了位于零的虚线——没有人的身高低于零——以及位于 272 厘米的“瓦德洛线”，代表世界最高个体。图形看起来完全不像任何人类群体。它实质上声称，体重与身高之间的关系可能荒谬地为正，也可能荒谬地为负。甚至还没看到数据，这就已经是一个糟糕模型。能否做得更好？</p>
+
+        <p>可以立刻改进。我们知道，至少在一定范围内，平均身高会随平均体重增加。试着把关系限制为正值。最简单的办法，是把先验改为对数正态分布。即使不习惯摆弄对数也没关系；下面会逐步展示，本节末尾的侧栏还有更多细节。</p>
+
+        <p>把 <span class="math-inline"><var>β</var></span> 定义为 Log-Normal(0, 1)，意味着声称 <span class="math-inline"><var>β</var></span> 的对数服从 Normal(0, 1) 分布。简写为：</p>
+
+        <div class="equation-block lognormal-beta-equation" id="eq-4-lognormal-beta">β ∼ Log-Normal(0, 1)</div>
+
+        <p>R 提供 <code>dlnorm</code> 和 <code>rlnorm</code> 两个密度函数，用来处理对数正态分布。可以模拟这层关系，看看它对 <span class="math-inline"><var>β</var></span> 意味着什么：</p>
+
+        <figure class="code-listing" id="code-4-40">
+          <figcaption>R 代码 4.40</figcaption>
+          <pre><code>b &lt;- rlnorm( 1e4 , 0 , 1 )
+dens( b , xlim=c(0,5) , adj=0.1 )</code></pre>
+        </figure>
+
+        <p>如果 <span class="math-inline"><var>β</var></span> 的对数是正态分布，那么 <span class="math-inline"><var>β</var></span> 本身严格为正。原因是，对任意实数 <span class="math-inline"><var>x</var></span>，<span class="math-inline">exp(<var>x</var>)</span> 都大于零。这正是对数正态先验十分常见的原因：它能轻松强制关系为正。那么它带来什么好处？现在使用对数正态先验，再做一次先验预测模拟：</p>
+
+        <figure class="code-listing" id="code-4-41">
+          <figcaption>R 代码 4.41</figcaption>
+          <pre><code>set.seed(2971)
+N &lt;- 100                   # 100 lines
+a &lt;- rnorm( N , 178 , 20 )
+b &lt;- rlnorm( N , 0 , 1 )</code></pre>
+        </figure>
+
+        <p>像之前一样绘图，就会得到<a href="#fig-4-5">图 4.5</a>右侧。这合理多了。仍有一条罕见的不可能关系，但 <span class="math-inline"><var>α</var></span> 与 <span class="math-inline"><var>β</var></span> 联合先验中的几乎所有直线，现在都落在人类常识范围内。</p>
+
+        <p>我们在这个先验上反复推敲，尽管下一节会看到，本例数据很多，先验最终并不重要。之所以仍要认真推敲，有两个原因。第一，有许多分析无论数据多少，都不能让先验变得无关紧要；在这种情况下，非贝叶斯程序也不会更好，因为它们同样依赖模型的结构特征。认真处理这些特征至关重要。第二，思考先验有助于构造更好的模型，甚至最终超越地心主义。</p>
+
+        <aside class="rethinking-box" id="rethinking-correct-prior">
+          <h3>再思考：什么是正确的先验？</h3>
+
+          <p>人们经常问，某项分析的正确先验是什么。这个问题有时暗示：对任意给定数据，都存在唯一正确且必须使用的先验，否则分析便无效。这是错误的。不存在唯一正确的先验，就像不存在唯一正确的似然。统计模型是推断机器。许多机器都能工作，只是有些比另一些更好。先验可能“错”，但其意义只类似于：某种锤子可能不适合用来造桌子。</p>
+
+          <p>选择先验时，可以从几条简单准则起步。先验编码看到数据之前的信息状态，因此让我们探索从不同信息出发会产生什么后果。如果掌握了良好先验信息，能降低某些参数值的可信程度——例如身高与体重之间的负关联——就可以把这类信息直接写入先验。即使没有这类信息，通常也足以知道合理取值的大致范围。还可以改变先验并重复分析，研究不同初始信息状态怎样影响推断。很多时候，合理的先验选择不止一种，而它们都会产生相同推断。与传统非贝叶斯方法相比，传统贝叶斯先验往往更保守；第 7 章会看到这种保守性怎样产生。</p>
+
+          <p class="continuation-note">“正确的先验”侧栏将在原书 PDF 第 116 页继续。</p>
+        </aside>
       </section>
     </section>
   </section>
@@ -847,10 +957,11 @@ post &lt;- mvrnorm( n=1e4 , mu=coef(m4.1) , Sigma=vcov(m4.1) )</code></pre>
       <li id="note-71">参见 Jaynes（1986）关于“左撇子袋鼠偏好哪种啤酒”的有趣例子；这篇论文还有一份 1996 年更新版可在线获取。 <a class="backref" href="#note-71-ref" aria-label="返回正文">↩</a></li>
       <li id="note-72">策略仍是前面（原书第 40 页）的网格近似，不过现在有两个维度，麻烦会按几何意义迅速增长。算法虽然不透明，所幸很短，可以看成六条命令。前两行分别设定要计算的 <span class="math-inline"><var>μ</var></span>、<span class="math-inline"><var>σ</var></span> 范围和网格点数；第三行把选定值展开为所有组合的矩阵，存入数据框 <code>post</code>。第四条命令计算每组 <span class="math-inline"><var>μ</var>, <var>σ</var></span> 的对数似然：<code>sapply</code> 把 <code>post</code> 每一行的组合传给函数，计算每个观测身高的对数似然并求和。必须在对数尺度上计算，否则舍入误差会很快把全部后验概率变成零。第五条命令把对数先验加到对数似然上，等价于在原尺度把先验与似然相乘。最后，从对数概率返回概率尺度时仍面临舍入问题；直接使用 <code>exp(post$prod)</code> 会得到全零向量。代码先用最大对数乘积缩放全部值，避免这个问题。因此，<code>post$prob</code> 中不是精确概率，而是相对后验概率；对后续用途已经足够。 <a class="backref" href="#note-72-ref" aria-label="返回正文">↩</a></li>
       <li id="note-73">高尔顿关于这一主题最容易理解的文字，已重印为 Galton（1989）。 <a class="backref" href="#note-73-ref" aria-label="返回正文">↩</a></li>
+      <li id="note-74">使用捕食者-猎物动力学的例子，参见 Reilly 和 Zeringue（2004）。第 16 章会处理这个例子。 <a class="backref" href="#note-74-ref" aria-label="返回正文">↩</a></li>
     </ol>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 89–112 页已完成翻译、逐页核对、阶段契约和桌面/移动端视觉验收。下一批从 PDF 第 113 页继续。
+    <strong>译稿状态：</strong>PDF 第 89–115 页已完成翻译、逐页核对、阶段契约和桌面/移动端视觉验收。下一批从 PDF 第 116 页继续。
   </aside>
 </article>
