@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-04" data-source-pages="89-136">
+<article class="book-article" data-chapter="chapter-04" data-source-pages="89-139">
   <header class="chapter-header">
     <p class="eyebrow">第四章</p>
     <h1>地心模型</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 89–136 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 89–139 页</p>
   </header>
 
   <p>历史对托勒密并不宽厚。克劳狄乌斯·托勒密（约公元 90 年生，168 年卒）是埃及数学家和天文学家，最著名的成就是太阳系地心模型。今天，科学家若想嘲讽某人，有时会把他比作地心模型的拥护者。但托勒密是位天才。他描述行星运动的数学模型（<a href="#fig-4-1">图 4.1</a>）极其准确。为了达到这种精度，模型采用了一种叫作<strong>本轮</strong>的装置，也就是圆上套圆。甚至还能有“本轮上的本轮”：圆上套圆再套圆。只要在适当位置放置足够多的本轮，托勒密模型的预测精度就能超过此前任何人。因此，这套模型沿用了一千多年。托勒密和许多与他相似的人历经数百年艰苦推演，在没有计算机帮助的条件下解决了这一切。任何人被比作托勒密，都应该感到受宠若惊。</p>
@@ -1717,8 +1717,128 @@ B &lt;- bs(d2$year,
 
       <p>矩阵 <code>B</code> 应有 1,124 行、17 列。每一行对应一个年份，也对应数据框 <code>d2</code> 的一行；每一列是一个基函数，即一个合成变量，它定义某段年份范围，在这段范围内对应参数会影响预测。若要显示基函数，只需把每一列对年份作图。</p>
 
-      <p class="continuation-note">基函数绘图代码、图 4.13 与样条模型拟合将在原书 PDF 第 137 页继续。</p>
+      <figure class="code-listing" id="code-4-75">
+        <figcaption>R 代码 4.75</figcaption>
+        <pre><code>plot( NULL , xlim=range(d2$year) , ylim=c(0,1) , xlab="year" , ylab="basis value" )
+for ( i in 1:ncol(B) ) lines( d2$year , B[,i] )</code></pre>
+      </figure>
+
+      <figure class="book-figure bspline-fit-figure" id="fig-4-13">
+        <div class="figure-scroll" tabindex="0" aria-label="可横向滚动的十五结点三次 B 样条三面板图">
+          <img src="/media/chapter-04-bspline-fit.svg" alt="上图显示十七个重叠的三次基函数，中图显示加权基函数，下图把所得样条与百分之九十七后验区间叠加在气温数据上">
+        </div>
+        <p class="scroll-hint">图较宽，可横向滚动查看三次基函数、权重与最终样条。</p>
+        <figcaption><strong>图 4.13：</strong>含 15 个结点的三次样条。上图与前图一样显示基函数，但现在重叠更多。中图再次显示每个基函数乘以对应参数。每一点上这些加权基函数的和，产生下图所示样条；下图把它显示为 <span class="math-inline"><var>μ</var></span> 的 97% 后验区间。</figcaption>
+      </figure>
+
+      <p>这些三次基函数显示在<a href="#fig-4-13">图 4.13</a>上图。</p>
+
+      <p>接下来要得到每个基函数的参数权重，就必须真正定义并运行模型。此时它只是一个线性回归。把矩阵 <code>B</code> 的每一列用作一个变量，再加入截距来捕捉平均气温。这样更容易为基函数权重定义先验，因为可以把每个权重设想成相对截距的偏离。数学形式如下：</p>
+
+      <div class="equation-block model-system-equation" id="eq-4-bspline-model">
+        <div><var>T</var><sub>i</sub> ∼ Normal(<var>μ</var><sub>i</sub>, <var>σ</var>)</div>
+        <div><var>μ</var><sub>i</sub> = <var>α</var> + Σ<sub><var>k</var>=1</sub><sup><var>K</var></sup> <var>w</var><sub><var>k</var></sub><var>B</var><sub><var>k</var>,<var>i</var></sub></div>
+        <div><var>α</var> ∼ Normal(6, 10)</div>
+        <div><var>w</var><sub><var>j</var></sub> ∼ Normal(0, 1)</div>
+        <div><var>σ</var> ∼ Exponential(1)</div>
+      </div>
+
+      <p>这个线性模型可能看起来有些古怪，但它所做的只是把每个基函数值乘以对应参数 <span class="math-inline"><var>w</var><sub><var>k</var></sub></span>，再把全部 <span class="math-inline"><var>K</var></span> 个乘积相加。这只是线性模型的一种紧凑写法，其余部分应该都很熟悉。不过，章末习题会要求从这些先验模拟。</p>
+
+      <p>要在 <code>quap</code> 中构造该模型，需要一种执行求和的方法。最简单的是使用矩阵乘法。即使不熟悉这里的线性代数也没关系，后面的“过度思考”侧栏会详细解释为什么可行。另一个技巧是为权重提供初始值列表，让 <code>quap</code> 知道一共有多少个权重：</p>
+
+      <figure class="code-listing" id="code-4-76">
+        <figcaption>R 代码 4.76</figcaption>
+        <pre><code>m4.7 &lt;- quap(
+    alist(
+        T ~ dnorm( mu , sigma ) ,
+        mu &lt;- a + B %*% w ,
+        a ~ dnorm(6,10),
+        w ~ dnorm(0,1),
+        sigma ~ dexp(1)
+    ),
+    data=list( T=d2$temp , B=B ) ,
+    start=list( w=rep( 0 , ncol(B) ) ) )</code></pre>
+      </figure>
+
+      <p>可以用 <code>precis(m4.7,depth=2)</code> 查看后验均值，但不会揭示多少信息。输出中应有 17 个 <code>w</code> 参数，却无法从参数汇总判断模型认为曲线是什么样子。因此需要绘制后验预测。先画加权基函数：</p>
+
+      <figure class="code-listing" id="code-4-77">
+        <figcaption>R 代码 4.77</figcaption>
+        <pre><code>post &lt;- extract.samples(m4.7)
+w &lt;- apply( post$w , 2 , mean )
+plot( NULL , xlim=range(d2$year) , ylim=c(-2,2) ,
+    xlab="year" , ylab="basis * weight" )
+for ( i in 1:ncol(B) ) lines( d2$year , w[i]*B[,i] )</code></pre>
+      </figure>
+
+      <p>加上结点作为参照后，这幅图显示在<a href="#fig-4-13">图 4.13</a>中间一行。最后计算每个年份上 <span class="math-inline"><var>μ</var></span> 的 97% 后验区间：</p>
+
+      <figure class="code-listing" id="code-4-78">
+        <figcaption>R 代码 4.78</figcaption>
+        <pre><code>mu &lt;- link( m4.7 )
+mu_PI &lt;- apply(mu,2,PI,0.97)
+plot( d2$year , d2$temp , col=col.alpha(rangi2,0.3) , pch=16 )
+shade( mu_PI , d2$year , col=col.alpha("black",0.5) )</code></pre>
+      </figure>
+
+      <p>结果显示在图的底部。现在样条起伏丰富得多。可以增加结点数量和基函数次数，观察样条怎样改变。也许会想知道多少个结点才正确；再过几章，我们就会准备好处理这个问题——准确地说，我们会通过改变问题来回答它。</p>
+
+      <aside class="overthinking-box" id="overthinking-spline-matrix-multiplication">
+        <h3>过度思考：样条模型中的矩阵乘法</h3>
+
+        <p>为了让模型 <code>m4.7</code> 更容易编程，前面使用基函数矩阵 <code>B</code> 乘以参数向量 <code>w</code>：<code>B %*% w</code>。这只是线性代数的简写，表示：（1）把向量 <code>w</code> 的每个元素与 <code>B</code> 对应列中的每个值相乘；（2）对结果的每一行求和。也可以用下面不太优雅的代码拟合同一个模型：</p>
+
+        <figure class="code-listing" id="code-4-79">
+          <figcaption>R 代码 4.79</figcaption>
+          <pre><code>m4.7alt &lt;- quap(
+    alist(
+        T ~ dnorm( mu , sigma ) ,
+        mu &lt;- a + sapply( 1:1124 , function(i) sum( B[i,]*w ) ) ,
+        a ~ dnorm(6,10),
+        w ~ dnorm(0,1),
+        sigma ~ dexp(1)
+    ),
+    data=list( T=d2$temp , B=B ) ,
+    start=list( w=rep( 0 , ncol(B) ) ) )</code></pre>
+        </figure>
+
+        <p>这样恰好得到所需结果：每个年份（每一行）都有一个求和线性预测变量。如果没有接触过多少线性代数，矩阵记号可能令人畏惧。请记住，它不过是已经熟悉的数学，只是以高度压缩的形式表达，方便对数字列表执行重复计算。</p>
+      </aside>
     </section>
+  </section>
+
+  <section id="sec-4-6">
+    <h2>4.6 总结</h2>
+
+    <p>本章介绍了简单线性回归模型，它是估计预测变量与结果变量之间关联的框架。高斯分布构成这类模型的似然，因为它会计算均值与标准差的不同组合能以多少种相对方式产生一项观测。为了把这些模型拟合到数据，本章介绍了后验分布的二次近似与 <code>quap</code> 工具，还介绍了可视化后验分布和后验预测的新程序。下一章会把这些概念扩展到包含多个预测变量的回归模型。</p>
+
+    <p>本章的基本技术，是后面各章大多数示例的基础。如果其中许多材料对你来说很新，那么在继续向前之前，现在也许值得回顾一遍本章。</p>
+  </section>
+
+  <section id="sec-4-7">
+    <h2>4.7 习题</h2>
+
+    <div class="practice-group" aria-labelledby="practice-4-easy">
+      <h3 id="practice-4-easy">简单题</h3>
+
+      <div class="exercise" id="exercise-4e1">
+        <h4>4E1</h4>
+        <p>在下面的模型定义中，哪一行是似然？</p>
+        <div class="equation-block model-system-equation" id="eq-4-practice-e1-model">
+          <div><var>y</var><sub>i</sub> ∼ Normal(<var>μ</var>, <var>σ</var>)</div>
+          <div><var>μ</var> ∼ Normal(0, 10)</div>
+          <div><var>σ</var> ∼ Exponential(1)</div>
+        </div>
+      </div>
+
+      <div class="exercise" id="exercise-4e2">
+        <h4>4E2</h4>
+        <p>在上面的模型定义中，后验分布里有多少个参数？</p>
+      </div>
+    </div>
+
+    <p class="continuation-note">其余简单题、中等题与困难题将在原书 PDF 第 140 页继续。</p>
   </section>
 
   <section class="endnotes" id="chapter-04-notes" role="doc-endnotes">
@@ -1741,6 +1861,6 @@ B &lt;- bs(d2$year,
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 89–136 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 137 页继续。
+    <strong>译稿状态：</strong>PDF 第 89–139 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 140 页继续。
   </aside>
 </article>

@@ -415,7 +415,14 @@
     "local linear approximation": "局部线性近似",
     "synthetic predictor variable": "合成预测变量",
     "reconstructed temperature record": "重建气温记录",
-    "complete case": "完整案例"
+    "complete case": "完整案例",
+    "spline model": "样条模型",
+    "matrix multiplication": "矩阵乘法",
+    "basis matrix": "基函数矩阵",
+    "parameter vector": "参数向量",
+    "sum linear predictor": "求和线性预测变量",
+    "simple linear regression": "简单线性回归",
+    "start list": "初始值列表"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"
