@@ -343,7 +343,7 @@
   },
   "chapter-04": {
     "required_status": "in_progress",
-    "source_pages": [89, 100],
+    "source_pages": [89, 103],
     "required_ids": [
       "fig-4-1",
       "sec-4-1",
@@ -386,6 +386,17 @@
       "rethinking-iid",
       "eq-4-height-iid",
       "eq-4-height-model-priors",
+      "code-4-12",
+      "code-4-13",
+      "code-4-14",
+      "code-4-15",
+      "fig-4-3",
+      "rethinking-farewell-epsilon",
+      "eq-4-epsilon-model",
+      "overthinking-height-model-to-bayes",
+      "eq-4-height-posterior",
+      "sec-4-3-3",
+      "code-4-16",
       "chapter-04-notes",
       "note-64",
       "note-65",
@@ -394,7 +405,8 @@
       "note-68",
       "note-69",
       "note-70",
-      "note-71"
+      "note-71",
+      "note-72"
     ],
     "required_headings": [
       "地心模型",
@@ -416,15 +428,19 @@
       "过度思考：索引魔法",
       "4.3.2 模型",
       "再思考：独立同分布",
+      "再思考：告别 epsilon",
+      "过度思考：再次从模型定义到贝叶斯定理",
+      "4.3.3 后验分布的网格近似",
       "尾注"
     ],
     "counts": {
-      "section": 13,
-      "figure": 13,
-      "figure img": 2,
+      "section": 14,
+      "figure": 19,
+      "figure img": 3,
       ".ptolemaic-figure": 1,
       ".random-walk-figure": 1,
-      ".equation-block": 10,
+      ".prior-predictive-figure": 1,
+      ".equation-block": 12,
       ".gaussian-density-equation": 1,
       ".gaussian-precision-equation": 1,
       ".model-system-equation": 2,
@@ -432,14 +448,16 @@
       ".height-likelihood-equation": 1,
       ".iid-equation": 1,
       ".annotated-model-equation": 1,
-      ".code-listing": 11,
+      ".epsilon-model-equation": 1,
+      ".height-posterior-equation": 1,
+      ".code-listing": 16,
       ".code-output": 2,
-      ".rethinking-box": 2,
-      ".overthinking-box": 4,
+      ".rethinking-box": 3,
+      ".overthinking-box": 5,
       ".model-language-steps": 1,
       ".model-language-steps li": 3,
       ".model-reading": 1,
-      ".endnotes li": 8
+      ".endnotes li": 9
     }
   }
 }

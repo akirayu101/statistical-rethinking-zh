@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-04" data-source-pages="89-100">
+<article class="book-article" data-chapter="chapter-04" data-source-pages="89-103">
   <header class="chapter-header">
     <p class="eyebrow">第四章</p>
     <h1>地心模型</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 89–100 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 89–103 页</p>
   </header>
 
   <p>历史对托勒密并不宽厚。克劳狄乌斯·托勒密（约公元 90 年生，168 年卒）是埃及数学家和天文学家，最著名的成就是太阳系地心模型。今天，科学家若想嘲讽某人，有时会把他比作地心模型的拥护者。但托勒密是位天才。他描述行星运动的数学模型（<a href="#fig-4-1">图 4.1</a>）极其准确。为了达到这种精度，模型采用了一种叫作<strong>本轮</strong>的装置，也就是圆上套圆。甚至还能有“本轮上的本轮”：圆上套圆再套圆。只要在适当位置放置足够多的本轮，托勒密模型的预测精度就能超过此前任何人。因此，这套模型沿用了一千多年。托勒密和许多与他相似的人历经数百年艰苦推演，在没有计算机帮助的条件下解决了这一切。任何人被比作托勒密，都应该感到受宠若惊。</p>
@@ -367,7 +367,106 @@ male      0.47  0.50  0.00   1.00     ▇▁▁▁▁▁▁▁▁▇</code></pre
 
       <p>为什么是 178 厘米？因为作者身高 178 厘米。从 138 到 218 厘米，覆盖了人类群体平均身高极其宽广的可信范围。因此，这个先验融入了特定领域的信息。每个人都对人类身高有所了解，都能设定一个这类合理而模糊的先验。但后面会看到，在许多回归问题中使用先验信息更微妙，因为参数并不总有如此清晰的物理含义。</p>
 
-      <p class="continuation-note">第 4.3.2 节将在原书 PDF 第 101 页继续。</p>
+      <p>无论选择什么先验，都强烈建议把它画出来，从而直观了解先验为模型带入了怎样的假设。本例中：</p>
+
+      <figure class="code-listing" id="code-4-12">
+        <figcaption>R 代码 4.12</figcaption>
+        <pre><code>curve( dnorm( x , 178 , 20 ) , from=100 , to=250 )</code></pre>
+      </figure>
+
+      <p>亲自执行这段代码，会看到魔像假定平均身高——不是每个个体的身高——几乎肯定介于 140 与 220 厘米之间。因此，这个先验包含少量信息，却不算多。<span class="math-inline"><var>σ</var></span> 的先验则是真正平坦的均匀先验，只负责把 <span class="math-inline"><var>σ</var></span> 限制在 0 到 50 厘米之间并赋予正概率。可以这样查看：</p>
+
+      <figure class="code-listing" id="code-4-13">
+        <figcaption>R 代码 4.13</figcaption>
+        <pre><code>curve( dunif( x , 0 , 50 ) , from=-10 , to=60 )</code></pre>
+      </figure>
+
+      <p>标准差 <span class="math-inline"><var>σ</var></span> 必须为正，所以把下界设为 0 很合理。上界该怎样选？本例中，50 厘米的标准差意味着 95% 的个体身高位于平均身高上下 100 厘米以内；这是非常宽广的范围。</p>
+
+      <p>这些讨论都很好，但真正看看这些先验对个体身高分布意味着什么，会更有帮助。这是建模中的关键环节：<strong>先验预测模拟</strong>。一旦为 <span class="math-inline"><var>h</var></span>、<span class="math-inline"><var>μ</var></span> 和 <span class="math-inline"><var>σ</var></span> 选定分布，它们便共同蕴含个体身高的联合先验分布。从这个分布中模拟，就能看到这些选择对可观测身高意味着什么，从而诊断糟糕选择。许多惯用选择确实很糟糕；做先验预测模拟就能看出来。</p>
+
+      <p>具体怎样做？可以像第 3 章从后验抽样那样，从先验抽样来快速模拟身高。请记住，每个后验都可能成为后续分析的先验，因此先验可以像后验一样处理。</p>
+
+      <figure class="code-listing" id="code-4-14">
+        <figcaption>R 代码 4.14</figcaption>
+        <pre><code>sample_mu &lt;- rnorm( 1e4 , 178 , 20 )
+sample_sigma &lt;- runif( 1e4 , 0 , 50 )
+prior_h &lt;- rnorm( 1e4 , sample_mu , sample_sigma )
+dens( prior_h )</code></pre>
+      </figure>
+
+      <p><a href="#fig-4-3">图 4.3</a>同时展示了这个密度，以及 <span class="math-inline"><var>μ</var></span> 和 <span class="math-inline"><var>σ</var></span> 各自的密度。身高先验预测呈现一条大致钟形、尾部较厚的密度曲线；它是在先验上求平均后得到的身高期望分布。注意，身高的先验概率分布本身并不是高斯分布，这没有问题。图中分布不是经验预期，而是在看到数据之前，不同身高相对可信度的分布。</p>
+
+      <p>先验预测模拟非常有助于指定合理先验，因为很难预先判断先验会怎样影响可观测变量。例如，考虑一个平坦得多、信息更少的 <span class="math-inline"><var>μ</var></span> 先验：<span class="math-inline"><var>μ</var> ∼ Normal(178, 100)</span>。这类标准差巨大的先验在贝叶斯模型中相当常见，却几乎从不合理。再次用模拟查看它蕴含的身高：</p>
+
+      <figure class="code-listing" id="code-4-15">
+        <figcaption>R 代码 4.15</figcaption>
+        <pre><code>sample_mu &lt;- rnorm( 1e4 , 178 , 100 )
+prior_h &lt;- rnorm( 1e4 , sample_mu , sample_sigma )
+dens( prior_h )</code></pre>
+      </figure>
+
+      <figure class="book-figure prior-predictive-figure" id="fig-4-3">
+        <div class="figure-scroll" tabindex="0" aria-label="可横向滚动的身高先验与先验预测四面板图">
+          <img src="/media/chapter-04-prior-predictive.svg" alt="顶部是均值与标准差先验，左下是合理先验的身高预测，右下是过宽均值先验产生的负身高与异常高身高">
+        </div>
+        <p class="scroll-hint">图较宽，可横向滚动查看四个先验与先验预测面板。</p>
+        <figcaption><strong>图 4.3：</strong>身高模型的先验预测模拟。上排：<span class="math-inline"><var>μ</var></span> 与 <span class="math-inline"><var>σ</var></span> 的先验分布。左下：使用上排先验得到的身高先验预测，横轴标出三个标准差位置。右下：使用 <span class="math-inline"><var>μ</var> ∼ Normal(178, 100)</span> 得到的先验预测；虚线为 0 厘米，实线为 272 厘米。</figcaption>
+      </figure>
+
+      <p>结果显示在<a href="#fig-4-3">图 4.3</a>右下角。看到数据之前，模型就预期 4% 的人——虚线左侧——身高为负；还预期会出现一些巨人。有记录以来最高的人之一，罗伯特·潘兴·瓦德洛（Robert Pershing Wadlow，1918–1940）身高 272 厘米。在先验预测模拟中，18% 的人——实线右侧——比他还高。</p>
+
+      <p>这重要吗？本例数据很多，所以即使如此荒唐的先验也不会造成伤害。但情况不会总是这样。有许多推断问题，无论数据多么丰富，仅靠数据本身仍不充分。贝叶斯方法让我们在这些情况下继续推断，但前提是运用科学知识构造合理先验。</p>
+
+      <aside class="rethinking-box" id="rethinking-farewell-epsilon">
+        <h3>再思考：告别 epsilon</h3>
+        <p>一些读者可能已经见过高斯线性模型的另一种记法：</p>
+
+        <div class="equation-block epsilon-model-equation" id="eq-4-epsilon-model">
+          <div>hᵢ = μ + εᵢ</div>
+          <div>εᵢ ∼ Normal(0, σ)</div>
+        </div>
+
+        <p>它等价于 <span class="math-inline">hᵢ ∼ Normal(μ, σ)</span>，其中 <span class="math-inline"><var>ε</var></span> 代替高斯密度。不过，<span class="math-inline"><var>ε</var></span> 这种形式并不理想，因为它通常无法推广到其他类型的模型。也就是说，不能靠 <span class="math-inline"><var>ε</var></span> 之类技巧表达非高斯模型。最好学习一套真正可以推广的系统。</p>
+      </aside>
+
+      <aside class="overthinking-box" id="overthinking-height-model-to-bayes">
+        <h3>过度思考：再次从模型定义到贝叶斯定理</h3>
+        <p>看看前一页的模型定义怎样构造后验分布，会很有帮助。身高模型连同 <span class="math-inline"><var>μ</var></span> 和 <span class="math-inline"><var>σ</var></span> 的先验，定义了：</p>
+
+        <div class="equation-block height-posterior-equation" id="eq-4-height-posterior">
+          <span>Pr(μ, σ | h) =</span>
+          <span class="fraction">
+            <span>∏ᵢ Normal(hᵢ | μ, σ) Normal(μ | 178, 20) Uniform(σ | 0, 50)</span>
+            <span>∫∫ ∏ᵢ Normal(hᵢ | μ, σ) Normal(μ | 178, 20) Uniform(σ | 0, 50) dμ dσ</span>
+          </span>
+        </div>
+
+        <p>公式看起来像怪物，其实仍是先前那只生物。它显得复杂，只因多了两件事。第一，<span class="math-inline"><var>h</var></span> 中不止一个观测；要得到全部数据的联合似然，必须计算每个 <span class="math-inline">hᵢ</span> 的概率，再把所有似然相乘。右侧的乘积符号负责这件事。第二，有两个先验，一个属于 <span class="math-inline"><var>μ</var></span>，另一个属于 <span class="math-inline"><var>σ</var></span>；它们只是依次叠加。下一节的网格近似代码会展示这个定义在 R 中的含义。全部计算都在对数尺度上完成，所以乘法会变成加法；除此之外，只是在执行贝叶斯定理。</p>
+      </aside>
+    </section>
+
+    <section id="sec-4-3-3">
+      <h3>4.3.3 后验分布的网格近似</h3>
+
+      <p>这是本书第一个高斯模型，也是第一个含有多个参数的模型，因此值得用蛮力计算快速绘出后验分布。我不建议在其他地方采用这种方法，因为它既繁琐又耗费计算；通常甚至不切实际到近乎不可能。不过，在开始接受近似之前，知道真正目标长什么样始终很有价值。本章稍后会使用二次近似估计后验分布，接下来几章也会继续使用这种方法。得到本小节生成的样本后，可以把它们与下一小节的二次近似比较。</p>
+
+      <p>遗憾的是，这里的计算需要一些几乎不增加概念洞见的技术技巧。因此先直接给出代码，不作解释。现在可以执行后继续阅读，稍后再回来根据尾注了解算法。<sup><a id="note-72-ref" href="#note-72" aria-label="尾注 72">72</a></sup>下面就是魔像的内脏：</p>
+
+      <figure class="code-listing" id="code-4-16">
+        <figcaption>R 代码 4.16</figcaption>
+        <pre><code>mu.list &lt;- seq( from=150, to=160 , length.out=100 )
+sigma.list &lt;- seq( from=7 , to=9 , length.out=100 )
+post &lt;- expand.grid( mu=mu.list , sigma=sigma.list )
+post$LL &lt;- sapply( 1:nrow(post) , function(i) sum(
+    dnorm( d2$height , post$mu[i] , post$sigma[i] , log=TRUE ) ) )
+post$prod &lt;- post$LL + dnorm( post$mu , 178 , 20 , TRUE ) +
+    dunif( post$sigma , 0 , 50 , TRUE )
+post$prob &lt;- exp( post$prod - max(post$prod) )</code></pre>
+      </figure>
+
+      <p>后验分布现在保存在 <code>post$prob</code> 中，可以用多种绘图命令检查。例如，可以这样得到简单的等高线图：</p>
+      <p class="continuation-note">代码与本节将在原书 PDF 第 104 页继续。</p>
     </section>
   </section>
 
@@ -382,10 +481,11 @@ male      0.47  0.50  0.00   1.00     ▇▁▁▁▁▁▁▁▁▇</code></pre
       <li id="note-69">参见 Howell（2010）和 Howell（2000），另见 Lee 和 DeVore（1976）。更多原始数据可从 <span class="url-text">https://tspace.library.utoronto.ca/handle/1807/10395</span> 下载。 <a class="backref" href="#note-69-ref" aria-label="返回正文">↩</a></li>
       <li id="note-70">参见 Jaynes（2003）第 21–22 页；该书索引还列出这一概念在各种统计论证中的其他用例。 <a class="backref" href="#note-70-ref" aria-label="返回正文">↩</a></li>
       <li id="note-71">参见 Jaynes（1986）关于“左撇子袋鼠偏好哪种啤酒”的有趣例子；这篇论文还有一份 1996 年更新版可在线获取。 <a class="backref" href="#note-71-ref" aria-label="返回正文">↩</a></li>
+      <li id="note-72">策略仍是前面（原书第 40 页）的网格近似，不过现在有两个维度，麻烦会按几何意义迅速增长。算法虽然不透明，所幸很短，可以看成六条命令。前两行分别设定要计算的 <span class="math-inline"><var>μ</var></span>、<span class="math-inline"><var>σ</var></span> 范围和网格点数；第三行把选定值展开为所有组合的矩阵，存入数据框 <code>post</code>。第四条命令计算每组 <span class="math-inline"><var>μ</var>, <var>σ</var></span> 的对数似然：<code>sapply</code> 把 <code>post</code> 每一行的组合传给函数，计算每个观测身高的对数似然并求和。必须在对数尺度上计算，否则舍入误差会很快把全部后验概率变成零。第五条命令把对数先验加到对数似然上，等价于在原尺度把先验与似然相乘。最后，从对数概率返回概率尺度时仍面临舍入问题；直接使用 <code>exp(post$prod)</code> 会得到全零向量。代码先用最大对数乘积缩放全部值，避免这个问题。因此，<code>post$prob</code> 中不是精确概率，而是相对后验概率；对后续用途已经足够。 <a class="backref" href="#note-72-ref" aria-label="返回正文">↩</a></li>
     </ol>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 89–100 页已完成翻译、逐页核对、阶段契约和桌面/移动端视觉验收。下一批从 PDF 第 101 页继续。
+    <strong>译稿状态：</strong>PDF 第 89–103 页已完成翻译、逐页核对、阶段契约和桌面/移动端视觉验收。下一批从 PDF 第 104 页继续。
   </aside>
 </article>

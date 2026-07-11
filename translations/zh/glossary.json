@@ -289,7 +289,16 @@
     "exchangeable": "可交换",
     "de Finetti's theorem": "de Finetti 定理",
     "joint prior": "联合先验",
-    "domain-specific information": "特定领域信息"
+    "domain-specific information": "特定领域信息",
+    "prior predictive distribution": "先验预测分布",
+    "observable height": "可观测身高",
+    "epsilon notation": "epsilon 表示法",
+    "joint likelihood": "联合似然",
+    "brute-force calculation": "蛮力计算",
+    "log-likelihood": "对数似然",
+    "rounding error": "舍入误差",
+    "relative posterior probability": "相对后验概率",
+    "grid point": "网格点"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"
