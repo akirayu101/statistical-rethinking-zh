@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-02" data-source-pages="35-52">
+<article class="book-article" data-chapter="chapter-02" data-source-pages="35-55">
   <header class="chapter-header">
     <p class="eyebrow">第二章</p>
     <h1>小世界与大世界</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 35–52 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 35–55 页</p>
   </header>
 
   <p>1492 年，Cristoforo Colombo（Christopher Columbus，中文常译“哥伦布”）那次声名狼藉的向西航行开始时，他相信地球是球形的。在这一点上，他和当时大多数受过教育的人一样。与大多数人不同的是，他还相信地球比实际小得多：赤道周长只有 30,000 公里，而不是真实的 40,000 公里（图 2.1）。<sup><a href="#note-37" aria-label="尾注 37">37</a></sup>这是欧洲历史上影响最为深远的错误之一。</p>
@@ -590,6 +590,96 @@ ways/sum(ways)</code></pre>
     <p>命名所有变量并为每个变量选择定义后，贝叶斯模型就能把全部先验分布更新为其纯粹的逻辑后果：<strong>后验分布</strong>。数据、似然、参数与先验每一种独特组合，都对应唯一的后验分布。这个分布包含在给定数据和模型条件下，不同参数值的相对可信程度。</p>
 
     <p>后验分布采取“给定数据后参数的概率”这一形式。在本例中，就是 <span class="math-inline">Pr(<var>p</var> | <var>W</var>, <var>L</var>)</span>：给定我们实际观测到的 <span class="math-inline"><var>W</var></span> 与 <span class="math-inline"><var>L</var></span> 后，<span class="math-inline"><var>p</var></span> 每个可能值的概率。</p>
+
+    <section id="sec-2-4-1">
+      <h3>2.4.1 贝叶斯定理</h3>
+
+      <p>后验分布的数学定义来自<strong>贝叶斯定理</strong>，贝叶斯数据分析正是由此得名。不过，这个定理本身只是概率论的一个平凡推论。下面在地球仪投掷例子中快速推导。其实，它只是把本章前面分叉数据花园的推导换一种表达；看起来不同，是因为这里用概率论规则引出更新规则，但本质上仍只是在计数。</p>
+
+      <p>数据 <span class="math-inline"><var>W</var></span>、<span class="math-inline"><var>L</var></span> 与 <span class="math-inline"><var>p</var></span> 任一特定取值的联合概率为：</p>
+
+      <div class="equation-block simple-equation" role="math" aria-label="W、L 和 p 的联合概率等于给定 p 后 W 和 L 的概率乘以 p 的先验概率">
+        <span>Pr(<var>W</var>, <var>L</var>, <var>p</var>) = Pr(<var>W</var>, <var>L</var> | <var>p</var>) Pr(<var>p</var>)</span>
+      </div>
+
+      <p>这只是说，<span class="math-inline"><var>W</var></span>、<span class="math-inline"><var>L</var></span> 和 <span class="math-inline"><var>p</var></span> 的概率，等于 <span class="math-inline">Pr(<var>W</var>, <var>L</var> | <var>p</var>)</span> 与先验概率 <span class="math-inline">Pr(<var>p</var>)</span> 的乘积。就像同一天又下雨又寒冷的概率，等于寒冷时下雨的概率乘以寒冷的概率。这只是定义。但下面同样成立：</p>
+
+      <div class="equation-block simple-equation" role="math" aria-label="W、L 和 p 的联合概率也等于给定 W 和 L 后 p 的概率乘以 W 和 L 的概率">
+        <span>Pr(<var>W</var>, <var>L</var>, <var>p</var>) = Pr(<var>p</var> | <var>W</var>, <var>L</var>) Pr(<var>W</var>, <var>L</var>)</span>
+      </div>
+
+      <p>右边只是把哪一个概率带条件反了过来，仍然是正确的定义。就像同一天又下雨又寒冷的概率，也等于下雨时寒冷的概率乘以下雨的概率。请与上一段的说法比较。</p>
+
+      <p>由于上面两个等式的右边都等于同一个 <span class="math-inline">Pr(<var>W</var>, <var>L</var>, <var>p</var>)</span>，它们也彼此相等：</p>
+
+      <div class="equation-block simple-equation" role="math" aria-label="给定 p 后 W 和 L 的概率乘 p 的先验，等于给定 W 和 L 后 p 的概率乘 W 和 L 的概率">
+        <span>Pr(<var>W</var>, <var>L</var> | <var>p</var>) Pr(<var>p</var>) = Pr(<var>p</var> | <var>W</var>, <var>L</var>) Pr(<var>W</var>, <var>L</var>)</span>
+      </div>
+
+      <p>于是可以解出我们真正想要的 <span class="math-inline">Pr(<var>p</var> | <var>W</var>, <var>L</var>)</span>：</p>
+
+      <div class="equation-block bayes-theorem-equation" id="eq-2-bayes-theorem" role="math" aria-label="给定 W 和 L 后 p 的概率，等于给定 p 后 W 和 L 的概率乘 p 的先验概率，再除以 W 和 L 的平均概率">
+        <span>Pr(<var>p</var> | <var>W</var>, <var>L</var>) =</span>
+        <span class="fraction"><span>Pr(<var>W</var>, <var>L</var> | <var>p</var>) Pr(<var>p</var>)</span><span>Pr(<var>W</var>, <var>L</var>)</span></span>
+      </div>
+
+      <p>这就是贝叶斯定理。它说：考虑数据之后，<span class="math-inline"><var>p</var></span> 任一特定取值的概率，等于“给定 <span class="math-inline"><var>p</var></span> 后数据的相对可信程度”与“<span class="math-inline"><var>p</var></span> 的先验可信程度”的乘积，再除以 <span class="math-inline">Pr(<var>W</var>, <var>L</var>)</span>。我把后者称为<strong>数据的平均概率</strong>。用文字写成：</p>
+
+      <div class="equation-block word-bayes-equation" role="math" aria-label="后验等于数据概率乘以先验，再除以数据的平均概率">
+        <span>后验 =</span>
+        <span class="fraction"><span>数据概率 × 先验</span><span>数据的平均概率</span></span>
+      </div>
+
+      <p>数据的平均概率 <span class="math-inline">Pr(<var>W</var>, <var>L</var>)</span> 可能令人困惑。它通常称为“证据”或“平均似然”，两个名称都不够直观。<span class="math-inline">Pr(<var>W</var>, <var>L</var>)</span> 的确就是数据的<strong>平均</strong>概率。对什么取平均？对先验取平均。它的工作只是标准化后验，确保后验总和（积分）为 1。数学上写成：</p>
+
+      <div class="equation-block integral-equation" id="eq-2-average-data" role="math" aria-label="W 和 L 的平均概率，等于给定 p 后 W 和 L 的概率在先验上的期望，也等于该概率乘 p 的先验概率后对 p 积分">
+        <span>Pr(<var>W</var>, <var>L</var>) = E[Pr(<var>W</var>, <var>L</var> | <var>p</var>)] = ∫ Pr(<var>W</var>, <var>L</var> | <var>p</var>) Pr(<var>p</var>) d<var>p</var></span>
+      </div>
+
+      <p>算子 <span class="math-inline">E</span> 表示取<strong>期望</strong>。在数理统计中，这类平均通常称为<strong>边际量</strong>，所以也会看到同一个概率被称为<strong>边际似然</strong>。上面的积分只是定义了如何对连续取值分布——例如 <span class="math-inline"><var>p</var></span> 的无穷多个可能值——正确取平均。</p>
+
+      <p>关键结论是：后验正比于先验与数据概率的乘积。为什么？因为对每个特定的 <span class="math-inline"><var>p</var></span> 值，穿过分叉数据花园的路径数，就是先验路径数与新路径数的乘积。乘法只是压缩后的计数；分母中的平均概率只是把计数标准化，使其总和为 1。因此，贝叶斯定理虽然看起来复杂——因为它遮蔽了与路径计数的关系——表达的仍只是逻辑所要求的计数。</p>
+
+      <figure class="book-figure bayes-figure" id="fig-2-6">
+        <div class="figure-scroll" tabindex="0" aria-label="可横向滚动的先验、似然与后验乘积图">
+          <img src="/media/chapter-02-bayes-products.svg" alt="三行图分别展示平坦先验、阶梯先验和尖峰先验与同一个似然相乘，得到不同的后验分布">
+        </div>
+        <p class="scroll-hint">图较宽，可横向滚动查看三列分布。</p>
+        <figcaption><strong>图 2.6：</strong>后验分布是先验分布与似然的乘积。第一行：平坦先验得到与似然成正比的后验。第二行：阶梯先验把小于 0.5 的所有值赋为零概率，得到截断后验。第三行：尖峰先验使后验相对似然发生偏移和偏斜。</figcaption>
+      </figure>
+
+      <p>图 2.6 展示先验与数据概率的乘法互动。每一行中，左侧先验乘以中间的数据概率，产生右侧后验。三行的数据概率完全相同，先验却不同，所以后验分布也不同。</p>
+
+      <aside class="rethinking-box">
+        <h3>再思考：贝叶斯数据分析并不等于贝叶斯定理</h3>
+        <p>关于贝叶斯数据分析乃至更广义的贝叶斯推断，一种常见看法是：它以使用贝叶斯定理为区别标志。这是错误的。任何概率概念下的推断，最终都会使用贝叶斯定理。用 HIV 和 DNA 检测讲解“贝叶斯”分析的常见入门例子，并非贝叶斯独有；由于计算的所有元素都是观测频率，非贝叶斯分析会做完全相同的事。</p>
+        <p>真正的区别是，贝叶斯方法可以更普遍地使用贝叶斯定理，对参数和模型等无法观测的理论实体之不确定性进行量化。贝叶斯与非贝叶斯概率概念都能产生强大的推断，只是需要不同的论证与牺牲。</p>
+      </aside>
+    </section>
+
+    <section id="sec-2-4-2">
+      <h3>2.4.2 引擎</h3>
+
+      <p>回想一下，你的贝叶斯模型是一台机器，是一个比喻意义上的魔像。它内置了似然、参数和先验的定义，核心处则有一台处理数据、产生后验分布的引擎。可以把这台引擎的动作理解为：用数据对先验进行<strong>条件化</strong>。上一小节解释过，这种条件化由概率论规则支配；对于给定的一组假设与观测，它定义了唯一合乎逻辑的后验。</p>
+
+      <p>然而，知道数学规则往往帮助不大，因为当代科学中的许多有趣模型，无论数学技巧多高，都无法用解析方式完成条件化。线性回归等用途广泛的模型虽然可以解析条件化，却只有在把先验限制为容易计算的特殊形式时才行。我们希望避免这种被迫的建模选择，转而采用能够容纳任何对推断最有用先验的条件化引擎。</p>
+
+      <p>这意味着，需要各种数值技术来近似贝叶斯定理定义所导出的数学。本书将介绍三种不同的条件化引擎，也就是计算后验分布的数值技术：</p>
+
+      <ol class="engine-list">
+        <li>网格近似；</li>
+        <li>二次近似；</li>
+        <li>马尔可夫链蒙特卡洛（MCMC）。</li>
+      </ol>
+
+      <p>还有许多其他引擎，新的引擎也一直在被发明。但本书介绍的三种很常见，用途也很广。学习它们时，还会掌握一些有助于理解其他技术的原则。</p>
+
+      <aside class="rethinking-box">
+        <h3>再思考：如何拟合模型，也是模型的一部分</h3>
+        <p>本章前面把模型隐式定义为先验与似然的组合，这是典型定义。但从实践看，还应把模型如何拟合数据也视为模型的一部分。在本章贯穿始终的地球仪投掷这类简单问题中，计算后验密度轻而易举，不易出错；可在稍微复杂的问题中，拟合细节会迫使我们承认，数值技术会影响推断。</p>
+        <p>原因是，不同技术会产生不同错误与妥协。同一模型用不同技术拟合同一数据，可能给出不同答案。出了问题时，机器的每一部分都可能有嫌疑。因此，我们的魔像随身携带自己的更新引擎；它们既受制于自身工程结构，也受制于我们编入其中的先验和似然。</p>
+      </aside>
+    </section>
   </section>
   </section>
 
@@ -612,6 +702,6 @@ ways/sum(ways)</code></pre>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 35–52 页已完成翻译、逐页渲染对照和桌面/移动端视觉验收；下一批从 PDF 第 53 页开始。
+    <strong>译稿状态：</strong>PDF 第 35–55 页已完成翻译、逐页渲染对照和桌面/移动端视觉验收；下一批从 PDF 第 56 页开始。
   </aside>
 </article>

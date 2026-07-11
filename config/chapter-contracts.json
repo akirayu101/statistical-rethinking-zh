@@ -53,7 +53,7 @@
   },
   "chapter-02": {
     "required_status": "in_progress",
-    "source_pages": [35, 52],
+    "source_pages": [35, 55],
     "required_ids": [
       "fig-2-1",
       "sec-2-1",
@@ -80,6 +80,11 @@
       "model-2-binomial",
       "model-2-prior",
       "sec-2-4",
+      "sec-2-4-1",
+      "eq-2-bayes-theorem",
+      "eq-2-average-data",
+      "fig-2-6",
+      "sec-2-4-2",
       "chapter-02-notes"
     ],
     "required_headings": [
@@ -99,21 +104,24 @@
       "2.3.2.2 未观测变量",
       "2.3.3 模型诞生了",
       "2.4 让模型运转起来",
+      "2.4.1 贝叶斯定理",
+      "2.4.2 引擎",
       "尾注"
     ],
     "counts": {
-      "section": 16,
-      "figure": 7,
-      "figure img": 5,
+      "section": 18,
+      "figure": 8,
+      "figure img": 6,
       ".marble-tree svg": 2,
       ".garden-figure": 3,
       ".learning-figure": 1,
-      ".rethinking-box": 10,
+      ".bayes-figure": 1,
+      ".rethinking-box": 12,
       ".overthinking-box": 2,
       ".count-table": 4,
       ".update-table": 2,
       ".probability-table": 1,
-      ".equation-block": 7,
+      ".equation-block": 13,
       ".code-listing": 2,
       ".term-definitions li": 4,
       ".component-counts": 1,
@@ -121,6 +129,7 @@
       ".binomial-equation": 1,
       ".formula-reading": 1,
       ".model-statement": 2,
+      ".engine-list li": 3,
       ".endnotes li": 12
     }
   }

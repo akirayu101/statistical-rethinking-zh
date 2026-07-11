@@ -139,7 +139,18 @@
     "uniform distribution": "均匀分布",
     "likelihood penalty": "似然惩罚",
     "loss function": "损失函数",
-    "posterior distribution": "后验分布"
+    "posterior distribution": "后验分布",
+    "Bayes' theorem": "贝叶斯定理",
+    "joint probability": "联合概率",
+    "average probability": "平均概率",
+    "expectation": "期望",
+    "marginal likelihood": "边际似然",
+    "conditioning": "条件化",
+    "conditioning engine": "条件化引擎",
+    "grid approximation": "网格近似",
+    "quadratic approximation": "二次近似",
+    "Markov chain Monte Carlo": "马尔可夫链蒙特卡洛",
+    "model fitting": "模型拟合"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"
