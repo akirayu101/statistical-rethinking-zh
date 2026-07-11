@@ -6,6 +6,7 @@ from __future__ import annotations
 import csv
 import io
 import math
+import random
 from pathlib import Path
 
 
@@ -265,12 +266,65 @@ def predictors_figure(data: list[dict[str, float | str]]) -> str:
     return "\n".join(body)
 
 
+def prior_lines_figure() -> str:
+    width, height = 900, 600
+    left, top, plot_width, plot_height = 125, 55, 690, 430
+
+    def px(value: float) -> float:
+        return left + (value + 2) / 4 * plot_width
+
+    def py(value: float) -> float:
+        return top + plot_height - (value + 2) / 4 * plot_height
+
+    rng = random.Random(10)
+    body = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">',
+        "  <title>m5.1 先验隐含的可信回归线</title>",
+        "  <desc>五十条从截距和斜率先验模拟出的标准化结婚年龄与标准化离婚率回归线。</desc>",
+        '  <rect width="100%" height="100%" fill="#fff"/>',
+        f'  <rect x="{left}" y="{top}" width="{plot_width}" height="{plot_height}" fill="#fff" stroke="#343732" stroke-width="1.5"/>',
+        f'  <line x1="{fmt(px(0))}" y1="{top}" x2="{fmt(px(0))}" y2="{top + plot_height}" stroke="#b9bcb8" stroke-width="1"/>',
+        f'  <line x1="{left}" y1="{fmt(py(0))}" x2="{left + plot_width}" y2="{fmt(py(0))}" stroke="#b9bcb8" stroke-width="1"/>',
+    ]
+    for _ in range(50):
+        intercept = rng.gauss(0, 0.2)
+        slope = rng.gauss(0, 0.5)
+        body.append(
+            f'  <line x1="{fmt(px(-2))}" y1="{fmt(py(intercept - 2 * slope))}" x2="{fmt(px(2))}" y2="{fmt(py(intercept + 2 * slope))}" stroke="#313431" stroke-width="2" opacity="0.38" clip-path="url(#clip)"/>'
+        )
+    body.insert(
+        6,
+        f'  <defs><clipPath id="clip"><rect x="{left}" y="{top}" width="{plot_width}" height="{plot_height}"/></clipPath></defs>',
+    )
+    for tick in [-2, -1, 0, 1, 2]:
+        tx, ty = px(tick), py(tick)
+        body.extend(
+            [
+                f'  <line x1="{fmt(tx)}" y1="{top + plot_height}" x2="{fmt(tx)}" y2="{top + plot_height + 8}" stroke="#343732"/>',
+                f'  <text x="{fmt(tx)}" y="{top + plot_height + 32}" text-anchor="middle" font-family="{FONT}" font-size="17" fill="#30332e">{tick}</text>',
+                f'  <line x1="{left - 8}" y1="{fmt(ty)}" x2="{left}" y2="{fmt(ty)}" stroke="#343732"/>',
+                f'  <text x="{left - 15}" y="{fmt(ty + 6)}" text-anchor="end" font-family="{FONT}" font-size="17" fill="#30332e">{tick}</text>',
+            ]
+        )
+    body.extend(
+        [
+            f'  <text x="{fmt(left + plot_width / 2)}" y="{top + plot_height + 72}" text-anchor="middle" font-family="{FONT}" font-size="20" font-weight="700" fill="#263f86">结婚年龄中位数（标准化）</text>',
+            f'  <text x="45" y="{fmt(top + plot_height / 2)}" transform="rotate(-90 45 {fmt(top + plot_height / 2)})" text-anchor="middle" font-family="{FONT}" font-size="20" font-weight="700" fill="#263f86">离婚率（标准化）</text>',
+            "</svg>",
+            "",
+        ]
+    )
+    return "\n".join(body)
+
+
 def main() -> int:
     data = rows()
     MEDIA.mkdir(parents=True, exist_ok=True)
     outputs = {
         MEDIA / "chapter-05-waffle-divorce.svg": waffle_figure(data),
         MEDIA / "chapter-05-divorce-predictors.svg": predictors_figure(data),
+        MEDIA / "chapter-05-prior-regression-lines.svg": prior_lines_figure(),
     }
     for path, content in outputs.items():
         path.write_text(content, encoding="utf-8")

@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-05" data-source-pages="143-145">
+<article class="book-article" data-chapter="chapter-05" data-source-pages="143-148">
   <header class="chapter-header">
     <p class="eyebrow">第五章</p>
     <h1>多变量与虚假华夫饼</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 143–145 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 143–148 页</p>
   </header>
 
   <p>在北美——即便不算全世界——最可靠的华夫饼来源之一，是华夫饼屋（Waffle House）餐厅。华夫饼屋几乎总在营业，哪怕飓风刚刚过境也不例外。多数门店都投入资金做好灾害准备，其中包括自备发电机。因此，美国灾害救援机构联邦紧急事务管理署（FEMA）会非正式地把华夫饼屋当作衡量灾情严重程度的指标。<sup id="note-77-ref"><a href="#note-77">77</a></sup> 如果华夫饼屋关门了，那就是严重事件。</p>
@@ -52,7 +52,7 @@
     <p>另一个与离婚相关的预测变量是结婚年龄中位数，见<a href="#fig-5-2">图 5.2</a>右侧。结婚年龄也是离婚率的良好预测变量——结婚年龄越高，预测的离婚越少。下面载入数据，并把关心的变量标准化：</p>
 
     <figure class="code-listing" id="code-5-1">
-      <figcaption>R 代码 5.1（前半）</figcaption>
+      <figcaption>R 代码 5.1</figcaption>
       <pre><code># load data and copy
 library(rethinking)
 data(WaffleDivorce)
@@ -63,7 +63,147 @@ d$A &lt;- scale( d$MedianAgeMarriage )
 d$D &lt;- scale( d$Divorce )</code></pre>
     </figure>
 
-    <p class="continuation-note">R 代码 5.1 的最后一行及标准化变量说明将在原书 PDF 第 146 页继续。</p>
+    <p>可以用下面的线性回归模型复现图中的右侧面板：</p>
+
+    <div class="equation-block model-system-equation" id="eq-5-age-divorce-model">
+      <div><var>D</var><sub>i</sub> ∼ Normal(<var>μ</var><sub>i</sub>, <var>σ</var>)</div>
+      <div><var>μ</var><sub>i</sub> = <var>α</var> + <var>β</var><sub>A</sub><var>A</var><sub>i</sub></div>
+      <div><var>α</var> ∼ Normal(0, 0.2)</div>
+      <div><var>β</var><sub>A</sub> ∼ Normal(0, 0.5)</div>
+      <div><var>σ</var> ∼ Exponential(1)</div>
+    </div>
+
+    <p><span class="math-inline"><var>D</var><sub>i</sub></span> 是州 <span class="math-inline"><var>i</var></span> 的标准化离婚率（均值为零、标准差为一），<span class="math-inline"><var>A</var><sub>i</sub></span> 是州 <span class="math-inline"><var>i</var></span> 的标准化结婚年龄中位数。这个线性模型的结构应该已经从上一章熟悉了。</p>
+
+    <p>那么这些先验怎样呢？由于结果和预测变量都已标准化，截距 <span class="math-inline"><var>α</var></span> 最后应当非常接近零。斜率先验 <span class="math-inline"><var>β</var><sub>A</sub></span> 又意味着什么？如果 <span class="math-inline"><var>β</var><sub>A</sub> = 1</span>，就表示结婚年龄改变一个标准差时，离婚率也相应改变一个标准差。要判断这是否是很强的关系，需要知道结婚年龄的一个标准差究竟有多大：</p>
+
+    <figure class="code-listing" id="code-5-2">
+      <figcaption>R 代码 5.2</figcaption>
+      <pre><code>sd( d$MedianAgeMarriage )</code></pre>
+      <pre class="code-output"><code>[1] 1.24363</code></pre>
+    </figure>
+
+    <p>所以，当 <span class="math-inline"><var>β</var><sub>A</sub> = 1</span> 时，结婚年龄中位数改变 1.2 年，就与结果变量整整一个标准差的变化相关。这似乎强得离谱。上面的先验认为，可信斜率中只有 5% 的绝对值大于 1。稍后会从这些先验模拟，让你看到它们在结果空间中的样子。</p>
+
+    <p>计算近似后验时，这里没有新的代码技巧或技术。不过，我会添加注释，帮助解释接下来这一大段代码。</p>
+
+    <figure class="code-listing" id="code-5-3">
+      <figcaption>R 代码 5.3</figcaption>
+      <pre><code>m5.1 &lt;- quap(
+    alist(
+        D ~ dnorm( mu , sigma ) ,
+        mu &lt;- a + bA * A ,
+        a ~ dnorm( 0 , 0.2 ) ,
+        bA ~ dnorm( 0 , 0.5 ) ,
+        sigma ~ dexp( 1 )
+    ) , data = d )</code></pre>
+    </figure>
+
+    <p>要从先验模拟，可以像上一章那样使用 <code>extract.prior</code> 和 <code>link</code>。我会在结果与预测变量各自两个标准差的范围上绘制直线，这将覆盖两个变量的大部分可能范围。</p>
+
+    <figure class="code-listing" id="code-5-4">
+      <figcaption>R 代码 5.4</figcaption>
+      <pre><code>set.seed(10)
+prior &lt;- extract.prior( m5.1 )
+mu &lt;- link( m5.1 , post=prior , data=list( A=c(-2,2) ) )
+plot( NULL , xlim=c(-2,2) , ylim=c(-2,2) )
+for ( i in 1:50 ) lines( c(-2,2) , mu[i,] , col=col.alpha("black",0.4) )</code></pre>
+    </figure>
+
+    <figure class="book-figure divorce-prior-lines-figure" id="fig-5-3">
+      <div class="figure-scroll" tabindex="0" aria-label="可横向滚动的五十条先验回归线">
+        <img src="/media/chapter-05-prior-regression-lines.svg" alt="五十条从 m5.1 截距和斜率先验模拟的标准化回归线">
+      </div>
+      <p class="scroll-hint">图较宽，可横向滚动查看全部先验回归线。</p>
+      <figcaption><strong>图 5.3：</strong><code>m5.1</code> 中的先验所隐含的可信回归线。这些先验具有弱信息性：它们允许某些强得不可信的关系，但总体上会把直线限制在变量可能的范围内。</figcaption>
+    </figure>
+
+    <p><a href="#fig-5-3">图 5.3</a>显示了结果。你也许愿意尝试一些更模糊、更平坦的先验，看看先验回归线会多快变得荒谬。</p>
+
+    <p>现在来看后验预测。步骤与上一章的例子完全相同：使用 <code>link</code>，再用均值和 <code>PI</code> 汇总，最后绘图。</p>
+
+    <figure class="code-listing" id="code-5-5">
+      <figcaption>R 代码 5.5</figcaption>
+      <pre><code># compute percentile interval of mean
+A_seq &lt;- seq( from=-3 , to=3.2 , length.out=30 )
+mu &lt;- link( m5.1 , data=list(A=A_seq) )
+mu.mean &lt;- apply( mu , 2, mean )
+mu.PI &lt;- apply( mu , 2 , PI )
+
+# plot it all
+plot( D ~ A , data=d , col=rangi2 )
+lines( A_seq , mu.mean , lwd=2 )
+shade( mu.PI , A_seq )</code></pre>
+    </figure>
+
+    <p>如果查看 <code>precis</code> 的输出，会发现 <span class="math-inline"><var>β</var><sub>A</sub></span> 的后验可靠地为负，这一点也能从<a href="#fig-5-2">图 5.2</a>看出。</p>
+
+    <p>可以为左侧面板中的关系拟合一个类似的回归：</p>
+
+    <figure class="code-listing" id="code-5-6">
+      <figcaption>R 代码 5.6</figcaption>
+      <pre><code>d$M &lt;- scale( d$Marriage )
+m5.2 &lt;- quap(
+    alist(
+        D ~ dnorm( mu , sigma ) ,
+        mu &lt;- a + bM * M ,
+        a ~ dnorm( 0 , 0.2 ) ,
+        bM ~ dnorm( 0 , 0.5 ) ,
+        sigma ~ dexp( 1 )
+    ) , data = d )</code></pre>
+    </figure>
+
+    <p>从图中可以看出，这种关系不如前一种强。</p>
+
+    <p>然而，只比较不同二元回归中的参数均值，绝不是判断哪个预测变量更好的办法。这两个预测变量可能各自提供独立价值，也可能彼此冗余，还可能其中一个会消除另一个的价值。</p>
+
+    <p>要理解这一点，就必须从因果角度思考。只有完成一些思考之后，同时包含结婚年龄和结婚率的更大回归模型才会帮助我们。</p>
+
+    <section id="sec-5-1-1">
+      <h3>5.1.1 回归前先思考</h3>
+
+      <p>这里涉及三个观测变量：各州的离婚率（<span class="math-inline"><var>D</var></span>）、结婚率（<span class="math-inline"><var>M</var></span>）和结婚年龄中位数（<span class="math-inline"><var>A</var></span>）。前两个模型中呈现、并在<a href="#fig-5-2">图 5.2</a>中展示的模式，是这样一种情形的典型症状：只有一个预测变量——本例中的 <span class="math-inline"><var>A</var></span>——对结果 <span class="math-inline"><var>D</var></span> 有因果影响，尽管两个预测变量都与结果强烈关联。</p>
+
+      <p>为了更好地理解这一点，引入一种特殊的因果图会很有帮助：<strong>DAG</strong>，即<strong>有向无环图</strong>。所谓“图”，表示它由节点和连接组成；“有向”表示连接带有箭头，指出因果影响的方向；“无环”表示原因最终不会流回自身。DAG 是描述变量之间定性因果关系的一种方式。它不像完整模型定义那样详细，却包含纯统计模型没有的信息。与统计模型不同，如果 DAG 正确，它会告诉你干预并改变某个变量会产生什么后果。</p>
+
+      <p>下面是离婚率例子的一个 DAG：</p>
+
+      <figure class="book-figure dag-figure" id="dag-5-divorce">
+        <svg viewBox="0 0 640 330" role="img" aria-labelledby="dag-5-divorce-title dag-5-divorce-desc">
+          <title id="dag-5-divorce-title">结婚年龄、结婚率与离婚率的有向无环图</title>
+          <desc id="dag-5-divorce-desc">A 指向 M 和 D，M 指向 D。</desc>
+          <defs>
+            <marker id="dag-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#3f4752"/>
+            </marker>
+          </defs>
+          <line x1="180" y1="85" x2="455" y2="85" stroke="#3f4752" stroke-width="4" marker-end="url(#dag-arrow)"/>
+          <line x1="195" y1="105" x2="305" y2="245" stroke="#3f4752" stroke-width="4" marker-end="url(#dag-arrow)"/>
+          <line x1="445" y1="105" x2="335" y2="245" stroke="#3f4752" stroke-width="4" marker-end="url(#dag-arrow)"/>
+          <circle cx="160" cy="85" r="38" fill="#f0f1fa" stroke="#263f86" stroke-width="3"/>
+          <circle cx="480" cy="85" r="38" fill="#f0f1fa" stroke="#263f86" stroke-width="3"/>
+          <circle cx="320" cy="270" r="38" fill="#f0f1fa" stroke="#263f86" stroke-width="3"/>
+          <text x="160" y="96" text-anchor="middle" font-size="32" font-weight="700" fill="#263f86">A</text>
+          <text x="480" y="96" text-anchor="middle" font-size="32" font-weight="700" fill="#263f86">M</text>
+          <text x="320" y="281" text-anchor="middle" font-size="32" font-weight="700" fill="#263f86">D</text>
+        </svg>
+        <figcaption><strong>离婚率例子的启发式因果模型：</strong><span class="math-inline"><var>A</var></span> 直接影响 <span class="math-inline"><var>M</var></span> 和 <span class="math-inline"><var>D</var></span>，<span class="math-inline"><var>M</var></span> 直接影响 <span class="math-inline"><var>D</var></span>。</figcaption>
+      </figure>
+
+      <p>如果想看绘制它的代码，请参见本节末尾的“过度思考”侧栏。它看起来也许没什么了不起，但这种图能完成大量工作。它表示一个启发式因果模型；与其他模型一样，它是一项分析假设。符号 <span class="math-inline"><var>A</var></span>、<span class="math-inline"><var>M</var></span> 和 <span class="math-inline"><var>D</var></span> 是观测变量，箭头表示影响方向。这个 DAG 表示：</p>
+
+      <ol class="dag-claims">
+        <li><span class="math-inline"><var>A</var></span> 直接影响 <span class="math-inline"><var>D</var></span>；</li>
+        <li><span class="math-inline"><var>M</var></span> 直接影响 <span class="math-inline"><var>D</var></span>；</li>
+        <li><span class="math-inline"><var>A</var></span> 直接影响 <span class="math-inline"><var>M</var></span>。</li>
+      </ol>
+
+      <p>这些陈述还会产生进一步含义。本例中，因为 <span class="math-inline"><var>A</var> → <var>M</var></span> 且 <span class="math-inline"><var>M</var> → <var>D</var></span>，结婚年龄会以两种方式影响离婚。第一，它可能有直接效应：年轻人也许比年长者变化得更快，因此更容易变得与伴侣不再相容。第二，它可以通过影响结婚率产生间接效应。如果人们更早结婚，那么结婚率可能上升，因为年轻人更多。比如，设想一位邪恶的独裁者强迫所有人到 65 岁才结婚。由于活到 65 岁的人口比例小于活到 25 岁的人口比例，强制推迟结婚也会降低结婚率。如果结婚率本身对离婚有任何直接效应——或许是通过让婚姻变得更合乎或更不合乎社会规范——那么这种直接效应中的一部分，可能其实是结婚年龄的间接效应。</p>
+
+      <p>要推断不同箭头的强度，需要不止一个统计模型。模型 <code>m5.1</code> 是 <span class="math-inline"><var>D</var></span> 对 <span class="math-inline"><var>A</var></span> 的回归，它只告诉我们：结婚年龄对离婚率的总影响强烈为负。这里的“总”表示必须计入从 <span class="math-inline"><var>A</var></span> 到 <span class="math-inline"><var>D</var></span> 的每一条路径。图中有两条这样的路径：直接路径 <span class="math-inline"><var>A</var> → <var>D</var></span>，以及间接路径 <span class="math-inline"><var>A</var> → <var>M</var> → <var>D</var></span>。一般而言，像 <span class="math-inline"><var>A</var></span> 这样的变量完全可能对 <span class="math-inline"><var>D</var></span> 这样的结果根本没有直接效应。</p>
+
+      <p class="continuation-note">中介关系、替代 DAG 与可检验含义将在原书 PDF 第 149 页继续。</p>
+    </section>
   </section>
 
   <section class="endnotes" id="chapter-05-notes" role="doc-endnotes">
@@ -77,6 +217,6 @@ d$D &lt;- scale( d$Divorce )</code></pre>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 143–145 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 146 页继续。
+    <strong>译稿状态：</strong>PDF 第 143–148 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 149 页继续。
   </aside>
 </article>

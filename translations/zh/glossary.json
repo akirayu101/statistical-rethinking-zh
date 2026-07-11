@@ -445,7 +445,24 @@
     "spurious association": "虚假关联",
     "marriage rate": "结婚率",
     "median age at marriage": "结婚年龄中位数",
-    "crud factor": "杂物因子"
+    "crud factor": "杂物因子",
+    "standardized variable": "标准化变量",
+    "outcome space": "结果空间",
+    "weakly informative prior": "弱信息先验",
+    "bivariate regression": "二元回归",
+    "redundant predictor": "冗余预测变量",
+    "directed acyclic graph": "有向无环图",
+    "DAG": "有向无环图",
+    "node": "节点",
+    "directed": "有向",
+    "acyclic": "无环",
+    "intervention": "干预",
+    "heuristic causal model": "启发式因果模型",
+    "direct effect": "直接效应",
+    "indirect effect": "间接效应",
+    "total influence": "总影响",
+    "direct path": "直接路径",
+    "indirect path": "间接路径"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"
