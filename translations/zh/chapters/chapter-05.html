@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-05" data-source-pages="143-151">
+<article class="book-article" data-chapter="chapter-05" data-source-pages="143-154">
   <header class="chapter-header">
     <p class="eyebrow">第五章</p>
     <h1>多变量与虚假华夫饼</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 143–151 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 143–154 页</p>
   </header>
 
   <p>在北美——即便不算全世界——最可靠的华夫饼来源之一，是华夫饼屋（Waffle House）餐厅。华夫饼屋几乎总在营业，哪怕飓风刚刚过境也不例外。多数门店都投入资金做好灾害准备，其中包括自备发电机。因此，美国灾害救援机构联邦紧急事务管理署（FEMA）会非正式地把华夫饼屋当作衡量灾情严重程度的指标。<sup id="note-77-ref"><a href="#note-77">77</a></sup> 如果华夫饼屋关门了，那就是严重事件。</p>
@@ -323,7 +323,122 @@ impliedConditionalIndependencies( DMA_dag1 )</code></pre>
         <li>为每个预测变量建立一个参数，用来测量它与结果的关联；</li>
         <li>把参数乘以变量，再把这一项加到线性模型中。</li>
       </ol>
-      <p class="continuation-note">双预测变量模型定义与拟合将在原书 PDF 第 152 页继续。</p>
+
+      <p>例子总是不可缺少。下面的模型同时使用结婚率和结婚年龄来预测离婚率：</p>
+
+      <div class="equation-block annotated-model-equation" id="eq-5-multiple-divorce-model">
+        <div><span><var>D</var><sub>i</sub> ∼ Normal(<var>μ</var><sub>i</sub>, <var>σ</var>)</span><span class="equation-label">数据的概率</span></div>
+        <div><span><var>μ</var><sub>i</sub> = <var>α</var> + <var>β</var><sub>M</sub><var>M</var><sub>i</sub> + <var>β</var><sub>A</sub><var>A</var><sub>i</sub></span><span class="equation-label">线性模型</span></div>
+        <div><span><var>α</var> ∼ Normal(0, 0.2)</span><span class="equation-label"><var>α</var> 的先验</span></div>
+        <div><span><var>β</var><sub>M</sub> ∼ Normal(0, 0.5)</span><span class="equation-label"><var>β</var><sub>M</sub> 的先验</span></div>
+        <div><span><var>β</var><sub>A</sub> ∼ Normal(0, 0.5)</span><span class="equation-label"><var>β</var><sub>A</sub> 的先验</span></div>
+        <div><span><var>σ</var> ∼ Exponential(1)</span><span class="equation-label"><var>σ</var> 的先验</span></div>
+      </div>
+
+      <p>参数和变量可以使用任何喜欢的符号。这里用 <span class="math-inline"><var>M</var></span> 表示结婚率，用 <span class="math-inline"><var>A</var></span> 表示结婚年龄，并把它们复用为对应参数的下标。不过，完全可以选择任何能减轻自己记忆负担的符号。</p>
+
+      <p>假设 <span class="math-inline"><var>μ</var><sub>i</sub> = <var>α</var> + <var>β</var><sub>M</sub><var>M</var><sub>i</sub> + <var>β</var><sub>A</sub><var>A</var><sub>i</sub></span> 意味着什么？它表示，结婚率为 <span class="math-inline"><var>M</var><sub>i</sub></span>、结婚年龄中位数为 <span class="math-inline"><var>A</var><sub>i</sub></span> 的任意州，其预期结果由三个独立项相加而成。第一项是常数 <span class="math-inline"><var>α</var></span>，每个州都有。第二项是结婚率 <span class="math-inline"><var>M</var><sub>i</sub></span> 与系数 <span class="math-inline"><var>β</var><sub>M</sub></span> 的乘积；该系数测量结婚率与离婚率的关联。第三项类似，但对应结婚年龄中位数的关联。</p>
+
+      <p>如果你和大多数人一样，这可能仍然相当神秘。一种有帮助的读法，是把加号读作“或”：一个州的离婚率可以是结婚率的函数，或是结婚年龄中位数的函数。“或”表示彼此独立的关联，而这些关联可能纯粹是统计性的，也可能是因果性的。</p>
+
+      <aside class="overthinking-box" id="overthinking-design-matrix">
+        <h3>过度思考：紧凑记号与设计矩阵</h3>
+        <p>线性模型经常写成如下紧凑形式：</p>
+        <div class="equation-block compact-regression-equation" id="eq-5-compact-regression"><var>μ</var><sub>i</sub> = <var>α</var> + Σ<sub><var>j</var>=1</sub><sup><var>n</var></sup> <var>β</var><sub><var>j</var></sub><var>x</var><sub><var>ji</var></sub></div>
+        <p>其中 <span class="math-inline"><var>j</var></span> 是预测变量索引，<span class="math-inline"><var>n</var></span> 是预测变量数量。同一个模型也可以简写为：</p>
+        <div class="equation-block expanded-regression-equation" id="eq-5-expanded-regression"><var>μ</var><sub>i</sub> = <var>α</var> + <var>β</var><sub>1</sub><var>x</var><sub>1<var>i</var></sub> + <var>β</var><sub>2</sub><var>x</var><sub>2<var>i</var></sub> + … + <var>β</var><sub><var>n</var></sub><var>x</var><sub><var>ni</var></sub></div>
+        <p>两种形式都可以读作：均值由截距与“参数和预测变量乘积”的加性组合之和建模。使用矩阵记号还能更紧凑：</p>
+        <div class="equation-block matrix-regression-equation" id="eq-5-matrix-regression"><strong>m</strong> = <strong>Xb</strong></div>
+        <p>其中 <strong>m</strong> 是预测均值向量，数据中的每一行对应一个均值；<strong>b</strong> 是参数列向量，每个预测变量对应一个参数；<strong>X</strong> 是一个矩阵，称为<strong>设计矩阵</strong>。它的行数与数据相同，列数等于预测变量数量加一。因此，<strong>X</strong> 基本上就是多出第一列的数据框，而额外的第一列全是 1。这些 1 乘以第一个参数——截距——便原样返回截距。用 <strong>X</strong> 乘以 <strong>b</strong> 就得到预测均值；R 记号为 <code>X %*% b</code>。</p>
+        <p>本书不会采用设计矩阵方法，一般也不需要。但最好能认出它，有时它能节省大量工作。例如，线性回归的最大似然（或最小二乘）估计有一个漂亮的矩阵公式；多数统计软件都会利用这个需要设计矩阵的公式。</p>
+      </aside>
+    </section>
+
+    <section id="sec-5-1-4">
+      <h3>5.1.4 近似后验</h3>
+      <p>要把这个模型拟合到离婚数据，只需扩展线性模型。下面再次列出模型定义，右侧是对应代码：</p>
+
+      <div class="equation-block multiple-model-code-map" id="eq-5-multiple-model-code-map">
+        <div><span><var>D</var><sub>i</sub> ∼ Normal(<var>μ</var><sub>i</sub>, <var>σ</var>)</span><code>D ~ dnorm(mu,sigma)</code></div>
+        <div><span><var>μ</var><sub>i</sub> = <var>α</var> + <var>β</var><sub>M</sub><var>M</var><sub>i</sub> + <var>β</var><sub>A</sub><var>A</var><sub>i</sub></span><code>mu &lt;- a + bM*M + bA*A</code></div>
+        <div><span><var>α</var> ∼ Normal(0, 0.2)</span><code>a ~ dnorm(0,0.2)</code></div>
+        <div><span><var>β</var><sub>M</sub> ∼ Normal(0, 0.5)</span><code>bM ~ dnorm(0,0.5)</code></div>
+        <div><span><var>β</var><sub>A</sub> ∼ Normal(0, 0.5)</span><code>bA ~ dnorm(0,0.5)</code></div>
+        <div><span><var>σ</var> ∼ Exponential(1)</span><code>sigma ~ dexp(1)</code></div>
+      </div>
+
+      <p>下面用 <code>quap</code> 近似后验分布：</p>
+      <figure class="code-listing" id="code-5-10">
+        <figcaption>R 代码 5.10</figcaption>
+        <pre><code>m5.3 &lt;- quap(
+    alist(
+        D ~ dnorm( mu , sigma ) ,
+        mu &lt;- a + bM*M + bA*A ,
+        a ~ dnorm( 0 , 0.2 ) ,
+        bM ~ dnorm( 0 , 0.5 ) ,
+        bA ~ dnorm( 0 , 0.5 ) ,
+        sigma ~ dexp( 1 )
+    ) , data = d )
+precis( m5.3 )</code></pre>
+        <pre class="code-output"><code>      mean   sd  5.5% 94.5%
+a     0.00 0.10 -0.16  0.16
+bM   -0.07 0.15 -0.31  0.18
+bA   -0.61 0.15 -0.85 -0.37
+sigma 0.79 0.08  0.66  0.91</code></pre>
+      </figure>
+
+      <p>现在，结婚率参数 <code>bM</code> 的后验均值接近零，且零两侧都有大量概率。结婚年龄参数 <code>bA</code> 的后验均值基本没有变化。把三个模型中斜率参数 <span class="math-inline"><var>β</var><sub>A</sub></span> 和 <span class="math-inline"><var>β</var><sub>M</sub></span> 的后验分布画在一起会很有帮助：</p>
+
+      <figure class="code-listing" id="code-5-11">
+        <figcaption>R 代码 5.11</figcaption>
+        <pre><code>plot( coeftab(m5.1,m5.2,m5.3), par=c("bA","bM") )</code></pre>
+      </figure>
+
+      <figure class="book-figure coefficient-comparison-figure" id="fig-5-coefficient-comparison">
+        <svg viewBox="0 0 900 520" role="img" aria-labelledby="coef-title coef-desc">
+          <title id="coef-title">三个模型的斜率后验比较</title>
+          <desc id="coef-desc">bA 在 m5.1 与 m5.3 中稳定为负，bM 在 m5.2 中为正，但在 m5.3 中收缩到接近零。</desc>
+          <rect width="900" height="520" fill="#fff"/>
+          <line x1="570" y1="55" x2="570" y2="445" stroke="#b8bbb8" stroke-width="2"/>
+          <g font-size="20" fill="#263f86" font-weight="700"><text x="75" y="65">bA</text><text x="75" y="275">bM</text></g>
+          <g font-size="18" fill="#30332e"><text x="140" y="105">m5.3</text><text x="140" y="150">m5.2</text><text x="140" y="195">m5.1</text><text x="140" y="315">m5.3</text><text x="140" y="360">m5.2</text><text x="140" y="405">m5.1</text></g>
+          <g stroke="#30332e" stroke-width="5" stroke-linecap="round"><line x1="315" y1="98" x2="495" y2="98"/><line x1="330" y1="188" x2="510" y2="188"/><line x1="505" y1="308" x2="625" y2="308"/><line x1="600" y1="353" x2="760" y2="353"/></g>
+          <g fill="#6670ee" stroke="#263f86" stroke-width="2"><circle cx="405" cy="98" r="8"/><circle cx="420" cy="188" r="8"/><circle cx="565" cy="308" r="8"/><circle cx="680" cy="353" r="8"/></g>
+          <line x1="285" y1="445" x2="800" y2="445" stroke="#343732" stroke-width="2"/>
+          <g font-size="17" fill="#30332e" text-anchor="middle"><text x="355" y="475">−0.5</text><text x="570" y="475">0.0</text><text x="785" y="475">0.5</text><text x="570" y="505" fill="#263f86" font-weight="700">估计值</text></g>
+        </svg>
+        <figcaption>点表示后验均值，实心水平线表示 89% 相容区间。<span class="math-inline"><var>β</var><sub>A</sub></span> 只是不确定性略增，位置几乎不动；<span class="math-inline"><var>β</var><sub>M</sub></span> 只有在模型缺少结婚年龄时才与离婚相关。</figcaption>
+      </figure>
+
+      <p>这些分布可以解释为：</p>
+      <blockquote class="book-quote" id="interpretation-marriage-rate"><p>一旦知道一个州的结婚年龄中位数，再知道该州的结婚率，几乎没有或完全没有额外预测力。</p></blockquote>
+
+      <p>用那个古怪记号表示，就是 <span class="math-inline"><var>D</var> ⫫ <var>M</var> | <var>A</var></span>。这检验了前面第二个 DAG 的含义。第一个 DAG 不蕴含这个结果，因此被排除。</p>
+
+      <p>注意，这并不意味着知道结婚率毫无价值。与前面的 DAG 一致，如果没有结婚年龄数据，知道结婚率肯定有用。这说明从结婚率到离婚率没有或几乎没有直接因果路径。二者的关联是虚假的，由结婚年龄同时影响结婚率和离婚率而产生。要补全这幅图景，读者可以自行研究结婚年龄 <span class="math-inline"><var>A</var></span> 与结婚率 <span class="math-inline"><var>M</var></span> 的关系。</p>
+
+      <p>但模型 <code>m5.3</code> 怎样推断出：一旦知道结婚年龄，结婚率就不再增加额外信息？让我们画几幅图。</p>
+
+      <aside class="overthinking-box" id="overthinking-simulating-divorce">
+        <h3>过度思考：模拟离婚例子</h3>
+        <p>离婚数据是真实数据，来源见 <code>?WaffleDivorce</code>。不过，模拟前一个 DAG 所示的因果关系 <span class="math-inline"><var>M</var> ← <var>A</var> → <var>D</var></span> 很有用。每个 DAG 都隐含一种模拟，而模拟能帮助我们设计模型，正确推断变量之间的关系。本例只需模拟三个变量：</p>
+        <figure class="code-listing" id="code-5-12">
+          <figcaption>R 代码 5.12</figcaption>
+          <pre><code>N &lt;- 50 # number of simulated States
+age &lt;- rnorm( N )        # sim A
+mar &lt;- rnorm( N , -age ) # sim A -&gt; M
+div &lt;- rnorm( N , age )  # sim A -&gt; D</code></pre>
+        </figure>
+        <p>把这些变量用于模型 <code>m5.1</code>、<code>m5.2</code> 和 <code>m5.3</code>，会看到相同的后验推断模式。也可以模拟 <span class="math-inline"><var>A</var></span> 与 <span class="math-inline"><var>M</var></span> 都影响 <span class="math-inline"><var>D</var></span>：<code>div &lt;- rnorm(N, age + mar)</code>。此时，<span class="math-inline"><var>D</var></span> 对 <span class="math-inline"><var>A</var></span> 的朴素回归会高估 <span class="math-inline"><var>A</var></span> 的影响，正如 <span class="math-inline"><var>D</var></span> 对 <span class="math-inline"><var>M</var></span> 的朴素回归会高估 <span class="math-inline"><var>M</var></span> 的重要性。多元回归同样有助于理清这种情形。但参数估计的解释始终取决于你相信哪种因果模型，因为通常有若干甚至大量因果模型都与同一组参数估计相容。后面会以<strong>马尔可夫等价</strong>之名讨论这一点。</p>
+      </aside>
+    </section>
+
+    <section id="sec-5-1-5">
+      <h3>5.1.5 绘制多变量后验</h3>
+      <p>继续之前，先停一下。这里有许多活动部件：三个变量、一些奇怪的 DAG，以及三个模型。如果你觉得有些困惑，那只是因为你正在认真留意。</p>
+      <p>把模型的推断可视化会有帮助。像上一章那样的简单二元回归，其后验分布很容易可视化：只有一个预测变量，所以一张散点图就能传达大量信息。上一章先绘制数据散点，再叠加回归线和区间，以便（1）显示预测变量与结果之间关联的大小；（2）粗略感受模型预测个体观测的能力。</p>
+      <p>对于多变量回归，需要更多图形。有大量文献详述各种绘图技术，它们都试图帮助理解多元线性回归。</p>
+      <p class="continuation-note">预测变量残差图与反事实预测图将在原书 PDF 第 155 页继续。</p>
     </section>
   </section>
 
@@ -338,6 +453,6 @@ impliedConditionalIndependencies( DMA_dag1 )</code></pre>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 143–151 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 152 页继续。
+    <strong>译稿状态：</strong>PDF 第 143–154 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 155 页继续。
   </aside>
 </article>

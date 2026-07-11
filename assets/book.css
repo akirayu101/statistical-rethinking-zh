@@ -153,6 +153,10 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .conditional-independence-equation { font-size: 1.25rem; }
 .not-independent { position: relative; display: inline-block; line-height: 1; font-family: "Times New Roman", serif; }
 .not-independent::after { content: ""; position: absolute; left: 52%; top: 2%; width: 1.5px; height: 100%; background: currentColor; transform: rotate(36deg); transform-origin: center; }
+.multiple-model-code-map { display: grid; gap: .55rem; }
+.multiple-model-code-map > div { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1rem; align-items: baseline; }
+.multiple-model-code-map code { justify-self: start; font-size: .9em; }
+.coefficient-comparison-figure svg { display: block; width: min(100%, 45rem); height: auto; margin: 0 auto; }
 .units-regression-equation { display: grid; gap: .7rem; font-size: 1rem; }
 .observation-sequence { display: flex; justify-content: center; gap: .75rem; margin: 1.5rem auto !important; padding: .75rem 1rem; max-width: 28rem; border-block: 1px solid var(--line); background: #fff; font: 700 1.1rem/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: .04em; }
 .model-loop { margin: 1.5rem 0; padding: 1rem 1rem 1rem 3.2rem; border-left: .25rem solid var(--blue); background: #f3f5fb; }
@@ -260,4 +264,5 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
   .marble-conjectures { grid-template-columns: 1fr; }
   .quap-formula-map > div { grid-template-columns: 1fr; gap: .3rem; }
   .polynomial-model-map > div { grid-template-columns: 1fr; gap: .3rem; }
+  .multiple-model-code-map > div { grid-template-columns: 1fr; gap: .3rem; }
 }
