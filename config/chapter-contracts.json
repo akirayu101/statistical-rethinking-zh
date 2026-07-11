@@ -183,5 +183,37 @@
       ".test-accuracy-list": 1,
       ".endnotes li": 12
     }
+  },
+  "chapter-03": {
+    "required_status": "in_progress",
+    "source_pages": [65, 67],
+    "required_ids": [
+      "eq-3-vampire-positive",
+      "eq-3-positive-rate",
+      "code-3-1",
+      "eq-3-natural-frequency",
+      "rethinking-natural-frequency",
+      "rethinking-bad-science",
+      "chapter-03-notes",
+      "note-49",
+      "note-50",
+      "note-51"
+    ],
+    "required_headings": [
+      "从想象中采样",
+      "再思考：自然频数现象并不独特",
+      "再思考：为什么统计学救不了糟糕的科学",
+      "尾注"
+    ],
+    "counts": {
+      "section": 1,
+      "figure": 1,
+      ".equation-block": 3,
+      ".code-listing": 1,
+      ".rethinking-box": 2,
+      ".frequency-scenario": 1,
+      ".frequency-scenario li": 3,
+      ".endnotes li": 3
+    }
   }
 }

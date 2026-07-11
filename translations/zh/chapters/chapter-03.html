@@ -1,0 +1,113 @@
+<article class="book-article" data-chapter="chapter-03" data-source-pages="65-67">
+  <header class="chapter-header">
+    <p class="eyebrow">第三章</p>
+    <h1>从想象中采样</h1>
+    <p class="source-range">当前译稿对应原书 PDF 第 65–67 页</p>
+  </header>
+
+  <p>许多贝叶斯统计教材都用医学检测情境来介绍<strong>后验推断</strong>。沿用常见例子的结构，假设有一种血液检测，能在 95% 的情况下正确检出吸血鬼。用更精确的数学记号表示，就是 <span class="math-inline">Pr(检测阳性 | 吸血鬼) = 0.95</span>。这项检测非常准确，几乎总能抓住真正的吸血鬼。</p>
+
+  <p>不过，它也会犯错，产生假阳性：有 1% 的时候，它会把普通人误诊为吸血鬼，即 <span class="math-inline">Pr(检测阳性 | 凡人) = 0.01</span>。最后一条已知信息是，吸血鬼相当罕见，只占人口的 0.1%，因此 <span class="math-inline">Pr(吸血鬼) = 0.001</span>。现在假设某人的吸血鬼检测结果为阳性。这个人真是不死嗜血者的概率是多少？</p>
+
+  <p>正确做法是用贝叶斯定理把条件概率反转，计算 <span class="math-inline">Pr(吸血鬼 | 阳性)</span>。可以把计算写成：</p>
+
+  <div class="equation-block vampire-bayes-equation" id="eq-3-vampire-positive">
+    <span>Pr(吸血鬼 | 阳性)</span>
+    <span>=</span>
+    <span class="fraction">
+      <span>Pr(阳性 | 吸血鬼) Pr(吸血鬼)</span>
+      <span>Pr(阳性)</span>
+    </span>
+  </div>
+
+  <p>其中，<span class="math-inline">Pr(阳性)</span> 是检测呈阳性的平均概率，也就是：</p>
+
+  <div class="equation-block positive-rate-equation" id="eq-3-positive-rate">
+    <div>Pr(阳性) = Pr(阳性 | 吸血鬼) Pr(吸血鬼)</div>
+    <div>+ Pr(阳性 | 凡人) [1 - Pr(吸血鬼)]</div>
+  </div>
+
+  <p>在 R 中完成计算：</p>
+
+  <figure class="code-listing" id="code-3-1">
+    <figcaption>R 代码 3.1</figcaption>
+    <pre><code>Pr_Positive_Vampire &lt;- 0.95
+Pr_Positive_Mortal &lt;- 0.01
+Pr_Vampire &lt;- 0.001
+Pr_Positive &lt;- Pr_Positive_Vampire * Pr_Vampire +
+               Pr_Positive_Mortal * ( 1 - Pr_Vampire )
+( Pr_Vampire_Positive &lt;- Pr_Positive_Vampire*Pr_Vampire / Pr_Positive )</code></pre>
+    <pre class="code-output"><code>[1] 0.08683729</code></pre>
+  </figure>
+  <p class="scroll-hint code-scroll-hint">代码较宽，可横向滚动查看完整行。</p>
+
+  <p>这意味着，被检测者实际上是吸血鬼的概率为 8.7%。</p>
+
+  <p>大多数人觉得这个结果违反直觉。它又非常重要，因为许多现实检测都具有相同结构，例如 HIV 检测、DNA 检测、犯罪画像，甚至统计显著性检验（见本节末尾的“再思考”框）。只要关心的状况极其罕见，即使一项检测能够找出全部真实病例，阳性结果也未必包含多少信息。原因是：即使所有真阳性都被正确检出，阳性结果中的大多数仍是假阳性。</p>
+
+  <p>不过，我不喜欢这类例子，理由有两个。第一，它们没有什么贝叶斯方法独有的地方。请记住：贝叶斯推断的独特之处，在于它对概率采取宽广的理解，而不是因为它使用贝叶斯定理。上面给出的概率全都指向事件频率，而不是理论参数；因此，各大统计学派都会同意在这里使用贝叶斯定理。</p>
+
+  <p>第二个理由对本章更重要：这类例子让贝叶斯推断显得比实际困难得多。很少有人能轻松记住每个数字该放在哪里，大概因为他们从未掌握整个过程的逻辑。那看起来只是一条从天而降的公式。如果你感到困惑，只是因为你正在试图理解它。</p>
+
+  <p>不过，可以换一种更直观的方式呈现同一个问题。假设我不再像刚才那样报告概率，而是告诉你：</p>
+
+  <ol class="frequency-scenario">
+    <li>在 100,000 人中，有 100 人是吸血鬼。</li>
+    <li>在这 100 名吸血鬼中，有 95 人的吸血鬼检测会呈阳性。</li>
+    <li>在 99,900 名凡人中，有 999 人的吸血鬼检测会呈阳性。</li>
+  </ol>
+
+  <p>现在告诉我：如果检测全部 100,000 人，结果呈阳性的人中，真正的吸血鬼占多大比例？很多人——当然不是所有人——会觉得这种表达容易得多。<sup><a id="note-49-ref" href="#note-49" aria-label="尾注 49">49</a></sup>现在只需数一数阳性者：<span class="math-inline">95 + 999 = 1094</span>。在这 1094 个阳性结果中，有 95 个来自真正的吸血鬼，因此：</p>
+
+  <div class="equation-block natural-frequency-equation" id="eq-3-natural-frequency">
+    <span>Pr(吸血鬼 | 阳性)</span>
+    <span>=</span>
+    <span class="fraction"><span>95</span><span>1094</span></span>
+    <span>≈ 0.087</span>
+  </div>
+
+  <p>答案与刚才完全相同，却不再需要一条看似任意的规则。</p>
+
+  <p>用计数而不是概率来表达问题，通常称为<strong>频数格式</strong>或<strong>自然频数</strong>。为什么频数格式能帮助人们直觉地找到正确方法，仍存在争议。有些人认为，当信息采用人在自然环境中会接触到的形式时，人类心理本来就更擅长处理它。按照这种看法，现实世界中我们只会遇到计数；从来没有人亲眼见过一个概率，但每个人在日常生活中都会看到计数，也就是“频数”。</p>
+
+  <p>无论这种现象该怎样解释，我们都可以利用它。本章会从上一章的概率分布中抽样，用样本产生计数。后验分布是一种概率分布；和所有概率分布一样，我们可以想象从中抽取样本。这里抽到的事件是参数值。</p>
+
+  <p>多数参数没有精确的经验实现。贝叶斯形式体系把参数分布理解为相对可信程度，而不是某种物理随机过程。无论如何，随机性始终是信息的属性，而不是现实世界的属性。但在计算机内部，参数和抛硬币、掷骰子或农业试验的结果一样具有经验性。一旦开始从后验中逐个抽取参数，后验便规定了不同参数值出现的预期频率。</p>
+
+  <aside class="rethinking-box" id="rethinking-natural-frequency">
+    <h3>再思考：自然频数现象并不独特</h3>
+    <p>改变问题的表述方式，常常会让问题更容易处理，或者激发旧表述中没有的新想法。<sup><a id="note-50-ref" href="#note-50" aria-label="尾注 50">50</a></sup>在物理学中，在牛顿力学与拉格朗日力学之间切换，可以让问题简单许多；在进化生物学中，在广义适合度与多层选择之间切换，会为旧模型带来新认识；在统计学中，在贝叶斯与非贝叶斯表述之间切换，也常让我们对两种方法都有新的理解。</p>
+  </aside>
+
+  <p>本章会教授处理后验分布样本的基本技能。现在就使用样本，似乎有点可笑，因为地球仪投掷模型的后验分布非常简单，直接处理网格近似甚至精确的数学形式都毫无困难。<sup><a id="note-51-ref" href="#note-51" aria-label="尾注 51">51</a></sup>不过，在真正有必要之前就尽早采用抽样方法，有两个理由。</p>
+
+  <p>第一，许多科学家的积分学基础相当不稳，但他们对怎样汇总数据却有强烈而可靠的直觉。使用样本，会把一道微积分题转换成一道数据汇总题，也就是频数格式的问题。典型贝叶斯情境中的积分，只不过是某个区间内的总概率；这可能是一道很难的微积分题。但有了概率分布的样本以后，只需数一数区间内的取值即可。</p>
+
+  <p>当模型包含许多参数时，就连置信区间这样看似简单的计算也会变得困难。描述某个关注参数的不确定性时，必须对其他所有参数的不确定性求平均。这需要复杂的积分，却只需要非常简单的数据汇总。以经验方式处理后验，让科学家不必依赖一名被圈养的数学家，也能针对模型提出并回答更多问题。因此，使用后验样本往往比直接使用概率和积分更容易，也更直观。</p>
+
+  <p>第二，一些最强大的后验计算方法只会产生样本。其中许多方法是马尔可夫链蒙特卡洛技术的变体（MCMC，见第 9 章）。如果尽早学会怎样理解和处理后验样本，那么以后不可避免地用 MCMC 把模型拟合到数据时，你已经知道怎样解读输出。从本书第 9 章开始，MCMC 将扩展你在实践中能够拟合的模型类型与复杂度。MCMC 已经不再是专家专属技术，而是定量科学标准工具箱的一部分，值得提前准备。</p>
+
+  <p>因此，本章将开始用样本汇总和模拟模型输出。尽管模型细节以及样本产生方式会不断变化，这里学到的技能仍适用于本书余下的每一个问题。</p>
+
+  <aside class="rethinking-box" id="rethinking-bad-science">
+    <h3>再思考：为什么统计学救不了糟糕的科学</h3>
+    <p>本章开头的吸血鬼例子，与许多不同的信号检测问题具有相同逻辑结构：（1）存在某种我们看不见的二元状态；（2）我们观察到一个关于隐藏状态的不完美线索；（3）我们（应该）使用贝叶斯定理，从逻辑上推导这条线索会怎样改变我们的不确定性。</p>
+    <p>科学推断经常以类似方式表述：（1）一个假说非真即假；（2）我们使用某种统计程序，得到关于假说为假的不完美线索；（3）我们（应该）使用贝叶斯定理，从逻辑上推导这条线索会怎样改变假说的地位。第三步几乎从来没有完成。不过，让我们用一个玩具例子真正做一遍，看看统计程序——无论是否贝叶斯——能为我们做的事情有多少。</p>
+    <p>假设在假说为真时，得到阳性发现的概率为 <span class="math-inline">Pr(显著 | 真) = 0.95</span>，这就是检验的功效。再假设在假说为假时，得到阳性发现的概率为 <span class="math-inline">Pr(显著 | 假) = 0.05</span>，这是假阳性率，类似传统显著性检验中的 5%。</p>
+    <p>最后，还必须说明假说为真的基础率。比如，假设每 100 个假说中有 1 个最终为真，那么 <span class="math-inline">Pr(真) = 0.01</span>。没有人知道这个值，但科学史表明它很小。第 17 章会进一步讨论。现在请用贝叶斯定理来……</p>
+    <p class="continuation-note">此侧栏将在原书 PDF 第 68 页继续。</p>
+  </aside>
+
+  <section class="endnotes" id="chapter-03-notes" role="doc-endnotes">
+    <h2>尾注</h2>
+    <ol start="49">
+      <li id="note-49">Gigerenzer 和 Hoffrage（1995）。相关实证文献很多，可以从 Gigerenzer 和 Hoffrage 的论文向后追踪引用它的研究。 <a class="backref" href="#note-49-ref" aria-label="返回正文">↩</a></li>
+      <li id="note-50">Feynman（1967）很好地论证了这种方法在科学发现中的价值。 <a class="backref" href="#note-50-ref" aria-label="返回正文">↩</a></li>
+      <li id="note-51">对于这类二元结果问题，后验密度为 <span class="math-inline">dbeta(p, w+1, n-w+1)</span>，其中 <span class="math-inline"><var>p</var></span> 是关心的比例，<span class="math-inline"><var>w</var></span> 是观测到的水域次数，<span class="math-inline"><var>n</var></span> 是投掷次数。如果想知道怎样证明，可查阅“beta-binomial conjugate prior（Beta-二项共轭先验）”。本书避免讨论解析方法，因为很少有问题简单到能像这个例子一样得到精确解析解。 <a class="backref" href="#note-51-ref" aria-label="返回正文">↩</a></li>
+    </ol>
+  </section>
+
+  <aside class="translation-status" aria-label="翻译状态">
+    <strong>译稿状态：</strong>PDF 第 65–67 页已完成翻译、逐页渲染对照和桌面/移动端视觉验收；下一批从 PDF 第 68 页继续。
+  </aside>
+</article>

@@ -15,7 +15,7 @@
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--paper); line-height: 1.86; }
 a { color: var(--blue); text-underline-offset: 0.18em; }
-section[id], figure[id], li[id] { scroll-margin-top: 4.5rem; }
+section[id], figure[id], aside[id], li[id] { scroll-margin-top: 4.5rem; }
 .equation-block[id] { scroll-margin-top: 4.5rem; }
 .topbar {
   position: sticky; top: 0; z-index: 10; display: flex; gap: 1rem; align-items: center;
@@ -156,6 +156,12 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .exercise p { margin: .55rem 0; font-size: 1rem; line-height: 1.78; text-align: justify; text-justify: inter-ideograph; }
 .exercise-options, .test-accuracy-list { margin: .7rem 0 .2rem; padding-left: 2rem; }
 .exercise-options li, .test-accuracy-list li { margin: .3rem 0; padding-left: .25rem; }
+.frequency-scenario { margin: 1.5rem 0; padding: 1rem 1rem 1rem 3.2rem; border-left: .25rem solid var(--blue); background: #f3f5fb; }
+.frequency-scenario li { margin: .55rem 0; padding-left: .25rem; }
+.vampire-bayes-equation, .natural-frequency-equation { display: flex; flex-wrap: wrap; justify-content: center; gap: .55rem; align-items: center; }
+.vampire-bayes-equation .fraction { min-width: min(100%, 18rem); }
+.natural-frequency-equation .fraction { min-width: 4.5rem; }
+.continuation-note { color: var(--muted); font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; font-size: .8rem !important; font-style: italic; }
 .book-quote { margin: 1.5rem 1rem; padding: .85rem 1.1rem; border-left: .22rem solid var(--blue); background: #f7f7f3; color: #3e403b; }
 .book-quote p { margin: 0; font-size: .98rem; line-height: 1.7; }
 .relations-figure svg { display: block; width: 100%; min-width: 48rem; height: auto; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; }

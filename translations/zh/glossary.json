@@ -181,7 +181,15 @@
     "Metropolis algorithm": "Metropolis 算法",
     "numerical technique": "数值技术",
     "trade-off": "权衡",
-    "genetic assay": "基因检测"
+    "genetic assay": "基因检测",
+    "posterior inference": "后验推断",
+    "true positive": "真阳性",
+    "frequency format": "频数格式",
+    "natural frequencies": "自然频数",
+    "integral calculus": "积分学",
+    "signal detection": "信号检测",
+    "statistical power": "检验功效",
+    "base rate": "基础率"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"
