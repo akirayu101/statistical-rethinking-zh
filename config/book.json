@@ -1,0 +1,31 @@
+{
+  "title_en": "Statistical Rethinking: A Bayesian Course with Examples in R and Stan",
+  "title_zh": "统计再思：贝叶斯课程——R 与 Stan 示例",
+  "edition": "第二版",
+  "author": "Richard McElreath",
+  "default_pdf": "~/Downloads/Statistical Rethinking 2nd Edition.pdf",
+  "pdf_pages": 617,
+  "chapters": [
+    {"slug": "front-matter", "number": "", "title_en": "Front Matter", "title_zh": "前置内容", "start": 1, "end": 16},
+    {"slug": "chapter-01", "number": "1", "title_en": "The Golem of Prague", "title_zh": "布拉格魔像", "start": 17, "end": 34},
+    {"slug": "chapter-02", "number": "2", "title_en": "Small Worlds and Large Worlds", "title_zh": "小世界与大世界", "start": 35, "end": 64},
+    {"slug": "chapter-03", "number": "3", "title_en": "Sampling the Imaginary", "title_zh": "从想象中采样", "start": 65, "end": 88},
+    {"slug": "chapter-04", "number": "4", "title_en": "Geocentric Models", "title_zh": "地心模型", "start": 89, "end": 142},
+    {"slug": "chapter-05", "number": "5", "title_en": "The Many Variables & The Spurious Waffles", "title_zh": "多变量与虚假华夫饼", "start": 143, "end": 180},
+    {"slug": "chapter-06", "number": "6", "title_en": "The Haunted DAG & The Causal Terror", "title_zh": "闹鬼的 DAG 与因果恐怖", "start": 181, "end": 210},
+    {"slug": "chapter-07", "number": "7", "title_en": "Ulysses’ Compass", "title_zh": "尤利西斯的罗盘", "start": 211, "end": 256},
+    {"slug": "chapter-08", "number": "8", "title_en": "Conditional Manatees", "title_zh": "条件海牛", "start": 257, "end": 284},
+    {"slug": "chapter-09", "number": "9", "title_en": "Markov Chain Monte Carlo", "title_zh": "马尔可夫链蒙特卡洛", "start": 285, "end": 322},
+    {"slug": "chapter-10", "number": "10", "title_en": "Big Entropy and the Generalized Linear Model", "title_zh": "大熵与广义线性模型", "start": 323, "end": 346},
+    {"slug": "chapter-11", "number": "11", "title_en": "God Spiked the Integers", "title_zh": "上帝给整数加了料", "start": 347, "end": 396},
+    {"slug": "chapter-12", "number": "12", "title_en": "Monsters and Mixtures", "title_zh": "怪物与混合", "start": 397, "end": 428},
+    {"slug": "chapter-13", "number": "13", "title_en": "Models With Memory", "title_zh": "有记忆的模型", "start": 429, "end": 464},
+    {"slug": "chapter-14", "number": "14", "title_en": "Adventures in Covariance", "title_zh": "协方差历险", "start": 465, "end": 516},
+    {"slug": "chapter-15", "number": "15", "title_en": "Missing Data and Other Opportunities", "title_zh": "缺失数据与其他机会", "start": 517, "end": 552},
+    {"slug": "chapter-16", "number": "16", "title_en": "Generalized Linear Madness", "title_zh": "广义线性疯狂", "start": 553, "end": 580},
+    {"slug": "chapter-17", "number": "17", "title_en": "Horoscopes", "title_zh": "星象", "start": 581, "end": 584},
+    {"slug": "endnotes", "number": "", "title_en": "Endnotes", "title_zh": "尾注", "start": 585, "end": 598},
+    {"slug": "bibliography", "number": "", "title_en": "Bibliography", "title_zh": "参考文献", "start": 599, "end": 610},
+    {"slug": "citation-index", "number": "", "title_en": "Citation Index", "title_zh": "引文索引", "start": 611, "end": 617}
+  ]
+}

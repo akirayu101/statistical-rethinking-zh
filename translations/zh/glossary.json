@@ -1,0 +1,41 @@
+{
+  "title": "Statistical Rethinking 中文术语表",
+  "terms": {
+    "Statistical Rethinking": "统计再思",
+    "Bayesian inference": "贝叶斯推断",
+    "Bayesian model": "贝叶斯模型",
+    "statistical model": "统计模型",
+    "golem": "魔像",
+    "posterior distribution": "后验分布",
+    "prior distribution": "先验分布",
+    "likelihood": "似然",
+    "prior predictive simulation": "先验预测模拟",
+    "posterior predictive distribution": "后验预测分布",
+    "quadratic approximation": "二次近似",
+    "grid approximation": "网格近似",
+    "Markov chain Monte Carlo": "马尔可夫链蒙特卡洛",
+    "Hamiltonian Monte Carlo": "哈密顿蒙特卡洛",
+    "generalized linear model": "广义线性模型",
+    "directed acyclic graph": "有向无环图",
+    "DAG": "DAG",
+    "causal inference": "因果推断",
+    "confounding": "混杂",
+    "collider bias": "碰撞点偏差",
+    "post-treatment bias": "处理后偏差",
+    "multicollinearity": "多重共线性",
+    "regularization": "正则化",
+    "overfitting": "过拟合",
+    "underfitting": "欠拟合",
+    "maximum entropy": "最大熵",
+    "multilevel model": "多层模型",
+    "varying effect": "变化效应",
+    "Gaussian process": "高斯过程",
+    "measurement error": "测量误差",
+    "missing data": "缺失数据",
+    "censoring": "删失",
+    "survival analysis": "生存分析"
+  },
+  "protected": [
+    "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"
+  ]
+}
