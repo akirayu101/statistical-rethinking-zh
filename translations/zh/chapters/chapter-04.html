@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-04" data-source-pages="89-115">
+<article class="book-article" data-chapter="chapter-04" data-source-pages="89-118">
   <header class="chapter-header">
     <p class="eyebrow">第四章</p>
     <h1>地心模型</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 89–115 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 89–118 页</p>
   </header>
 
   <p>历史对托勒密并不宽厚。克劳狄乌斯·托勒密（约公元 90 年生，168 年卒）是埃及数学家和天文学家，最著名的成就是太阳系地心模型。今天，科学家若想嘲讽某人，有时会把他比作地心模型的拥护者。但托勒密是位天才。他描述行星运动的数学模型（<a href="#fig-4-1">图 4.1</a>）极其准确。为了达到这种精度，模型采用了一种叫作<strong>本轮</strong>的装置，也就是圆上套圆。甚至还能有“本轮上的本轮”：圆上套圆再套圆。只要在适当位置放置足够多的本轮，托勒密模型的预测精度就能超过此前任何人。因此，这套模型沿用了一千多年。托勒密和许多与他相似的人历经数百年艰苦推演，在没有计算机帮助的条件下解决了这一切。任何人被比作托勒密，都应该感到受宠若惊。</p>
@@ -938,8 +938,135 @@ b &lt;- rlnorm( N , 0 , 1 )</code></pre>
 
           <p>选择先验时，可以从几条简单准则起步。先验编码看到数据之前的信息状态，因此让我们探索从不同信息出发会产生什么后果。如果掌握了良好先验信息，能降低某些参数值的可信程度——例如身高与体重之间的负关联——就可以把这类信息直接写入先验。即使没有这类信息，通常也足以知道合理取值的大致范围。还可以改变先验并重复分析，研究不同初始信息状态怎样影响推断。很多时候，合理的先验选择不止一种，而它们都会产生相同推断。与传统非贝叶斯方法相比，传统贝叶斯先验往往更保守；第 7 章会看到这种保守性怎样产生。</p>
 
-          <p class="continuation-note">“正确的先验”侧栏将在原书 PDF 第 116 页继续。</p>
+          <p>做选择往往让新手紧张。有时人们会产生一种错觉：默认程序比需要用户选择的程序——例如选择先验——更客观。如果真是如此，那么“客观”只意味着每个人都做同一件事；它并不保证符合现实，也不保证准确。</p>
         </aside>
+
+        <aside class="rethinking-box" id="rethinking-prior-predictive-p-hacking">
+          <h3>再思考：先验预测模拟与 p-hacking</h3>
+
+          <p>当代应用统计学的一个严重问题是“p-hacking”，即为了得到想要的结果而调整模型和数据。想要的结果通常是小于 5% 的 p 值。问题在于，一旦根据观测数据调整模型，p 值便不再保有原本的含义，出现错误结果是可以预期的。本书不关注 p 值，但如果我们依据已经观测到的样本来选择先验，只为得到某个想要的结果，同样的危险仍然存在。</p>
+
+          <p>本章采用的程序，是根据看到数据之前对数据的知识——它的约束、范围和理论关系——来选择先验。正因如此，前一节没有展示实际数据。我们是用一般事实，而不是这个样本，来判断先验。接下来再观察模型在真实数据上的表现。</p>
+        </aside>
+      </section>
+    </section>
+
+    <section id="sec-4-4-2">
+      <h3>4.4.2 求后验分布</h3>
+
+      <p>近似后验所需的代码，只是对已经见过的代码作直接修改。只需把新的均值模型放进 <code>quap</code> 内部的模型定义，并确保为新参数 <span class="math-inline"><var>β</var></span> 添加先验。下面再次写出模型定义，并在右侧列出对应的 R 代码：</p>
+
+      <div class="equation-block quap-formula-map linear-model-code-map" id="eq-4-linear-model-code-map">
+        <div><span>hᵢ ∼ Normal(μᵢ, σ)</span><code>height ~ dnorm(mu,sigma)</code></div>
+        <div><span>μᵢ = α + β(xᵢ − x̄)</span><code>mu &lt;- a + b*weight</code></div>
+        <div><span>α ∼ Normal(178, 20)</span><code>a ~ dnorm(178,20)</code></div>
+        <div><span>β ∼ Log-Normal(0, 1)</span><code>b ~ dlnorm(0,1)</code></div>
+        <div><span>σ ∼ Uniform(0, 50)</span><code>sigma ~ dunif(0,50)</code></div>
+      </div>
+
+      <p>注意，右侧 R 代码中的线性模型使用赋值运算符 <code>&lt;-</code>，尽管数学定义使用的是等号 <span class="math-inline">=</span>。多种贝叶斯模型拟合引擎都采用这项代码约定，因此值得习惯这种切换。只要记住：在 R 代码中定义线性模型时使用 <code>&lt;-</code>，而不是 <code>=</code>。</p>
+
+      <p>就是这样。上面的定义让我们可以构造后验近似：</p>
+
+      <figure class="code-listing" id="code-4-42">
+        <figcaption>R 代码 4.42</figcaption>
+        <pre><code># load data again, since it's a long way back
+library(rethinking)
+data(Howell1)
+d &lt;- Howell1
+d2 &lt;- d[ d$age &gt;= 18 , ]
+
+# define the average weight, x-bar
+xbar &lt;- mean(d2$weight)
+
+# fit model
+m4.3 &lt;- quap(
+    alist(
+        height ~ dnorm( mu , sigma ) ,
+        mu &lt;- a + b*( weight - xbar ) ,
+        a ~ dnorm( 178 , 20 ) ,
+        b ~ dlnorm( 0 , 1 ) ,
+        sigma ~ dunif( 0 , 50 )
+    ) ,
+    data=d2 )</code></pre>
+      </figure>
+
+      <aside class="rethinking-box" id="rethinking-dependent-quantities-posterior">
+        <h3>再思考：凡是依赖参数的量，都有后验分布</h3>
+
+        <p>在上面的模型中，<span class="math-inline"><var>μ</var></span> 已不再是参数，因为它变成了参数 <span class="math-inline"><var>α</var></span> 与 <span class="math-inline"><var>β</var></span> 的函数。不过，既然 <span class="math-inline"><var>α</var></span> 与 <span class="math-inline"><var>β</var></span> 有联合后验，<span class="math-inline"><var>μ</var></span> 也同样有后验。本章稍后会直接处理 <span class="math-inline"><var>μ</var></span> 的后验分布，即使它已经不再是参数。</p>
+
+        <p>参数具有不确定性，所以依赖参数的一切也都不确定。这既包括 <span class="math-inline"><var>μ</var></span> 这样的统计量，也包括基于模型的预测、拟合度量，以及其他所有使用参数的量。使用后验样本时，要把任意量的后验不确定性纳入考虑，只需对每个后验样本计算一次该量。得到的一组数值——每个后验样本对应一个——就会近似这个量的后验分布。</p>
+      </aside>
+
+      <aside class="overthinking-box" id="overthinking-logs-exps">
+        <h3>过度思考：log 和 exp，天哪</h3>
+
+        <p>我的经验是，许多自然科学家和社会科学家都自然而然地忘掉了自己曾经学过的对数知识。对数在应用统计中随处可见。可以把 <span class="math-inline"><var>y</var> = log(<var>x</var>)</span> 实用地理解为：把 <span class="math-inline"><var>x</var></span> 的数量级赋给 <span class="math-inline"><var>y</var></span>。函数 <span class="math-inline"><var>x</var> = exp(<var>y</var>)</span> 则反向操作，把数量级变回数值。数学家听到这些定义可能会尖叫，但我们的许多计算工作只依赖这些直觉。</p>
+
+        <p>这些定义让 <span class="math-inline"><var>β</var></span> 的对数正态先验可以换一种写法。我们不直接定义参数 <span class="math-inline"><var>β</var></span>，而是定义一个等于 <span class="math-inline"><var>β</var></span> 对数的参数，再赋予它正态分布；随后在线性模型内部把对数逆转回来。形式如下：</p>
+
+        <figure class="code-listing" id="code-4-43">
+          <figcaption>R 代码 4.43</figcaption>
+          <pre><code>m4.3b &lt;- quap(
+    alist(
+        height ~ dnorm( mu , sigma ) ,
+        mu &lt;- a + exp(log_b)*( weight - xbar ) ,
+        a ~ dnorm( 178 , 20 ) ,
+        log_b ~ dnorm( 0 , 1 ) ,
+        sigma ~ dunif( 0 , 50 )
+    ) ,
+    data=d2 )</code></pre>
+        </figure>
+
+        <p>注意 <code>mu</code> 定义中的 <code>exp(log_b)</code>。这与 <code>m4.3</code> 是同一个模型，会给出相同预测；但后验分布中得到的不再是 <span class="math-inline"><var>β</var></span>，而是 <span class="math-inline">log(<var>β</var>)</span>。两者很容易互换，因为 <span class="math-inline"><var>β</var> = exp(log(<var>β</var>))</span>。写成代码就是：<code>b &lt;- exp(log_b)</code>。</p>
+      </aside>
+    </section>
+
+    <section id="sec-4-4-3">
+      <h3>4.4.3 解释后验分布</h3>
+
+      <p>统计模型的一个麻烦是难以理解。模型拟合完成后，它只能报告后验分布。这是对你所提问题的正确回答，但处理这个回答并赋予它意义，是你的责任。</p>
+
+      <p>处理大体分为两类：（1）读取表格；（2）绘制模拟结果。对一些简单问题，仅看边际值表格也能学到很多；但大多数模型都很难只靠数字表格理解。单看表格的一大困难，是它看起来很简单，与生成它的模型和数据的复杂性形成反差。一旦模型中不止两三个参数，仅凭数字就很难弄清它们怎样共同影响预测。这也是我们从先验模拟的原因。一旦加入交互项（第 8 章）或多项式（本章稍后），甚至可能连预测变量影响结果的方向都猜不出来。</p>
+
+      <p>因此，本书始终强调绘制后验分布和后验预测，而不是试图读懂一张表。把模型的蕴含画出来，就能追问一些难以从表格读取的问题：</p>
+
+      <ol class="posterior-plot-uses">
+        <li>模型拟合程序是否正确运行；</li>
+        <li>结果与预测变量之间关系的绝对大小，而不只是相对大小；</li>
+        <li>平均关系周围的不确定性；</li>
+        <li>模型蕴含的预测周围的不确定性——它不同于单纯的参数不确定性。</li>
+      </ol>
+
+      <p>此外，一旦熟悉把后验分布处理成图，就能针对任何类型的模型提出任何想得到的问题。读者也会比起一张估计值表格，更欣赏一幅图。</p>
+
+      <p>所以，本节余下部分先花一点时间讨论估计值表格，再转向怎样绘制估计；这些图始终会纳入完整后验分布的信息，包括参数之间的相关性。</p>
+
+      <aside class="rethinking-box" id="rethinking-parameter-meaning">
+        <h3>再思考：参数意味着什么？</h3>
+
+        <p>解释基于模型的估计时，一个基本问题是弄清参数的含义。不过，人们对参数意味着什么并无共识，因为不同的人对模型、概率和预测持有不同哲学立场。本书采用一种常见贝叶斯视角：<strong>根据模型，参数值的后验概率描述世界不同状态与数据之间的相对相容程度。</strong>这些是小世界（第 2 章）中的数字。因此，理性的人可能对它们在大世界中的含义存在分歧，而分歧细节高度依赖具体语境。这类分歧很有建设性，因为它们会引出模型批评与修订——魔像无法自行完成这些工作。</p>
+
+        <p>后面几章会看到，参数既可以指向可观测量——数据——也可以指向不可观测值。这使参数更有用，也让其解释更加依赖语境。</p>
+      </aside>
+
+      <section id="sec-4-4-3-1">
+        <h4>4.4.3.1 边际分布表</h4>
+
+        <p>新的线性回归已经用卡拉哈里数据训练完成。现在检查各参数的边际后验分布：</p>
+
+        <figure class="code-listing" id="code-4-44">
+          <figcaption>R 代码 4.44</figcaption>
+          <pre><code>precis( m4.3 )</code></pre>
+          <pre class="code-output"><code>         mean   sd   5.5% 94.5%
+a      154.60 0.27 154.17 155.03
+b        0.90 0.04   0.84   0.97
+sigma    5.07 0.19   4.77   5.38</code></pre>
+        </figure>
+
+        <p>第一行给出 <span class="math-inline"><var>α</var></span> 的二次近似，第二行给出 <span class="math-inline"><var>β</var></span> 的近似，第三行给出 <span class="math-inline"><var>σ</var></span> 的近似。下面尝试理解这些结果。</p>
+        <p class="continuation-note">参数解释将在原书 PDF 第 119 页继续。</p>
       </section>
     </section>
   </section>
@@ -962,6 +1089,6 @@ b &lt;- rlnorm( N , 0 , 1 )</code></pre>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 89–115 页已完成翻译、逐页核对、阶段契约和桌面/移动端视觉验收。下一批从 PDF 第 116 页继续。
+    <strong>译稿状态：</strong>PDF 第 89–118 页已完成翻译、逐页核对、阶段契约和桌面/移动端视觉验收。下一批从 PDF 第 119 页继续。
   </aside>
 </article>

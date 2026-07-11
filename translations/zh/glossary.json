@@ -345,7 +345,20 @@
     "positive relationship": "正向关系",
     "structural feature": "结构特征",
     "conservative prior": "保守先验",
-    "prior choice": "先验选择"
+    "prior choice": "先验选择",
+    "p-hacking": "p-hacking",
+    "pre-data knowledge": "数据前知识",
+    "Bayesian model fitting engine": "贝叶斯模型拟合引擎",
+    "model-based prediction": "基于模型的预测",
+    "measure of fit": "拟合度量",
+    "order of magnitude": "数量级",
+    "posterior prediction": "后验预测",
+    "absolute magnitude": "绝对大小",
+    "interaction term": "交互项",
+    "polynomial": "多项式",
+    "model criticism": "模型批评",
+    "model revision": "模型修订",
+    "marginal distribution table": "边际分布表"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"
