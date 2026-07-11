@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-04" data-source-pages="89-103">
+<article class="book-article" data-chapter="chapter-04" data-source-pages="89-106">
   <header class="chapter-header">
     <p class="eyebrow">第四章</p>
     <h1>地心模型</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 89–103 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 89–106 页</p>
   </header>
 
   <p>历史对托勒密并不宽厚。克劳狄乌斯·托勒密（约公元 90 年生，168 年卒）是埃及数学家和天文学家，最著名的成就是太阳系地心模型。今天，科学家若想嘲讽某人，有时会把他比作地心模型的拥护者。但托勒密是位天才。他描述行星运动的数学模型（<a href="#fig-4-1">图 4.1</a>）极其准确。为了达到这种精度，模型采用了一种叫作<strong>本轮</strong>的装置，也就是圆上套圆。甚至还能有“本轮上的本轮”：圆上套圆再套圆。只要在适当位置放置足够多的本轮，托勒密模型的预测精度就能超过此前任何人。因此，这套模型沿用了一千多年。托勒密和许多与他相似的人历经数百年艰苦推演，在没有计算机帮助的条件下解决了这一切。任何人被比作托勒密，都应该感到受宠若惊。</p>
@@ -466,7 +466,138 @@ post$prob &lt;- exp( post$prod - max(post$prod) )</code></pre>
       </figure>
 
       <p>后验分布现在保存在 <code>post$prob</code> 中，可以用多种绘图命令检查。例如，可以这样得到简单的等高线图：</p>
-      <p class="continuation-note">代码与本节将在原书 PDF 第 104 页继续。</p>
+
+      <figure class="code-listing" id="code-4-17">
+        <figcaption>R 代码 4.17</figcaption>
+        <pre><code>contour_xyz( post$mu , post$sigma , post$prob )</code></pre>
+      </figure>
+
+      <p>也可以绘制一幅简单的热图：</p>
+
+      <figure class="code-listing" id="code-4-18">
+        <figcaption>R 代码 4.18</figcaption>
+        <pre><code>image_xyz( post$mu , post$sigma , post$prob )</code></pre>
+      </figure>
+
+      <p><code>contour_xyz</code> 和 <code>image_xyz</code> 两个函数都来自 <code>rethinking</code> 包。</p>
+    </section>
+
+    <section id="sec-4-3-4">
+      <h3>4.3.4 从后验分布抽样</h3>
+
+      <p>为了更细致地研究这个后验分布，我仍然推荐从中抽取参数值这一灵活方法。它与第 3 章从地球仪投掷示例的 <span class="math-inline"><var>p</var></span> 后验分布抽样完全一样。唯一的新技巧是：现在有两个参数，而且要抽取它们的组合，所以先按照 <code>post$prob</code> 中各值的比例，随机抽取 <code>post</code> 的行号；再从这些随机抽中的行里取出参数值。下面的代码可以完成这件事：</p>
+
+      <figure class="code-listing" id="code-4-19">
+        <figcaption>R 代码 4.19</figcaption>
+        <pre><code>sample.rows &lt;- sample( 1:nrow(post) , size=1e4 , replace=TRUE ,
+    prob=post$prob )
+sample.mu &lt;- post$mu[ sample.rows ]
+sample.sigma &lt;- post$sigma[ sample.rows ]</code></pre>
+      </figure>
+
+      <p>最终会得到身高数据后验分布的 10,000 个有放回样本。看看这些样本：</p>
+
+      <figure class="code-listing" id="code-4-20">
+        <figcaption>R 代码 4.20</figcaption>
+        <pre><code>plot( sample.mu , sample.sigma , cex=0.5 , pch=16 , col=col.alpha(rangi2,0.1) )</code></pre>
+      </figure>
+
+      <figure class="book-figure posterior-samples-figure" id="fig-4-4">
+        <div class="figure-scroll" tabindex="0" aria-label="可横向滚动的身高参数联合后验样本散点图">
+          <img src="/media/chapter-04-height-posterior.svg" alt="均值 mu 与标准差 sigma 的一万个联合后验样本在中心形成高密度点云">
+        </div>
+        <p class="scroll-hint">图较宽，可横向滚动查看完整坐标与点云。</p>
+        <figcaption><strong>图 4.4：</strong>身高数据后验分布的样本。中心区域点的密度最高，反映 <span class="math-inline"><var>μ</var></span> 与 <span class="math-inline"><var>σ</var></span> 最可信的组合。在给定模型的条件下，这些参数值能产生数据的方式多得多。</figcaption>
+      </figure>
+
+      <p><a href="#fig-4-4">图 4.4</a>重现了这幅图。函数 <code>col.alpha</code> 属于 <code>rethinking</code> R 包；它所做的只是让颜色变得透明，使重叠样本形成的密度在图中更容易辨认。可以调整 <code>cex</code>（character expansion，即点的大小）、<code>pch</code>（plot character，即绘图字符）以及 0.1 这个透明度值，按自己的偏好修改图形。</p>
+
+      <p>有了这些样本，就可以像汇总数据一样汇总它们，从而描述对每一组 <span class="math-inline"><var>μ</var></span> 与 <span class="math-inline"><var>σ</var></span> 组合的可信程度。就像第 3 章那样，把样本当成数据来描述即可。例如，要刻画 <span class="math-inline"><var>μ</var></span> 和 <span class="math-inline"><var>σ</var></span> 的边际后验密度形状，只需：</p>
+
+      <figure class="code-listing" id="code-4-21">
+        <figcaption>R 代码 4.21</figcaption>
+        <pre><code>dens( sample.mu )
+dens( sample.sigma )</code></pre>
+      </figure>
+
+      <p>这里的术语“边际”指“对其他参数求平均”。执行上面的代码并检查图形。这些密度都非常接近正态分布，而且这种现象相当典型：随着样本量增加，后验密度会趋近正态分布。不过仔细看会发现，<span class="math-inline"><var>σ</var></span> 的密度右尾更长。稍后我会稍微夸大这一倾向，说明这种情况对标准差参数非常常见。</p>
+
+      <p>若要像第 3 章那样，用后验兼容区间概括这些密度的宽度，只需：</p>
+
+      <figure class="code-listing" id="code-4-22">
+        <figcaption>R 代码 4.22</figcaption>
+        <pre><code>PI( sample.mu )
+PI( sample.sigma )</code></pre>
+      </figure>
+
+      <p>这些样本只是数值向量，所以普通数据能计算的任何统计量，它们都能计算。若想得到均值或中位数，直接使用相应的 R 函数即可。</p>
+
+      <aside class="overthinking-box" id="overthinking-sigma-posterior-normality">
+        <h3>过度思考：样本量与 σ 后验的正态性</h3>
+
+        <p>在转向使用二次近似（<code>quap</code>）作为上述全部推断的捷径之前，值得重复一次身高数据分析，但这次只使用原始数据的一小部分。这样做是为了说明：原则上，后验形状并不总是如此高斯。均值 <span class="math-inline"><var>μ</var></span> 没有问题。只要 <span class="math-inline"><var>μ</var></span> 的似然和先验都是高斯分布，无论样本量多大，其后验分布也始终是高斯分布。造成麻烦的是标准差 <span class="math-inline"><var>σ</var></span>。因此，如果你关心 <span class="math-inline"><var>σ</var></span>——很多人并不关心——就需要谨慎，不能滥用二次近似。</p>
+
+        <p><span class="math-inline"><var>σ</var></span> 的后验往往拥有较长右尾，其深层原因很复杂。不过可以这样理解：方差必须为正。因此，对方差（或标准差）究竟能有多大的不确定性，必然多于对它能有多小的不确定性。例如，若方差估计值接近零，就能肯定它不可能小很多；但它却可能大得多。</p>
+
+        <p>下面只快速分析身高数据中的 20 个值，揭示这个问题。要从原列表中随机抽取 20 个身高：</p>
+
+        <figure class="code-listing" id="code-4-23">
+          <figcaption>R 代码 4.23</figcaption>
+          <pre><code>d3 &lt;- sample( d2$height , size=20 )</code></pre>
+        </figure>
+
+        <p>现在重复上一小节的全部代码，但把重点从原始数据改为 <code>d3</code> 中的 20 个身高。下面把代码压缩到一起，不过这些内容都已经见过：</p>
+
+        <figure class="code-listing" id="code-4-24">
+          <figcaption>R 代码 4.24</figcaption>
+          <pre><code>mu.list &lt;- seq( from=150, to=170 , length.out=200 )
+sigma.list &lt;- seq( from=4 , to=20 , length.out=200 )
+post2 &lt;- expand.grid( mu=mu.list , sigma=sigma.list )
+post2$LL &lt;- sapply( 1:nrow(post2) , function(i)
+    sum( dnorm( d3 , mean=post2$mu[i] , sd=post2$sigma[i] ,
+        log=TRUE ) ) )
+post2$prod &lt;- post2$LL + dnorm( post2$mu , 178 , 20 , TRUE ) +
+    dunif( post2$sigma , 0 , 50 , TRUE )
+post2$prob &lt;- exp( post2$prod - max(post2$prod) )
+sample2.rows &lt;- sample( 1:nrow(post2) , size=1e4 , replace=TRUE ,
+    prob=post2$prob )
+sample2.mu &lt;- post2$mu[ sample2.rows ]
+sample2.sigma &lt;- post2$sigma[ sample2.rows ]
+plot( sample2.mu , sample2.sigma , cex=0.5 ,
+    col=col.alpha(rangi2,0.1) ,
+    xlab="mu" , ylab="sigma" , pch=16 )</code></pre>
+        </figure>
+
+        <p>执行上面的代码后，会看到另一幅后验密度样本散点图，但这次会发现点云顶部有一条明显更长的尾部。还应该查看 <span class="math-inline"><var>σ</var></span> 的边际后验密度，即对 <span class="math-inline"><var>μ</var></span> 求平均后的密度：</p>
+
+        <figure class="code-listing" id="code-4-25">
+          <figcaption>R 代码 4.25</figcaption>
+          <pre><code>dens( sample2.sigma , norm.comp=TRUE )</code></pre>
+        </figure>
+
+        <p>这段代码还会显示一个具有相同均值和方差的正态近似。现在可以看出，<span class="math-inline"><var>σ</var></span> 的后验并不是高斯分布，而是朝较大值方向拖着一条不确定性的长尾。</p>
+      </aside>
+    </section>
+
+    <section id="sec-4-3-5">
+      <h3>4.3.5 使用 quap 求后验分布</h3>
+
+      <p>现在把网格近似留在身后，转向应用统计学的一台强大引擎：<strong>二次近似</strong>。回想一下，我们关心二次近似，是因为它能方便、快速地推断后验形状。后验峰值位于最大后验估计（MAP），而在这个峰值处对后验分布作二次近似，就能获得一幅有用的后验形状图景。</p>
+
+      <p>为了构造二次近似，我们将使用 <code>rethinking</code> 包中的命令 <code>quap</code>。<code>quap</code> 函数利用本章前面介绍的模型定义来工作：定义中的每一行，都有一行相应的 R 代码。<code>quap</code> 内部的引擎据此定义每组参数值对应的后验概率，然后沿后验分布向上攀爬，找到它的峰值，也就是 MAP。最后，它估计 MAP 处的二次曲率，生成后验分布的近似。请记住：这个过程与许多非贝叶斯方法非常相似，只是后者没有先验。</p>
+
+      <p>先重复加载数据并筛选成年人的代码：</p>
+
+      <figure class="code-listing" id="code-4-26">
+        <figcaption>R 代码 4.26</figcaption>
+        <pre><code>library(rethinking)
+data(Howell1)
+d &lt;- Howell1
+d2 &lt;- d[ d$age &gt;= 18 , ]</code></pre>
+      </figure>
+
+      <p>现在可以使用 R 的公式语法定义模型。本例的模型定义与前面相同，不过接下来会再次列出它，并在每一行旁边给出对应的 R 代码。</p>
+      <p class="continuation-note">模型定义将在原书 PDF 第 107 页继续。</p>
     </section>
   </section>
 
@@ -486,6 +617,6 @@ post$prob &lt;- exp( post$prod - max(post$prod) )</code></pre>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 89–103 页已完成翻译、逐页核对、阶段契约和桌面/移动端视觉验收。下一批从 PDF 第 104 页继续。
+    <strong>译稿状态：</strong>PDF 第 89–106 页已完成翻译、逐页核对、阶段契约和桌面/移动端视觉验收。下一批从 PDF 第 107 页继续。
   </aside>
 </article>

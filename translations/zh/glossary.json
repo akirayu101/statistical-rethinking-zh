@@ -298,7 +298,17 @@
     "log-likelihood": "对数似然",
     "rounding error": "舍入误差",
     "relative posterior probability": "相对后验概率",
-    "grid point": "网格点"
+    "grid point": "网格点",
+    "heat map": "热图",
+    "sampling with replacement": "有放回抽样",
+    "joint posterior sample": "联合后验样本",
+    "transparent color": "透明颜色",
+    "character expansion": "字符扩展系数",
+    "plot character": "绘图字符",
+    "marginal posterior density": "边际后验密度",
+    "right-hand tail": "右尾",
+    "normal approximation": "正态近似",
+    "posterior curvature": "后验曲率"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"
