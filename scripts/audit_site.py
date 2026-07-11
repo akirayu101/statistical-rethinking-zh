@@ -118,6 +118,8 @@ def main() -> int:
                             svg_root = ET.parse(asset).getroot()
                             if not svg_root.tag.endswith("svg") or not svg_root.get("viewBox"):
                                 failures.append(f"{path.name}: invalid SVG image asset {src}")
+                            if not svg_root.get("width") or not svg_root.get("height"):
+                                failures.append(f"{path.name}: SVG image asset lacks explicit dimensions {src}")
                             if svg_root.find("{http://www.w3.org/2000/svg}title") is None:
                                 failures.append(f"{path.name}: SVG image asset lacks title {src}")
                             if svg_root.find("{http://www.w3.org/2000/svg}desc") is None:

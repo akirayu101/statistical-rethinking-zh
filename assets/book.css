@@ -89,6 +89,12 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .marble-tree .tree-node.white { fill: #fff; }
 .marble-tree .tree-node.blue { fill: #315bd7; stroke: #172860; }
 .garden-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
+.learning-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
+.observation-sequence { display: flex; justify-content: center; gap: .75rem; margin: 1.5rem auto !important; padding: .75rem 1rem; max-width: 28rem; border-block: 1px solid var(--line); background: #fff; font: 700 1.1rem/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: .04em; }
+.model-loop { margin: 1.5rem 0; padding: 1rem 1rem 1rem 3.2rem; border-left: .25rem solid var(--blue); background: #f3f5fb; }
+.model-loop li { margin: .55rem 0; padding-left: .25rem; }
+.data-story { margin: 1.5rem 0; padding: 1rem 1rem 1rem 3.2rem; border: 1px solid var(--line); border-radius: .35rem; background: #fff; }
+.data-story li { margin: .55rem 0; padding-left: .25rem; }
 .table-wrap { width: 100%; overflow-x: auto; }
 .count-table { width: min(100%, 34rem); margin: 1.5rem auto; border-collapse: collapse; background: #fff; }
 .count-table th, .count-table td { padding: .7rem 1rem; border-bottom: 1px solid var(--line); text-align: center; }

@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-02" data-source-pages="35-43">
+<article class="book-article" data-chapter="chapter-02" data-source-pages="35-46">
   <header class="chapter-header">
     <p class="eyebrow">第二章</p>
     <h1>小世界与大世界</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 35–43 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 35–46 页</p>
   </header>
 
   <p>1492 年，Cristoforo Colombo（Christopher Columbus，中文常译“哥伦布”）那次声名狼藉的向西航行开始时，他相信地球是球形的。在这一点上，他和当时大多数受过教育的人一样。与大多数人不同的是，他还相信地球比实际小得多：赤道周长只有 30,000 公里，而不是真实的 40,000 公里（图 2.1）。<sup><a href="#note-37" aria-label="尾注 37">37</a></sup>这是欧洲历史上影响最为深远的错误之一。</p>
@@ -321,6 +321,82 @@ ways/sum(ways)</code></pre>
         <li>任一特定 <span class="math-inline"><var>p</var></span> 的先验可信程度，通常称为<strong>先验概率</strong>。</li>
         <li>任一特定 <span class="math-inline"><var>p</var></span> 的新近更新可信程度，通常称为<strong>后验概率</strong>。</li>
       </ul>
+
+      <p>在下一个大节中，你将见到这些对象更正式的记法，并了解它们如何组合成一个简单的统计模型。</p>
+
+      <aside class="rethinking-box">
+        <h3>再思考：随机化</h3>
+        <p>洗一副牌，或者通过掷硬币把受试者分配到不同处理组时，人们通常会说所得牌序与处理分配已经“随机化”。把某样东西随机化究竟意味着什么？它只是意味着，我们对该对象作了某种处理，使自己几乎不再知道其排列方式。洗牌改变了我们的知识状态，让我们不再掌握牌序的任何具体信息。</p>
+        <p>这样做带来的额外好处是：如果确实洗得足够充分，抹去了关于牌序的所有先验知识，那么最终牌序很可能属于许多具有高<strong>信息熵</strong>的排列之一。随着课程推进，信息熵会越来越重要；第 7 章与第 10 章将详细拆解这个概念。</p>
+      </aside>
+    </section>
+  </section>
+
+  <section id="sec-2-2">
+    <h2>2.2 构建模型</h2>
+
+    <p>用概率替代原始计数，让贝叶斯推断做起来容易得多，却看上去困难得多。因此，本节承接分叉数据的花园，介绍贝叶斯统计模型的惯常形式。这里使用的玩具例子具备典型统计分析的完整骨架，你将逐渐熟悉这种风格；但其中每个部分都能映射回分叉数据的花园，逻辑并没有改变。</p>
+
+    <p>假设你有一个代表我们所居住行星——地球——的地球仪。这个世界小到可以捧在手中。你想知道地表有多大比例被水覆盖，于是采用如下策略：把地球仪抛向空中，接住时记录右手食指下方是水域还是陆地；然后再次抛起地球仪，重复这一过程。<sup><a href="#note-43" aria-label="尾注 43">43</a></sup>这套策略会生成一串地球仪表面样本。最初九次样本可能如下：</p>
+
+    <p class="observation-sequence" aria-label="水域、陆地、水域、水域、水域、陆地、水域、陆地、水域"><span>W</span><span>L</span><span>W</span><span>W</span><span>W</span><span>L</span><span>W</span><span>L</span><span>W</span></p>
+
+    <p>其中，W 表示水域（water），L 表示陆地（land）。因此，这个例子中观测到 6 次 W（水域）和 3 次 L（陆地）。把这串观测称为<strong>数据</strong>。</p>
+
+    <p>要让推理运转起来，就必须作出假设；这些假设共同构成模型。设计一个简单贝叶斯模型，可以采用包含三个步骤的设计循环：</p>
+
+    <ol class="model-loop">
+      <li><strong>数据故事：</strong>讲述数据可能如何产生，为模型赋予动机。</li>
+      <li><strong>更新：</strong>把数据喂给模型，让模型学习。</li>
+      <li><strong>评估：</strong>所有统计模型都需要监督，并可能因此修订。</li>
+    </ol>
+
+    <p>接下来的小节将围绕地球仪投掷证据，依次走过这三个步骤。</p>
+
+    <section id="sec-2-2-1">
+      <h3>2.2.1 数据故事</h3>
+
+      <p>贝叶斯数据分析通常意味着讲述数据如何产生的故事。这个故事可以是<strong>描述性</strong>的：规定一组关联，以便在给定观测后预测结果；也可以是<strong>因果性</strong>的：提出某些事件如何产生其他事件的理论。通常，任何意在表达因果关系的故事也可以用于描述；但许多描述性故事很难作因果解释。</p>
+
+      <p>不过，所有数据故事都是完整的：它们提供的信息足以指定一个模拟新数据的算法。下一章将看到具体例子，因为模拟新数据不但有助于批评模型，也有助于构造模型。</p>
+
+      <p>可以尝试解释每一份数据如何诞生，以此建立数据故事的动机。这通常意味着既描述背后的现实，也描述抽样过程。本例的数据故事只是对抽样过程的重述：</p>
+
+      <ol class="data-story">
+        <li>地球仪表面被水覆盖的真实比例为 <span class="math-inline"><var>p</var></span>。</li>
+        <li>一次地球仪投掷产生水域（W）观测的概率为 <span class="math-inline"><var>p</var></span>；产生陆地（L）观测的概率为 <span class="math-inline">1 - <var>p</var></span>。</li>
+        <li>每次投掷都与其他投掷相互独立。</li>
+      </ol>
+
+      <p>随后，数据故事会被翻译成正式的概率模型。这个模型很容易构建，因为构建过程可以有效拆分为一系列组件决策。不过，在认识这些组件之前，先直观看看贝叶斯模型如何运作会很有帮助。熟悉模型如何从数据中学习后，我们再打开机器，研究它的工程结构。</p>
+
+      <aside class="rethinking-box">
+        <h3>再思考：讲故事的价值</h3>
+        <p>即使很快放弃数据故事，从不用它构建模型或模拟新观测，它仍然有价值。事实上，最终丢开故事十分重要，因为许多不同故事总会对应同一个模型。因此，证明模型表现良好，并不能反过来唯一支持我们的数据故事。</p>
+        <p>故事依然有价值，因为尝试勾勒故事时，我们常会意识到还有问题必须回答。大多数数据故事，都远比启发数据收集的口头假说具体。假说可以很含糊，比如“暖和的日子更可能下雨”。一旦被迫考虑抽样与测量，并精确陈述温度如何预测降雨，许多故事及其模型都可能与同一个含糊假说相容。消除这种歧义，往往会在任何模型拟合数据之前，就带来重要认识和模型修订。</p>
+      </aside>
+    </section>
+
+    <section id="sec-2-2-2">
+      <h3>2.2.2 贝叶斯更新</h3>
+
+      <p>我们的问题，是利用证据——地球仪投掷序列——在各种可能的地表水域比例之间作出判断。这些比例与本章前面猜测袋中弹珠组成的情形相似。给定证据后，每个可能比例都可能更可信或更不可信。贝叶斯模型先给每种可能性分配一组可信程度，也就是<strong>先验可信程度</strong>；然后依据数据更新它们，产生<strong>后验可信程度</strong>。这种更新过程是一种学习，称为<strong>贝叶斯更新</strong>。更新在机械上如何实现，可以留到本章后面再说；现在先只观察这台机器如何运作。</p>
+
+      <p>仅为了这个例子，先把贝叶斯机器设定为：起初给每一种水域比例，也就是 <span class="math-inline"><var>p</var></span> 的每个取值，分配相同的可信程度。稍后会采用更好的做法。看图 2.5 左上角的面板：水平虚线表示 <span class="math-inline"><var>p</var></span> 每个可能值的初始可信程度。看到第一次投掷结果 W 后，模型把可信程度更新为实线。</p>
+
+      <p>此时，<span class="math-inline"><var>p</var> = 0</span> 的可信程度恰好降为零，也就是“不可能”。为什么？因为至少观测到了一小块水域，所以现在知道地球仪上<strong>确实有水</strong>。模型会自动执行这套逻辑，无需另行指示。概率论会替我们处理这种后果，因为它本质上仍是在数上一节分叉数据花园中的路径。</p>
+
+      <p>同样，<span class="math-inline"><var>p</var> &gt; 0.5</span> 的可信程度上升了。这是因为尚无任何证据表明地球仪上存在陆地，所以初始可信程度会被修改得与现有信息相容。不过请注意，真正重要的是相对可信程度，而且目前证据仍然很少，可信程度之间的差异因而还不大。这样一来，到目前为止积累了多少证据，就体现在 <span class="math-inline"><var>p</var></span> 各取值的可信程度中。</p>
+
+      <figure class="book-figure learning-figure" id="fig-2-5">
+        <div class="figure-scroll" tabindex="0" aria-label="可横向滚动的九步贝叶斯更新图">
+          <img src="/media/chapter-02-globe-learning.svg" alt="九个面板依次显示 W L W W W L W L W 观测到来后水域比例可信程度的更新，虚线为更新前，蓝色实线为更新后">
+        </div>
+        <p class="scroll-hint">图较宽，可横向滚动查看九次更新。</p>
+        <figcaption><strong>图 2.5：</strong>贝叶斯模型如何学习。每次投掷地球仪都会产生一个水域（W）或陆地（L）观测。模型对地球仪水域比例的估计，是赋予每个可能值的一组可信程度；图中的线与曲线正是这些可信程度。每个面板都依据最新观测，把先前可信程度（虚线）更新为一组新的可信程度（实线）。</figcaption>
+      </figure>
+
+      <p>图 2.5 的其余面板把地球仪的其他样本逐个交给模型。每条虚线都来自前一面板的实线，阅读顺序是从左到右、从上到下。每当观测到 W，可信程度曲线的峰值就向右移动，朝向更大的 <span class="math-inline"><var>p</var></span> 值。</p>
     </section>
   </section>
 
@@ -333,10 +409,11 @@ ways/sum(ways)</code></pre>
       <li id="note-40">参见 Simon（1969）以及 Gigerenzer 等（2000）的相关章节。 <a class="backref" href="#sec-2-1" aria-label="返回正文">↩</a></li>
       <li id="note-41">参见 Cox（1946）。Jaynes（2003）与 Van Horn（2003）解释了 Cox 定理及其在推断中的作用。另见 Skilling 和 Knuth（2019），该文展示了这种概率论观点如何统一看似不同的领域。 <a class="backref" href="#sec-2-1-1" aria-label="返回正文">↩</a></li>
       <li id="note-42">例子参见 Gelman 和 Robert（2013）。 <a class="backref" href="#sec-2-1-1" aria-label="返回正文">↩</a></li>
+      <li id="note-43">我最早在 Gelman 和 Nolan（2002）中见到这种投掷地球仪的策略。自从把它用于课堂之后，几个人告诉我曾在别处见过，但我始终没能找到更早的原始出处——如果确实存在的话。 <a class="backref" href="#sec-2-2" aria-label="返回正文">↩</a></li>
     </ol>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 35–43 页已完成翻译、逐页渲染对照和桌面/移动端视觉验收；下一批从 PDF 第 44 页开始。
+    <strong>译稿状态：</strong>PDF 第 35–46 页已完成翻译、逐页渲染对照和桌面/移动端视觉验收；下一批从 PDF 第 47 页开始。
   </aside>
 </article>

@@ -112,7 +112,15 @@
     "parameter value": "参数值",
     "likelihood": "似然",
     "prior probability": "先验概率",
-    "posterior probability": "后验概率"
+    "posterior probability": "后验概率",
+    "randomization": "随机化",
+    "information entropy": "信息熵",
+    "data story": "数据故事",
+    "descriptive": "描述性",
+    "causal": "因果性",
+    "Bayesian updating": "贝叶斯更新",
+    "prior plausibility": "先验可信程度",
+    "posterior plausibility": "后验可信程度"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"
