@@ -343,7 +343,7 @@
   },
   "chapter-04": {
     "required_status": "in_progress",
-    "source_pages": [89, 133],
+    "source_pages": [89, 136],
     "required_ids": [
       "fig-4-1",
       "sec-4-1",
@@ -508,6 +508,11 @@
       "code-4-70",
       "code-4-71",
       "sec-4-5-2",
+      "code-4-72",
+      "eq-4-bspline-linear-model",
+      "fig-4-12",
+      "code-4-73",
+      "code-4-74",
       "chapter-04-notes",
       "note-64",
       "note-65",
@@ -520,7 +525,8 @@
       "note-72",
       "note-73",
       "note-74",
-      "note-75"
+      "note-75",
+      "note-76"
     ],
     "required_headings": [
       "地心模型",
@@ -584,8 +590,8 @@
     ],
     "counts": {
       "section": 32,
-      "figure": 82,
-      "figure img": 11,
+      "figure": 86,
+      "figure img": 12,
       ".ptolemaic-figure": 1,
       ".random-walk-figure": 1,
       ".prior-predictive-figure": 1,
@@ -597,7 +603,8 @@
       ".mean-interval-figure": 1,
       ".prediction-interval-figure": 1,
       ".polynomial-regression-figure": 1,
-      ".equation-block": 25,
+      ".bspline-intro-figure": 1,
+      ".equation-block": 26,
       ".quap-formula-map": 2,
       ".linear-model-code-map": 1,
       ".polynomial-model-map": 2,
@@ -617,8 +624,8 @@
       ".lognormal-beta-equation": 1,
       ".epsilon-model-equation": 1,
       ".height-posterior-equation": 1,
-      ".code-listing": 71,
-      ".code-output": 17,
+      ".code-listing": 74,
+      ".code-output": 18,
       ".rethinking-box": 12,
       ".overthinking-box": 13,
       ".source-erratum": 1,
@@ -631,7 +638,7 @@
       ".model-language-steps": 1,
       ".model-language-steps li": 3,
       ".model-reading": 1,
-      ".endnotes li": 12
+      ".endnotes li": 13
     }
   }
 }

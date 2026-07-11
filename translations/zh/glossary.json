@@ -406,7 +406,16 @@
     "partial correlation": "偏相关",
     "phenomenological explanation": "现象学解释",
     "spline": "样条",
-    "component function": "组成函数"
+    "component function": "组成函数",
+    "basis function": "基函数",
+    "basis variable": "基变量",
+    "weight parameter": "权重参数",
+    "knot": "结点",
+    "spline degree": "样条次数",
+    "local linear approximation": "局部线性近似",
+    "synthetic predictor variable": "合成预测变量",
+    "reconstructed temperature record": "重建气温记录",
+    "complete case": "完整案例"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"

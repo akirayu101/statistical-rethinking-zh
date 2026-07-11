@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-04" data-source-pages="89-133">
+<article class="book-article" data-chapter="chapter-04" data-source-pages="89-136">
   <header class="chapter-header">
     <p class="eyebrow">第四章</p>
     <h1>地心模型</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 89–133 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 89–136 页</p>
   </header>
 
   <p>历史对托勒密并不宽厚。克劳狄乌斯·托勒密（约公元 90 年生，168 年卒）是埃及数学家和天文学家，最著名的成就是太阳系地心模型。今天，科学家若想嘲讽某人，有时会把他比作地心模型的拥护者。但托勒密是位天才。他描述行星运动的数学模型（<a href="#fig-4-1">图 4.1</a>）极其准确。为了达到这种精度，模型采用了一种叫作<strong>本轮</strong>的装置，也就是圆上套圆。甚至还能有“本轮上的本轮”：圆上套圆再套圆。只要在适当位置放置足够多的本轮，托勒密模型的预测精度就能超过此前任何人。因此，这套模型沿用了一千多年。托勒密和许多与他相似的人历经数百年艰苦推演，在没有计算机帮助的条件下解决了这一切。任何人被比作托勒密，都应该感到受宠若惊。</p>
@@ -1643,9 +1643,81 @@ axis( side=1 , at=at , labels=round(labels,1) )</code></pre>
     <section id="sec-4-5-2">
       <h3>4.5.2 样条</h3>
 
-      <p>引入曲线的第二种方法，是构造一种称为<strong>样条</strong>的东西。<em>spline</em> 一词最初指一条细长的木片或金属片，可以固定在几个位置，帮助绘图员或设计师画出曲线。在统计学中，样条是由更小的组成函数构造出的平滑函数。样条其实有很多类型；这里要考察的 B 样条是其中最常见的一类。</p>
+      <p>引入曲线的第二种方法，是构造一种称为<strong>样条</strong>的东西。<em>spline</em> 一词最初指一条细长的木片或金属片，可以固定在几个位置，帮助绘图员或设计师画出曲线。在统计学中，样条是由更小的组成函数构造出的平滑函数。样条其实有很多类型；这里要考察的 B 样条是其中最常见的一类，并具有许多良好性质。“B”代表“basis（基）”，在这里就是“组成部分”的意思。B 样条用较简单、起伏较少的组成部分，构造出起伏丰富的函数。这些组成部分称为<strong>基函数</strong>。</p>
 
-      <p class="continuation-note">B 样条的构造与图示将在原书 PDF 第 134 页继续。</p>
+      <p>为了理解 B 样条怎样工作，需要一个比 !Kung 身高数据起伏更大——这是个科学术语——的例子。日本各地的樱花每年春季开放，随后便是赏花（花見）的传统。下面载入一千年的日本樱花日期：</p>
+
+      <figure class="code-listing" id="code-4-72">
+        <figcaption>R 代码 4.72</figcaption>
+        <pre><code>library(rethinking)
+data(cherry_blossoms)
+d &lt;- cherry_blossoms
+precis(d)</code></pre>
+        <pre class="code-output"><code>'data.frame': 1215 obs. of 5 variables:
+               mean     sd   5.5%   94.5%       histogram
+year        1408.00 350.88 867.77 1948.23  ▇▇▇▇▇▇▇▇▇▇▇▇▁
+doy          104.54   6.41  94.43  115.00         ▁▂▅▇▇▃▁▁
+temp           6.14   0.66   5.15    7.29         ▁▃▅▇▃▂▁▁
+temp_upper     7.19   0.99   5.90    8.90  ▁▂▅▇▇▅▂▂▁▁▁▁▁▁▁
+temp_lower     5.10   0.85   3.79    6.37  ▁▁▁▁▁▁▁▃▅▇▃▂▁▁▁</code></pre>
+      </figure>
+
+      <p>详细说明与数据来源可查看 <code>?cherry_blossoms</code>。目前只使用重建气温记录 <code>temp</code>，它从公元 839 年延伸到 1980 年，起伏很大。可以先把 <code>temp</code> 对 <code>year</code> 作图观察；抛物线在这里绝对无法胜任。</p>
+
+      <p>对 B 样条的简短解释是：它把某个预测变量——例如年份——的完整范围划分成若干部分，再给每个部分分配一个参数。这些参数会逐渐开启与关闭，使它们的和形成一条精巧、起伏丰富的曲线。长解释包含更多细节，但所有细节都只为实现同一个目标：用单独看起来曲率较小的局部函数，构造一个整体上弯曲的大函数。</p>
+
+      <p>下面给出带视觉示例的较长解释。目标是用一条起伏函数近似气温趋势。与多项式回归相同，B 样条也会生成新的预测变量，并把它们用于线性模型 <span class="math-inline"><var>μ</var><sub>i</sub></span>。不同之处在于，B 样条不会通过平方或立方直接转换预测变量，而是发明一系列全新的合成预测变量。每个变量都在预测变量的某段范围内，逐步开启和关闭某个特定参数；这样的变量就称为<strong>基函数</strong>。最终的线性模型非常熟悉：</p>
+
+      <div class="equation-block compact-equation" id="eq-4-bspline-linear-model">
+        <span><var>μ</var><sub>i</sub></span>
+        <span>=</span>
+        <span><var>α</var> + <var>w</var><sub>1</sub><var>B</var><sub>i,1</sub> + <var>w</var><sub>2</sub><var>B</var><sub>i,2</sub> + <var>w</var><sub>3</sub><var>B</var><sub>i,3</sub> + …</span>
+      </div>
+
+      <p>其中，<span class="math-inline"><var>B</var><sub>i,n</sub></span> 是第 <span class="math-inline"><var>n</var></span> 个基函数在第 <span class="math-inline"><var>i</var></span> 行的值，<span class="math-inline"><var>w</var></span> 参数则是各基函数对应的权重。参数的作用类似斜率，调节每个基函数对均值 <span class="math-inline"><var>μ</var><sub>i</sub></span> 的影响。因此，这实际上仍是线性回归，只是使用了一些精巧的合成预测变量；这些合成变量替我们完成了非常优雅的描述性（地心式）工作。</p>
+
+      <p>怎样构造这些基变量 <span class="math-inline"><var>B</var></span>？<a href="#fig-4-12">图 4.12</a>展示最简单的情形：用四段不同的线性近似来近似气温数据。先用称为<strong>结点</strong>的枢轴点，把横轴完整范围分成四段；上图中的“+”号表示结点。然后用五个不同的基函数——也就是五个 <span class="math-inline"><var>B</var></span> 变量——在相邻区段之间平缓过渡。本质上，这些变量会告诉你离哪个结点更近。</p>
+
+      <figure class="book-figure bspline-intro-figure" id="fig-4-12">
+        <div class="figure-scroll" tabindex="0" aria-label="可横向滚动的 B 样条三面板构造图">
+          <img src="/media/chapter-04-bspline-intro.svg" alt="上图显示五个基函数，中图显示基函数乘以权重，下图把所得 B 样条叠加在日本三月气温原始数据上">
+        </div>
+        <p class="scroll-hint">图较宽，可横向滚动查看基函数、权重与最终样条。</p>
+        <figcaption><strong>图 4.12：</strong>用 B 样条作局部线性近似。上：每个基函数都是一个变量，会在预测变量范围的某些部分开启；横轴任一点（例如 1306 年）只有两个基函数非零。中：称为权重的参数与基函数相乘；任一点上的样条，就是这些加权基函数之和。下：把所得 B 样条叠加在原始数据上；每个权重参数只决定预测变量某段范围内的斜率。</figcaption>
+      </figure>
+
+      <p>从上图左侧开始，基函数 1 的值为 1，其他基函数都为零。向右靠近第二个结点时，基函数 1 下降，基函数 2 上升。到结点 2 时，基函数 2 的值为 1，其余都为零。</p>
+
+      <p>这些基函数的优点，是让每个参数的影响都非常局部。在<a href="#fig-4-12">图 4.12</a>横轴任一点上，只有两个基函数具有非零值。例如，上图蓝色虚线表示 1306 年；这一年基函数 2 和 3 非零，所以只有它们对应的参数会影响 1306 年的预测。这与多项式回归非常不同，后者的参数会影响整条曲线的形状。</p>
+
+      <p><a href="#fig-4-12">图 4.12</a>中图把每个基函数乘以对应的权重参数。这些权重来自模型对数据的拟合，稍后会说明怎样得到它们；现在先关注图。权重参数可以为正，也可以为负，所以基函数 2 和 4 最终位于零线下方。要构造某一年（仍以 1306 年为例）的预测，只需把该年份处的加权基函数相加；1306 年只有基函数 2 和 3 会影响预测。</p>
+
+      <p>最后，<a href="#fig-4-12">图 4.12</a>下图把样条显示为原始气温数据上 <span class="math-inline"><var>μ</var></span> 的 97% 后验区间。这个近似还不够好，可以用两种方法改进：第一，使用更多结点；结点越多，样条越灵活。第二，用更高次多项式代替线性近似。</p>
+
+      <p>下面逐步构造能够复现<a href="#fig-4-12">图 4.12</a>、又能任意改变结点和次数的代码。先选择结点。结点只是作为样条枢轴的 <code>year</code> 值。结点应该放在哪里？这个问题有多种答案。<sup id="note-76-ref"><a href="#note-76" role="doc-noteref">76</a></sup> 原则上可以随意放置，但结点位置是模型的一部分，必须为它们负责。这里采用一种简单做法：把结点放在预测变量等距分位数处，例如 0%、25%、50%、75% 和 100%。这样，观测更多的区域会获得更多结点。气温数据中的 <code>year</code> 均匀分布，因此使用等距分位数也会得到间距均匀的年份。第一个示例只用了 5 个结点；现在改用 15 个：</p>
+
+      <figure class="code-listing" id="code-4-73">
+        <figcaption>R 代码 4.73</figcaption>
+        <pre><code>d2 &lt;- d[ complete.cases(d$temp) , ] # complete cases on temp
+num_knots &lt;- 15
+knot_list &lt;- quantile( d2$year , probs=seq(0,1,length.out=num_knots) )</code></pre>
+      </figure>
+
+      <p>查看 <code>knot_list</code>，会发现其中包含 15 个均匀间隔的日期，覆盖数据的完整范围。</p>
+
+      <p>下一个选择是多项式次数。它决定基函数怎样组合，也就决定参数怎样交互并产生样条。像<a href="#fig-4-12">图 4.12</a>这样的一次样条，每一点由两个基函数组合；二次样条每一点由三个函数组合；三次样条则由四个函数组合。R 已经提供了一个方便的函数，可以为任意结点列表和次数构造基函数。下面的代码为三次样条构造所需基函数：</p>
+
+      <figure class="code-listing" id="code-4-74">
+        <figcaption>R 代码 4.74</figcaption>
+        <pre><code>library(splines)
+B &lt;- bs(d2$year,
+    knots=knot_list[-c(1,num_knots)] ,
+    degree=3 , intercept=TRUE )</code></pre>
+      </figure>
+
+      <p>矩阵 <code>B</code> 应有 1,124 行、17 列。每一行对应一个年份，也对应数据框 <code>d2</code> 的一行；每一列是一个基函数，即一个合成变量，它定义某段年份范围，在这段范围内对应参数会影响预测。若要显示基函数，只需把每一列对年份作图。</p>
+
+      <p class="continuation-note">基函数绘图代码、图 4.13 与样条模型拟合将在原书 PDF 第 137 页继续。</p>
     </section>
   </section>
 
@@ -1664,10 +1736,11 @@ axis( side=1 , at=at , labels=round(labels,1) )</code></pre>
       <li id="note-73">高尔顿关于这一主题最容易理解的文字，已重印为 Galton（1989）。 <a class="backref" href="#note-73-ref" aria-label="返回正文">↩</a></li>
       <li id="note-74">使用捕食者-猎物动力学的例子，参见 Reilly 和 Zeringue（2004）。第 16 章会处理这个例子。 <a class="backref" href="#note-74-ref" aria-label="返回正文">↩</a></li>
       <li id="note-75">抛物线模型隐含的 <span class="math-inline"><var>α</var></span> 定义为 <span class="math-inline"><var>α</var> = E(<var>y</var><sub>i</sub>) - <var>β</var><sub>1</sub>E(<var>x</var><sub>i</sub>) - <var>β</var><sub>2</sub>E(<var>x</var><sub>i</sub><sup>2</sup>)</span>。即使 <span class="math-inline"><var>x</var><sub>i</sub></span> 的均值为零，即 <span class="math-inline">E(<var>x</var><sub>i</sub>) = 0</span>，平方的均值通常也不会为零。因此，<span class="math-inline"><var>α</var></span> 又变得难以直接解释。 <a class="backref" href="#note-75-ref" aria-label="返回正文">↩</a></li>
+      <li id="note-76">关于结点选择的更多讨论，可参见 Fahrmeir 等（2013）和 Wood（2017）。一种常见方法，是使用 Wood 的结点选择算法；R 包 <code>mgcv</code> 默认实现了该算法。 <a class="backref" href="#note-76-ref" aria-label="返回正文">↩</a></li>
     </ol>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 89–133 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 134 页继续。
+    <strong>译稿状态：</strong>PDF 第 89–136 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 137 页继续。
   </aside>
 </article>
