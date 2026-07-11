@@ -482,7 +482,17 @@
     "predictor variable residual": "预测变量残差",
     "prediction error": "预测误差",
     "residual variation": "残余变异",
-    "causal identification strategy": "因果识别策略"
+    "causal identification strategy": "因果识别策略",
+    "posterior predictive check": "后验预测检查",
+    "domain expertise": "领域知识",
+    "chasing noise": "追逐噪声",
+    "perfect prediction": "完美预测",
+    "population composition": "人口构成",
+    "model criticism": "模型批评",
+    "model revision": "模型修订",
+    "spurious predictor": "虚假预测变量",
+    "imaginary intervention": "假想干预",
+    "intervention variable": "干预变量"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"

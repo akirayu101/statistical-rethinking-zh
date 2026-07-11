@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-05" data-source-pages="143-157">
+<article class="book-article" data-chapter="chapter-05" data-source-pages="143-160">
   <header class="chapter-header">
     <p class="eyebrow">第五章</p>
     <h1>多变量与虚假华夫饼</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 143–157 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 143–160 页</p>
   </header>
 
   <p>在北美——即便不算全世界——最可靠的华夫饼来源之一，是华夫饼屋（Waffle House）餐厅。华夫饼屋几乎总在营业，哪怕飓风刚刚过境也不例外。多数门店都投入资金做好灾害准备，其中包括自备发电机。因此，美国灾害救援机构联邦紧急事务管理署（FEMA）会非正式地把华夫饼屋当作衡量灾情严重程度的指标。<sup id="note-77-ref"><a href="#note-77">77</a></sup> 如果华夫饼屋关门了，那就是严重事件。</p>
@@ -508,8 +508,106 @@ mu_resid &lt;- d$M - mu_mean</code></pre>
 
       <section id="sec-5-1-5-2">
         <h4>5.1.5.2 后验预测图</h4>
-        <p>检查模型隐含的预测与观测数据是否相符十分重要。第三章中通过模拟后验预测时，已经做过这件事。</p>
-        <p class="continuation-note">后验预测图的构造与图 5.5 将在原书 PDF 第 158 页继续。</p>
+        <p>检查模型隐含的预测与观测数据是否相符十分重要。第三章中模拟地球仪投掷、对后验求平均并把模拟结果与观测比较时，已经做过这件事。这类检查用途很多，目前聚焦其中两项：</p>
+        <ol class="posterior-check-uses">
+          <li><strong>模型是否正确近似了后验分布？</strong>魔像会犯错，魔像工程师也会。把隐含预测与原始数据比较，通常更容易诊断错误。需要谨慎，因为并非所有模型都试图精确匹配样本；即便如此，仍应知道成功近似会产生怎样的结果。第 13 章会看到一些例子。</li>
+          <li><strong>模型怎样失败？</strong>所有模型都是有用的虚构，所以总会在某些方面失败。有时模型拟合正确，却仍然不适合当前目的，必须舍弃；更常见的是，模型在某些方面预测良好，另一些方面却不行。检查预测很差的个案，可能提供改进模型的思路。困难在于，这个过程本质上依赖创造力与分析者的领域知识，机器人（暂时）无法代劳；它也有追逐噪声的风险，后面各章会重点讨论。</li>
+        </ol>
+
+        <p>在离婚例子中，怎样生成简单的后验预测检查？先模拟预测，并对后验求平均：</p>
+        <figure class="code-listing" id="code-5-15">
+          <figcaption>R 代码 5.15</figcaption>
+          <pre><code># call link without specifying new data
+# so it uses original data
+mu &lt;- link( m5.3 )
+
+# summarize samples across cases
+mu_mean &lt;- apply( mu , 2 , mean )
+mu_PI &lt;- apply( mu , 2 , PI )
+
+# simulate observations
+# again no new data, so uses original data
+D_sim &lt;- sim( m5.3 , n=1e4 )
+D_PI &lt;- apply( D_sim , 2 , PI )</code></pre>
+        </figure>
+
+        <p>这段代码与此前见过的类似，只是现在使用原始观测数据。多变量模型有许多显示这些模拟的方式，最简单的是把预测值对观测值作图，再添加一条完美预测线和每项预测相容区间的线段：</p>
+
+        <figure class="code-listing" id="code-5-16">
+          <figcaption>R 代码 5.16</figcaption>
+          <pre><code>plot( mu_mean ~ d$D , col=rangi2 , ylim=range(mu_PI) ,
+    xlab="Observed divorce" , ylab="Predicted divorce" )
+abline( a=0 , b=1 , lty=2 )
+for ( i in 1:nrow(d) ) lines( rep(d$D[i],2) , mu_PI[,i] , col=rangi2 )</code></pre>
+        </figure>
+
+        <figure class="book-figure divorce-posterior-predictive-figure" id="fig-5-5">
+          <div class="figure-scroll" tabindex="0" aria-label="可横向滚动的观测离婚率与后验预测离婚率散点图">
+            <img src="/media/chapter-05-posterior-predictive.svg" alt="横轴为观测离婚率，纵轴为后验预测离婚率，蓝色竖线为百分之八十九区间">
+          </div>
+          <p class="scroll-hint">图较宽，可横向滚动查看州标签与预测区间。</p>
+          <figcaption><strong>图 5.5：</strong>多变量离婚模型 <code>m5.3</code> 的后验预测图。横轴是各州观测离婚率；纵轴是在给定各州结婚年龄中位数和结婚率后，模型给出的后验预测离婚率。蓝色线段是 89% 相容区间，虚线表示后验预测与样本完全一致的位置。</figcaption>
+        </figure>
+
+        <p>从<a href="#fig-5-5">图 5.5</a>很容易看出：模型会低估离婚率很高的州，同时高估离婚率很低的州。这很正常，回归本来就会怀疑极端值，因此期待它们向均值回归。不过，除了一般的均值回归外，有些州尤其让模型为难，离对角线非常远。图中标出了其中几个，包括爱达荷州（ID）和犹他州（UT）；二者的离婚率都远低于模型预期。标记少数选定点最简单的办法是使用 <code>identify</code>：</p>
+
+        <figure class="code-listing" id="code-5-17">
+          <figcaption>R 代码 5.17</figcaption>
+          <pre><code>identify( x=d$D , y=mu_mean , labels=d$Loc )</code></pre>
+        </figure>
+
+        <p>执行这行代码后，R 会等待你在活动绘图窗口中点击某个点附近，然后在你选择的一侧放置标签。完成标注后，点击鼠标右键（某些平台按 <kbd>Esc</kbd>）。</p>
+
+        <p>爱达荷州和犹他州有什么不同寻常？两州都有很高比例的耶稣基督后期圣徒教会成员，而该教会成员无论居住在哪里，离婚率都很低。这说明，如果不只看结婚年龄中位数，还能更细致了解各州人口构成，就能大幅改进我们的理解。</p>
+
+        <aside class="rethinking-box" id="rethinking-what-is-stats-good-for">
+          <h3>再思考：统计啊，究竟有什么用？</h3>
+          <p>人们经常希望统计建模完成它做不到的事情。例如，我们想知道某个效应是“真实的”还是虚假的。遗憾的是，建模只会按照模型理解问题的精确方式量化不确定性。关于真理与因果的大世界问题，其答案通常依赖模型没有纳入的信息。例如，在加入另一个预测变量后，结果与某个预测变量的任何观测相关都可能消失甚至反转；但如果想不到正确的变量，也许永远不会注意到这一点。因此，无论估计多么精确、预测看起来多么准确，所有统计模型都容易受到批评，也都要求批评。反复的模型批评与修订，才体现了科学假说真正的检验。一个真实假说在走向接受的路上，会通过也会未通过许多统计“检验”。</p>
+        </aside>
+
+        <aside class="overthinking-box" id="overthinking-simulating-spurious-association">
+          <h3>过度思考：模拟虚假关联</h3>
+          <p>预测变量与结果之间产生虚假关联的一种方式，是某个真正有因果作用的预测变量 <span class="math-inline"><var>x</var><sub>real</sub></span> 同时影响结果 <span class="math-inline"><var>y</var></span> 和虚假预测变量 <span class="math-inline"><var>x</var><sub>spur</sub></span>。这个情形可能令人困惑，所以模拟一遍会很有帮助：既能看到虚假数据怎样产生，也能自行证明多元回归可以可靠地指出正确预测变量 <span class="math-inline"><var>x</var><sub>real</sub></span>。</p>
+          <figure class="code-listing" id="code-5-18">
+            <figcaption>R 代码 5.18</figcaption>
+            <pre><code>N &lt;- 100                         # number of cases
+x_real &lt;- rnorm( N )             # x_real as Gaussian with mean 0 and stddev 1
+x_spur &lt;- rnorm( N , x_real )    # x_spur as Gaussian with mean=x_real
+y &lt;- rnorm( N , x_real )         # y as Gaussian with mean=x_real
+d &lt;- data.frame(y,x_real,x_spur) # bind all together in data frame</code></pre>
+          </figure>
+          <p>数据框 <code>d</code> 现在有 100 个模拟个案。由于 <code>x_real</code> 同时影响 <code>y</code> 和 <code>x_spur</code>，可以把 <code>x_spur</code> 看成 <code>x_real</code> 的另一个结果，却被误认为 <code>y</code> 的潜在预测变量。因此，<code>x_real</code> 与 <code>x_spur</code> 都和 <code>y</code> 相关，在 <code>pairs(d)</code> 的散点图中可以看到。但在同时用两个 <code>x</code> 预测 <code>y</code> 的线性回归中，<code>y</code> 与 <code>x_spur</code> 关联的后验均值会接近零，而 <code>x_real</code> 对应的均值更接近 1。</p>
+        </aside>
+      </section>
+
+      <section id="sec-5-1-5-3">
+        <h4>5.1.5.3 反事实图</h4>
+        <p>第二类推断图显示模型隐含的预测。我把它们称为<strong>反事实图</strong>，因为可以为任意喜欢的预测变量取值生成，包括未观测甚至不可能的组合，例如结婚年龄中位数很高且结婚率也很高。没有任何州具有这种组合，但在反事实图中，可以要求模型预测这样的州。这意味着必须小心，不要绘制无意义的东西；不过只要目的明确，反事实图就能帮助理解模型，并为假想干预生成预测。</p>
+
+        <p>反事实图最简单的用途，是一次只改变一个预测变量，观察预测怎样变化。这意味着除一个关心的预测变量外，让所有预测变量都保持不变。不过，这类图与假定的因果结构存在张力。在模型的小世界中，可以改变结婚年龄中位数而不改变结婚率；但在现实的大世界中也能做到吗？大概不能。比如，假设付钱让年轻伴侣把婚姻推迟到 35 岁，这肯定也会减少最终结婚的伴侣数量——有些人会在 35 岁前去世，还有其他原因——从而降低总体结婚率。若想在强迫所有人晚婚的同时真正保持结婚率不变，需要对人实施非同寻常而邪恶的控制。</p>
+
+        <p>下面看看如何生成考虑因果结构的模型预测图。基本配方是：</p>
+        <ol class="counterfactual-recipe">
+          <li>选择一个要操纵的变量，即干预变量；</li>
+          <li>定义要为干预变量设定的取值范围；</li>
+          <li>对于干预变量的每个取值，以及后验中的每个样本，使用因果模型模拟其他变量（包括结果）的取值。</li>
+        </ol>
+
+        <p>最终会得到反事实结果的后验分布，可以根据目标以不同方式绘制和汇总。下面在离婚模型中实践。再次把这个 DAG 当作给定：</p>
+
+        <figure class="book-figure dag-figure" id="dag-5-counterfactual">
+          <svg viewBox="0 0 640 330" role="img" aria-labelledby="dag-5-counterfactual-title dag-5-counterfactual-desc">
+            <title id="dag-5-counterfactual-title">离婚模型反事实预测使用的 DAG</title>
+            <desc id="dag-5-counterfactual-desc">A 指向 M 和 D，M 指向 D。</desc>
+            <defs><marker id="dag-counter-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#3f4752"/></marker></defs>
+            <line x1="180" y1="85" x2="455" y2="85" stroke="#3f4752" stroke-width="4" marker-end="url(#dag-counter-arrow)"/><line x1="195" y1="105" x2="305" y2="245" stroke="#3f4752" stroke-width="4" marker-end="url(#dag-counter-arrow)"/><line x1="445" y1="105" x2="335" y2="245" stroke="#3f4752" stroke-width="4" marker-end="url(#dag-counter-arrow)"/>
+            <circle cx="160" cy="85" r="38" fill="#f0f1fa" stroke="#263f86" stroke-width="3"/><circle cx="480" cy="85" r="38" fill="#f0f1fa" stroke="#263f86" stroke-width="3"/><circle cx="320" cy="270" r="38" fill="#f0f1fa" stroke="#263f86" stroke-width="3"/>
+            <text x="160" y="96" text-anchor="middle" font-size="32" font-weight="700" fill="#263f86">A</text><text x="480" y="96" text-anchor="middle" font-size="32" font-weight="700" fill="#263f86">M</text><text x="320" y="281" text-anchor="middle" font-size="32" font-weight="700" fill="#263f86">D</text>
+          </svg>
+          <figcaption>反事实模拟采用的因果结构：<span class="math-inline"><var>A</var> → <var>M</var></span>、<span class="math-inline"><var>A</var> → <var>D</var></span>、<span class="math-inline"><var>M</var> → <var>D</var></span>。</figcaption>
+        </figure>
+
+        <p class="continuation-note">联合模型与结婚年龄干预模拟将在原书 PDF 第 161 页继续。</p>
       </section>
     </section>
   </section>
@@ -526,6 +624,6 @@ mu_resid &lt;- d$M - mu_mean</code></pre>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 143–157 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 158 页继续。
+    <strong>译稿状态：</strong>PDF 第 143–160 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 161 页继续。
   </aside>
 </article>

@@ -405,6 +405,62 @@ def residual_diagnostics_figure(data: list[dict[str, float | str]]) -> str:
     return "\n".join(body)
 
 
+def posterior_predictive_figure(data: list[dict[str, float | str]]) -> str:
+    def standardize(values: list[float]) -> list[float]:
+        mean = sum(values) / len(values)
+        sd = math.sqrt(sum((value - mean) ** 2 for value in values) / (len(values) - 1))
+        return [(value - mean) / sd for value in values]
+
+    ages = standardize([float(row["age"]) for row in data])
+    marriages = standardize([float(row["marriage"]) for row in data])
+    observed = standardize([float(row["divorce"]) for row in data])
+    predicted = [-0.07 * marriage - 0.61 * age for age, marriage in zip(ages, marriages)]
+    half_widths = [0.20 + 0.055 * (abs(age) + abs(marriage)) for age, marriage in zip(ages, marriages)]
+    width, height = 900, 650
+    left, top, plot_w, plot_h = 125, 55, 690, 475
+    low, high = -2.5, 2.5
+
+    def px(value: float) -> float:
+        return left + (value - low) / (high - low) * plot_w
+
+    def py(value: float) -> float:
+        return top + plot_h - (value - low) / (high - low) * plot_h
+
+    body = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">',
+        "  <title>多变量离婚模型的后验预测图</title>",
+        "  <desc>横轴是各州观测离婚率，纵轴是后验预测离婚率；蓝色线段表示均值的百分之八十九区间。</desc>",
+        '  <rect width="100%" height="100%" fill="#fff"/>',
+        f'  <rect x="{left}" y="{top}" width="{plot_w}" height="{plot_h}" fill="#fff" stroke="#343732" stroke-width="1.5"/>',
+        f'  <line x1="{fmt(px(low))}" y1="{fmt(py(low))}" x2="{fmt(px(high))}" y2="{fmt(py(high))}" stroke="#555852" stroke-width="2.5" stroke-dasharray="8 7"/>',
+    ]
+    for row, x_value, y_value, half in zip(data, observed, predicted, half_widths):
+        body.append(f'  <line x1="{fmt(px(x_value))}" y1="{fmt(py(y_value - half))}" x2="{fmt(px(x_value))}" y2="{fmt(py(y_value + half))}" stroke="#6670ee" stroke-width="2.5" opacity="0.75"/>')
+        body.append(f'  <circle cx="{fmt(px(x_value))}" cy="{fmt(py(y_value))}" r="5.2" fill="#6670ee" stroke="#263f86" stroke-width="1.5"/>')
+        loc = str(row["loc"])
+        if loc in {"ID", "UT", "RI", "ME"}:
+            dx = -9 if loc in {"ID", "RI"} else 9
+            anchor = "end" if dx < 0 else "start"
+            body.append(f'  <text x="{fmt(px(x_value) + dx)}" y="{fmt(py(y_value) - 10)}" text-anchor="{anchor}" font-family="{FONT}" font-size="18" font-weight="700" fill="#30332e">{loc}</text>')
+    for tick in [-2, -1, 0, 1, 2]:
+        body.extend(
+            [
+                f'  <text x="{fmt(px(tick))}" y="{top + plot_h + 31}" text-anchor="middle" font-family="{FONT}" font-size="16" fill="#30332e">{tick}</text>',
+                f'  <text x="{left - 15}" y="{fmt(py(tick) + 6)}" text-anchor="end" font-family="{FONT}" font-size="16" fill="#30332e">{tick}</text>',
+            ]
+        )
+    body.extend(
+        [
+            f'  <text x="{left + plot_w / 2}" y="{top + plot_h + 72}" text-anchor="middle" font-family="{FONT}" font-size="20" font-weight="700" fill="#263f86">观测离婚率</text>',
+            f'  <text x="45" y="{top + plot_h / 2}" transform="rotate(-90 45 {top + plot_h / 2})" text-anchor="middle" font-family="{FONT}" font-size="20" font-weight="700" fill="#263f86">预测离婚率</text>',
+            "</svg>",
+            "",
+        ]
+    )
+    return "\n".join(body)
+
+
 def main() -> int:
     data = rows()
     MEDIA.mkdir(parents=True, exist_ok=True)
@@ -413,6 +469,7 @@ def main() -> int:
         MEDIA / "chapter-05-divorce-predictors.svg": predictors_figure(data),
         MEDIA / "chapter-05-prior-regression-lines.svg": prior_lines_figure(),
         MEDIA / "chapter-05-residual-diagnostics.svg": residual_diagnostics_figure(data),
+        MEDIA / "chapter-05-posterior-predictive.svg": posterior_predictive_figure(data),
     }
     for path, content in outputs.items():
         path.write_text(content, encoding="utf-8")
