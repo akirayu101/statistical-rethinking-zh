@@ -19,7 +19,7 @@ def esc(value: object) -> str:
 
 
 def status_label(status: str) -> str:
-    return {"draft": "翻译中", "reviewed": "已审校", "verified": "已验收"}.get(status, "待翻译")
+    return {"in_progress": "翻译中", "draft": "翻译中", "reviewed": "已审校", "verified": "已验收"}.get(status, "待翻译")
 
 
 def shell(title: str, body: str, *, page_class: str = "") -> str:

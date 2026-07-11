@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-01" data-source-pages="17">
+<article class="book-article" data-chapter="chapter-01" data-source-pages="17-20">
   <header class="chapter-header">
     <p class="eyebrow">第一章</p>
     <h1>布拉格魔像</h1>
-    <p class="source-range">当前样稿对应原书 PDF 第 17 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 17–20 页</p>
   </header>
 
   <p>16 世纪，哈布斯堡王朝统治着中欧大部、尼德兰和西班牙，以及西班牙在美洲的殖民地。它或许是世界上第一个真正的全球强权；太阳总会照耀着其疆域的某个角落。王朝的统治者同时也是神圣罗马帝国皇帝，权力中心设在布拉格。16 世纪后期的皇帝鲁道夫二世热爱知识生活。他资助艺术、科学（包括占星术与炼金术）和数学，使布拉格成为世界性的学术中心。正是在这种崇尚学问的氛围中，早期的机器人——布拉格魔像——出现了。</p>
@@ -14,9 +14,117 @@
   <section id="sec-1-1">
     <h2>1.1 统计魔像</h2>
     <p>科学家也会制造魔像。<sup><a href="#note-1" aria-label="尾注 1">1</a></sup> 我们的魔像很少拥有实体形态，但它们也常由“泥土”制成——以计算机代码的形式栖身于硅片之中。这些魔像就是科学模型。它们通过做出的预测，以及挑战或激发的直觉，对现实世界产生真实影响。对“真理”的关切为这些模型注入生命；但就像传说中的魔像或现代机器人一样，科学模型既不为真，也不为假；既不是先知，也不是骗子。它们只是为了某种目的而设计出来的构造物。这些构造物力量惊人，会尽职尽责地执行我们为它们编排好的计算。</p>
+
+    <figure class="book-figure flowchart-figure" id="fig-1-1">
+      <div class="figure-scroll" tabindex="0" aria-label="可横向滚动的统计方法选择决策树">
+        <svg viewBox="0 0 1100 770" role="img" aria-labelledby="fig-1-1-title fig-1-1-desc">
+          <title id="fig-1-1-title">统计方法选择决策树</title>
+          <desc id="fig-1-1-desc">先按数据类型分为连续数据与离散分类数据；连续数据再按关系或差异问题、组数及参数假设选择回归、相关、t 检验、方差分析或非参数方法；离散分类数据按单元格计数选择卡方检验或 Fisher 精确检验。</desc>
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" /></marker>
+          </defs>
+          <g class="flow-lines" marker-end="url(#arrow)">
+            <path d="M500 62 H650"/><path d="M430 86 V132 H305 V164"/>
+            <path d="M740 86 V118 H665 V150"/><path d="M740 86 V118 H865 V150"/>
+            <path d="M305 208 V238 H180 V264"/><path d="M305 208 V238 H455 V264"/>
+            <path d="M180 308 V334 H105 V360"/><path d="M180 308 V334 H255 V360"/>
+            <path d="M255 404 V430 H190 V456"/><path d="M255 404 V430 H325 V456"/>
+            <path d="M455 308 V334 H420 V360"/><path d="M455 308 V334 H560 V360"/><path d="M455 308 V334 H800 V360"/>
+            <path d="M420 404 V430 H485 V456"/><path d="M560 404 V430 H627 V456"/><path d="M800 404 V456"/>
+            <path d="M800 500 V526 H620 V552"/><path d="M800 500 V526 H880 V552"/>
+            <path d="M620 596 V620 H535 V642"/><path d="M620 596 V620 H710 V642"/>
+            <path d="M880 596 V620 H850 V642"/><path d="M880 596 V620 H1010 V642"/>
+            <path d="M850 686 V710 H930 V724"/><path d="M1010 686 V710 H930 V724"/>
+          </g>
+          <g class="flow-node assumption"><rect x="20" y="20" width="230" height="105" rx="10"/><text x="35" y="45"><tspan class="strong">参数假设：</tspan><tspan x="35" dy="23">（1）样本相互独立</tspan><tspan x="35" dy="23">（2）数据服从正态分布</tspan><tspan x="35" dy="23">（3）方差相等</tspan></text></g>
+          <g class="flow-node"><rect x="360" y="38" width="140" height="48"/><text x="430" y="67">数据类型？</text></g>
+          <g class="flow-label"><text x="520" y="54">离散、分类</text><text x="372" y="122">连续</text></g>
+          <g class="flow-node"><rect x="650" y="38" width="180" height="48"/><text x="740" y="67">是否有计数 &lt; 5？</text></g>
+          <g class="flow-node"><rect x="575" y="150" width="180" height="58"/><text x="665" y="174"><tspan>卡方检验</tspan><tspan x="665" dy="20">单样本或双样本</tspan></text></g>
+          <g class="flow-node"><rect x="800" y="150" width="130" height="58"/><text x="865" y="174"><tspan>Fisher</tspan><tspan x="865" dy="20">精确检验</tspan></text></g>
+          <g class="flow-label"><text x="665" y="120">否</text><text x="852" y="120">是</text></g>
+          <g class="flow-node"><rect x="225" y="164" width="160" height="44"/><text x="305" y="191">问题类型？</text></g>
+          <g class="flow-label"><text x="130" y="238">关系</text><text x="460" y="238">差异</text></g>
+          <g class="flow-node"><rect x="90" y="264" width="180" height="44"/><text x="180" y="282"><tspan>是否同时有因变量</tspan><tspan x="180" dy="18">与自变量？</tspan></text></g>
+          <g class="flow-node"><rect x="370" y="264" width="170" height="44"/><text x="455" y="291">比较什么差异？</text></g>
+          <g class="flow-node"><rect x="45" y="360" width="120" height="44"/><text x="105" y="387">回归分析</text></g>
+          <g class="flow-node"><rect x="195" y="360" width="120" height="44"/><text x="255" y="387">相关分析</text></g>
+          <g class="flow-node"><rect x="125" y="456" width="130" height="44"/><text x="190" y="483">Pearson r</text></g>
+          <g class="flow-node"><rect x="270" y="456" width="150" height="44"/><text x="345" y="474"><tspan>Spearman</tspan><tspan x="345" dy="18">秩相关</tspan></text></g>
+          <g class="flow-label"><text x="120" y="342">是</text><text x="245" y="342">否</text><text x="145" y="430">参数</text><text x="290" y="430">非参数</text></g>
+          <g class="flow-node"><rect x="365" y="360" width="110" height="44"/><text x="420" y="387">均值</text></g>
+          <g class="flow-node"><rect x="505" y="360" width="110" height="44"/><text x="560" y="387">方差</text></g>
+          <g class="flow-node"><rect x="725" y="360" width="150" height="44"/><text x="800" y="378"><tspan>多个均值</tspan><tspan x="800" dy="18">单个变量</tspan></text></g>
+          <g class="flow-node"><rect x="430" y="456" width="110" height="44"/><text x="485" y="483">单样本 t 检验</text></g>
+          <g class="flow-node"><rect x="560" y="456" width="135" height="44"/><text x="627" y="474"><tspan>Fmax 或</tspan><tspan x="627" dy="18">Bartlett 检验</tspan></text></g>
+          <g class="flow-node"><rect x="725" y="456" width="150" height="44"/><text x="800" y="483">有多少组？</text></g>
+          <g class="flow-label"><text x="670" y="525">两组</text><text x="930" y="525">两组以上</text></g>
+          <g class="flow-node"><rect x="560" y="552" width="120" height="44"/><text x="620" y="570"><tspan>参数假设</tspan><tspan x="620" dy="18">成立？</tspan></text></g>
+          <g class="flow-node"><rect x="820" y="552" width="120" height="44"/><text x="880" y="570"><tspan>参数假设</tspan><tspan x="880" dy="18">成立？</tspan></text></g>
+          <g class="flow-node"><rect x="470" y="642" width="130" height="44"/><text x="535" y="669">双样本 t 检验</text></g>
+          <g class="flow-node"><rect x="640" y="642" width="140" height="44"/><text x="710" y="660"><tspan>Mann–Whitney U</tspan><tspan x="710" dy="18">或 Wilcoxon 检验</tspan></text></g>
+          <g class="flow-node"><rect x="790" y="642" width="120" height="44"/><text x="850" y="669">单因素 ANOVA</text></g>
+          <g class="flow-node"><rect x="940" y="642" width="140" height="44"/><text x="1010" y="660"><tspan>Kruskal–Wallis</tspan><tspan x="1010" dy="18">检验</tspan></text></g>
+          <g class="flow-node"><rect x="840" y="724" width="180" height="36"/><text x="930" y="747">显著时进行事后检验</text></g>
+        </svg>
+      </div>
+      <p class="scroll-hint">图较宽，可横向滚动查看完整流程。</p>
+      <figcaption><strong>图 1.1：</strong>选择适当统计方法的决策树（或流程图）示例。从顶部开始，使用者依次回答有关测量类型与研究意图的问题，最后抵达某种方法的名称。这样的决策树可以画出许多种。</figcaption>
+    </figure>
+
+    <p>有时，模型那套不肯通融的逻辑会揭示设计者先前未曾察觉的推论。这些推论可能成为无价的发现，也可能催生荒唐而危险的行为。科学模型并非理性的理想化天使，而是没有自身意图、力量强大的泥制机器人，只会循着其内部短视的指令跌跌撞撞地前进。如同 Judah 拉比的魔像，科学的魔像值得我们既敬畏、又戒惧。我们非用它们不可，但使用永远伴随着风险。</p>
+
+    <p>统计模型种类繁多。每当有人采用哪怕最简单的统计方法——例如经典 t 检验——她就在启用一个小小的魔像。这个魔像会顺从地执行精确计算，几乎<sup><a href="#note-2" aria-label="尾注 2">2</a></sup>每次都以相同方式完成，毫无怨言。几乎所有科学分支都依赖统计魔像的感官。很多时候，不借助模型，我们甚至无法测量感兴趣的现象。无论要测量自然选择的强度、中微子的速度，还是亚马孙地区的物种数量，我们都必须使用模型。魔像是一件义肢，替我们完成测量、执行惊人的计算，并在表面看不出规律之处发现模式。</p>
+
+    <p>然而，魔像并没有智慧。它不会判断当前语境是否适合采用自己的答案；它只懂自己的程序，除此之外一无所知，只会照命令行事。因此，统计科学今日拥有如此众多、各自适用于特定语境的魔像，仍是一项了不起的成就。这样看来，统计学既不是数学，也不是一门科学，而是工程学的一个分支。正如工程学一样，一套共同的设计原则与约束，会产生形形色色的专门应用。</p>
+
+    <p>应用的多样性也解释了为什么统计学入门课程常让初学者如此困惑。学生学到的不是一套用于构建、改进和批判统计模型的统一方法，而是一整座装满预制魔像的动物园；这些魔像被称为“检验”。每种检验都有特定用途。图 1.1 那样的决策树十分常见：使用者依次回答一系列问题，以便为自己的研究情境选出“正确”的方法。</p>
+
+    <p>遗憾的是，经验丰富的统计学家能够把握这些方法内在的统一性，学生和研究者却往往做不到。统计学高级课程确实会强调工程原则，但大多数科学家根本学不到那一步。这种教法有点像把工程学倒过来教：先教造桥，最后才讲基础物理。于是，学生和许多科学家往往不假思索地照着图 1.1 一类图表操作，对其底层结构考虑甚少，也不太知道每种方法体现了怎样的模型，更缺少一个框架来帮助他们作出真实研究中无可避免的妥协。这不是他们的错。</p>
+
+    <p>对一些人而言，一箱预制魔像已经足够终身使用。只要停留在经过充分检验的情境中，只在合适的任务里使用少数几种方法，就能完成大量出色的科学工作。这就像水管工即使不太懂流体动力学，也能完成许多有用的工作。真正的麻烦始于学者开始开展创新研究、推进专业边界之时——那仿佛是把水管工晋升为水利工程师。</p>
+
+    <p>为什么这些检验不足以支持研究？统计学入门课中的经典方法往往既不灵活，又很脆弱。所谓不灵活，是指它们适应独特研究情境的方式极其有限；所谓脆弱，是指一旦被用于新情境，就可能以难以预料的方式失效。这一点至关重要，因为在多数科学领域的前沿，几乎从来都无法明确判断哪种方法才合适。传统魔像没有一个曾在全新的研究环境中接受评估，因此，我们既难以选择，也难以理解它选定之后会有怎样的表现。</p>
+
+    <p>Fisher 精确检验就是一个很好的例子。它只（精确地）适用于极其狭窄的经验情境，却经常在单元格计数较小时一概被采用。我本人在科学期刊中读过数百次 Fisher 精确检验的应用；除了 Fisher 最初那次用法之外，我从未见过它被恰当地使用。即使普通线性回归这样在许多方面相当灵活、能够表达大量有趣假说的方法，有时也很脆弱。例如，当预测变量存在严重测量误差时，它可能以惊人的方式失效。更重要的是，我们几乎总能找到比普通线性回归更好的做法，主要原因是一种称为过拟合的现象（见第 7 章）。</p>
+
+    <p>重点不在于统计工具具有专门用途——它们当然如此。重点在于，经典工具的多样性还不足以应对许多常见研究问题。每个活跃的科学领域都面对独特的测量与解释难题，也都用一套其他“部落”的科学家几乎听不懂的方言，与本领域特有的理论交谈。学科外的统计专家可以提供帮助，但由于不熟悉该学科的经验问题和理论关切，他们的帮助终究有限。</p>
+
+    <p>而且，没有任何统计工具能够自行解决从证据推断原因这一根本问题。统计魔像不懂因果，只懂关联。没有我们的引导与怀疑，预制魔像可能什么有用的事也做不成；更糟的是，它们或许会毁掉布拉格。</p>
+
+    <p>研究者需要的是一套统一的魔像工程理论：一组用来设计、构建和改进专用统计方法的原则。统计哲学的每个主要分支都有这样一套统一理论，但入门课程从不教授它，高级课程往往也不教。因此，把统计推断重新思考为一组策略，而不是一套预制工具，会带来实实在在的好处。</p>
+  </section>
+
+  <section id="sec-1-2">
+    <h2>1.2 重新思考统计</h2>
+
+    <p>统计推断可能在许多环节出错，这也是初学者对此如此焦虑的原因之一。如果整个框架就是从流程图里挑出一个预制检验，那么，人们越担心自己有没有选中“正确”的检验，焦虑就越会累积。统计学家有时还会从训斥科学家中获得乐趣，使这场心理战变得更加糟糕。</p>
+
+    <p>不过，焦虑可以被培育成智慧。这正是本书坚持拆开每个魔像、亲手摆弄其计算零件的原因。如果你不理解魔像如何处理信息，就无法解释它的输出。这要求我们比通常做法更细致地了解统计模型，也要求我们先用费力的方式完成计算——至少要等到你足够明智，才可以放心使用一键式方案。</p>
+
+    <p>概念层面同样存在障碍，涉及学者如何界定统计目标、如何解释统计结果。在这些情况下，仅仅理解某一个魔像还不够。我们还需要某种统计认识论：理解统计模型如何与假说及我们关心的自然机制发生联系。说到底，我们究竟打算用这些小小的计算机器做什么？</p>
+
+    <p>我在学生和同事中遇到的最大障碍，是一种不言自明的信念：统计推断的正当目标就是检验零假设。<sup><a href="#note-3" aria-label="尾注 3">3</a></sup>按照这种思路，这之所以是正当目标，是因为 Karl Popper 主张科学通过证伪假说而进步。Karl Popper（1902–1994）可能是对科学家影响最大的科学哲学家。他极具说服力地指出，如果科学努力发展原则上可被证伪的假说，运作就会更好。主动寻找可能使我们的观念难堪的证据，是一项规范性标准；大多数学者——无论是否自称科学家——都赞同它。因此，如果我们希望成为优秀的统计科学家，统计方法或许也应当证伪假说。</p>
+
+    <p>但上面的说法其实是一种民间 Popper 主义：它是科学家中常见、科学哲学家中却并不常见的非正式科学哲学。证伪标准并不能描述真实的科学，Popper 自己也清楚这一点。<sup><a href="#note-4" aria-label="尾注 4">4</a></sup>事实上，在几乎所有科学情境中，演绎式证伪都不可能实现。下面先看造成这种不可能性的两个原因。</p>
+
+    <ol class="argument-list">
+      <li><strong>假说不是模型。</strong>假说与不同类型模型之间的关系十分复杂：多个模型可能对应同一个假说，多个假说也可能对应同一个模型。因此，严格证伪不可能实现。</li>
+      <li><strong>测量很重要。</strong>即使我们认为数据已经证伪了某个模型，另一位观察者仍可能质疑我们的方法和测量；他们不信任这些数据。有时，他们是对的。</li>
+    </ol>
+  </section>
+
+  <section class="endnotes" id="chapter-01-notes" role="doc-endnotes">
+    <h2>尾注</h2>
+    <ol>
+      <li id="note-1">这个比喻取自 Collins 和 Pinch（1998）的 <cite>The Golem: What You Should Know about Science</cite>。它与 E. T. Jaynes 在 2003 年把统计模型比作机器人的说法非常相似，只是前者不那么精确，也更带有怪物意味。 <a class="backref" href="#sec-1-1" aria-label="返回正文">↩</a></li>
+      <li id="note-2">大概不存在永远不会损坏、变形或故障的算法或机器。对此观察常见的引文是 Wittgenstein（1953）<cite>Philosophical Investigations</cite> 第 193 节。本书后面讨论更复杂的模型及其数据拟合方法时，故障问题还会再次出现。 <a class="backref" href="#sec-1-1" aria-label="返回正文">↩</a></li>
+      <li id="note-3">参见 Mulkay 和 Gilbert（1981）。我有时会教授一门包含部分科学哲学内容的博士核心课程；博士生几乎无一例外会惊讶地发现，他们对因果的哲学看法与 Popper 或其他科学哲学家的观点相去甚远。要迅速进入科学哲学史，Ian Hacking 的 <cite>Representing and Intervening</cite>（1983）前半部分或许是最佳途径。内容虽已略显陈旧，却仍然易读而开阔。 <a class="backref" href="#sec-1-2" aria-label="返回正文">↩</a></li>
+      <li id="note-4">或许最好从 Popper 的最后一本书 <cite>The Myth of the Framework</cite>（1996）读起。我也建议感兴趣的读者直接阅读其早期著作 <cite>Logic of Scientific Discovery</cite> 的现代译本，尤其是第 6、8、9、10 章；它们表明 Popper 很清楚，把科学描述成证伪练习会遇到哪些困难。他后期的其他作品——其中许多收入 <cite>Objective Knowledge: An Evolutionary Approach</cite>——还显示，Popper 把科学知识的产生看作一种允许多种方法并存的演化过程。 <a class="backref" href="#sec-1-2" aria-label="返回正文">↩</a></li>
+    </ol>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>样稿状态：</strong>本页已完成文本层与人工语义核对；公式、图表与后续页面尚未进入本章稿件。
+    <strong>译稿状态：</strong>PDF 第 17–20 页已完成文本层、页面渲染与人工语义核对；后续页面尚未进入本章稿件。
   </aside>
 </article>

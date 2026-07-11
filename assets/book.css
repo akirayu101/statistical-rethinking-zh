@@ -42,12 +42,31 @@ h2 { margin-top: 3.6rem; font-size: clamp(1.5rem, 4vw, 2.1rem); color: var(--blu
 .toc-title { font-weight: 700; }
 .toc-title small { display: block; margin-top: .12rem; color: var(--muted); font: .76rem/1.4 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; }
 .status { padding: .2rem .55rem; border-radius: 999px; white-space: nowrap; background: #efeee9; }
-.status-draft { color: var(--amber); background: #fff2d8; }
+.status-in_progress, .status-draft { color: var(--amber); background: #fff2d8; }
 .status-reviewed, .status-verified { color: var(--green); background: #e5f3ea; }
 .chapter-header { margin-bottom: 3.2rem; padding-bottom: 2rem; border-bottom: 1px solid var(--line); }
 .chapter-header h1 { color: var(--blue); }
 .book-article > p, .book-article section > p { margin: 1.15rem 0; font-size: 1.08rem; text-align: justify; text-justify: inter-ideograph; }
 .book-article sup { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; }
+.book-figure { width: min(60rem, calc(100vw - 2rem)); margin: 2.75rem 0 2.75rem 50%; transform: translateX(-50%); }
+.figure-scroll { overflow-x: auto; padding: .75rem; border: 1px solid var(--line); border-radius: .65rem; background: #fff; }
+.flowchart-figure svg { display: block; width: 100%; min-width: 58rem; height: auto; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; }
+.flowchart-figure .flow-node rect { fill: #fff; stroke: #242720; stroke-width: 1.5; }
+.flowchart-figure .flow-node text { font-size: 14px; text-anchor: middle; dominant-baseline: middle; }
+.flowchart-figure .flow-node.assumption text { text-anchor: start; dominant-baseline: auto; }
+.flowchart-figure .flow-node .strong { font-weight: 700; }
+.flowchart-figure .flow-label text { fill: var(--muted); font-size: 13px; text-anchor: middle; }
+.flowchart-figure .flow-lines { fill: none; stroke: #33352f; stroke-width: 1.5; }
+.flowchart-figure marker path { fill: #33352f; }
+.book-figure figcaption { margin: .75rem auto 0; max-width: 42rem; color: var(--muted); font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; font-size: .86rem; line-height: 1.6; }
+.scroll-hint { display: none; margin: .45rem 0 0; color: var(--muted); font: .76rem/1.5 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; }
+.argument-list { margin: 1.5rem 0; padding-left: 2rem; }
+.argument-list li { margin: .75rem 0; padding-left: .4rem; }
+.endnotes { margin-top: 4.5rem; padding-top: 1rem; border-top: 1px solid var(--line); }
+.endnotes h2 { margin-top: 1.5rem; }
+.endnotes ol { padding-left: 1.5rem; color: #44453f; font-size: .9rem; line-height: 1.7; }
+.endnotes li { margin: 1rem 0; padding-left: .35rem; }
+.endnotes .backref { margin-left: .25rem; text-decoration: none; }
 .translation-status { margin-top: 3.5rem; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; font-size: .88rem; line-height: 1.65; }
 
 @media (max-width: 640px) {
@@ -56,4 +75,5 @@ h2 { margin-top: 3.6rem; font-size: clamp(1.5rem, 4vw, 2.1rem); color: var(--blu
   .toc-list li { grid-template-columns: 1fr auto; gap: .35rem .7rem; }
   .toc-number { grid-column: 1 / -1; }
   .book-article > p, .book-article section > p { font-size: 1.02rem; text-align: left; }
+  .scroll-hint { display: block; }
 }

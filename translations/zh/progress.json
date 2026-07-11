@@ -1,9 +1,9 @@
 {
   "chapter-01": {
-    "status": "verified",
-    "translated_pages": [17],
-    "reviewed_pages": [17],
-    "verified_pages": [17],
-    "notes": "PDF 第 17 页人工精译完成；1440×1200 桌面与 390×844 移动端视觉验收通过。"
+    "status": "in_progress",
+    "translated_pages": [17, 18, 19, 20],
+    "reviewed_pages": [17, 18, 19, 20],
+    "verified_pages": [17, 18, 19, 20],
+    "notes": "PDF 第 17–20 页人工精译完成；图 1.1 已中文 SVG 化，桌面与移动端视觉验收通过。"
   }
 }

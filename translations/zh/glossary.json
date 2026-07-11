@@ -33,7 +33,15 @@
     "measurement error": "测量误差",
     "missing data": "缺失数据",
     "censoring": "删失",
-    "survival analysis": "生存分析"
+    "survival analysis": "生存分析",
+    "null hypothesis": "零假设",
+    "falsification": "证伪",
+    "association": "关联",
+    "Fisher's exact test": "Fisher 精确检验",
+    "ordinary linear regression": "普通线性回归",
+    "measurement error": "测量误差",
+    "statistical epistemology": "统计认识论",
+    "parametric assumptions": "参数假设"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"

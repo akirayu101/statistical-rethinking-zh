@@ -22,6 +22,20 @@ def chinese_ratio(text: str) -> float:
     return sum(bool(CHINESE.match(ch)) for ch in letters) / len(letters) if letters else 1.0
 
 
+def parse_page_ranges(value: str) -> set[int]:
+    pages: set[int] = set()
+    for part in value.split(","):
+        part = part.strip()
+        if not part:
+            continue
+        if "-" in part:
+            start, end = (int(item) for item in part.split("-", 1))
+            pages.update(range(start, end + 1))
+        else:
+            pages.add(int(part))
+    return pages
+
+
 def main() -> int:
     failures: list[str] = []
     index = SITE / "index.html"
@@ -71,6 +85,25 @@ def main() -> int:
         source_pages = article.get("data-source-pages", "")
         if not source_pages:
             failures.append(f"{path.name}: data-source-pages missing")
+        else:
+            try:
+                declared_pages = parse_page_ranges(source_pages)
+            except ValueError:
+                failures.append(f"{path.name}: invalid data-source-pages value {source_pages!r}")
+                declared_pages = set()
+            progress_pages = set(PROGRESS.get(path.stem, {}).get("translated_pages", []))
+            if declared_pages != progress_pages:
+                failures.append(f"{path.name}: data-source-pages differs from translated_pages")
+        for link in article.select('a[href^="#"]'):
+            target = link.get("href", "")[1:]
+            if target and soup.find(id=target) is None:
+                failures.append(f"{path.name}: broken internal link #{target}")
+        for figure in article.select("figure"):
+            if figure.select_one("figcaption") is None:
+                failures.append(f"{path.name}: figure without figcaption")
+            for svg in figure.select("svg[role='img']"):
+                if svg.select_one("title") is None or svg.select_one("desc") is None:
+                    failures.append(f"{path.name}: accessible SVG requires title and desc")
         print(f"{path.name}\t{ratio:.3f}\t{len(article.select('section'))}\t{source_pages}")
 
     if failures:
