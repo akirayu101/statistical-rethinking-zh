@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-04" data-source-pages="89-94">
+<article class="book-article" data-chapter="chapter-04" data-source-pages="89-97">
   <header class="chapter-header">
     <p class="eyebrow">第四章</p>
     <h1>地心模型</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 89–94 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 89–97 页</p>
   </header>
 
   <p>历史对托勒密并不宽厚。克劳狄乌斯·托勒密（约公元 90 年生，168 年卒）是埃及数学家和天文学家，最著名的成就是太阳系地心模型。今天，科学家若想嘲讽某人，有时会把他比作地心模型的拥护者。但托勒密是位天才。他描述行星运动的数学模型（<a href="#fig-4-1">图 4.1</a>）极其准确。为了达到这种精度，模型采用了一种叫作<strong>本轮</strong>的装置，也就是圆上套圆。甚至还能有“本轮上的本轮”：圆上套圆再套圆。只要在适当位置放置足够多的本轮，托勒密模型的预测精度就能超过此前任何人。因此，这套模型沿用了一千多年。托勒密和许多与他相似的人历经数百年艰苦推演，在没有计算机帮助的条件下解决了这一切。任何人被比作托勒密，都应该感到受宠若惊。</p>
@@ -154,9 +154,127 @@ small &lt;- replicate( 10000 , prod( 1 + runif(12,0,0.01) ) )</code></pre>
 
         <p>公式看起来像怪物，但关键其实只是 <span class="math-inline">(<var>y</var> − <var>μ</var>)²</span>。正是这一项赋予正态分布根本形状，也就是二次形状。把这个二次形状指数化，就得到经典钟形曲线。其余部分只是缩放和标准化，使分布积分为 1——所有概率分布都必须如此。仅仅 <span class="math-inline">exp(−<var>y</var>²)</span> 这样简单的表达式，就能生成高斯原型。可以在 R 中试试：<code>curve( exp( -x^2 ) , from=-3 , to=3 )</code>。</p>
 
-        <p>高斯分布是连续分布，不同于前几章的离散分布。这意味着高斯分布中的 <span class="math-inline"><var>y</var></span> 可以取任何连续值；二项分布则只能取整数。像二项分布这样只有离散结果的概率分布，称为<strong>概率质量函数</strong>，记作 <span class="math-inline">Pr</span>。像高斯分布这样的连续分布，称为<strong>概率密度函数</strong>；不同作者与传统会把它记作 <span class="math-inline"><var>p</var></span>，或普通的 <span class="math-inline"><var>f</var></span>。出于数学原因，概率密度可以大于 1，概率质量则不能。比如试试 <code>dnorm(0,0,0.1)</code>，这是让 R 计算 <span class="math-inline">p(0 | 0, 0.1)</span> 的方法。答案大约是——</p>
-        <p class="continuation-note">此侧栏将在原书 PDF 第 95 页继续。</p>
+        <p>高斯分布是连续分布，不同于前几章的离散分布。这意味着高斯分布中的 <span class="math-inline"><var>y</var></span> 可以取任何连续值；二项分布则只能取整数。像二项分布这样只有离散结果的概率分布，称为<strong>概率质量函数</strong>，记作 <span class="math-inline">Pr</span>。像高斯分布这样的连续分布，称为<strong>概率密度函数</strong>；不同作者与传统会把它记作 <span class="math-inline"><var>p</var></span>，或普通的 <span class="math-inline"><var>f</var></span>。出于数学原因，概率密度可以大于 1，概率质量则不能。比如试试 <code>dnorm(0,0,0.1)</code>，这是让 R 计算 <span class="math-inline">p(0 | 0, 0.1)</span> 的方法。答案大约是 4，并没有错。</p>
+
+        <p>概率密度是累积概率的变化率。因此，在累积概率快速增加的地方，密度很容易超过 1；但密度函数下方的面积永远不会超过 1。这些面积也称为概率质量。做计算时，通常可以忽略密度与质量的这些细节。本书的概念讨论也会把两者等同处理。不过，知道这种区别仍然有益；有时它确实很重要。</p>
+
+        <p>高斯分布还经常不用 <span class="math-inline"><var>σ</var></span>，而改用另一个参数 <span class="math-inline"><var>τ</var></span>。这里的 <span class="math-inline"><var>τ</var></span> 通常称为<strong>精度参数</strong>，定义为 <span class="math-inline"><var>τ</var> = 1 / <var>σ</var>²</span>。当 <span class="math-inline"><var>σ</var></span> 很大时，<span class="math-inline"><var>τ</var></span> 很小。改变参数后，可以得到等价公式（只需代入 <span class="math-inline"><var>σ</var> = 1 / √<var>τ</var></span>）：</p>
+
+        <div class="equation-block gaussian-precision-equation" id="eq-4-gaussian-precision">
+          <span>p(y | μ, τ) =</span>
+          <span class="sqrt-expression">√(τ / 2π)</span>
+          <span>exp(−½ τ(y − μ)²)</span>
+        </div>
+
+        <p>这种形式在贝叶斯数据分析中很常见；BUGS 或 JAGS 等贝叶斯模型拟合软件，有时要求使用 <span class="math-inline"><var>τ</var></span> 而不是 <span class="math-inline"><var>σ</var></span>。</p>
       </aside>
+    </section>
+  </section>
+
+  <section id="sec-4-2">
+    <h2>4.2 描述模型的语言</h2>
+
+    <p>本书采用一套描述和编写统计模型的标准语言。许多统计教材和几乎所有统计期刊都会使用这种语言，因为它同时适用于贝叶斯与非贝叶斯建模。科学家也越来越多地用同一套语言描述自己的统计方法。因此，无论下一步准备去往哪里，学习这门语言都是一项值得的投资。</p>
+
+    <p>下面先抽象说明这种方法。后面会有很多例子，但在看例子之前，理解通用配方很重要。</p>
+
+    <ol class="model-language-steps">
+      <li>首先，识别出一组想要理解的变量。其中一些可以观测，称为<strong>数据</strong>；另一些不可观测，例如速率和平均值，称为<strong>参数</strong>。</li>
+      <li>对每个变量，要么用其他变量定义它，要么用概率分布定义它。借助这些定义，便能了解变量之间的关联。</li>
+      <li>变量及其概率分布的组合定义了一个<strong>联合生成模型</strong>；它既能模拟假想观测，也能分析真实观测。</li>
+    </ol>
+
+    <p>从天文学到艺术史，这份提纲适用于每个领域的模型。最大的困难通常在研究主题本身——哪些变量重要？理论告诉我们该怎样连接它们？——而不在数学。</p>
+
+    <p>所有这些决定作出以后——其中大多数很快会变得近乎自动——我们用下面这样颇具数学气息的形式汇总模型：</p>
+
+    <div class="equation-block model-system-equation" id="eq-4-model-language-example">
+      <div>yᵢ ∼ Normal(μᵢ, σ)</div>
+      <div>μᵢ = βxᵢ</div>
+      <div>β ∼ Normal(0, 10)</div>
+      <div>σ ∼ Exponential(1)</div>
+      <div>xᵢ ∼ Normal(0, 1)</div>
+    </div>
+
+    <p>如果这些还看不太懂，那很好。这说明你拿对了教材，因为本书正是要教你读写这种数学模型描述。我们不会对它们做任何数学变形；相反，它们提供了一种无歧义地定义和交流模型的方法。一旦熟悉这套语法，再在其他书籍或科学期刊里读到数学模型描述时，就不会觉得那么晦涩。</p>
+
+    <p>上面的做法当然不是描述统计建模的唯一方式，却是一种广泛而富有成效的语言。科学家一旦掌握它，就能更容易地交流模型假设。我们不再需要死记“同方差性（方差恒定）”之类看似任意的古怪条件清单，因为可以直接从模型定义中读出这些条件。也能看清改变假设的自然方式，而不会觉得被困在回归、多元回归、ANOVA、ANCOVA 等削足适履的模型类别中。它们其实都是同一类模型；一旦学会把模型说成“通过概率分布，把一组变量映射到另一组变量”，这一点就显而易见。从根本上说，给定某些变量的值，这些模型定义了另一些变量的值能够以哪些方式产生（第 2 章）。</p>
+
+    <section id="sec-4-2-1">
+      <h3>4.2.1 重新描述地球仪投掷模型</h3>
+
+      <p>例子很有帮助。回想前几章的水域比例问题；那个模型始终是：</p>
+
+      <div class="equation-block model-system-equation" id="eq-4-globe-model-rephrased">
+        <div>W ∼ Binomial(N, p)</div>
+        <div>p ∼ Uniform(0, 1)</div>
+      </div>
+
+      <p>其中，<span class="math-inline"><var>W</var></span> 是观测到的水域次数，<span class="math-inline"><var>N</var></span> 是总投掷次数，<span class="math-inline"><var>p</var></span> 是地球仪上的水域比例。上面的陈述读作：</p>
+
+      <div class="model-reading">
+        <p>计数 <span class="math-inline"><var>W</var></span> 服从二项分布，样本量为 <span class="math-inline"><var>N</var></span>，概率为 <span class="math-inline"><var>p</var></span>。</p>
+        <p><span class="math-inline"><var>p</var></span> 的先验被假定为 0 到 1 之间的均匀分布。</p>
+      </div>
+
+      <p>一旦以这种方式知道模型，就自动知道它的全部假设。二项分布假定每个样本（地球仪投掷）都与其他样本独立，因此也知道模型假定各个抽样点彼此独立。</p>
+
+      <p>目前先关注上面这样的简单模型。在这些模型中，第一行定义贝叶斯定理使用的似然函数，其他行定义先验。模型的两行都是<strong>随机关系</strong>，由符号 <span class="math-inline">∼</span> 表示。随机关系只是把变量或参数映射到一个分布。之所以称为随机，是因为左侧变量的任何一次具体实现都无法确定；这种映射是概率性的：有些值比另一些值更可信，但在任何模型下，许多不同的值都可能成立。后面还会遇到包含确定性定义的模型。</p>
+
+      <aside class="overthinking-box" id="overthinking-model-to-bayes">
+        <h3>过度思考：从模型定义到贝叶斯定理</h3>
+        <p>要把上面的数学格式与贝叶斯定理联系起来，可以用模型定义写出后验分布：</p>
+
+        <div class="equation-block model-to-bayes-equation" id="eq-4-model-to-bayes">
+          <span>Pr(p | w, n) =</span>
+          <span class="fraction">
+            <span>Binomial(w | n, p) Uniform(p | 0, 1)</span>
+            <span>∫ Binomial(w | n, p) Uniform(p | 0, 1) dp</span>
+          </span>
+        </div>
+
+        <p>那个骇人的分母仍然只是平均似然，用来把后验标准化，使其总和为 1。真正发生作用的是分子：任一特定 <span class="math-inline"><var>p</var></span> 值的后验概率，再次与似然和先验的乘积成比例。写成 R 代码，这就是一直在用的同一套网格近似计算；下面的形式与上式一一对应：</p>
+
+        <figure class="code-listing" id="code-4-6">
+          <figcaption>R 代码 4.6</figcaption>
+          <pre><code>w &lt;- 6; n &lt;- 9;
+p_grid &lt;- seq(from=0,to=1,length.out=100)
+posterior &lt;- dbinom(w,n,p_grid)*dunif(p_grid,0,1)
+posterior &lt;- posterior/sum(posterior)</code></pre>
+        </figure>
+
+        <p>可以把它与前几章的计算比较。</p>
+      </aside>
+    </section>
+  </section>
+
+  <section id="sec-4-3">
+    <h2>4.3 身高的高斯模型</h2>
+
+    <p>现在来建立一个线性回归模型。严格说，要等加入预测变量后，它才算“回归”。目前先搭好脚手架，下一节再构造预测变量。</p>
+
+    <p>我们将使用真实数据集逐步学习。这里要把单个测量变量建模成高斯分布。描述分布形状需要两个参数：均值 <span class="math-inline"><var>μ</var></span> 和标准差 <span class="math-inline"><var>σ</var></span>。贝叶斯更新让我们考虑 <span class="math-inline"><var>μ</var></span> 与 <span class="math-inline"><var>σ</var></span> 的每一种可能组合，并根据数据给每种组合的相对可信度打分。这些相对可信度，就是各组 <span class="math-inline"><var>μ</var>, <var>σ</var></span> 参数值的后验概率。</p>
+
+    <p>也可以换一种说法。可能的高斯分布有无穷多个：有些均值小，有些均值大；有些很宽，<span class="math-inline"><var>σ</var></span> 很大，另一些很窄。我们希望贝叶斯机器考察每个由 <span class="math-inline"><var>μ</var></span> 与 <span class="math-inline"><var>σ</var></span> 组合定义的可能分布，并按后验可信度排序。后验可信度衡量每个可能分布与数据和模型在逻辑上的相容程度。</p>
+
+    <p>实践中会使用正式分析的近似，所以不会真的考察 <span class="math-inline"><var>μ</var></span> 与 <span class="math-inline"><var>σ</var></span> 的每个可能取值；但在大多数情况下，这不会造成损失。真正需要牢记的是：这里的“估计”将是整个后验分布，而不是其中某个点。因此，后验分布会是“高斯分布的分布”。没错，分布之上的分布。如果现在还不理解，只说明你对自己很诚实。坚持住，认真做，很快它就会变得十分清楚。</p>
+
+    <section id="sec-4-3-1">
+      <h3>4.3.1 数据</h3>
+
+      <p><code>data(Howell1)</code> 中的数据，是 Dobe 地区 !Kung San 人的部分人口普查资料，由 Nancy Howell 根据 20 世纪 60 年代末的访谈整理而成。<sup><a id="note-69-ref" href="#note-69" aria-label="尾注 69">69</a></sup>为方便非人类学读者理解：!Kung San 是 20 世纪最著名的采集狩猎群体之一，很大程度上正是因为 Howell 等人开展了细致的定量研究。</p>
+
+      <p>用下面的代码载入数据，并把它放进一个方便使用的对象：</p>
+
+      <figure class="code-listing" id="code-4-7">
+        <figcaption>R 代码 4.7</figcaption>
+        <pre><code>library(rethinking)
+data(Howell1)
+d &lt;- Howell1</code></pre>
+      </figure>
+
+      <p>现在得到一个名为 <code>d</code> 的数据框。本书会反复使用 <code>d</code> 表示当前正在处理的数据框；名称很短，可以少敲几次键。数据框是 R 中一种特殊对象。它是一个表，其中——</p>
+      <p class="continuation-note">此段将在原书 PDF 第 98 页继续。</p>
     </section>
   </section>
 
@@ -168,10 +286,11 @@ small &lt;- replicate( 10000 , prod( 1 + runif(12,0,0.01) ) )</code></pre>
       <li id="note-66">严格说来，只有原始分布具有有限方差时，和分布才会收敛到正态分布。实际含义是：任何一个新抽样值都不能大到压过此前所有值。自然界存在方差实际上近乎无限的现象，不过本书不会处理；或者更准确地说，即使处理到了，我也不会特别说明。 <a class="backref" href="#note-66-ref" aria-label="返回正文">↩</a></li>
       <li id="note-67">这一主题最著名的非技术读物是 Taleb（2007），影响很大；相关技术文献也相当丰富。注意，“heavy tail（厚尾）”与“fat tail（肥尾）”有时具有精确的技术定义。 <a class="backref" href="#note-67-ref" aria-label="返回正文">↩</a></li>
       <li id="note-68">Pasquale Cirillo 与 Nassim Nicholas Taleb 的精彩文章《暴力冲突的衰落：数据究竟说明了什么？》集中讨论了这个问题。 <a class="backref" href="#note-68-ref" aria-label="返回正文">↩</a></li>
+      <li id="note-69">参见 Howell（2010）和 Howell（2000），另见 Lee 和 DeVore（1976）。更多原始数据可从 <span class="url-text">https://tspace.library.utoronto.ca/handle/1807/10395</span> 下载。 <a class="backref" href="#note-69-ref" aria-label="返回正文">↩</a></li>
     </ol>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 89–94 页已完成翻译、逐页核对、阶段契约和桌面/移动端视觉验收。下一批从 PDF 第 95 页继续。
+    <strong>译稿状态：</strong>PDF 第 89–97 页已完成翻译、逐页核对、阶段契约和桌面/移动端视觉验收。下一批从 PDF 第 98 页继续。
   </aside>
 </article>

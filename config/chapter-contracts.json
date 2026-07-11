@@ -343,7 +343,7 @@
   },
   "chapter-04": {
     "required_status": "in_progress",
-    "source_pages": [89, 94],
+    "source_pages": [89, 97],
     "required_ids": [
       "fig-4-1",
       "sec-4-1",
@@ -364,12 +364,24 @@
       "rethinking-heavy-tails",
       "overthinking-gaussian-distribution",
       "eq-4-gaussian-density",
+      "eq-4-gaussian-precision",
+      "sec-4-2",
+      "eq-4-model-language-example",
+      "sec-4-2-1",
+      "eq-4-globe-model-rephrased",
+      "overthinking-model-to-bayes",
+      "eq-4-model-to-bayes",
+      "code-4-6",
+      "sec-4-3",
+      "sec-4-3-1",
+      "code-4-7",
       "chapter-04-notes",
       "note-64",
       "note-65",
       "note-66",
       "note-67",
-      "note-68"
+      "note-68",
+      "note-69"
     ],
     "required_headings": [
       "地心模型",
@@ -382,20 +394,31 @@
       "4.1.4.2 认识论依据",
       "再思考：厚尾",
       "过度思考：高斯分布",
+      "4.2 描述模型的语言",
+      "4.2.1 重新描述地球仪投掷模型",
+      "过度思考：从模型定义到贝叶斯定理",
+      "4.3 身高的高斯模型",
+      "4.3.1 数据",
       "尾注"
     ],
     "counts": {
-      "section": 8,
-      "figure": 7,
+      "section": 12,
+      "figure": 9,
       "figure img": 2,
       ".ptolemaic-figure": 1,
       ".random-walk-figure": 1,
-      ".equation-block": 3,
+      ".equation-block": 7,
       ".gaussian-density-equation": 1,
-      ".code-listing": 5,
+      ".gaussian-precision-equation": 1,
+      ".model-system-equation": 2,
+      ".model-to-bayes-equation": 1,
+      ".code-listing": 7,
       ".rethinking-box": 1,
-      ".overthinking-box": 1,
-      ".endnotes li": 5
+      ".overthinking-box": 2,
+      ".model-language-steps": 1,
+      ".model-language-steps li": 3,
+      ".model-reading": 1,
+      ".endnotes li": 6
     }
   }
 }
