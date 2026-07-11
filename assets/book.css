@@ -148,6 +148,11 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .multiple-regression-reasons li { margin: .8rem 0; padding-left: .25rem; }
 .dag-claims { margin: 1.5rem 0; padding: 1rem 1rem 1rem 3.2rem; border-left: .25rem solid var(--blue); background: #f3f5fb; }
 .dag-claims li { margin: .6rem 0; padding-left: .25rem; }
+.conditional-questions, .multiple-regression-steps { margin: 1.5rem 0; padding: 1rem 1rem 1rem 3.2rem; border-left: .25rem solid var(--blue); background: #f3f5fb; }
+.conditional-questions li, .multiple-regression-steps li { margin: .65rem 0; padding-left: .25rem; }
+.conditional-independence-equation { font-size: 1.25rem; }
+.not-independent { position: relative; display: inline-block; line-height: 1; font-family: "Times New Roman", serif; }
+.not-independent::after { content: ""; position: absolute; left: 52%; top: 2%; width: 1.5px; height: 100%; background: currentColor; transform: rotate(36deg); transform-origin: center; }
 .units-regression-equation { display: grid; gap: .7rem; font-size: 1rem; }
 .observation-sequence { display: flex; justify-content: center; gap: .75rem; margin: 1.5rem auto !important; padding: .75rem 1rem; max-width: 28rem; border-block: 1px solid var(--line); background: #fff; font: 700 1.1rem/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: .04em; }
 .model-loop { margin: 1.5rem 0; padding: 1rem 1rem 1rem 3.2rem; border-left: .25rem solid var(--blue); background: #f3f5fb; }

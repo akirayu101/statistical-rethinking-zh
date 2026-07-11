@@ -462,7 +462,16 @@
     "indirect effect": "间接效应",
     "total influence": "总影响",
     "direct path": "直接路径",
-    "indirect path": "间接路径"
+    "indirect path": "间接路径",
+    "mediation": "中介",
+    "common cause": "共同原因",
+    "testable implication": "可检验含义",
+    "conditional independence": "条件独立性",
+    "condition on": "以……为条件",
+    "not independent of": "不独立于",
+    "additional value": "额外价值",
+    "experimental control": "实验控制",
+    "multiple regression notation": "多元回归记号"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"

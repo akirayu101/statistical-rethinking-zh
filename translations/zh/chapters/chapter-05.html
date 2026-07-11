@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-05" data-source-pages="143-148">
+<article class="book-article" data-chapter="chapter-05" data-source-pages="143-151">
   <header class="chapter-header">
     <p class="eyebrow">第五章</p>
     <h1>多变量与虚假华夫饼</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 143–148 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 143–151 页</p>
   </header>
 
   <p>在北美——即便不算全世界——最可靠的华夫饼来源之一，是华夫饼屋（Waffle House）餐厅。华夫饼屋几乎总在营业，哪怕飓风刚刚过境也不例外。多数门店都投入资金做好灾害准备，其中包括自备发电机。因此，美国灾害救援机构联邦紧急事务管理署（FEMA）会非正式地把华夫饼屋当作衡量灾情严重程度的指标。<sup id="note-77-ref"><a href="#note-77">77</a></sup> 如果华夫饼屋关门了，那就是严重事件。</p>
@@ -202,7 +202,128 @@ m5.2 &lt;- quap(
 
       <p>要推断不同箭头的强度，需要不止一个统计模型。模型 <code>m5.1</code> 是 <span class="math-inline"><var>D</var></span> 对 <span class="math-inline"><var>A</var></span> 的回归，它只告诉我们：结婚年龄对离婚率的总影响强烈为负。这里的“总”表示必须计入从 <span class="math-inline"><var>A</var></span> 到 <span class="math-inline"><var>D</var></span> 的每一条路径。图中有两条这样的路径：直接路径 <span class="math-inline"><var>A</var> → <var>D</var></span>，以及间接路径 <span class="math-inline"><var>A</var> → <var>M</var> → <var>D</var></span>。一般而言，像 <span class="math-inline"><var>A</var></span> 这样的变量完全可能对 <span class="math-inline"><var>D</var></span> 这样的结果根本没有直接效应。</p>
 
-      <p class="continuation-note">中介关系、替代 DAG 与可检验含义将在原书 PDF 第 149 页继续。</p>
+      <p>即使如此，它仍可能完全通过间接路径与 <span class="math-inline"><var>D</var></span> 相关。这类关系称为<strong>中介</strong>，后面还会遇到另一个例子。</p>
+
+      <p>不过在本例中，间接路径几乎不起作用。怎样才能说明这一点？从 <code>m5.2</code> 已知，结婚率与离婚率正相关。但这不足以说明路径 <span class="math-inline"><var>M</var> → <var>D</var></span> 为正。<span class="math-inline"><var>M</var></span> 与 <span class="math-inline"><var>D</var></span> 的关联，可能完全来自 <span class="math-inline"><var>A</var></span> 对二者的共同影响，如下图：</p>
+
+      <figure class="book-figure dag-figure" id="dag-5-common-cause">
+        <svg viewBox="0 0 640 330" role="img" aria-labelledby="dag-5-common-title dag-5-common-desc">
+          <title id="dag-5-common-title">结婚年龄作为共同原因的 DAG</title>
+          <desc id="dag-5-common-desc">A 指向 M 和 D，M 与 D 之间没有箭头。</desc>
+          <defs><marker id="dag-common-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#3f4752"/></marker></defs>
+          <line x1="180" y1="85" x2="455" y2="85" stroke="#3f4752" stroke-width="4" marker-end="url(#dag-common-arrow)"/>
+          <line x1="190" y1="110" x2="305" y2="245" stroke="#3f4752" stroke-width="4" marker-end="url(#dag-common-arrow)"/>
+          <circle cx="160" cy="85" r="38" fill="#f0f1fa" stroke="#263f86" stroke-width="3"/><circle cx="480" cy="85" r="38" fill="#f0f1fa" stroke="#263f86" stroke-width="3"/><circle cx="320" cy="270" r="38" fill="#f0f1fa" stroke="#263f86" stroke-width="3"/>
+          <text x="160" y="96" text-anchor="middle" font-size="32" font-weight="700" fill="#263f86">A</text><text x="480" y="96" text-anchor="middle" font-size="32" font-weight="700" fill="#263f86">M</text><text x="320" y="281" text-anchor="middle" font-size="32" font-weight="700" fill="#263f86">D</text>
+        </svg>
+        <figcaption><strong>共同原因 DAG：</strong><span class="math-inline"><var>A</var></span> 同时影响 <span class="math-inline"><var>M</var></span> 与 <span class="math-inline"><var>D</var></span>，但 <span class="math-inline"><var>M</var></span> 不直接影响 <span class="math-inline"><var>D</var></span>。</figcaption>
+      </figure>
+
+      <p>这个 DAG 同样与模型 <code>m5.1</code> 和 <code>m5.2</code> 的后验分布相容。那么究竟是哪一种？结婚率是否有直接效应，还是结婚年龄同时驱动二者，从而制造了结婚率与离婚率之间的虚假相关？</p>
+
+      <p>要找出答案，必须放慢脚步，仔细思考每个 DAG 分别意味着什么。下一小节就来做这件事。</p>
+
+      <aside class="overthinking-box" id="overthinking-drawing-dag">
+        <h3>过度思考：绘制 DAG</h3>
+        <p>无论在 R、Python 还是其他环境中，都有若干软件包可以帮助绘制和分析有向无环图。本书示例使用 <code>dagitty</code>；它既是 R 包，也可在网页浏览器或桌面应用中使用，网址为 <span class="url-text">http://www.dagitty.net/</span>。绘制本节前面的简单 DAG：</p>
+        <figure class="code-listing" id="code-5-7">
+          <figcaption>R 代码 5.7</figcaption>
+          <pre><code>library(dagitty)
+dag5.1 &lt;- dagitty( "dag {
+    A -&gt; D
+    A -&gt; M
+    M -&gt; D
+}")
+coordinates(dag5.1) &lt;- list( x=c(A=0,D=1,M=2) , y=c(A=0,D=1,M=0) )
+drawdag( dag5.1 )</code></pre>
+        </figure>
+        <p>DAG 定义中的 <code>-&gt;</code> 箭头表示影响方向。<code>coordinates</code> 函数允许按喜好布置图形；也可以让 <code>dagitty</code> 自动布局，使用 <code>plot(graphLayout(dag5.1))</code>。<code>rethinking</code> 包还提供了视觉控制稍多的 DAG 绘图函数，参见 <code>?drawdag</code>。</p>
+      </aside>
+    </section>
+
+    <section id="sec-5-1-2">
+      <h3>5.1.2 可检验含义</h3>
+
+      <p>怎样使用数据比较多个可信的因果模型？首先应考虑每个模型的<strong>可检验含义</strong>。请对照目前的两个 DAG：</p>
+
+      <figure class="book-figure dag-figure dag-comparison" id="dag-5-candidates">
+        <svg viewBox="0 0 1000 360" role="img" aria-labelledby="dag-5-candidates-title dag-5-candidates-desc">
+          <title id="dag-5-candidates-title">离婚例子的两个候选 DAG</title>
+          <desc id="dag-5-candidates-desc">左图包含 M 指向 D 的箭头，右图没有这条箭头。</desc>
+          <defs><marker id="dag-pair-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#3f4752"/></marker></defs>
+          <text x="250" y="38" text-anchor="middle" font-size="24" font-weight="700" fill="#263f86">候选 DAG 1</text><text x="750" y="38" text-anchor="middle" font-size="24" font-weight="700" fill="#263f86">候选 DAG 2</text>
+          <line x1="150" y1="105" x2="340" y2="105" stroke="#3f4752" stroke-width="4" marker-end="url(#dag-pair-arrow)"/><line x1="160" y1="125" x2="238" y2="270" stroke="#3f4752" stroke-width="4" marker-end="url(#dag-pair-arrow)"/><line x1="340" y1="125" x2="262" y2="270" stroke="#3f4752" stroke-width="4" marker-end="url(#dag-pair-arrow)"/>
+          <line x1="650" y1="105" x2="840" y2="105" stroke="#3f4752" stroke-width="4" marker-end="url(#dag-pair-arrow)"/><line x1="660" y1="125" x2="738" y2="270" stroke="#3f4752" stroke-width="4" marker-end="url(#dag-pair-arrow)"/>
+          <g fill="#f0f1fa" stroke="#263f86" stroke-width="3"><circle cx="130" cy="105" r="34"/><circle cx="370" cy="105" r="34"/><circle cx="250" cy="300" r="34"/><circle cx="630" cy="105" r="34"/><circle cx="870" cy="105" r="34"/><circle cx="750" cy="300" r="34"/></g>
+          <g text-anchor="middle" font-size="28" font-weight="700" fill="#263f86"><text x="130" y="115">A</text><text x="370" y="115">M</text><text x="250" y="310">D</text><text x="630" y="115">A</text><text x="870" y="115">M</text><text x="750" y="310">D</text></g>
+        </svg>
+        <figcaption>左：<span class="math-inline"><var>A</var> → <var>M</var></span>、<span class="math-inline"><var>A</var> → <var>D</var></span>、<span class="math-inline"><var>M</var> → <var>D</var></span>。右：只有 <span class="math-inline"><var>A</var></span> 共同影响 <span class="math-inline"><var>M</var></span> 与 <span class="math-inline"><var>D</var></span>。</figcaption>
+      </figure>
+
+      <p>任何 DAG 都可能意味着：在某些条件下，一些变量独立于另一些变量。这些就是模型的可检验含义，也就是它的<strong>条件独立性</strong>。条件独立性有两种形式。第一，它说明数据中哪些变量应当彼此关联（或不关联）。第二，它说明在以另一组变量为条件后，哪些变量会变得不再关联。更正式地说，以变量 <span class="math-inline"><var>Z</var></span> 为条件后，变量 <span class="math-inline"><var>Y</var></span> 与 <span class="math-inline"><var>X</var></span> 不相关，写作 <span class="math-inline"><var>Y</var> ⫫ <var>X</var> | <var>Z</var></span>。这个记号非常古怪；如果你觉得恼火，完全有道理。下面把它放回离婚例子中。</p>
+
+      <p>页首两个 DAG 的条件独立性是什么？怎样推导它们？寻找条件独立性并不困难，却完全不显然。稍加练习后就会很容易。更一般的规则留到下一章；目前先逐个检查两个 DAG。</p>
+
+      <p>对于上图左侧、含三条箭头的 DAG，先注意每一对变量都相关，因为每一对之间都有因果箭头；这些箭头会产生相关。因此，在未以任何变量为条件前，一切都与其他一切关联。这本身就是可检验含义，可写成：</p>
+
+      <div class="equation-block conditional-independence-equation" id="eq-5-all-associated"><var>D</var> <span class="not-independent" aria-label="不独立于">⫫</span> <var>A</var>, &nbsp; <var>D</var> <span class="not-independent" aria-label="不独立于">⫫</span> <var>M</var>, &nbsp; <var>A</var> <span class="not-independent" aria-label="不独立于">⫫</span> <var>M</var></div>
+
+      <p><span class="not-independent" aria-label="不独立于">⫫</span> 表示“不独立于”。如果在数据中发现任意一对变量不相关，那么这个 DAG 就有问题（假设数据正确）。在这里，三对变量事实上都强烈关联。可以用 <code>cor()</code> 测量简单相关自行检查。相关系数非常简单，有时也是糟糕的关联度量——含义不同的许多关联模式都可能产生相同相关系数——但在本例中它能诚实地完成工作。</p>
+
+      <p>第一个 DAG 还有其他可检验含义吗？没有。转而看第二个 DAG 会更容易明白原因；在第二个 DAG 中，<span class="math-inline"><var>M</var></span> 不影响 <span class="math-inline"><var>D</var></span>。三者仍然彼此关联：<span class="math-inline"><var>A</var></span> 同时影响 <span class="math-inline"><var>D</var></span> 和 <span class="math-inline"><var>M</var></span>，所以它与二者都关联；<span class="math-inline"><var>D</var></span> 和 <span class="math-inline"><var>M</var></span> 共享原因 <span class="math-inline"><var>A</var></span>，因而也通过这个共同原因彼此相关。</p>
+
+      <p class="source-erratum"><strong>原文勘误：</strong>原书在上一句把共同原因误写为 <span class="math-inline"><var>M</var></span>；依照该 DAG 与上下文，此处应为 <span class="math-inline"><var>A</var></span>。</p>
+
+      <p>但假设以 <span class="math-inline"><var>A</var></span> 为条件。<span class="math-inline"><var>M</var></span> 中所有与预测 <span class="math-inline"><var>D</var></span> 有关的信息，都已包含在 <span class="math-inline"><var>A</var></span> 中。因此，一旦以 <span class="math-inline"><var>A</var></span> 为条件，<span class="math-inline"><var>M</var></span> 就不再告诉我们任何关于 <span class="math-inline"><var>D</var></span> 的额外信息。第二个 DAG 的一个可检验含义是：给定 <span class="math-inline"><var>A</var></span> 后，<span class="math-inline"><var>D</var></span> 与 <span class="math-inline"><var>M</var></span> 独立，即 <span class="math-inline"><var>D</var> ⫫ <var>M</var> | <var>A</var></span>。第一个 DAG 不会如此；因为在那个模型中 <span class="math-inline"><var>M</var></span> 本身确实影响 <span class="math-inline"><var>D</var></span>，所以以 <span class="math-inline"><var>A</var></span> 为条件不会让二者独立。</p>
+
+      <p>如果仍然难以看出这些条件独立性，<code>dagitty</code> 包可以代为寻找。下面定义第二个 DAG 并显示它隐含的条件独立性：</p>
+
+      <figure class="code-listing" id="code-5-8">
+        <figcaption>R 代码 5.8</figcaption>
+        <pre><code>DMA_dag2 &lt;- dagitty('dag{ D &lt;- A -&gt; M }')
+impliedConditionalIndependencies( DMA_dag2 )</code></pre>
+        <pre class="code-output"><code>D _||_ M | A</code></pre>
+      </figure>
+
+      <p>第一个 DAG 没有条件独立性。可以定义它并检查：</p>
+
+      <figure class="code-listing" id="code-5-9">
+        <figcaption>R 代码 5.9</figcaption>
+        <pre><code>DMA_dag1 &lt;- dagitty('dag{ D &lt;- A -&gt; M -&gt; D }')
+impliedConditionalIndependencies( DMA_dag1 )</code></pre>
+      </figure>
+
+      <p>由于没有条件独立性，所以没有输出可显示。</p>
+
+      <p>总结一下：第一个 DAG 的可检验含义是，无论以什么为条件，所有变量对都应当相关。第二个 DAG 的可检验含义是，在不以任何变量为条件时，所有变量对都应当相关；但以 <span class="math-inline"><var>A</var></span> 为条件后，<span class="math-inline"><var>D</var></span> 与 <span class="math-inline"><var>M</var></span> 应当独立。因此，两者唯一不同的含义是 <span class="math-inline"><var>D</var> ⫫ <var>M</var> | <var>A</var></span>。</p>
+
+      <p>要检验这个含义，需要一个以 <span class="math-inline"><var>A</var></span> 为条件的统计模型，从而判断它是否会使 <span class="math-inline"><var>D</var></span> 独立于 <span class="math-inline"><var>M</var></span>。这正是多元回归能提供帮助的地方。它可以回答一个有用的描述性问题：</p>
+
+      <blockquote class="book-quote" id="question-additional-value"><p>当我已经知道所有其他预测变量之后，再知道某个变量还有没有额外价值？</p></blockquote>
+
+      <p>例如，用结婚率和结婚年龄共同预测离婚率的多元回归，会回答：</p>
+      <ol class="conditional-questions">
+        <li>已经知道结婚率后，再知道结婚年龄还有什么额外价值？</li>
+        <li>已经知道结婚年龄后，再知道结婚率还有什么额外价值？</li>
+      </ol>
+
+      <p>与每个预测变量对应的参数估计，就是这些问题（往往不透明）的答案。问题本身是描述性的，答案也是描述性的。只有前面推导出的可检验含义，才赋予这些描述性结果因果意义。</p>
+
+      <aside class="rethinking-box" id="rethinking-control-out-of-control">
+        <h3>再思考：“控制”失控了</h3>
+        <p>上面的问题经常被称作“统计控制”，例如在估计一个变量的效应时“控制”另一个变量的效应。但这种语言很草率，因为它暗示得太多。统计控制与实验控制十分不同，下一章会进一步探讨。这里的重点不是管束措辞，而是注意小世界解释与大世界解释之间的区别。大多数统计使用者不是统计学家，“控制”之类的草率措辞会助长草率的解释文化；这种文化往往高估统计方法的能力，因此很难抵抗。约束自己的语言也许已经足够；约束别人的语言则很难不显得像个吹毛求疵的训斥者——就像这个侧栏本身大概给人的感觉一样。</p>
+      </aside>
+    </section>
+
+    <section id="sec-5-1-3">
+      <h3>5.1.3 多元回归记号</h3>
+      <p>多元回归公式很像上一章末尾的多项式模型：它们在 <span class="math-inline"><var>μ</var><sub>i</sub></span> 的定义中加入更多参数和变量。策略很直接：</p>
+      <ol class="multiple-regression-steps">
+        <li>指定想放进均值线性模型的预测变量；</li>
+        <li>为每个预测变量建立一个参数，用来测量它与结果的关联；</li>
+        <li>把参数乘以变量，再把这一项加到线性模型中。</li>
+      </ol>
+      <p class="continuation-note">双预测变量模型定义与拟合将在原书 PDF 第 152 页继续。</p>
     </section>
   </section>
 
@@ -217,6 +338,6 @@ m5.2 &lt;- quap(
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 143–148 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 149 页继续。
+    <strong>译稿状态：</strong>PDF 第 143–151 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 152 页继续。
   </aside>
 </article>
