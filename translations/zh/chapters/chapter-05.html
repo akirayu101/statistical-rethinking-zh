@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-05" data-source-pages="143-175">
+<article class="book-article" data-chapter="chapter-05" data-source-pages="143-178">
   <header class="chapter-header">
     <p class="eyebrow">第五章</p>
     <h1>多变量与虚假华夫饼</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 143–175 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 143–178 页</p>
   </header>
 
   <p>在北美——即便不算全世界——最可靠的华夫饼来源之一，是华夫饼屋（Waffle House）餐厅。华夫饼屋几乎总在营业，哪怕飓风刚刚过境也不例外。多数门店都投入资金做好灾害准备，其中包括自备发电机。因此，美国灾害救援机构联邦紧急事务管理署（FEMA）会非正式地把华夫饼屋当作衡量灾情严重程度的指标。<sup id="note-77-ref"><a href="#note-77">77</a></sup> 如果华夫饼屋关门了，那就是严重事件。</p>
@@ -1175,11 +1175,114 @@ sigma 27.31 0.83  25.98  28.63</code></pre>
 
       <p>注意我给 <code>precis</code> 增加了 <code>depth=2</code>。这会让它显示向量参数，例如新的 <code>a</code> 向量。<code>precis</code> 默认隐藏向量（和矩阵）参数，因为有时这类参数很多，并不想逐一查看它们的值；后面各章会看到具体例子。</p>
 
-      <p>这些参数很容易解释——它们就是每个类别的预期身高。但我们往往关心类别之间的差异。本例中，女性与男性的预期身高差是多少？</p>
+      <p>这些参数很容易解释——它们就是每个类别的预期身高。但我们往往关心类别之间的差异。本例中，女性与男性的预期身高差是多少？可以用后验样本计算。我会把后验样本提取到数据框中，再把计算结果直接插入同一个数据框：</p>
 
-      <p class="continuation-note">类别间差异的后验分布与二元类别余文将在原书 PDF 第 176 页继续。</p>
+      <figure class="code-listing" id="code-5-48">
+        <figcaption>R 代码 5.48</figcaption>
+        <pre><code>post &lt;- extract.samples(m5.8)
+post$diff_fm &lt;- post$a[,1] - post$a[,2]
+precis( post , depth=2 )</code></pre>
+        <pre class="code-output"><code>quap posterior: 10000 samples from m5.8
+          mean   sd   5.5% 94.5%      histogram
+sigma    27.29 0.84 25.95 28.63 ▁▁▁▁▃▇▇▇▃▂▁▁▁
+a[1]    134.91 1.59 132.37 137.42 ▁▁▁▂▅▇▇▅▂▁▁▁▁
+a[2]    142.60 1.71 139.90 145.35     ▁▁▁▅▇▃▁▁▁
+diff_fm  -7.70 2.33 -11.41 -3.97     ▁▁▁▁▃▇▇▃▁▁▁</code></pre>
+      </figure>
+
+      <p>计算结果像一个新的后验参数一样出现在最后一行。这是样本中女性与男性的预期差异。这类计算称为<strong>对比</strong>。无论类别有多少，都可以用后验样本计算任意两类之差，从而得到差异的后验分布。</p>
+    </section>
+
+    <section id="sec-5-3-2">
+      <h3>5.3.2 多类别</h3>
+
+      <p>无论使用指示变量还是索引变量，二元类别都很容易。但类别超过两个时，指示变量方法会迅速膨胀：每增加一个类别，就需要一个新的指示变量。若有 <span class="math-inline"><var>k</var></span> 个唯一类别，就需要 <span class="math-inline"><var>k</var> − 1</span> 个指示变量。R 的 <code>lm</code> 等自动化工具确实采用这条路线，替你构造 <span class="math-inline"><var>k</var> − 1</span> 个变量并返回同样多的参数估计。</p>
+
+      <p>这里继续使用索引变量。增加类别时，模型写法完全不变；参数当然会增加，与指示变量方法一样多。但模型定义与二元情形完全相同，而且除非确实拥有关于类别对比的先验信息，否则先验仍更容易指定。</p>
+
+      <p>再次用灵长类乳汁数据举例。现在关心 <code>clade</code> 变量，它编码每个物种所属的大类群：</p>
+
+      <figure class="code-listing" id="code-5-49">
+        <figcaption>R 代码 5.49</figcaption>
+        <pre><code>data(milk)
+d &lt;- milk
+unique(d$clade)</code></pre>
+        <pre class="code-output"><code>[1] Strepsirrhine    New World Monkey Old World Monkey Ape
+Levels: Ape New World Monkey Old World Monkey Strepsirrhine</code></pre>
+      </figure>
+
+      <p>需要为四个类别分别创建一个索引值。可以手动完成，但直接把因子强制转换为整数即可：</p>
+
+      <figure class="code-listing" id="code-5-50"><figcaption>R 代码 5.50</figcaption><pre><code>d$clade_id &lt;- as.integer( d$clade )</code></pre></figure>
+
+      <p>下面用模型测量每个类群的平均乳汁能量。数学形式为：</p>
+
+      <div class="equation-block model-system-equation" id="eq-5-clade-index-model">
+        <div><var>K</var><sub>i</sub> ∼ Normal(<var>μ</var><sub>i</sub>, <var>σ</var>)</div>
+        <div><var>μ</var><sub>i</sub> = <var>α</var><sub>clade[i]</sub></div>
+        <div><var>α</var><sub>j</sub> ∼ Normal(0, 0.5), &nbsp; <var>j</var> = 1…4</div>
+        <div><var>σ</var> ∼ Exponential(1)</div>
+      </div>
+
+      <p><span class="math-inline"><var>K</var></span> 是标准化千卡。我把 <span class="math-inline"><var>α</var></span> 的先验稍微放宽，让数据需要时不同类群可以分散开。建议改变这个先验并反复近似后验，观察类别间的后验差异怎样依赖它。现在启动 <code>quap</code>：</p>
+
+      <figure class="code-listing" id="code-5-51">
+        <figcaption>R 代码 5.51</figcaption>
+        <pre><code>d$K &lt;- scale( d$kcal.per.g )
+m5.9 &lt;- quap(
+    alist(
+        K ~ dnorm( mu , sigma ),
+        mu &lt;- a[clade_id],
+        a[clade_id] ~ dnorm( 0 , 0.5 ),
+        sigma ~ dexp( 1 )
+    ) , data=d )
+labels &lt;- paste( "a[" , 1:4 , "]:" , levels(d$clade) , sep="" )
+plot( precis( m5.9 , depth=2 , pars="a" ) , labels=labels ,
+    xlab="expected kcal (std)" )</code></pre>
+      </figure>
+
+      <figure class="book-figure coefficient-comparison-figure clade-coefficient-figure" id="fig-5-clade-coefficients">
+        <svg viewBox="0 0 900 400" role="img" aria-labelledby="clade-coef-title clade-coef-desc">
+          <title id="clade-coef-title">四个灵长类类群的预期乳汁能量</title><desc id="clade-coef-desc">点与水平区间比较四个类群的标准化预期千卡。</desc><rect width="900" height="400" fill="#fff"/><line x1="590" y1="45" x2="590" y2="320" stroke="#b8bbb8" stroke-width="2"/>
+          <g font-size="18" fill="#30332e"><text x="45" y="90">a[1]: Ape</text><text x="45" y="150">a[2]: New World Monkey</text><text x="45" y="210">a[3]: Old World Monkey</text><text x="45" y="270">a[4]: Strepsirrhine</text></g>
+          <g stroke="#30332e" stroke-width="5" stroke-linecap="round"><line x1="360" y1="83" x2="515" y2="83"/><line x1="615" y1="143" x2="780" y2="143"/><line x1="535" y1="203" x2="690" y2="203"/><line x1="350" y1="263" x2="510" y2="263"/></g><g fill="#6670ee" stroke="#263f86" stroke-width="2"><circle cx="438" cy="83" r="8"/><circle cx="698" cy="143" r="8"/><circle cx="612" cy="203" r="8"/><circle cx="430" cy="263" r="8"/></g>
+          <line x1="310" y1="320" x2="820" y2="320" stroke="#343732" stroke-width="2"/><g font-size="16" fill="#30332e" text-anchor="middle"><text x="335" y="350">−1.0</text><text x="463" y="350">−0.5</text><text x="590" y="350">0.0</text><text x="718" y="350">0.5</text><text x="815" y="350">1.0</text><text x="590" y="382" fill="#263f86" font-weight="700">预期千卡（标准化）</text></g>
+        </svg>
+        <figcaption>四个类群的后验均值与 89% 相容区间；标签保留索引值与原始类别名称的对应关系。</figcaption>
+      </figure>
+
+      <p>这里用可选的 <code>labels</code> 参数，把参数名 <code>a[1]</code> 到 <code>a[4]</code> 与原变量中的类群名称连在一起。实践中必须非常小心地记录索引值与类别的对应关系，不要相信 R 的因子类型一定会做对。</p>
+
+      <p>若还想加入饮食或栖息地等类别变量，方法完全相同。下面随机把这些灵长类分配到四个虚构类别：[1] Gryffindor、[2] Hufflepuff、[3] Ravenclaw、[4] Slytherin：</p>
+
+      <figure class="code-listing" id="code-5-52"><figcaption>R 代码 5.52</figcaption><pre><code>set.seed(63)
+d$house &lt;- sample( rep(1:4,each=8) , size=nrow(d) )</code></pre></figure>
+
+      <p>现在可以把这些类别作为另一个预测变量纳入模型：</p>
+
+      <figure class="code-listing" id="code-5-53"><figcaption>R 代码 5.53</figcaption><pre><code>m5.10 &lt;- quap(
+    alist(
+        K ~ dnorm( mu , sigma ),
+        mu &lt;- a[clade_id] + h[house],
+        a[clade_id] ~ dnorm( 0 , 0.5 ),
+        h[house] ~ dnorm( 0 , 0.5 ),
+        sigma ~ dexp( 1 )
+    ) , data=d )</code></pre></figure>
+
+      <p>检查后验时，会看到 Slytherin 格外突出。</p>
+
+      <aside class="rethinking-box" id="rethinking-differences-significance">
+        <h3>再思考：差异与统计显著性</h3>
+        <p>解释参数估计时，一个常见错误是认为：一个参数离零足够远——“显著”——而另一个“不显著”，所以两参数之差也显著。事实未必如此。<sup id="note-83-ref"><a href="#note-83">83</a></sup> 这不只是非贝叶斯分析的问题：若想知道差异的分布，就必须真正计算这个差异，也就是对比。仅仅观察到男性中的某个斜率与零高度重叠，而女性中的同一斜率可靠地大于零，并不足够；必须计算男女斜率差异的后验分布。</p>
+        <p>例如，假设两个参数 <span class="math-inline"><var>β</var><sub>f</sub></span> 与 <span class="math-inline"><var>β</var><sub>m</sub></span> 的后验均值和标准差分别为 0.15 ± 0.02 与 0.02 ± 0.10。虽然前者可靠地不同于零而后者不是，但若假设二者不相关，差异约为 <span class="math-inline">(0.15 − 0.02) ± √(0.02² + 0.10²) ≈ 0.13 ± 0.10</span>，仍与零大量重叠。换言之，可以确信 <span class="math-inline"><var>β</var><sub>f</sub></span> 远离零，却不能确信它与 <span class="math-inline"><var>β</var><sub>m</sub></span> 的差远离零。</p>
+        <p>在非贝叶斯显著性检验中，这种现象源于统计显著性只在“与零假设不同”这一方面具有推断力。<span class="math-inline"><var>β</var><sub>m</sub></span> 与零重叠时，也可能与远离零的值重叠，它的值很不确定；因此与 <span class="math-inline"><var>β</var><sub>f</sub></span> 的比较同样不确定，表现为差异后验分布 <span class="math-inline"><var>β</var><sub>f</sub> − <var>β</var><sub>m</sub></span> 很宽。更根本的错误是接受零假设。文章或书中所谓“没有发现差异”或“没有效应”，通常只是某个参数没有显著不同于零，于是作者把零当成估计值。这既不合逻辑，又极其常见。</p>
+      </aside>
     </section>
   </section>
+
+  <section id="sec-5-4"><h2>5.4 总结</h2><p>本章介绍了多元回归：构造描述性模型，表达某项测量的均值怎样与多个预测变量关联。多元回归的核心问题是：当已经知道其他预测变量后，再知道每个预测变量有何价值？这个问题隐含两点：（1）关注预测变量对描述当前样本的价值，而不是预测未来样本；（2）假设每个预测变量的价值不依赖其他预测变量的取值。后续各章会面对这两个问题。但在此之前，下一章将看到：加入预测变量制造的问题可以和它解决的问题一样多。</p></section>
+
+  <section id="sec-5-5"><h2>5.5 习题</h2><div class="exercise-group" id="chapter-05-exercises-easy"><h3>简单题</h3><p class="continuation-note">第 5 章习题将在原书 PDF 第 179 页开始。</p></div></section>
 
   <section class="endnotes" id="chapter-05-notes" role="doc-endnotes">
     <h2>尾注</h2>
@@ -1190,10 +1293,11 @@ sigma 27.31 0.83  25.98  28.63</code></pre>
       <li id="note-80">可参见 Pearl（2014）的通俗导论及其讨论；另见 Rubin（2005）介绍的一种相关方法。 <a class="backref" href="#note-80-ref" aria-label="返回正文">↩</a></li>
       <li id="note-81">参见 Freckleton（2002）。 <a class="backref" href="#note-81-ref" aria-label="返回正文">↩</a></li>
       <li id="note-82">数据来自 Hinde 和 Milligan（2011）的表 2。 <a class="backref" href="#note-82-ref" aria-label="返回正文">↩</a></li>
+      <li id="note-83">参见 Gelman 与 Stern（2006）关于“显著”和“不显著”之差本身未必显著的讨论。 <a class="backref" href="#note-83-ref" aria-label="返回正文">↩</a></li>
     </ol>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 143–175 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 176 页继续。
+    <strong>译稿状态：</strong>PDF 第 143–178 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 179 页继续。
   </aside>
 </article>
