@@ -238,7 +238,17 @@
     "flat prior": "均匀先验",
     "first born": "第一胎",
     "second born": "第二胎",
-    "birth sex": "出生性别"
+    "birth sex": "出生性别",
+    "geocentric model": "地心模型",
+    "epicycle": "本轮",
+    "deferent": "均轮",
+    "equant": "对应点",
+    "Fourier series": "傅里叶级数",
+    "linear regression": "线性回归",
+    "additive combination": "加性组合",
+    "Gaussian distribution": "高斯分布",
+    "random walk": "随机游走",
+    "normality": "正态性"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"

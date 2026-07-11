@@ -340,5 +340,33 @@
       ".exercise": 18,
       ".endnotes li": 15
     }
+  },
+  "chapter-04": {
+    "required_status": "in_progress",
+    "source_pages": [89, 91],
+    "required_ids": [
+      "fig-4-1",
+      "sec-4-1",
+      "sec-4-1-1",
+      "fig-4-2",
+      "code-4-1",
+      "chapter-04-notes",
+      "note-64"
+    ],
+    "required_headings": [
+      "地心模型",
+      "4.1 为什么正态分布如此“正常”",
+      "4.1.1 由加法而正态",
+      "尾注"
+    ],
+    "counts": {
+      "section": 3,
+      "figure": 3,
+      "figure img": 2,
+      ".ptolemaic-figure": 1,
+      ".random-walk-figure": 1,
+      ".code-listing": 1,
+      ".endnotes li": 1
+    }
   }
 }
