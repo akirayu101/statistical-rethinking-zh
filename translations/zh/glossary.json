@@ -248,7 +248,22 @@
     "additive combination": "加性组合",
     "Gaussian distribution": "高斯分布",
     "random walk": "随机游走",
-    "normality": "正态性"
+    "normality": "正态性",
+    "finite variance": "有限方差",
+    "locus": "基因座",
+    "proportional increase": "比例增加",
+    "multiplicative interaction": "乘性交互",
+    "log scale": "对数尺度",
+    "ontological justification": "本体论依据",
+    "epistemological justification": "认识论依据",
+    "micro-process": "微观过程",
+    "information theory": "信息论",
+    "heavy tail": "厚尾",
+    "tail": "尾部",
+    "continuous distribution": "连续分布",
+    "discrete distribution": "离散分布",
+    "probability mass function": "概率质量函数",
+    "probability density function": "概率密度函数"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"
