@@ -426,7 +426,26 @@
     "allometry": "异速生长",
     "natural logarithm": "自然对数",
     "expected height": "预期身高",
-    "biologically reasonable outcome space": "生物学上合理的结果空间"
+    "biologically reasonable outcome space": "生物学上合理的结果空间",
+    "Waffle House": "华夫饼屋",
+    "hash brown potato": "薯饼",
+    "misleading correlation": "误导性相关",
+    "multiple regression": "多元回归",
+    "statistical control": "统计控制",
+    "confound": "混杂因素",
+    "southernness": "南方属性",
+    "multiple causation": "多重因果",
+    "interaction": "交互作用",
+    "main effect": "主效应",
+    "spurious correlation": "虚假相关",
+    "categorical variable": "类别变量",
+    "graphical causal model": "图形因果模型",
+    "causal inference": "因果推断",
+    "unverifiable assumption": "无法验证的假设",
+    "spurious association": "虚假关联",
+    "marriage rate": "结婚率",
+    "median age at marriage": "结婚年龄中位数",
+    "crud factor": "杂物因子"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"

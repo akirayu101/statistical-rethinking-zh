@@ -1,0 +1,82 @@
+<article class="book-article" data-chapter="chapter-05" data-source-pages="143-145">
+  <header class="chapter-header">
+    <p class="eyebrow">第五章</p>
+    <h1>多变量与虚假华夫饼</h1>
+    <p class="source-range">当前译稿对应原书 PDF 第 143–145 页</p>
+  </header>
+
+  <p>在北美——即便不算全世界——最可靠的华夫饼来源之一，是华夫饼屋（Waffle House）餐厅。华夫饼屋几乎总在营业，哪怕飓风刚刚过境也不例外。多数门店都投入资金做好灾害准备，其中包括自备发电机。因此，美国灾害救援机构联邦紧急事务管理署（FEMA）会非正式地把华夫饼屋当作衡量灾情严重程度的指标。<sup id="note-77-ref"><a href="#note-77">77</a></sup> 如果华夫饼屋关门了，那就是严重事件。</p>
+
+  <p>颇具讽刺意味的是，一贯坚守营业的华夫饼屋，竟与全美国最高的一些离婚率联系在一起（<a href="#fig-5-1">图 5.1</a>）。乔治亚州和阿拉巴马州等人均华夫饼屋很多的州，也有全美最高的一些离婚率。最低的离婚率则出现在华夫饼屋数量为零的地方。随时都能吃到的华夫饼和薯饼，难道会危及婚姻吗？</p>
+
+  <p>大概不会。这是一个误导性相关的例子。没有人认为，华夫饼屋餐厅会通过某种可信机制增加离婚概率。相反，看到这种相关时，我们会立刻追问：究竟是哪些其他变量真正驱动了华夫饼与离婚之间的关系？本例中，华夫饼屋于 1955 年创立于乔治亚州。此后餐厅逐渐遍布美国南部，却一直基本没有走出这片区域。因此，华夫饼屋与“南方”联系在一起。离婚并非南方特有的制度，但美国南部确有一些全美最高的离婚率。所以，华夫饼屋与高离婚率同时出现在南部，很可能只是历史的偶然。</p>
+
+  <p>这样的偶然随处可见。华夫饼屋与离婚相关并不令人惊讶，因为一般意义上的相关本来就不稀奇。在大型数据集中，每一对变量之间都有统计上可辨识的非零相关。<sup id="note-78-ref"><a href="#note-78">78</a></sup> 然而，大多数相关并不表示因果关系，因此我们需要工具来区分纯粹关联与因果证据。正因如此，人们才会投入大量精力研究<strong>多元回归</strong>：使用不止一个预测变量，同时对同一个结果建模。采用多元回归模型的常见理由包括：</p>
+
+  <ol class="multiple-regression-reasons">
+    <li><strong>对混杂因素进行统计“控制”。</strong>混杂因素会误导我们对因果影响的判断——下一章会给出更精确的定义。华夫饼与离婚的虚假相关，是混杂的一种可能形式：混杂因素（南方属性）会让一个实际上并不重要的变量（华夫饼屋密度）显得重要。但混杂形式多种多样；它们既能制造虚假重要变量，也同样能把真正重要的变量隐藏起来。</li>
+    <li><strong>多重因果。</strong>一个现象可能由多个原因共同产生。测量每个原因都有价值，因此只要能够用同一份数据估计不止一种影响，就应该这样做。此外，当因果来源不止一个时，一种原因可能把另一种掩盖起来。</li>
+    <li><strong>交互作用。</strong>一个变量的重要性可能取决于另一个变量。例如，光照和水分都能让植物受益；但只要缺少其中任何一种，另一种就完全没有益处。这样的交互作用非常常见。要对一个变量做出有效推断，往往必须考虑其他变量。</li>
+  </ol>
+
+  <figure class="book-figure waffle-divorce-figure" id="fig-5-1">
+    <div class="figure-scroll" tabindex="0" aria-label="可横向滚动的华夫饼屋密度与离婚率散点图">
+      <img src="/media/chapter-05-waffle-divorce.svg" alt="美国五十州散点图，显示每百万人华夫饼屋数量与离婚率正相关，南方州为蓝色">
+    </div>
+    <p class="scroll-hint">图较宽，可横向滚动查看州缩写、散点与区间。</p>
+    <figcaption><strong>图 5.1：</strong>在美国各州内部，每百万人拥有的华夫饼屋餐厅数量与离婚率（2009 年）相关。每个点代表一个州。“南方”（前邦联）州以蓝色显示。阴影区域是均值的 89% 百分位区间。这些数据位于 <code>rethinking</code> 包的 <code>data(WaffleDivorce)</code> 中。</figcaption>
+  </figure>
+
+  <p>本章会先处理上面三项中的前两项：使用多元回归应对简单混杂，并同时测量多种关联。你将看到，如何在高斯均值的线性模型中加入任意数量的主效应。这些主效应是变量的加性组合，也是最简单的一类多变量模型。我们会重点研究这类模型能帮助完成的两件事：（1）揭示华夫饼屋与离婚这类虚假相关；（2）揭示那些可能被其他尚未显现的相关掩盖的重要相关。在此过程中，你还会遇到<strong>类别变量</strong>；与连续变量相比，它们需要特殊处理。</p>
+
+  <p>然而，如果不知道怎样使用，多元回归可能比毫无用处还糟。仅仅向模型添加变量，就可能造成很大伤害。因此，本章将开始正式思考因果推断，并引入<strong>图形因果模型</strong>，用它来设计和解释回归模型。下一章会延续这一主题，介绍添加预测变量时一些严重而常见的危险，最后给出一个统一框架，帮助理解本章与下一章中的例子。</p>
+
+  <aside class="rethinking-box" id="rethinking-causal-inference">
+    <h3>再思考：因果推断</h3>
+    <p>尽管因果推断至关重要，科学界和统计学界仍没有统一方法。甚至有人主张，因果并不真正存在，它只是一种心理幻觉。<sup id="note-79-ref"><a href="#note-79">79</a></sup> 而在复杂动力系统里，一切似乎都会导致其他一切，“原因”也就失去了直觉价值。不过，有一点得到了普遍认同：因果推断总是依赖无法验证的假设。换句话说，无论设计或分析多么谨慎，总能想象出某种方式，使你关于因果的推断出错。即便存在这道障碍，我们仍然可以取得许多成果。<sup id="note-80-ref"><a href="#note-80">80</a></sup></p>
+  </aside>
+
+  <section id="sec-5-1">
+    <h2>5.1 虚假关联</h2>
+
+    <figure class="book-figure divorce-predictors-figure" id="fig-5-2">
+      <div class="figure-scroll" tabindex="0" aria-label="可横向滚动的离婚率与结婚率及结婚年龄双面板散点图">
+        <img src="/media/chapter-05-divorce-predictors.svg" alt="左图显示离婚率随结婚率上升，右图显示离婚率随结婚年龄中位数下降">
+      </div>
+      <p class="scroll-hint">图较宽，可横向滚动比较两种预测变量。</p>
+      <figcaption><strong>图 5.2：</strong>离婚率既与结婚率相关（左），也与结婚年龄中位数相关（右）。本例中两个预测变量都经过标准化。各州平均结婚率为每 1,000 名成年人 20 对，平均结婚年龄中位数为 26 岁。</figcaption>
+    </figure>
+
+    <p>让我们暂时把华夫饼放到一边。一个更容易理解的例子，是离婚率与结婚率之间的相关（<a href="#fig-5-2">图 5.2</a>）。如图左侧所示，成年人的结婚率是离婚率的出色预测变量。但结婚会导致离婚吗？从一个平凡意义上说，显然会：不先结婚，就不可能离婚。不过，高结婚率没有理由一定要与离婚相关。很容易设想，高结婚率意味着某种文化高度重视婚姻，因此反而与低离婚率相关。所以，这里有些可疑。</p>
+
+    <p>另一个与离婚相关的预测变量是结婚年龄中位数，见<a href="#fig-5-2">图 5.2</a>右侧。结婚年龄也是离婚率的良好预测变量——结婚年龄越高，预测的离婚越少。下面载入数据，并把关心的变量标准化：</p>
+
+    <figure class="code-listing" id="code-5-1">
+      <figcaption>R 代码 5.1（前半）</figcaption>
+      <pre><code># load data and copy
+library(rethinking)
+data(WaffleDivorce)
+d &lt;- WaffleDivorce
+
+# standardize variables
+d$A &lt;- scale( d$MedianAgeMarriage )
+d$D &lt;- scale( d$Divorce )</code></pre>
+    </figure>
+
+    <p class="continuation-note">R 代码 5.1 的最后一行及标准化变量说明将在原书 PDF 第 146 页继续。</p>
+  </section>
+
+  <section class="endnotes" id="chapter-05-notes" role="doc-endnotes">
+    <h2>尾注</h2>
+    <ol start="77">
+      <li id="note-77">《如何用一顿早餐衡量风暴的威力》，《华尔街日报》，2011 年 9 月 1 日。 <a class="backref" href="#note-77-ref" aria-label="返回正文">↩</a></li>
+      <li id="note-78">参见 Meehl（1990），尤其是第 204 页所述的“杂物因子”（crud factor）。 <a class="backref" href="#note-78-ref" aria-label="返回正文">↩</a></li>
+      <li id="note-79">关于因果推断的争论由来已久，大卫·休谟是一个关键引文来源。现代统计学中有一道奇特障碍：经典因果推理要求，如果 A 导致 B，那么 A 出现时 B 就总会出现。但在大多数当代科学模型所描述的概率关系中，谈论概率性原因毫不奇怪，此时 B 只会在 A 之后偶尔发生。参见 <span class="url-text">http://plato.stanford.edu/entries/causation-probabilistic/</span>。 <a class="backref" href="#note-79-ref" aria-label="返回正文">↩</a></li>
+      <li id="note-80">可参见 Pearl（2014）的通俗导论及其讨论；另见 Rubin（2005）介绍的一种相关方法。 <a class="backref" href="#note-80-ref" aria-label="返回正文">↩</a></li>
+    </ol>
+  </section>
+
+  <aside class="translation-status" aria-label="翻译状态">
+    <strong>译稿状态：</strong>PDF 第 143–145 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 146 页继续。
+  </aside>
+</article>

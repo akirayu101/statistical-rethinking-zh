@@ -689,5 +689,39 @@
       ".model-reading": 1,
       ".endnotes li": 13
     }
+  },
+  "chapter-05": {
+    "required_status": "in_progress",
+    "source_pages": [143, 145],
+    "required_ids": [
+      "fig-5-1",
+      "rethinking-causal-inference",
+      "sec-5-1",
+      "fig-5-2",
+      "code-5-1",
+      "chapter-05-notes",
+      "note-77",
+      "note-78",
+      "note-79",
+      "note-80"
+    ],
+    "required_headings": [
+      "多变量与虚假华夫饼",
+      "再思考：因果推断",
+      "5.1 虚假关联",
+      "尾注"
+    ],
+    "counts": {
+      "section": 2,
+      "figure": 3,
+      "figure img": 2,
+      ".waffle-divorce-figure": 1,
+      ".divorce-predictors-figure": 1,
+      ".code-listing": 1,
+      ".rethinking-box": 1,
+      ".multiple-regression-reasons": 1,
+      ".multiple-regression-reasons li": 3,
+      ".endnotes li": 4
+    }
   }
 }
