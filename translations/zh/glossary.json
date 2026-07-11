@@ -210,7 +210,17 @@
     "posterior median": "后验中位数",
     "decision": "决策值",
     "expected loss": "预期损失",
-    "absolute-error loss": "绝对误差损失"
+    "absolute-error loss": "绝对误差损失",
+    "quadratic loss": "二次损失",
+    "asymmetric loss": "不对称损失",
+    "model design": "模型设计",
+    "model checking": "模型检查",
+    "software validation": "软件验证",
+    "research design": "研究设计",
+    "power analysis": "功效分析",
+    "forecasting": "预测",
+    "generative": "生成式",
+    "dummy data": "虚拟数据"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"

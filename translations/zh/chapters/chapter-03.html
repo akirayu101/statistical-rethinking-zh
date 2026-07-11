@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-03" data-source-pages="65-76">
+<article class="book-article" data-chapter="chapter-03" data-source-pages="65-79">
   <header class="chapter-header">
     <p class="eyebrow">第三章</p>
     <h1>从想象中采样</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 65–76 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 65–79 页</p>
   </header>
 
   <p>许多贝叶斯统计教材都用医学检测情境来介绍<strong>后验推断</strong>。沿用常见例子的结构，假设有一种血液检测，能在 95% 的情况下正确检出吸血鬼。用更精确的数学记号表示，就是 <span class="math-inline">Pr(检测阳性 | 吸血鬼) = 0.95</span>。这项检测非常准确，几乎总能抓住真正的吸血鬼。</p>
@@ -406,6 +406,112 @@ median( samples )</code></pre>
       </figure>
 
       <p>这实际上就是后验中位数：它把后验密度分成两半，一半概率质量位于其上，一半位于其下。可以运行 <code>median(samples)</code> 比较。由于抽样变异，结果可能不会完全相同，但会很接近。</p>
+
+      <p>从这一切中该学到什么？要决定点估计——后验分布的单值摘要——就必须选择损失函数。不同损失函数会指定不同点估计。最常见的两个例子，是上面的绝对损失，它导出中位数；以及二次损失 <span class="math-inline">(<var>d</var> - <var>p</var>)<sup>2</sup></span>，它导出后验均值（<code>mean(samples)</code>）。当后验分布对称且近似正态时，中位数与均值会收敛到同一个点，稍稍减轻选择损失函数的焦虑。例如，对最初九次投掷六次水域的数据，均值与中位数几乎没有区别。</p>
+
+      <p>不过，实际应用情境的细节原则上可能要求一种非常独特的损失函数。考虑根据飓风风速估计决定是否发布疏散命令。随着风速增加，生命和财产损失会急剧上升。不必要的疏散也有成本，但小得多。因此，隐含的损失函数高度不对称：真实风速高于猜测时，损失急剧增加；真实风速低于猜测时，损失只缓慢增加。在这种情境下，最优点估计往往会高于后验均值或中位数。更何况，真正的问题是要不要疏散，或许根本不必给出风速点估计。</p>
+
+      <p>研究科学家通常不会思考损失函数。因此，他们报告的均值或 MAP 等点估计，并不是为了支持某项特定决策，而只是描述后验形状。也许你会说，真正的决策是是否接受一个假说；但这时的挑战，是说明获得或失去知识分别带来什么成本与收益。<sup><a id="note-60-ref" href="#note-60" aria-label="尾注 60">60</a></sup>通常最好尽可能充分地传达后验分布、数据以及模型本身，让其他人能够在你的工作上继续构建。过早决定接受或拒绝假说，可能付出生命代价。<sup><a id="note-61-ref" href="#note-61" aria-label="尾注 61">61</a></sup></p>
+
+      <p>把这些问题放在心上是健康的，至少它们会提醒我们：统计推断中的许多例行问题，只有结合具体经验情境和应用目的才能回答。统计学家可以提供一般轮廓和标准答案，但一位积极而专注的科学家，总能改进这种一般建议。</p>
+    </section>
+  </section>
+
+  <section id="sec-3-3">
+    <h2>3.3 用抽样模拟预测</h2>
+
+    <p>样本的另一项常见用途，是让模型隐含观测的模拟变得更容易。从模型生成隐含观测，至少有以下几种不同用途：</p>
+
+    <ol class="simulation-uses">
+      <li><strong>模型设计。</strong>不仅可以从后验抽样，也可以从先验抽样。在数据到来之前查看模型预期什么，是理解先验含义的最佳办法。后续章节会大量这样做；届时参数不止一个，其联合含义并不总是清楚。</li>
+      <li><strong>模型检查。</strong>用数据更新模型后，值得模拟隐含观测，以检查拟合是否正确运行，并研究模型行为。</li>
+      <li><strong>软件验证。</strong>为了确认模型拟合软件正常工作，可以在已知模型下模拟观测，然后尝试恢复生成数据所用的参数值。</li>
+      <li><strong>研究设计。</strong>如果能从假说模拟观测，就能评估研究设计是否有效。狭义上，这意味着做功效分析；但可能性远不止于此。</li>
+      <li><strong>预测。</strong>可以用估计为新案例和未来观测模拟新预测。这些预测既可用于实际预测，也可用于模型批评与修订。</li>
+    </ol>
+
+    <p>本章最后一节将学习怎样产生模拟观测，并完成一些简单的模型检查。</p>
+
+    <section id="sec-3-3-1">
+      <h3>3.3.1 虚拟数据</h3>
+
+      <p>先总结一下已经使用两章的地球仪投掷模型。存在一个固定的真实水域比例 <span class="math-inline"><var>p</var></span>，它是推断目标。把地球仪抛到空中再接住，会以 <span class="math-inline"><var>p</var></span> 和 <span class="math-inline">1 - <var>p</var></span> 的比例分别产生“水域”和“陆地”观测。</p>
+
+      <p>请注意，这些假设不仅允许我们在观测后推断 <span class="math-inline"><var>p</var></span> 各个可能取值的可信程度——上一章做的正是这件事——也允许我们模拟模型隐含的观测。之所以能这样做，是因为似然函数可以双向工作。给定一个已经实现的观测，似然函数说明该观测有多可信；只给定参数，似然又定义了可能观测的分布，可以从中抽样以模拟观测。</p>
+
+      <p>从这个意义上说，贝叶斯模型始终是<strong>生成式</strong>的，能够模拟预测。许多非贝叶斯模型也是生成式的，但也有许多不是。</p>
+
+      <p>我们把这类模拟数据称为<strong>虚拟数据</strong>，表示它是真实数据的替身。在地球仪投掷模型中，虚拟数据来自二项似然：</p>
+
+      <div class="equation-block dummy-binomial-equation" id="eq-3-dummy-binomial">
+        <span>Pr(<var>W</var> | <var>N</var>, <var>p</var>)</span>
+        <span>=</span>
+        <span class="fraction">
+          <span><var>N</var>!</span>
+          <span><var>W</var>!(<var>N</var> - <var>W</var>)!</span>
+        </span>
+        <span><var>p</var><sup><var>W</var></sup>(1 - <var>p</var>)<sup><var>N</var> - <var>W</var></sup></span>
+      </div>
+
+      <p>其中，<span class="math-inline"><var>W</var></span> 是观测到的“水域”次数，<span class="math-inline"><var>N</var></span> 是投掷次数。假设 <span class="math-inline"><var>N</var> = 2</span>，也就是投掷两次；那么只有三种可能观测：0 次水域、1 次水域、2 次水域。给定任意 <span class="math-inline"><var>p</var></span>，都能迅速计算各自概率。取 <span class="math-inline"><var>p</var> = 0.7</span>，这大约是地球真实的水域比例：</p>
+
+      <figure class="code-listing" id="code-3-20">
+        <figcaption>R 代码 3.20</figcaption>
+        <pre><code>dbinom( 0:2 , size=2 , prob=0.7 )</code></pre>
+        <pre class="code-output"><code>[1] 0.09 0.42 0.49</code></pre>
+      </figure>
+
+      <p>这意味着，观察到 <span class="math-inline"><var>w</var> = 0</span> 的概率是 9%，<span class="math-inline"><var>w</var> = 1</span> 是 42%，<span class="math-inline"><var>w</var> = 2</span> 是 49%。改变 <span class="math-inline"><var>p</var></span> 的值，就会得到不同的隐含观测分布。</p>
+
+      <p>现在利用这些概率模拟观测，也就是从刚才描述的分布中抽样。可以用 <code>sample</code>，但 R 为二项分布等常见概率分布提供了方便的抽样函数。一次虚拟 <span class="math-inline"><var>W</var></span> 观测可以这样抽取：</p>
+
+      <figure class="code-listing" id="code-3-21">
+        <figcaption>R 代码 3.21</figcaption>
+        <pre><code>rbinom( 1 , size=2 , prob=0.7 )</code></pre>
+        <pre class="code-output"><code>[1] 1</code></pre>
+      </figure>
+
+      <p>这个 1 表示“两次投掷中有一次水域”。<code>rbinom</code> 中的“r”代表“random（随机）”。它也能一次生成多个模拟结果。可以这样生成 10 次模拟：</p>
+
+      <figure class="code-listing" id="code-3-22">
+        <figcaption>R 代码 3.22</figcaption>
+        <pre><code>rbinom( 10 , size=2 , prob=0.7 )</code></pre>
+        <pre class="code-output"><code>[1] 2 2 2 1 2 1 1 1 0 2</code></pre>
+      </figure>
+
+      <p>再生成 100,000 个虚拟观测，验证每个取值（0、1、2）是否按照似然给出的比例出现：</p>
+
+      <figure class="code-listing" id="code-3-23">
+        <figcaption>R 代码 3.23</figcaption>
+        <pre><code>dummy_w &lt;- rbinom( 1e5 , size=2 , prob=0.7 )
+table(dummy_w)/1e5</code></pre>
+        <pre class="code-output"><code>dummy_w
+      0       1       2
+0.08904 0.41948 0.49148</code></pre>
+      </figure>
+
+      <p>这些数值非常接近前面解析计算出的似然。由于模拟方差，你会看到略有不同的数值。多次执行代码，观察实际频率怎样在一次次模拟之间波动。</p>
+
+      <p>不过，两次地球仪投掷算不上多大的样本。现在模拟与之前相同的样本量，也就是九次投掷：</p>
+
+      <figure class="code-listing" id="code-3-24">
+        <figcaption>R 代码 3.24</figcaption>
+        <pre><code>dummy_w &lt;- rbinom( 1e5 , size=9 , prob=0.7 )
+simplehist( dummy_w , xlab="dummy water count" )</code></pre>
+      </figure>
+      <p class="scroll-hint code-scroll-hint">代码较宽，可横向滚动查看完整行。</p>
+
+      <figure class="book-figure dummy-histogram-figure" id="fig-3-5">
+        <div class="figure-scroll" tabindex="0" aria-label="可横向滚动的九次投掷模拟水域次数直方图">
+          <img src="/media/chapter-03-dummy-water-histogram.svg" alt="十万次九投掷模拟中，水域次数集中在六次和七次">
+        </div>
+        <p class="scroll-hint">图较宽，可横向滚动查看完整坐标轴。</p>
+        <figcaption><strong>图 3.5：</strong>九次地球仪投掷的模拟样本观测分布。这些样本假设水域比例为 0.7。</figcaption>
+      </figure>
+
+      <p>结果见图 3.5。请注意，多数时候，预期观测并不会按真实比例 0.7 包含水域。这就是观测的本质：数据与数据生成过程之间是一对多关系。可以改变样本量（上面代码中的 <code>size</code>）以及 <code>prob</code>，观察模拟样本分布的形状与位置怎样变化。</p>
+
+      <p>这就是观测的基本模拟。它有什么用？这些样本有许多用途。本章会用它们检查模型的隐含预测；但要做到这一点，还必须把它们与后验分布样本结合起来。这就是下一步。</p>
     </section>
   </section>
 
@@ -423,10 +529,12 @@ median( samples )</code></pre>
       <li id="note-57">Gelman 等（2013a）第 33 页评论了百分位区间与 HPDI 之间的差异。 <a class="backref" href="#note-57-ref" aria-label="返回正文">↩</a></li>
       <li id="note-58">关于物理常数估计（例如光速）的例子，参见 Henrion 和 Fischoff（1986）。 <a class="backref" href="#note-58-ref" aria-label="返回正文">↩</a></li>
       <li id="note-59">Robert（2007）简洁证明了多种标准损失函数（包括这里这种）下的最优估计量，也介绍了这一主题的历史，以及从统计程序推导良好决策的许多相关问题。 <a class="backref" href="#note-59-ref" aria-label="返回正文">↩</a></li>
+      <li id="note-60">Rice（2010）展示了一个有趣的构造：通过采用损失函数，建立经典 Fisher 式检验。 <a class="backref" href="#note-60-ref" aria-label="返回正文">↩</a></li>
+      <li id="note-61">Hauer（2004）讲述了交通安全中的三个故事：检验导致过早的错误决策，并造成可证实且持续的人命损失。 <a class="backref" href="#note-61-ref" aria-label="返回正文">↩</a></li>
     </ol>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 65–76 页已完成翻译、逐页渲染对照和桌面/移动端视觉验收；下一批从 PDF 第 77 页继续。
+    <strong>译稿状态：</strong>PDF 第 65–79 页已完成翻译、逐页渲染对照和桌面/移动端视觉验收；下一批从 PDF 第 80 页继续。
   </aside>
 </article>

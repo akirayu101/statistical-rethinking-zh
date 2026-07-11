@@ -186,7 +186,7 @@
   },
   "chapter-03": {
     "required_status": "in_progress",
-    "source_pages": [65, 76],
+    "source_pages": [65, 79],
     "required_ids": [
       "eq-3-vampire-positive",
       "eq-3-positive-rate",
@@ -225,6 +225,15 @@
       "code-3-17",
       "code-3-18",
       "code-3-19",
+      "sec-3-3",
+      "sec-3-3-1",
+      "eq-3-dummy-binomial",
+      "code-3-20",
+      "code-3-21",
+      "code-3-22",
+      "code-3-23",
+      "code-3-24",
+      "fig-3-5",
       "chapter-03-notes",
       "note-49",
       "note-50",
@@ -236,7 +245,9 @@
       "note-56",
       "note-57",
       "note-58",
-      "note-59"
+      "note-59",
+      "note-60",
+      "note-61"
     ],
     "required_headings": [
       "从想象中采样",
@@ -250,17 +261,21 @@
       "再思考：为什么是 95%？",
       "再思考：兼容区间意味着什么？",
       "3.2.3 点估计",
+      "3.3 用抽样模拟预测",
+      "3.3.1 虚拟数据",
       "尾注"
     ],
     "counts": {
-      "section": 6,
-      "figure": 23,
-      "figure img": 4,
+      "section": 8,
+      "figure": 29,
+      "figure img": 5,
       ".posterior-samples-figure": 1,
       ".interval-figure": 2,
       ".point-estimate-figure": 1,
-      ".equation-block": 4,
-      ".code-listing": 19,
+      ".dummy-histogram-figure": 1,
+      ".equation-block": 5,
+      ".dummy-binomial-equation": 1,
+      ".code-listing": 24,
       ".rethinking-box": 4,
       ".overthinking-box": 1,
       ".book-quote": 1,
@@ -269,7 +284,9 @@
       ".frequency-scenario li": 3,
       ".sample-questions": 1,
       ".sample-questions li": 5,
-      ".endnotes li": 11
+      ".simulation-uses": 1,
+      ".simulation-uses li": 5,
+      ".endnotes li": 13
     }
   }
 }

@@ -97,6 +97,7 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .posterior-samples-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
 .interval-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
 .point-estimate-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
+.dummy-histogram-figure .figure-scroll img { display: block; width: 45rem; max-width: none; height: auto; margin: 0 auto; }
 .observation-sequence { display: flex; justify-content: center; gap: .75rem; margin: 1.5rem auto !important; padding: .75rem 1rem; max-width: 28rem; border-block: 1px solid var(--line); background: #fff; font: 700 1.1rem/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: .04em; }
 .model-loop { margin: 1.5rem 0; padding: 1rem 1rem 1rem 3.2rem; border-left: .25rem solid var(--blue); background: #f3f5fb; }
 .model-loop li { margin: .55rem 0; padding-left: .25rem; }
@@ -170,6 +171,10 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .bad-science-equation .wide-fraction { min-width: min(100%, 31rem); }
 .sample-questions { margin: 1.5rem 0; padding: 1rem 1rem 1rem 3.2rem; border: 1px solid var(--line); border-radius: .35rem; background: #fff; }
 .sample-questions li { margin: .55rem 0; padding-left: .25rem; }
+.simulation-uses { margin: 1.5rem 0; padding: 1rem 1rem 1rem 3.2rem; border-left: .25rem solid var(--blue); background: #f3f5fb; }
+.simulation-uses li { margin: .8rem 0; padding-left: .25rem; }
+.dummy-binomial-equation { display: flex; flex-wrap: wrap; justify-content: center; gap: .55rem; align-items: center; }
+.dummy-binomial-equation .fraction { min-width: 8.5rem; }
 .rethinking-box .fisher-quote { margin: 1rem .2rem; background: #fff; }
 .book-quote { margin: 1.5rem 1rem; padding: .85rem 1.1rem; border-left: .22rem solid var(--blue); background: #f7f7f3; color: #3e403b; }
 .book-quote p { margin: 0; font-size: .98rem; line-height: 1.7; }
