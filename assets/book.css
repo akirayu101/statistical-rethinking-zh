@@ -95,6 +95,8 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .model-loop li { margin: .55rem 0; padding-left: .25rem; }
 .data-story { margin: 1.5rem 0; padding: 1rem 1rem 1rem 3.2rem; border: 1px solid var(--line); border-radius: .35rem; background: #fff; }
 .data-story li { margin: .55rem 0; padding-left: .25rem; }
+.component-counts { margin: 1.5rem 0; padding: 1rem 1rem 1rem 3.2rem; border-left: .25rem solid var(--blue); background: #f3f5fb; }
+.component-counts li { margin: .55rem 0; padding-left: .25rem; }
 .table-wrap { width: 100%; overflow-x: auto; }
 .count-table { width: min(100%, 34rem); margin: 1.5rem auto; border-collapse: collapse; background: #fff; }
 .count-table th, .count-table td { padding: .7rem 1rem; border-bottom: 1px solid var(--line); text-align: center; }
@@ -107,6 +109,8 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .equation-relation { color: var(--blue); font-size: 1.35rem; line-height: 1.2; }
 .compact-equation { display: flex; flex-wrap: wrap; justify-content: center; gap: .15rem .7rem; align-items: baseline; }
 .normalized-equation { display: flex; flex-wrap: wrap; justify-content: center; gap: .4rem; align-items: center; }
+.binomial-equation { display: flex; flex-wrap: wrap; justify-content: center; gap: .55rem; align-items: center; }
+.binomial-equation .fraction { min-width: 7rem; }
 .fraction { display: inline-flex; flex-direction: column; min-width: min(100%, 27rem); vertical-align: middle; }
 .fraction > span:first-child { padding: 0 .45rem .2rem; border-bottom: 1px solid currentColor; }
 .fraction > span:last-child { padding-top: .1rem; }
@@ -117,6 +121,7 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .book-article code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .9em; }
 .term-definitions { margin: 1.5rem 0; padding-left: 1.7rem; }
 .term-definitions li { margin: .75rem 0; padding-left: .25rem; }
+.formula-reading { margin: 1.4rem auto !important; padding: .9rem 1.1rem; max-width: 38rem; border-left: .22rem solid var(--blue); background: #f7f7f3; font-style: italic; text-align: center !important; }
 .rethinking-box { margin: 2rem 0; padding: 1.15rem 1.25rem; border: 1px solid #d9dcf0; border-radius: .35rem; background: #f0f1fa; }
 .rethinking-box h3 { margin: 0 0 .45rem; color: var(--blue); font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; font-size: 1rem; }
 .rethinking-box p { margin: 0; font-size: .96rem; line-height: 1.72; }

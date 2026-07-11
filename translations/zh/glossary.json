@@ -120,7 +120,16 @@
     "causal": "因果性",
     "Bayesian updating": "贝叶斯更新",
     "prior plausibility": "先验可信程度",
-    "posterior plausibility": "后验可信程度"
+    "posterior plausibility": "后验可信程度",
+    "sample size": "样本量",
+    "asymptotic behavior": "渐近行为",
+    "estimator": "估计量",
+    "model evaluation": "模型评估",
+    "parameter": "参数",
+    "observed variable": "观测变量",
+    "unobserved variable": "未观测变量",
+    "distribution function": "分布函数",
+    "binomial distribution": "二项分布"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"
