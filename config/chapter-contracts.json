@@ -1,0 +1,54 @@
+{
+  "chapter-01": {
+    "required_status": "verified",
+    "source_pages": [17, 34],
+    "required_ids": [
+      "sec-1-1",
+      "fig-1-1",
+      "sec-1-2",
+      "sec-1-2-1",
+      "fig-1-2",
+      "sec-1-2-2",
+      "sec-1-2-2-1",
+      "sec-1-2-2-2",
+      "sec-1-2-3",
+      "sec-1-3",
+      "sec-1-3-1",
+      "fig-1-3",
+      "sec-1-3-2",
+      "sec-1-3-3",
+      "sec-1-3-4",
+      "sec-1-4",
+      "chapter-01-notes"
+    ],
+    "required_headings": [
+      "1.1 统计魔像",
+      "1.2 重新思考统计",
+      "1.2.1 假说不是模型",
+      "1.2.2 测量很重要",
+      "1.2.2.1 观测误差",
+      "1.2.2.2 连续型假说",
+      "1.2.3 证伪依靠共识",
+      "1.3 魔像工程的工具",
+      "1.3.1 贝叶斯数据分析",
+      "1.3.2 模型比较与预测",
+      "1.3.3 多层模型",
+      "1.3.4 图形因果模型",
+      "1.4 总结",
+      "尾注"
+    ],
+    "counts": {
+      "section": 14,
+      "figure": 3,
+      "figure svg": 2,
+      "figure img": 1,
+      ".rethinking-box": 7,
+      ".book-quote": 2,
+      ".hypothesis-block": 4,
+      ".tool-list": 1,
+      ".use-case-list": 2,
+      ".roadmap-list": 1,
+      ".endnotes li": 36
+    }
+  }
+}

@@ -89,7 +89,15 @@
     "identification problem": "识别问题",
     "confounding variable": "混杂变量",
     "intervention": "干预",
-    "randomized controlled experiment": "随机对照实验"
+    "randomized controlled experiment": "随机对照实验",
+    "causal identification": "因果识别",
+    "transportability": "可迁移性",
+    "directed acyclic graph": "有向无环图",
+    "DAG": "DAG",
+    "causal salad": "因果沙拉",
+    "omitted variable": "遗漏变量",
+    "control variable": "控制变量",
+    "spatial correlation": "空间相关性"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"

@@ -12,6 +12,8 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = json.loads((ROOT / "config" / "book.json").read_text(encoding="utf-8"))
+CONTRACTS_PATH = ROOT / "config" / "chapter-contracts.json"
+CONTRACTS = json.loads(CONTRACTS_PATH.read_text(encoding="utf-8")) if CONTRACTS_PATH.exists() else {}
 PROGRESS = json.loads((ROOT / "translations" / "zh" / "progress.json").read_text(encoding="utf-8"))
 SITE = ROOT / "site"
 CHINESE = re.compile(r"[\u4e00-\u9fff]")
@@ -122,6 +124,31 @@ def main() -> int:
                                 failures.append(f"{path.name}: image asset too small {src} ({width}x{height})")
                         except Exception as error:
                             failures.append(f"{path.name}: unreadable image asset {src}: {error}")
+        contract = CONTRACTS.get(path.stem)
+        if contract:
+            required_status = contract.get("required_status")
+            actual_status = PROGRESS.get(path.stem, {}).get("status")
+            if required_status and actual_status != required_status:
+                failures.append(
+                    f"{path.name}: chapter contract requires status {required_status!r}, found {actual_status!r}"
+                )
+            expected_start, expected_end = contract.get("source_pages", [0, -1])
+            if declared_pages != set(range(int(expected_start), int(expected_end) + 1)):
+                failures.append(f"{path.name}: source pages do not satisfy chapter contract")
+            present_ids = {tag.get("id") for tag in article.select("[id]")}
+            for required_id in contract.get("required_ids", []):
+                if required_id not in present_ids:
+                    failures.append(f"{path.name}: chapter contract missing id #{required_id}")
+            headings = {heading.get_text(" ", strip=True) for heading in article.select("h1,h2,h3,h4")}
+            for required_heading in contract.get("required_headings", []):
+                if required_heading not in headings:
+                    failures.append(f"{path.name}: chapter contract missing heading {required_heading!r}")
+            for selector, expected_count in contract.get("counts", {}).items():
+                actual_count = len(article.select(selector))
+                if actual_count != int(expected_count):
+                    failures.append(
+                        f"{path.name}: chapter contract expected {expected_count} for {selector!r}, found {actual_count}"
+                    )
         print(f"{path.name}\t{ratio:.3f}\t{len(article.select('section'))}\t{source_pages}")
 
     if failures:
