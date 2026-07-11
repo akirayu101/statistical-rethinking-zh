@@ -186,7 +186,7 @@
   },
   "chapter-03": {
     "required_status": "in_progress",
-    "source_pages": [65, 73],
+    "source_pages": [65, 76],
     "required_ids": [
       "eq-3-vampire-positive",
       "eq-3-positive-rate",
@@ -216,6 +216,15 @@
       "code-3-13",
       "fig-3-3",
       "rethinking-why-95",
+      "rethinking-compatibility-meaning",
+      "sec-3-2-3",
+      "code-3-14",
+      "code-3-15",
+      "code-3-16",
+      "fig-3-4",
+      "code-3-17",
+      "code-3-18",
+      "code-3-19",
       "chapter-03-notes",
       "note-49",
       "note-50",
@@ -224,7 +233,10 @@
       "note-53",
       "note-54",
       "note-55",
-      "note-56"
+      "note-56",
+      "note-57",
+      "note-58",
+      "note-59"
     ],
     "required_headings": [
       "从想象中采样",
@@ -236,17 +248,20 @@
       "过度思考：用 sum 计数",
       "3.2.2 概率质量已知的区间",
       "再思考：为什么是 95%？",
+      "再思考：兼容区间意味着什么？",
+      "3.2.3 点估计",
       "尾注"
     ],
     "counts": {
-      "section": 5,
-      "figure": 16,
-      "figure img": 3,
+      "section": 6,
+      "figure": 23,
+      "figure img": 4,
       ".posterior-samples-figure": 1,
       ".interval-figure": 2,
+      ".point-estimate-figure": 1,
       ".equation-block": 4,
-      ".code-listing": 13,
-      ".rethinking-box": 3,
+      ".code-listing": 19,
+      ".rethinking-box": 4,
       ".overthinking-box": 1,
       ".book-quote": 1,
       ".fisher-quote": 1,
@@ -254,7 +269,7 @@
       ".frequency-scenario li": 3,
       ".sample-questions": 1,
       ".sample-questions li": 5,
-      ".endnotes li": 8
+      ".endnotes li": 11
     }
   }
 }

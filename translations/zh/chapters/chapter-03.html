@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-03" data-source-pages="65-73">
+<article class="book-article" data-chapter="chapter-03" data-source-pages="65-76">
   <header class="chapter-header">
     <p class="eyebrow">第三章</p>
     <h1>从想象中采样</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 65–73 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 65–76 页</p>
   </header>
 
   <p>许多贝叶斯统计教材都用医学检测情境来介绍<strong>后验推断</strong>。沿用常见例子的结构，假设有一种血液检测，能在 95% 的情况下正确检出吸血鬼。用更精确的数学记号表示，就是 <span class="math-inline">Pr(检测阳性 | 吸血鬼) = 0.95</span>。这项检测非常准确，几乎总能抓住真正的吸血鬼。</p>
@@ -318,6 +318,94 @@ samples &lt;- sample( p_grid , size=1e4 , replace=TRUE , prob=posterior )</code>
         <p>那么究竟该怎么办？没有共识，但思考总是好主意。如果想说明某个区间不包含某个值，可以使用仍能排除该值的最宽区间。兼容区间往往只是为了传达分布形状；这时，一系列嵌套区间可能比任何单一区间都更有用。</p>
         <p>例如，何不把 67%、89% 和 97% 区间与中位数一起报告？为什么是这些数值？没有理由。它们是质数，容易记住。真正重要的只是区间彼此分隔得足够开，能够展示后验形状。这些数值也避开了 95%，因为传统的 95% 区间会诱使许多读者在无意识中进行假设检验。</p>
       </aside>
+
+      <p>所以，HPDI 相比 PI 确实有一些优势。但在大多数情况下，这两类区间非常相似。<sup><a id="note-57-ref" href="#note-57" aria-label="尾注 57">57</a></sup>本例中它们看起来差异很大，只因为后验分布高度偏斜。如果改用九次投掷中六次水域的后验样本，两个区间几乎相同。可以用不同的概率质量亲自试试，例如 <code>prob=0.8</code> 和 <code>prob=0.95</code>。当后验呈钟形时，选择哪种区间几乎无关紧要。请记住，我们既不是发射火箭，也不是校准粒子对撞机；迷恋小数点后第五位的精度，并不会改善科学。</p>
+
+      <p>HPDI 也有缺点。它的计算量比 PI 更大，模拟方差也更高——这只是说，它对从后验抽取了多少样本较为敏感。HPDI 也更难理解；许多科学读者不会欣赏它的特点，却能立刻理解百分位区间，因为普通非贝叶斯区间通常（错误地）被解释为百分位区间（不过请看下面的“再思考”框）。</p>
+
+      <p>总的来说，如果区间类型的选择会造成很大差异，就不应该用区间来汇总后验。请记住，整个后验分布才是贝叶斯“估计”；它概括了参数每个可能取值的相对可信程度。分布区间只是方便的摘要。如果区间选择会导向不同推断，最好直接绘制完整后验分布。</p>
+
+      <aside class="rethinking-box" id="rethinking-compatibility-meaning">
+        <h3>再思考：兼容区间意味着什么？</h3>
+        <p>经常有人说，95%“置信”区间意味着真实参数值有 0.95 的概率位于区间内。在严格的非贝叶斯统计推断中，这种说法绝不正确，因为严格的非贝叶斯推断不允许用概率衡量参数的不确定性。正确说法应是：如果把研究和分析重复非常多次，那么算出的区间中有 95% 会包含真实参数值。如果你觉得这一区别并不完全清楚，那么你并不孤单。大多数科学家都觉得置信区间的定义令人困惑，许多人会无意识地滑向贝叶斯解释。</p>
+        <p>不过，无论是否采用贝叶斯解释，95% 区间都不会有 95% 的时候包含真实值。科学史告诉我们，置信区间长期表现得过度自信。<sup><a id="note-58-ref" href="#note-58" aria-label="尾注 58">58</a></sup>“真实”这个词应当拉响警报，提醒我们“包含真实值”这样的说法出了问题。95% 是一个小世界数字（见第 2 章引言），只在模型的逻辑世界中成立；它永远不会精确适用于真实的大世界。这是魔像相信的事情，但你可以相信别的。无论如何，区间的宽度及其覆盖的数值仍能提供有价值的建议。</p>
+      </aside>
+    </section>
+
+    <section id="sec-3-2-3">
+      <h3>3.2.3 点估计</h3>
+
+      <p>汇总后验的第三项、也是最后一项常见任务，是产生某种点估计。给定完整后验分布，应该报告哪个数值？这看起来是个无害的问题，却很难回答。贝叶斯参数估计恰恰就是整个后验分布：它不是单个数字，而是一个函数，把每个不同的参数值映射到一个可信程度。</p>
+
+      <p>因此，最重要的一点是：你并非必须选择点估计。它几乎从来不是必需的，而且经常有害，因为它会丢弃信息。</p>
+
+      <p>不过，如果非得用一个点概括后验，就必须提出并回答更多问题。再次考虑图 3.3 那个三次地球仪投掷全部观察到水域的例子。来看三种备选点估计。首先，科学家经常报告后验概率最高的参数值，也就是<strong>最大后验</strong>（MAP）估计。本例中的 MAP 很容易计算：</p>
+
+      <figure class="code-listing" id="code-3-14">
+        <figcaption>R 代码 3.14</figcaption>
+        <pre><code>p_grid[ which.max(posterior) ]</code></pre>
+        <pre class="code-output"><code>[1] 1</code></pre>
+      </figure>
+
+      <p>如果只有后验样本，仍然可以近似同一个点：</p>
+
+      <figure class="code-listing" id="code-3-15">
+        <figcaption>R 代码 3.15</figcaption>
+        <pre><code>chainmode( samples , adj=0.01 )</code></pre>
+        <pre class="code-output"><code>[1] 0.9985486</code></pre>
+      </figure>
+
+      <p>但这个点——众数——为什么有趣？为什么不报告后验均值或中位数？</p>
+
+      <figure class="code-listing" id="code-3-16">
+        <figcaption>R 代码 3.16</figcaption>
+        <pre><code>mean( samples )
+median( samples )</code></pre>
+        <pre class="code-output"><code>[1] 0.8005558
+[1] 0.8408408</code></pre>
+      </figure>
+
+      <p>这些同样是点估计，也同样概括后验。但在本例中，众数（MAP）、均值和中位数三者并不相同。该怎样选择？图 3.4 显示这个后验分布以及三个点摘要的位置。</p>
+
+      <p>若要有原则地超越“把整个后验当作估计”这种做法，可以选择一个<strong>损失函数</strong>。损失函数是一条规则，告诉你采用某个特定点估计会付出多大代价。统计学家和博弈论学者长期关注损失函数以及贝叶斯推断如何支持它们，但科学家几乎从不显式使用。关键洞见是：不同损失函数会导出不同点估计。</p>
+
+      <p>来看一个例子。假设我与你打赌：请告诉我，你认为地球的水域比例 <span class="math-inline"><var>p</var></span> 是多少。如果完全猜对，我付你 100 美元；但我会按照你的决策与正确值之间的距离，从奖金中扣钱。准确地说，你的损失与 <span class="math-inline">|<var>d</var> - <var>p</var>|</span> 成正比，其中 <span class="math-inline"><var>d</var></span> 是你的决策，<span class="math-inline"><var>p</var></span> 是正确答案。可以更改具体金额而不改变问题的关键；重要的是，损失与决策离真实值的距离成正比。</p>
+
+      <p>有了后验分布后，怎样用它最大化预期收益？事实证明，使预期收益最大（预期损失最小）的参数值，就是后验分布的中位数。下面不用数学证明来计算这个事实；对证明感兴趣的读者可以查看尾注。<sup><a id="note-59-ref" href="#note-59" aria-label="尾注 59">59</a></sup></p>
+
+      <p>计算某项决策的预期损失，意味着使用后验，对真实值的不确定性求平均。当然，多数情况下我们不知道真实值；但若要使用模型提供的参数信息，就必须使用整个后验分布。假设把 <span class="math-inline"><var>p</var> = 0.5</span> 作为决策，那么预期损失为：</p>
+
+      <figure class="book-figure point-estimate-figure" id="fig-3-4">
+        <div class="figure-scroll" tabindex="0" aria-label="可横向滚动的点估计与期望损失图">
+          <img src="/media/chapter-03-point-estimates-loss.svg" alt="左图标出后验均值、中位数和众数，右图显示期望绝对损失在后验中位数处最小">
+        </div>
+        <p class="scroll-hint">图较宽，可横向滚动查看两个面板。</p>
+        <figcaption><strong>图 3.4：</strong>点估计与损失函数。左：三次地球仪投掷全部观察到水域后的后验分布（蓝色）；竖线标出众数、中位数和均值的位置，每个点都隐含不同的损失函数。右：损失与决策值（横轴）到真实值的绝对距离成正比时的预期损失；圆点标出使预期损失最小的 <span class="math-inline"><var>p</var></span>，也就是后验中位数。</figcaption>
+      </figure>
+
+      <figure class="code-listing" id="code-3-17">
+        <figcaption>R 代码 3.17</figcaption>
+        <pre><code>sum( posterior*abs( 0.5 - p_grid ) )</code></pre>
+        <pre class="code-output"><code>[1] 0.3128752</code></pre>
+      </figure>
+
+      <p><code>posterior</code> 和 <code>p_grid</code> 与本章一直使用的对象相同，分别保存后验概率和参数值。上面的代码只是计算加权平均损失，每项损失都由对应的后验概率加权。可以借助 <code>sapply</code>，用一个技巧对每个可能决策重复这项计算：</p>
+
+      <figure class="code-listing" id="code-3-18">
+        <figcaption>R 代码 3.18</figcaption>
+        <pre><code>loss &lt;- sapply( p_grid , function(d) sum( posterior*abs( d - p_grid ) ) )</code></pre>
+      </figure>
+      <p class="scroll-hint code-scroll-hint">代码较宽，可横向滚动查看完整行。</p>
+
+      <p>现在，<code>loss</code> 保存一列损失值，每个可能决策各一个，对应 <code>p_grid</code> 中的取值。接下来很容易找到使损失最小的参数值：</p>
+
+      <figure class="code-listing" id="code-3-19">
+        <figcaption>R 代码 3.19</figcaption>
+        <pre><code>p_grid[ which.min(loss) ]</code></pre>
+        <pre class="code-output"><code>[1] 0.8408408</code></pre>
+      </figure>
+
+      <p>这实际上就是后验中位数：它把后验密度分成两半，一半概率质量位于其上，一半位于其下。可以运行 <code>median(samples)</code> 比较。由于抽样变异，结果可能不会完全相同，但会很接近。</p>
     </section>
   </section>
 
@@ -332,10 +420,13 @@ samples &lt;- sample( p_grid , size=1e4 , replace=TRUE , prob=posterior )</code>
       <li id="note-54">Fisher（1925），第三章第 12 节关于正态分布的讨论。同一本书还有几处同样诉诸便利或惯例的地方。Fisher 似乎表明，到 1925 年时，5% 标记已经被广泛采用，却仍然没有清晰依据。 <a class="backref" href="#note-54-ref" aria-label="返回正文">↩</a></li>
       <li id="note-55">Fisher（1956）。 <a class="backref" href="#note-55-ref" aria-label="返回正文">↩</a></li>
       <li id="note-56">参见 Box 和 Tiao（1973）第 84 页，以及第 122 页的一般性讨论。 <a class="backref" href="#note-56-ref" aria-label="返回正文">↩</a></li>
+      <li id="note-57">Gelman 等（2013a）第 33 页评论了百分位区间与 HPDI 之间的差异。 <a class="backref" href="#note-57-ref" aria-label="返回正文">↩</a></li>
+      <li id="note-58">关于物理常数估计（例如光速）的例子，参见 Henrion 和 Fischoff（1986）。 <a class="backref" href="#note-58-ref" aria-label="返回正文">↩</a></li>
+      <li id="note-59">Robert（2007）简洁证明了多种标准损失函数（包括这里这种）下的最优估计量，也介绍了这一主题的历史，以及从统计程序推导良好决策的许多相关问题。 <a class="backref" href="#note-59-ref" aria-label="返回正文">↩</a></li>
     </ol>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 65–73 页已完成翻译、逐页渲染对照和桌面/移动端视觉验收；下一批从 PDF 第 74 页继续。
+    <strong>译稿状态：</strong>PDF 第 65–76 页已完成翻译、逐页渲染对照和桌面/移动端视觉验收；下一批从 PDF 第 77 页继续。
   </aside>
 </article>

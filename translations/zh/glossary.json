@@ -203,7 +203,14 @@
     "skewed distribution": "偏斜分布",
     "median": "中位数",
     "nested intervals": "嵌套区间",
-    "significance threshold": "显著性阈值"
+    "significance threshold": "显著性阈值",
+    "simulation variance": "模拟方差",
+    "maximum a posteriori estimate": "最大后验估计",
+    "posterior mean": "后验均值",
+    "posterior median": "后验中位数",
+    "decision": "决策值",
+    "expected loss": "预期损失",
+    "absolute-error loss": "绝对误差损失"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"
