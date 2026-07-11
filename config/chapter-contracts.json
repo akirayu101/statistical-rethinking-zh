@@ -343,7 +343,7 @@
   },
   "chapter-04": {
     "required_status": "in_progress",
-    "source_pages": [89, 130],
+    "source_pages": [89, 133],
     "required_ids": [
       "fig-4-1",
       "sec-4-1",
@@ -497,6 +497,17 @@
       "eq-4-parabolic-mean",
       "eq-4-polynomial-model-code-map",
       "code-4-65",
+      "code-4-66",
+      "code-4-67",
+      "code-4-68",
+      "fig-4-11",
+      "eq-4-cubic-model-code-map",
+      "code-4-69",
+      "rethinking-linear-additive-funky",
+      "overthinking-natural-scale",
+      "code-4-70",
+      "code-4-71",
+      "sec-4-5-2",
       "chapter-04-notes",
       "note-64",
       "note-65",
@@ -508,7 +519,8 @@
       "note-71",
       "note-72",
       "note-73",
-      "note-74"
+      "note-74",
+      "note-75"
     ],
     "required_headings": [
       "地心模型",
@@ -565,12 +577,15 @@
       "过度思考：自己实现 sim",
       "4.5 从直线到曲线",
       "4.5.1 多项式回归",
+      "再思考：线性、可加、古怪",
+      "过度思考：转换回自然尺度",
+      "4.5.2 样条",
       "尾注"
     ],
     "counts": {
-      "section": 31,
-      "figure": 75,
-      "figure img": 10,
+      "section": 32,
+      "figure": 82,
+      "figure img": 11,
       ".ptolemaic-figure": 1,
       ".random-walk-figure": 1,
       ".prior-predictive-figure": 1,
@@ -581,10 +596,12 @@
       ".mean-height-density-figure": 1,
       ".mean-interval-figure": 1,
       ".prediction-interval-figure": 1,
-      ".equation-block": 24,
+      ".polynomial-regression-figure": 1,
+      ".equation-block": 25,
       ".quap-formula-map": 2,
       ".linear-model-code-map": 1,
-      ".polynomial-model-map": 1,
+      ".polynomial-model-map": 2,
+      ".cubic-model-map": 1,
       ".gaussian-density-equation": 1,
       ".gaussian-precision-equation": 1,
       ".model-system-equation": 2,
@@ -600,10 +617,10 @@
       ".lognormal-beta-equation": 1,
       ".epsilon-model-equation": 1,
       ".height-posterior-equation": 1,
-      ".code-listing": 65,
-      ".code-output": 16,
-      ".rethinking-box": 11,
-      ".overthinking-box": 12,
+      ".code-listing": 71,
+      ".code-output": 17,
+      ".rethinking-box": 12,
+      ".overthinking-box": 13,
       ".source-erratum": 1,
       ".linear-questions": 1,
       ".linear-questions li": 2,
@@ -614,7 +631,7 @@
       ".model-language-steps": 1,
       ".model-language-steps li": 3,
       ".model-reading": 1,
-      ".endnotes li": 11
+      ".endnotes li": 12
     }
   }
 }

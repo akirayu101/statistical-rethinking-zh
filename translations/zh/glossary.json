@@ -395,7 +395,18 @@
     "parabolic model": "抛物线模型",
     "standardization": "标准化",
     "quadratic term": "二次项",
-    "variable transformation": "变量转换"
+    "variable transformation": "变量转换",
+    "linear component": "线性分量",
+    "square component": "平方分量",
+    "cubic regression": "三次回归",
+    "third-order polynomial": "三阶多项式",
+    "standardized unit": "标准单位",
+    "z-score": "z 分数",
+    "natural scale": "自然尺度",
+    "partial correlation": "偏相关",
+    "phenomenological explanation": "现象学解释",
+    "spline": "样条",
+    "component function": "组成函数"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"

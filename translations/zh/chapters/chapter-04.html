@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-04" data-source-pages="89-130">
+<article class="book-article" data-chapter="chapter-04" data-source-pages="89-133">
   <header class="chapter-header">
     <p class="eyebrow">第四章</p>
     <h1>地心模型</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 89–130 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 89–133 页</p>
   </header>
 
   <p>历史对托勒密并不宽厚。克劳狄乌斯·托勒密（约公元 90 年生，168 年卒）是埃及数学家和天文学家，最著名的成就是太阳系地心模型。今天，科学家若想嘲讽某人，有时会把他比作地心模型的拥护者。但托勒密是位天才。他描述行星运动的数学模型（<a href="#fig-4-1">图 4.1</a>）极其准确。为了达到这种精度，模型采用了一种叫作<strong>本轮</strong>的装置，也就是圆上套圆。甚至还能有“本轮上的本轮”：圆上套圆再套圆。只要在适当位置放置足够多的本轮，托勒密模型的预测精度就能超过此前任何人。因此，这套模型沿用了一千多年。托勒密和许多与他相似的人历经数百年艰苦推演，在没有计算机帮助的条件下解决了这一切。任何人被比作托勒密，都应该感到受宠若惊。</p>
@@ -1516,10 +1516,136 @@ str(d)</code></pre>
         <figcaption>R 代码 4.65</figcaption>
         <pre><code>d$weight_s &lt;- ( d$weight - mean(d$weight) )/sd(d$weight)
 d$weight_s2 &lt;- d$weight_s^2
-m4.5 &lt;- quap(</code></pre>
+m4.5 &lt;- quap(
+    alist(
+        height ~ dnorm( mu , sigma ) ,
+        mu &lt;- a + b1*weight_s + b2*weight_s2 ,
+        a ~ dnorm( 178 , 20 ) ,
+        b1 ~ dlnorm( 0 , 1 ) ,
+        b2 ~ dnorm( 0 , 1 ) ,
+        sigma ~ dunif( 0 , 50 )
+    ) ,
+    data=d )</code></pre>
       </figure>
 
-      <p class="continuation-note">代码 4.65 的模型定义与多项式回归后续说明将在原书 PDF 第 131 页继续。</p>
+      <p>现在，结果 <code>height</code> 与预测变量 <code>weight</code> 的关系依赖两个斜率 <code>b1</code> 和 <code>b2</code>，因此不太容易直接从系数表读出关系：</p>
+
+      <figure class="code-listing" id="code-4-66">
+        <figcaption>R 代码 4.66</figcaption>
+        <pre><code>precis( m4.5 )</code></pre>
+        <pre class="code-output"><code>        mean   sd   5.5% 94.5%
+a     146.06 0.37 145.47 146.65
+b1     21.73 0.29  21.27  22.19
+b2     -7.80 0.27  -8.24  -7.37
+sigma   5.77 0.18   5.49   6.06</code></pre>
+      </figure>
+
+      <p>参数 <span class="math-inline"><var>α</var></span>（<code>a</code>）仍是截距，所以它表示体重位于均值时的期望身高。但它不再等于样本的平均身高，因为在多项式回归中没有理由保证二者相等。<sup id="note-75-ref"><a href="#note-75" role="doc-noteref">75</a></sup> 参数 <span class="math-inline"><var>β</var><sub>1</sub></span> 与 <span class="math-inline"><var>β</var><sub>2</sub></span> 分别是曲线的线性分量与平方分量；但这样的说法并没有让它们变得直观。</p>
+
+      <p>必须把模型拟合画出来，才能理解它们表达了什么。下面像上一节一样，计算均值关系、均值的 89% 区间，以及预测的 89% 区间：</p>
+
+      <figure class="code-listing" id="code-4-67">
+        <figcaption>R 代码 4.67</figcaption>
+        <pre><code>weight.seq &lt;- seq( from=-2.2 , to=2 , length.out=30 )
+pred_dat &lt;- list( weight_s=weight.seq , weight_s2=weight.seq^2 )
+mu &lt;- link( m4.5 , data=pred_dat )
+mu.mean &lt;- apply( mu , 2 , mean )
+mu.PI &lt;- apply( mu , 2 , PI , prob=0.89 )
+sim.height &lt;- sim( m4.5 , data=pred_dat )
+height.PI &lt;- apply( sim.height , 2 , PI , prob=0.89 )</code></pre>
+      </figure>
+
+      <p>把这些内容画出来很直接：</p>
+
+      <figure class="code-listing" id="code-4-68">
+        <figcaption>R 代码 4.68</figcaption>
+        <pre><code>plot( height ~ weight_s , d , col=col.alpha(rangi2,0.5) )
+lines( weight.seq , mu.mean )
+shade( mu.PI , weight.seq )
+shade( height.PI , weight.seq )</code></pre>
+      </figure>
+
+      <figure class="book-figure polynomial-regression-figure" id="fig-4-11">
+        <div class="figure-scroll" tabindex="0" aria-label="可横向滚动的线性、二次与三次回归三面板图">
+          <img src="/media/chapter-04-polynomial-regressions.svg" alt="三个面板比较身高对标准化体重的线性、二次和三次回归，并显示均值区间与预测区间">
+        </div>
+        <p class="scroll-hint">图较宽，可横向滚动比较三种回归曲线和区间。</p>
+        <figcaption><strong>图 4.11：</strong>对完整 !Kung 数据，用标准化体重回归身高的多项式模型。每个面板的圆点是原始数据，实线是各模型中的 <span class="math-inline"><var>μ</var></span> 路径，阴影区域表示均值的 89% 区间（紧贴实线）和预测的 89% 区间（更宽）。左：线性回归；中：二阶多项式，即抛物线或二次回归；右：三阶多项式，即三次回归。</figcaption>
+      </figure>
+
+      <p><a href="#fig-4-11">图 4.11</a>左侧是本章前面熟悉的线性回归，但现在预测变量已经标准化，数据也包含成年人和非成年人。线性模型在极低体重和中等体重处都作出了非常糟糕的预测。与中间面板的新二次回归相比，曲线能更好地从数据中央穿过。</p>
+
+      <p><a href="#fig-4-11">图 4.11</a>右侧展示更高阶的多项式回归，即体重的三次回归。模型是：</p>
+
+      <div class="equation-block polynomial-model-map cubic-model-map" id="eq-4-cubic-model-code-map">
+        <div><span><var>h</var><sub>i</sub> ∼ Normal(<var>μ</var><sub>i</sub>, <var>σ</var>)</span><code>height ~ dnorm(mu,sigma)</code></div>
+        <div><span><var>μ</var><sub>i</sub> = <var>α</var> + <var>β</var><sub>1</sub><var>x</var><sub>i</sub> + <var>β</var><sub>2</sub><var>x</var><sub>i</sub><sup>2</sup> + <var>β</var><sub>3</sub><var>x</var><sub>i</sub><sup>3</sup></span><code>mu &lt;- a + b1*weight.s + b2*weight.s^2 + b3*weight.s^3</code></div>
+        <div><span><var>α</var> ∼ Normal(178, 20)</span><code>a ~ dnorm(178,20)</code></div>
+        <div><span><var>β</var><sub>1</sub> ∼ Log-Normal(0, 1)</span><code>b1 ~ dlnorm(0,1)</code></div>
+        <div><span><var>β</var><sub>2</sub> ∼ Normal(0, 1)</span><code>b2 ~ dnorm(0,1)</code></div>
+        <div><span><var>β</var><sub>3</sub> ∼ Normal(0, 1)</span><code>b3 ~ dnorm(0,1)</code></div>
+        <div><span><var>σ</var> ∼ Uniform(0, 50)</span><code>sigma ~ dunif(0,50)</code></div>
+      </div>
+
+      <p>只需稍微修改抛物线模型的代码，就能拟合该模型：</p>
+
+      <figure class="code-listing" id="code-4-69">
+        <figcaption>R 代码 4.69</figcaption>
+        <pre><code>d$weight_s3 &lt;- d$weight_s^3
+m4.6 &lt;- quap(
+    alist(
+        height ~ dnorm( mu , sigma ) ,
+        mu &lt;- a + b1*weight_s + b2*weight_s2 + b3*weight_s3 ,
+        a ~ dnorm( 178 , 20 ) ,
+        b1 ~ dlnorm( 0 , 1 ) ,
+        b2 ~ dnorm( 0 , 10 ) ,
+        b3 ~ dnorm( 0 , 10 ) ,
+        sigma ~ dunif( 0 , 50 )
+    ) ,
+    data=d )</code></pre>
+      </figure>
+
+      <p>计算曲线与区间，也只需对前面的代码作小幅修改。这条三次曲线比抛物线更灵活，因此对数据的拟合甚至更好。</p>
+
+      <p>但这些模型是否真的很有意义，并不清楚。它们确实都是样本的良好地心式描述，却存在两个明显问题。第一，对样本拟合得更好，未必真的是更好的模型；这是第 7 章的主题。第二，模型不包含任何生物学信息，因此没有从中学到身高与体重之间的因果关系。这个问题要到本书很后面的第 16 章才会处理。</p>
+
+      <aside class="rethinking-box" id="rethinking-linear-additive-funky">
+        <h3>再思考：线性、可加、古怪</h3>
+
+        <p>上面的 <span class="math-inline"><var>μ</var><sub>i</sub></span> 抛物线模型仍是均值的“线性模型”，尽管方程显然不是直线。遗憾的是，“线性”在不同语境中含义不同，即使在同一语境中，不同的人也会用出不同含义。这里所谓“线性”，是指 <span class="math-inline"><var>μ</var><sub>i</sub></span> 是任意单个参数的线性函数。这类模型的优点是更容易拟合数据，也通常更容易解释，因为它们假设各参数独立作用于均值。缺点是高度依赖惯例，人们经常不假思索地使用它们。</p>
+
+        <p>只要真正了解研究系统，往往很容易做得比线性模型更好。这些模型是地心式引擎，是描述变量间偏相关的装置。使用它们时应当感到一点不安，这样才不会满足于它们给出的现象学解释。</p>
+      </aside>
+
+      <aside class="overthinking-box" id="overthinking-natural-scale">
+        <h3>过度思考：转换回自然尺度</h3>
+
+        <p><a href="#fig-4-11">图 4.11</a>的横轴使用标准单位，有时也称为 z 分数。假设模型使用标准化变量拟合，却希望在原始尺度上绘制估计。真正需要做的，只是在绘制原始数据时先关闭横轴：</p>
+
+        <figure class="code-listing" id="code-4-70">
+          <figcaption>R 代码 4.70</figcaption>
+          <pre><code>plot( height ~ weight_s , d , col=col.alpha(rangi2,0.5) , xaxt="n" )</code></pre>
+        </figure>
+
+        <p>末尾的 <code>xaxt</code> 会关闭横轴。然后用 <code>axis</code> 函数显式构造坐标轴：</p>
+
+        <figure class="code-listing" id="code-4-71">
+          <figcaption>R 代码 4.71</figcaption>
+          <pre><code>at &lt;- c(-2,-1,0,1,2)
+labels &lt;- at*sd(d$weight) + mean(d$weight)
+axis( side=1 , at=at , labels=round(labels,1) )</code></pre>
+        </figure>
+
+        <p>第一行用标准单位定义标签位置，第二行把这些单位转换回原始尺度，第三行绘制坐标轴。更多细节可查看帮助 <code>?axis</code>。</p>
+      </aside>
+    </section>
+
+    <section id="sec-4-5-2">
+      <h3>4.5.2 样条</h3>
+
+      <p>引入曲线的第二种方法，是构造一种称为<strong>样条</strong>的东西。<em>spline</em> 一词最初指一条细长的木片或金属片，可以固定在几个位置，帮助绘图员或设计师画出曲线。在统计学中，样条是由更小的组成函数构造出的平滑函数。样条其实有很多类型；这里要考察的 B 样条是其中最常见的一类。</p>
+
+      <p class="continuation-note">B 样条的构造与图示将在原书 PDF 第 134 页继续。</p>
     </section>
   </section>
 
@@ -1537,10 +1663,11 @@ m4.5 &lt;- quap(</code></pre>
       <li id="note-72">策略仍是前面（原书第 40 页）的网格近似，不过现在有两个维度，麻烦会按几何意义迅速增长。算法虽然不透明，所幸很短，可以看成六条命令。前两行分别设定要计算的 <span class="math-inline"><var>μ</var></span>、<span class="math-inline"><var>σ</var></span> 范围和网格点数；第三行把选定值展开为所有组合的矩阵，存入数据框 <code>post</code>。第四条命令计算每组 <span class="math-inline"><var>μ</var>, <var>σ</var></span> 的对数似然：<code>sapply</code> 把 <code>post</code> 每一行的组合传给函数，计算每个观测身高的对数似然并求和。必须在对数尺度上计算，否则舍入误差会很快把全部后验概率变成零。第五条命令把对数先验加到对数似然上，等价于在原尺度把先验与似然相乘。最后，从对数概率返回概率尺度时仍面临舍入问题；直接使用 <code>exp(post$prod)</code> 会得到全零向量。代码先用最大对数乘积缩放全部值，避免这个问题。因此，<code>post$prob</code> 中不是精确概率，而是相对后验概率；对后续用途已经足够。 <a class="backref" href="#note-72-ref" aria-label="返回正文">↩</a></li>
       <li id="note-73">高尔顿关于这一主题最容易理解的文字，已重印为 Galton（1989）。 <a class="backref" href="#note-73-ref" aria-label="返回正文">↩</a></li>
       <li id="note-74">使用捕食者-猎物动力学的例子，参见 Reilly 和 Zeringue（2004）。第 16 章会处理这个例子。 <a class="backref" href="#note-74-ref" aria-label="返回正文">↩</a></li>
+      <li id="note-75">抛物线模型隐含的 <span class="math-inline"><var>α</var></span> 定义为 <span class="math-inline"><var>α</var> = E(<var>y</var><sub>i</sub>) - <var>β</var><sub>1</sub>E(<var>x</var><sub>i</sub>) - <var>β</var><sub>2</sub>E(<var>x</var><sub>i</sub><sup>2</sup>)</span>。即使 <span class="math-inline"><var>x</var><sub>i</sub></span> 的均值为零，即 <span class="math-inline">E(<var>x</var><sub>i</sub>) = 0</span>，平方的均值通常也不会为零。因此，<span class="math-inline"><var>α</var></span> 又变得难以直接解释。 <a class="backref" href="#note-75-ref" aria-label="返回正文">↩</a></li>
     </ol>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 89–130 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 131 页继续。
+    <strong>译稿状态：</strong>PDF 第 89–133 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 134 页继续。
   </aside>
 </article>
