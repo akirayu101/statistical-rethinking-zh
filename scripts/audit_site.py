@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 from bs4 import BeautifulSoup
+from PIL import Image
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -104,6 +105,23 @@ def main() -> int:
             for svg in figure.select("svg[role='img']"):
                 if svg.select_one("title") is None or svg.select_one("desc") is None:
                     failures.append(f"{path.name}: accessible SVG requires title and desc")
+            for image in figure.select("img[src]"):
+                src = image.get("src", "")
+                if not image.get("alt", "").strip():
+                    failures.append(f"{path.name}: figure image requires non-empty alt text")
+                if src.startswith("/"):
+                    asset = SITE / src.lstrip("/")
+                    if not asset.is_file():
+                        failures.append(f"{path.name}: missing image asset {src}")
+                    else:
+                        try:
+                            with Image.open(asset) as decoded:
+                                width, height = decoded.size
+                                decoded.verify()
+                            if width < 80 or height < 80:
+                                failures.append(f"{path.name}: image asset too small {src} ({width}x{height})")
+                        except Exception as error:
+                            failures.append(f"{path.name}: unreadable image asset {src}: {error}")
         print(f"{path.name}\t{ratio:.3f}\t{len(article.select('section'))}\t{source_pages}")
 
     if failures:

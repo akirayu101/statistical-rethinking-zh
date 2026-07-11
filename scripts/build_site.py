@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CONFIG = json.loads((ROOT / "config" / "book.json").read_text(encoding="utf-8"))
 PROGRESS = json.loads((ROOT / "translations" / "zh" / "progress.json").read_text(encoding="utf-8"))
 CHAPTERS = ROOT / "translations" / "zh" / "chapters"
+MEDIA = ROOT / "translations" / "zh" / "media"
 SITE = ROOT / "site"
 
 
@@ -89,6 +90,8 @@ def main() -> int:
     (SITE / "assets").mkdir(parents=True)
     (SITE / "chapters").mkdir(parents=True)
     shutil.copy2(ROOT / "assets" / "book.css", SITE / "assets" / "book.css")
+    if MEDIA.exists():
+        shutil.copytree(MEDIA, SITE / "media")
     (SITE / "index.html").write_text(build_index(), encoding="utf-8")
     for fragment in sorted(CHAPTERS.glob("*.html")):
         chapter = next((item for item in CONFIG["chapters"] if item["slug"] == fragment.stem), None)

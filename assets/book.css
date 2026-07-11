@@ -61,6 +61,7 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .flowchart-figure .flow-lines { fill: none; stroke: #33352f; stroke-width: 1.5; }
 .flowchart-figure marker path { fill: #33352f; }
 .book-figure figcaption { margin: .75rem auto 0; max-width: 42rem; color: var(--muted); font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; font-size: .86rem; line-height: 1.6; }
+.image-figure img { display: block; width: min(100%, 39.7rem); height: auto; margin: 0 auto; border-radius: .3rem; background: #111; }
 .scroll-hint { display: none; margin: .45rem 0 0; color: var(--muted); font: .76rem/1.5 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; }
 .argument-list { margin: 1.5rem 0; padding-left: 2rem; }
 .argument-list li { margin: .75rem 0; padding-left: .4rem; }
@@ -71,6 +72,9 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .rethinking-box { margin: 2rem 0; padding: 1.15rem 1.25rem; border: 1px solid #d9dcf0; border-radius: .35rem; background: #f0f1fa; }
 .rethinking-box h3 { margin: 0 0 .45rem; color: var(--blue); font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; font-size: 1rem; }
 .rethinking-box p { margin: 0; font-size: .96rem; line-height: 1.72; }
+.rethinking-box p + p { margin-top: .75rem; }
+.book-quote { margin: 1.5rem 1rem; padding: .85rem 1.1rem; border-left: .22rem solid var(--blue); background: #f7f7f3; color: #3e403b; }
+.book-quote p { margin: 0; font-size: .98rem; line-height: 1.7; }
 .relations-figure svg { display: block; width: 100%; min-width: 48rem; height: auto; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; }
 .relations-figure .relation-lines { fill: none; stroke: #4a4c46; stroke-width: 2; }
 .relations-figure .relation-heading text { fill: var(--blue); font-size: 21px; font-weight: 700; text-anchor: middle; }

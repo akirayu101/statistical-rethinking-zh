@@ -66,7 +66,18 @@
     "generative model": "生成模型",
     "Bayesian data analysis": "贝叶斯数据分析",
     "model comparison": "模型比较",
-    "graphical causal model": "图形因果模型"
+    "graphical causal model": "图形因果模型",
+    "frequentist approach": "频率学派方法",
+    "frequentism": "频率主义",
+    "sampling distribution": "抽样分布",
+    "epistemological uncertainty": "认识论不确定性",
+    "image reconstruction": "图像重建",
+    "Bayesianism": "贝叶斯主义",
+    "posterior probability": "后验概率",
+    "confidence interval": "置信区间",
+    "cross-validation": "交叉验证",
+    "information criterion": "信息准则",
+    "predictive accuracy": "预测准确性"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"
