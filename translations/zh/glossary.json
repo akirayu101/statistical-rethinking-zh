@@ -235,7 +235,10 @@
     "run length": "连续段长度",
     "number of switches": "切换次数",
     "tail-area probability": "尾部面积概率",
-    "flat prior": "均匀先验"
+    "flat prior": "均匀先验",
+    "first born": "第一胎",
+    "second born": "第二胎",
+    "birth sex": "出生性别"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"

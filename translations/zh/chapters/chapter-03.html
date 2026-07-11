@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-03" data-source-pages="65-85">
+<article class="book-article" data-chapter="chapter-03" data-source-pages="65-88">
   <header class="chapter-header">
     <p class="eyebrow">第三章</p>
     <h1>从想象中采样</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 65–85 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 65–88 页</p>
   </header>
 
   <p>许多贝叶斯统计教材都用医学检测情境来介绍<strong>后验推断</strong>。沿用常见例子的结构，假设有一种血液检测，能在 95% 的情况下正确检出吸血鬼。用更精确的数学记号表示，就是 <span class="math-inline">Pr(检测阳性 | 吸血鬼) = 0.95</span>。这项检测非常准确，几乎总能抓住真正的吸血鬼。</p>
@@ -708,9 +708,71 @@ samples &lt;- sample( p_grid , prob=posterior , size=1e4 , replace=TRUE )</code>
         <h4>3M5</h4>
         <p>从 3M1 重新开始，但这次使用一个在 <span class="math-inline"><var>p</var> &lt; 0.5</span> 时为零、在 <span class="math-inline"><var>p</var> ≥ 0.5</span> 时为常数的先验。这对应于一项先验信息：地球表面大部分是水域。重复上面的每一道题并比较推断结果。更好的先验带来了什么差异？如果有帮助，可以把两种先验下的推断都与真实值 <span class="math-inline"><var>p</var> = 0.7</span> 比较。</p>
       </div>
+
+      <div class="exercise" id="exercise-3m6">
+        <h4>3M6</h4>
+        <p>假设你想非常精确地估计地球表面的水域比例。具体来说，你希望 <span class="math-inline"><var>p</var></span> 的后验分布 99% 百分位区间宽度只有 0.05，也就是区间上界与下界之差为 0.05。为此需要投掷地球仪多少次？</p>
+      </div>
     </div>
 
-    <p class="continuation-note">第 3.5 节练习将在原书 PDF 第 86 页继续。</p>
+    <div class="practice-group" aria-labelledby="practice-3-hard">
+      <h3 id="practice-3-hard">困难题</h3>
+
+      <p><strong>说明。</strong>这里的练习全部使用下面的数据。这些数据记录了 100 个有两个孩子的家庭中，正式报告的第一胎和第二胎性别（男孩 = 1，女孩 = 0）。</p>
+
+      <figure class="code-listing" id="code-3-28">
+        <figcaption>R 代码 3.28</figcaption>
+        <pre><code>birth1 &lt;- c(1,0,0,0,1,1,0,1,0,1,0,0,1,1,0,1,1,0,0,0,1,0,0,0,1,0,
+0,0,0,1,1,1,0,1,0,1,1,1,0,1,0,1,1,0,1,0,0,1,1,0,1,0,0,0,0,0,0,0,
+1,1,0,1,0,0,1,0,0,0,1,0,0,1,1,1,1,0,1,0,1,1,1,1,1,0,0,1,0,1,1,0,
+1,0,1,1,1,0,1,1,1,1)
+birth2 &lt;- c(0,1,0,1,0,1,1,1,0,0,1,1,1,1,1,0,0,1,1,1,0,0,1,1,1,0,
+1,1,1,0,1,1,1,0,1,0,0,1,1,1,1,0,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,0,1,1,0,1,1,0,1,1,1,0,0,0,0,0,0,1,0,0,0,1,1,0,0,1,0,0,1,1,
+0,0,0,1,1,1,0,0,0,0)</code></pre>
+      </figure>
+
+      <p>例如，数据中的第一个家庭先报告了一个男孩（1），然后报告了一个女孩（0）；第二个家庭先报告女孩（0），然后报告男孩（1）；第三个家庭报告了两个女孩。也可以输入下面的代码，把这两个向量载入 R 的内存：</p>
+
+      <figure class="code-listing" id="code-3-29">
+        <figcaption>R 代码 3.29</figcaption>
+        <pre><code>library(rethinking)
+data(homeworkch3)</code></pre>
+      </figure>
+
+      <p>把这些向量作为数据。例如，要计算所有这些出生记录中的男孩总数，可以使用：</p>
+
+      <figure class="code-listing" id="code-3-30">
+        <figcaption>R 代码 3.30</figcaption>
+        <pre><code>sum(birth1) + sum(birth2)</code></pre>
+        <pre class="code-output"><code>[1] 111</code></pre>
+      </figure>
+
+      <div class="exercise" id="exercise-3h1">
+        <h4>3H1</h4>
+        <p>使用网格近似，计算一次出生为男孩的概率的后验分布。假设先验概率均匀。哪个参数值使后验概率达到最大？</p>
+      </div>
+
+      <div class="exercise" id="exercise-3h2">
+        <h4>3H2</h4>
+        <p>使用 <code>sample</code> 函数，从上一题计算的后验分布中抽取 10,000 个随机参数值。用这些样本估计 50%、89% 和 97% 的最高后验密度区间。</p>
+      </div>
+
+      <div class="exercise" id="exercise-3h3">
+        <h4>3H3</h4>
+        <p>使用 <code>rbinom</code> 模拟 10,000 组、每组 200 次出生。最终应得到 10,000 个数字，每个数字都是 200 次出生中的男孩数。把预测男孩数的分布与数据中的实际计数（200 次出生中有 111 个男孩）比较。模拟结果有很多合适的可视化方式，不过本例最简单的可能是使用 <code>rethinking</code> 包中的 <code>dens</code> 命令。模型看起来与数据拟合得好吗？也就是说，预测分布是否把实际观测包含为一个居中且很可能出现的结果？</p>
+      </div>
+
+      <div class="exercise" id="exercise-3h4">
+        <h4>3H4</h4>
+        <p>现在只模拟 100 次第一胎出生，共生成 10,000 个男孩计数，并把它们与 <code>birth1</code> 中第一胎的实际男孩数比较。从这个角度看，模型表现如何？</p>
+      </div>
+
+      <div class="exercise" id="exercise-3h5">
+        <h4>3H5</h4>
+        <p>模型假设第一胎与第二胎的性别彼此独立。为检查这个假设，现在只关注第一胎为女孩之后的第二胎。把 10,000 个模拟男孩计数与实际数据中“第一胎为女孩之后出生的第二胎男孩”比较。要正确完成模拟，需要先数出第一胎为女孩的家庭数，再把这么多次出生模拟 10,000 遍。将模拟中的男孩计数与第一胎为女孩之后实际观察到的男孩数比较。从这个角度看，模型表现如何？你能猜到这些数据中发生了什么吗？</p>
+      </div>
+    </div>
   </section>
 
   <section class="endnotes" id="chapter-03-notes" role="doc-endnotes">
@@ -735,6 +797,6 @@ samples &lt;- sample( p_grid , prob=posterior , size=1e4 , replace=TRUE )</code>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 65–85 页已完成翻译、逐页核对、阶段契约和桌面/移动端视觉验收。下一批从 PDF 第 86 页继续。
+    <strong>译稿状态：</strong>第 3 章 PDF 第 65–88 页已完成整章翻译、逐页渲染对照、结构契约和桌面/移动端视觉验收；第 88 页为空白保留页。
   </aside>
 </article>

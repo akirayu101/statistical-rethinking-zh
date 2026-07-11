@@ -185,8 +185,8 @@
     }
   },
   "chapter-03": {
-    "required_status": "in_progress",
-    "source_pages": [65, 85],
+    "required_status": "verified",
+    "source_pages": [65, 88],
     "required_ids": [
       "eq-3-vampire-positive",
       "eq-3-positive-rate",
@@ -260,6 +260,16 @@
       "exercise-3m3",
       "exercise-3m4",
       "exercise-3m5",
+      "exercise-3m6",
+      "practice-3-hard",
+      "code-3-28",
+      "code-3-29",
+      "code-3-30",
+      "exercise-3h1",
+      "exercise-3h2",
+      "exercise-3h3",
+      "exercise-3h4",
+      "exercise-3h5",
       "chapter-03-notes",
       "note-49",
       "note-50",
@@ -300,11 +310,12 @@
       "3.5 练习",
       "简单题",
       "中等题",
+      "困难题",
       "尾注"
     ],
     "counts": {
       "section": 13,
-      "figure": 34,
+      "figure": 37,
       "figure img": 7,
       ".posterior-samples-figure": 1,
       ".interval-figure": 2,
@@ -314,7 +325,7 @@
       ".predictive-diagnostics-figure": 1,
       ".equation-block": 5,
       ".dummy-binomial-equation": 1,
-      ".code-listing": 27,
+      ".code-listing": 30,
       ".rethinking-box": 6,
       ".overthinking-box": 1,
       ".book-quote": 1,
@@ -325,8 +336,8 @@
       ".sample-questions li": 5,
       ".simulation-uses": 1,
       ".simulation-uses li": 5,
-      ".practice-group": 2,
-      ".exercise": 12,
+      ".practice-group": 3,
+      ".exercise": 18,
       ".endnotes li": 15
     }
   }
