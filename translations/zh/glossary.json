@@ -189,7 +189,14 @@
     "integral calculus": "积分学",
     "signal detection": "信号检测",
     "statistical power": "检验功效",
-    "base rate": "基础率"
+    "base rate": "基础率",
+    "density estimate": "密度估计",
+    "probability mass": "概率质量",
+    "point estimate": "点估计",
+    "interval of defined boundaries": "边界已知的区间",
+    "interval of defined mass": "概率质量已知的区间",
+    "credible interval": "可信区间",
+    "compatibility interval": "兼容区间"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"

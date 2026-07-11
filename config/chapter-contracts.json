@@ -186,7 +186,7 @@
   },
   "chapter-03": {
     "required_status": "in_progress",
-    "source_pages": [65, 67],
+    "source_pages": [65, 70],
     "required_ids": [
       "eq-3-vampire-positive",
       "eq-3-positive-rate",
@@ -194,26 +194,52 @@
       "eq-3-natural-frequency",
       "rethinking-natural-frequency",
       "rethinking-bad-science",
+      "eq-3-true-positive",
+      "sec-3-1",
+      "code-3-2",
+      "code-3-3",
+      "code-3-4",
+      "code-3-5",
+      "fig-3-1",
+      "sec-3-2",
+      "sec-3-2-1",
+      "code-3-6",
+      "code-3-7",
+      "code-3-8",
+      "overthinking-counting-sum",
+      "sec-3-2-2",
       "chapter-03-notes",
       "note-49",
       "note-50",
-      "note-51"
+      "note-51",
+      "note-52",
+      "note-53"
     ],
     "required_headings": [
       "从想象中采样",
       "再思考：自然频数现象并不独特",
       "再思考：为什么统计学救不了糟糕的科学",
+      "3.1 从网格近似后验中采样",
+      "3.2 用抽样进行汇总",
+      "3.2.1 边界已知的区间",
+      "过度思考：用 sum 计数",
+      "3.2.2 概率质量已知的区间",
       "尾注"
     ],
     "counts": {
-      "section": 1,
-      "figure": 1,
-      ".equation-block": 3,
-      ".code-listing": 1,
+      "section": 5,
+      "figure": 9,
+      "figure img": 1,
+      ".posterior-samples-figure": 1,
+      ".equation-block": 4,
+      ".code-listing": 8,
       ".rethinking-box": 2,
+      ".overthinking-box": 1,
       ".frequency-scenario": 1,
       ".frequency-scenario li": 3,
-      ".endnotes li": 3
+      ".sample-questions": 1,
+      ".sample-questions li": 5,
+      ".endnotes li": 5
     }
   }
 }

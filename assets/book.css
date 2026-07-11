@@ -94,6 +94,7 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .bayes-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
 .grid-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
 .quadratic-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
+.posterior-samples-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
 .observation-sequence { display: flex; justify-content: center; gap: .75rem; margin: 1.5rem auto !important; padding: .75rem 1rem; max-width: 28rem; border-block: 1px solid var(--line); background: #fff; font: 700 1.1rem/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: .04em; }
 .model-loop { margin: 1.5rem 0; padding: 1rem 1rem 1rem 3.2rem; border-left: .25rem solid var(--blue); background: #f3f5fb; }
 .model-loop li { margin: .55rem 0; padding-left: .25rem; }
@@ -162,6 +163,11 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .vampire-bayes-equation .fraction { min-width: min(100%, 18rem); }
 .natural-frequency-equation .fraction { min-width: 4.5rem; }
 .continuation-note { color: var(--muted); font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; font-size: .8rem !important; font-style: italic; }
+.bad-science-equation { display: flex; flex-wrap: wrap; justify-content: center; gap: .45rem; align-items: center; font-size: .91rem; }
+.bad-science-equation .fraction { min-width: min(100%, 13rem); }
+.bad-science-equation .wide-fraction { min-width: min(100%, 31rem); }
+.sample-questions { margin: 1.5rem 0; padding: 1rem 1rem 1rem 3.2rem; border: 1px solid var(--line); border-radius: .35rem; background: #fff; }
+.sample-questions li { margin: .55rem 0; padding-left: .25rem; }
 .book-quote { margin: 1.5rem 1rem; padding: .85rem 1.1rem; border-left: .22rem solid var(--blue); background: #f7f7f3; color: #3e403b; }
 .book-quote p { margin: 0; font-size: .98rem; line-height: 1.7; }
 .relations-figure svg { display: block; width: 100%; min-width: 48rem; height: auto; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; }

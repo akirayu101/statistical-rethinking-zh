@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-03" data-source-pages="65-67">
+<article class="book-article" data-chapter="chapter-03" data-source-pages="65-70">
   <header class="chapter-header">
     <p class="eyebrow">第三章</p>
     <h1>从想象中采样</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 65–67 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 65–70 页</p>
   </header>
 
   <p>许多贝叶斯统计教材都用医学检测情境来介绍<strong>后验推断</strong>。沿用常见例子的结构，假设有一种血液检测，能在 95% 的情况下正确检出吸血鬼。用更精确的数学记号表示，就是 <span class="math-inline">Pr(检测阳性 | 吸血鬼) = 0.95</span>。这项检测非常准确，几乎总能抓住真正的吸血鬼。</p>
@@ -94,9 +94,147 @@ Pr_Positive &lt;- Pr_Positive_Vampire * Pr_Vampire +
     <p>本章开头的吸血鬼例子，与许多不同的信号检测问题具有相同逻辑结构：（1）存在某种我们看不见的二元状态；（2）我们观察到一个关于隐藏状态的不完美线索；（3）我们（应该）使用贝叶斯定理，从逻辑上推导这条线索会怎样改变我们的不确定性。</p>
     <p>科学推断经常以类似方式表述：（1）一个假说非真即假；（2）我们使用某种统计程序，得到关于假说为假的不完美线索；（3）我们（应该）使用贝叶斯定理，从逻辑上推导这条线索会怎样改变假说的地位。第三步几乎从来没有完成。不过，让我们用一个玩具例子真正做一遍，看看统计程序——无论是否贝叶斯——能为我们做的事情有多少。</p>
     <p>假设在假说为真时，得到阳性发现的概率为 <span class="math-inline">Pr(显著 | 真) = 0.95</span>，这就是检验的功效。再假设在假说为假时，得到阳性发现的概率为 <span class="math-inline">Pr(显著 | 假) = 0.05</span>，这是假阳性率，类似传统显著性检验中的 5%。</p>
-    <p>最后，还必须说明假说为真的基础率。比如，假设每 100 个假说中有 1 个最终为真，那么 <span class="math-inline">Pr(真) = 0.01</span>。没有人知道这个值，但科学史表明它很小。第 17 章会进一步讨论。现在请用贝叶斯定理来……</p>
-    <p class="continuation-note">此侧栏将在原书 PDF 第 68 页继续。</p>
+    <p>最后，还必须说明假说为真的基础率。比如，假设每 100 个假说中有 1 个最终为真，那么 <span class="math-inline">Pr(真) = 0.01</span>。没有人知道这个值，但科学史表明它很小。第 17 章会进一步讨论。现在用贝叶斯定理计算后验：</p>
+
+    <div class="equation-block bad-science-equation" id="eq-3-true-positive">
+      <span>Pr(真 | 阳性)</span>
+      <span>=</span>
+      <span class="fraction">
+        <span>Pr(阳性 | 真) Pr(真)</span>
+        <span>Pr(阳性)</span>
+      </span>
+      <span>=</span>
+      <span class="fraction wide-fraction">
+        <span>Pr(阳性 | 真) Pr(真)</span>
+        <span>Pr(阳性 | 真) Pr(真) + Pr(阳性 | 假) Pr(假)</span>
+      </span>
+    </div>
+
+    <p>代入相应数值，得到的答案约为 <span class="math-inline">Pr(真 | 阳性) = 0.16</span>。也就是说，一项阳性发现只对应假说为真的 16% 概率。这与医学检测（以及吸血鬼检测）中的低基础率现象完全相同。</p>
+    <p>即使把假阳性率降到 1%，这个后验概率也只能升至 0.5，和抛硬币一样。最重要的是提高基础率 <span class="math-inline">Pr(真)</span>；而这需要思考，不是检测。<sup><a id="note-52-ref" href="#note-52" aria-label="尾注 52">52</a></sup></p>
   </aside>
+
+  <section id="sec-3-1">
+    <h2>3.1 从网格近似后验中采样</h2>
+
+    <p>开始处理样本之前，首先要生成它们。先回顾一下怎样用网格近似计算地球仪投掷模型的后验。请记住，这里的后验是指：给定数据时，<span class="math-inline"><var>p</var></span> 的概率。</p>
+
+    <figure class="code-listing" id="code-3-2">
+      <figcaption>R 代码 3.2</figcaption>
+      <pre><code>p_grid &lt;- seq( from=0 , to=1 , length.out=1000 )
+prob_p &lt;- rep( 1 , 1000 )
+prob_data &lt;- dbinom( 6 , size=9 , prob=p_grid )
+posterior &lt;- prob_data * prob_p
+posterior &lt;- posterior / sum(posterior)</code></pre>
+    </figure>
+    <p class="scroll-hint code-scroll-hint">代码较宽，可横向滚动查看完整行。</p>
+
+    <p>现在希望从这个后验中抽取 10,000 个样本。把后验想象成一个装满参数值的桶，里面有 0.1、0.7、0.5、1 等数字。每个数值在桶中所占的比例等于它的后验概率，所以靠近峰值的数值远比尾部数值常见。我们要从桶里舀出 10,000 个值。</p>
+
+    <p>只要桶已经充分混匀，所得样本的比例就会与精确后验密度相同。因此，<span class="math-inline"><var>p</var></span> 的各个取值会按照各自的后验可信程度，成比例地出现在样本中。</p>
+
+    <p>在 R 中，只需一行代码：</p>
+
+    <figure class="code-listing" id="code-3-3">
+      <figcaption>R 代码 3.3</figcaption>
+      <pre><code>samples &lt;- sample( p_grid , prob=posterior , size=1e4 , replace=TRUE )</code></pre>
+    </figure>
+    <p class="scroll-hint code-scroll-hint">代码较宽，可横向滚动查看完整行。</p>
+
+    <p>这里的主力是 <code>sample</code>，它会从向量中随机抽取数值。本例的向量是 <code>p_grid</code>，也就是参数值网格；每个数值的抽取概率由刚才算出的 <code>posterior</code> 给出。</p>
+
+    <p>图 3.1 展示所得样本。左图按顺序显示全部 10,000（<code>1e4</code>）个随机样本：</p>
+
+    <figure class="code-listing" id="code-3-4">
+      <figcaption>R 代码 3.4</figcaption>
+      <pre><code>plot( samples )</code></pre>
+    </figure>
+
+    <p>在这幅图中，就像你正飞越后验分布，从上方向下俯视。靠近 0.6 的高密度区域产生了更多样本，而低于 0.25 的样本很少。右图显示由这些样本计算出的密度估计：</p>
+
+    <figure class="code-listing" id="code-3-5">
+      <figcaption>R 代码 3.5</figcaption>
+      <pre><code>library(rethinking)
+dens( samples )</code></pre>
+    </figure>
+
+    <figure class="book-figure posterior-samples-figure" id="fig-3-1">
+      <div class="figure-scroll" tabindex="0" aria-label="可横向滚动的后验样本与密度估计图">
+        <img src="/media/chapter-03-posterior-samples.svg" alt="左图显示一万个水域比例后验样本，右图显示同批样本的密度估计">
+      </div>
+      <p class="scroll-hint">图较宽，可横向滚动查看两个面板。</p>
+      <figcaption><strong>图 3.1：</strong>从后验分布中抽取参数值。左：地球仪投掷数据与模型所隐含后验的 10,000 个样本。右：各参数值（横轴）处的样本密度（纵轴）。</figcaption>
+    </figure>
+
+    <p>可以看到，估计密度与网格近似算出的理想后验非常相似。如果抽取更多样本，比如 <code>1e5</code> 或 <code>1e6</code> 个，密度估计会越来越接近理想后验。</p>
+
+    <p>到目前为止，你只是粗略复制了一个早已算出的后验密度，价值并不大。接下来要用这些样本描述和理解后验；这件事价值很大。</p>
+  </section>
+
+  <section id="sec-3-2">
+    <h2>3.2 用抽样进行汇总</h2>
+
+    <p>模型一旦产生后验分布，模型的工作就结束了，但你的工作才刚开始。必须汇总并解释后验分布。具体怎样汇总取决于目的，不过常见问题包括：</p>
+
+    <ul class="sample-questions">
+      <li>某个参数值以下包含多少后验概率？</li>
+      <li>两个参数值之间包含多少后验概率？</li>
+      <li>哪个参数值标记了后验概率最低的 5%？</li>
+      <li>哪个参数值范围包含 90% 的后验概率？</li>
+      <li>哪个参数值拥有最高后验概率？</li>
+    </ul>
+
+    <p>这些简单问题可以分为三类：（1）边界已知的区间；（2）概率质量已知的区间；（3）点估计。下面会学习怎样用后验样本处理它们。</p>
+
+    <section id="sec-3-2-1">
+      <h3>3.2.1 边界已知的区间</h3>
+
+      <p>假设我问：水域比例小于 0.5 的后验概率是多少？使用网格近似后验，只需把对应参数值小于 0.5 的概率全部相加：</p>
+
+      <figure class="code-listing" id="code-3-6">
+        <figcaption>R 代码 3.6</figcaption>
+        <pre><code># add up posterior probability where p &lt; 0.5
+sum( posterior[ p_grid &lt; 0.5 ] )</code></pre>
+        <pre class="code-output"><code>[1] 0.1718746</code></pre>
+      </figure>
+      <p class="scroll-hint code-scroll-hint">代码较宽，可横向滚动查看完整行。</p>
+
+      <p>所以，大约 17% 的后验概率位于 0.5 以下，简单得不能再简单。不过，网格近似一般并不实用，因此事情不会总这么轻松。后验分布一旦包含多个参数（下一章就会遇到这种复杂性），连这道简单的求和都不再简单。</p>
+
+      <p>现在改用后验样本完成同一计算。这种方法能够推广到包含许多参数的复杂模型，所以到处都能使用。只需同样数出低于 0.5 的样本，再把计数除以样本总数；也就是找出参数值低于 0.5 的频率：</p>
+
+      <figure class="code-listing" id="code-3-7">
+        <figcaption>R 代码 3.7</figcaption>
+        <pre><code>sum( samples &lt; 0.5 ) / 1e4</code></pre>
+        <pre class="code-output"><code>[1] 0.1726</code></pre>
+      </figure>
+
+      <p>这与网格近似给出的答案几乎相同，不过你的结果不会一模一样，因为每次从后验抽到的具体样本都会不同。图 3.2 的左上图展示了这个区域。用同样方法，还可以求 0.5 与 0.75 之间包含多少后验概率：</p>
+
+      <figure class="code-listing" id="code-3-8">
+        <figcaption>R 代码 3.8</figcaption>
+        <pre><code>sum( samples &gt; 0.5 &amp; samples &lt; 0.75 ) / 1e4</code></pre>
+        <pre class="code-output"><code>[1] 0.6059</code></pre>
+      </figure>
+      <p class="scroll-hint code-scroll-hint">代码较宽，可横向滚动查看完整行。</p>
+
+      <p>所以，大约 61% 的后验概率位于 0.5 与 0.75 之间。图 3.2 的右上图展示了这个区域。</p>
+
+      <aside class="overthinking-box" id="overthinking-counting-sum">
+        <h3>过度思考：用 <code>sum</code> 计数</h3>
+        <p>在刚才的 R 代码中，我用 <code>sum</code> 实际数出了多少样本满足某个逻辑条件。为什么这样做有效？因为 R 会在内部把 <code>samples &lt; 0.5</code> 这样的逻辑表达式转换成由 <code>TRUE</code> 和 <code>FALSE</code> 组成的向量；<code>samples</code> 的每个元素都有一个结果，表示它是否符合条件。</p>
+        <p>可以在 R 提示符中输入 <code>samples &lt; 0.5</code>，亲自看看。对这个 <code>TRUE</code>/<code>FALSE</code> 向量求和时，R 把每个 <code>TRUE</code> 当作 1，把每个 <code>FALSE</code> 当作 0。最终数出的 <code>TRUE</code> 个数，也就是 <code>samples</code> 中符合逻辑条件的元素个数。</p>
+      </aside>
+    </section>
+
+    <section id="sec-3-2-2">
+      <h3>3.2.2 概率质量已知的区间</h3>
+
+      <p>科学期刊更常报告概率质量已知的区间，通常称为<strong>置信区间</strong>。像这里这样基于后验概率的区间，也可以称为<strong>可信区间</strong>。不过，我们将把它称为<strong>兼容区间</strong>，以免“置信”和“可信”带来没有根据的暗示。<sup><a id="note-53-ref" href="#note-53" aria-label="尾注 53">53</a></sup>这种区间表示与模型和数据相容的一组参数值。模型与数据本身可能并不值得信任，那么区间当然也不会值得信任。</p>
+
+      <p>这类后验区间给出两个参数值，其间包含指定数量的后验概率，也就是一份概率质量。对这种区间，使用后验样本比使用网格近似更容易找到答案。</p>
+    </section>
+  </section>
 
   <section class="endnotes" id="chapter-03-notes" role="doc-endnotes">
     <h2>尾注</h2>
@@ -104,10 +242,12 @@ Pr_Positive &lt;- Pr_Positive_Vampire * Pr_Vampire +
       <li id="note-49">Gigerenzer 和 Hoffrage（1995）。相关实证文献很多，可以从 Gigerenzer 和 Hoffrage 的论文向后追踪引用它的研究。 <a class="backref" href="#note-49-ref" aria-label="返回正文">↩</a></li>
       <li id="note-50">Feynman（1967）很好地论证了这种方法在科学发现中的价值。 <a class="backref" href="#note-50-ref" aria-label="返回正文">↩</a></li>
       <li id="note-51">对于这类二元结果问题，后验密度为 <span class="math-inline">dbeta(p, w+1, n-w+1)</span>，其中 <span class="math-inline"><var>p</var></span> 是关心的比例，<span class="math-inline"><var>w</var></span> 是观测到的水域次数，<span class="math-inline"><var>n</var></span> 是投掷次数。如果想知道怎样证明，可查阅“beta-binomial conjugate prior（Beta-二项共轭先验）”。本书避免讨论解析方法，因为很少有问题简单到能像这个例子一样得到精确解析解。 <a class="backref" href="#note-51-ref" aria-label="返回正文">↩</a></li>
+      <li id="note-52">关于同一观点的另一种叙述，参见 Ioannidis（2005）。问题可能比这项简单计算所显示的更加糟糕；另一方面，真实的科学推断比把假说简单分成真或假更微妙。我个人不喜欢用这种方式描述科学发现。但许多——即便不是大多数——科学家确实倾向于这样二元思考，所以这项计算理应令人不安。 <a class="backref" href="#note-52-ref" aria-label="返回正文">↩</a></li>
+      <li id="note-53">这个术语来自 Sander Greenland 及其合作者。参见 Amrhein 等（2019）以及 Gelman 和 Greenland（2019）。 <a class="backref" href="#note-53-ref" aria-label="返回正文">↩</a></li>
     </ol>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 65–67 页已完成翻译、逐页渲染对照和桌面/移动端视觉验收；下一批从 PDF 第 68 页继续。
+    <strong>译稿状态：</strong>PDF 第 65–70 页已完成翻译、逐页渲染对照和桌面/移动端视觉验收；下一批从 PDF 第 71 页继续。
   </aside>
 </article>
