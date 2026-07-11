@@ -150,7 +150,19 @@
     "grid approximation": "网格近似",
     "quadratic approximation": "二次近似",
     "Markov chain Monte Carlo": "马尔可夫链蒙特卡洛",
-    "model fitting": "模型拟合"
+    "model fitting": "模型拟合",
+    "continuous": "连续",
+    "grid": "网格",
+    "unstandardized posterior": "未标准化后验",
+    "vectorization": "向量化",
+    "vector": "向量",
+    "loop": "循环",
+    "posterior mode": "后验众数",
+    "variance": "方差",
+    "Gaussian approximation": "高斯近似",
+    "optimization algorithm": "优化算法",
+    "curvature": "曲率",
+    "log-posterior": "对数后验"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"

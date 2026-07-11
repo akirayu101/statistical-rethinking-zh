@@ -53,7 +53,7 @@
   },
   "chapter-02": {
     "required_status": "in_progress",
-    "source_pages": [35, 55],
+    "source_pages": [35, 58],
     "required_ids": [
       "fig-2-1",
       "sec-2-1",
@@ -85,6 +85,12 @@
       "eq-2-average-data",
       "fig-2-6",
       "sec-2-4-2",
+      "sec-2-4-3",
+      "code-2-3",
+      "code-2-4",
+      "fig-2-7",
+      "code-2-5",
+      "sec-2-4-4",
       "chapter-02-notes"
     ],
     "required_headings": [
@@ -106,23 +112,26 @@
       "2.4 让模型运转起来",
       "2.4.1 贝叶斯定理",
       "2.4.2 引擎",
+      "2.4.3 网格近似",
+      "2.4.4 二次近似",
       "尾注"
     ],
     "counts": {
-      "section": 18,
-      "figure": 8,
-      "figure img": 6,
+      "section": 20,
+      "figure": 12,
+      "figure img": 7,
       ".marble-tree svg": 2,
       ".garden-figure": 3,
       ".learning-figure": 1,
       ".bayes-figure": 1,
+      ".grid-figure": 1,
       ".rethinking-box": 12,
-      ".overthinking-box": 2,
+      ".overthinking-box": 3,
       ".count-table": 4,
       ".update-table": 2,
       ".probability-table": 1,
       ".equation-block": 13,
-      ".code-listing": 2,
+      ".code-listing": 5,
       ".term-definitions li": 4,
       ".component-counts": 1,
       ".parameter-questions li": 4,
@@ -130,6 +139,8 @@
       ".formula-reading": 1,
       ".model-statement": 2,
       ".engine-list li": 3,
+      ".grid-recipe li": 5,
+      ".quadratic-steps li": 2,
       ".endnotes li": 12
     }
   }

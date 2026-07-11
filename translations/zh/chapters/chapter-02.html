@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-02" data-source-pages="35-55">
+<article class="book-article" data-chapter="chapter-02" data-source-pages="35-58">
   <header class="chapter-header">
     <p class="eyebrow">第二章</p>
     <h1>小世界与大世界</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 35–55 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 35–58 页</p>
   </header>
 
   <p>1492 年，Cristoforo Colombo（Christopher Columbus，中文常译“哥伦布”）那次声名狼藉的向西航行开始时，他相信地球是球形的。在这一点上，他和当时大多数受过教育的人一样。与大多数人不同的是，他还相信地球比实际小得多：赤道周长只有 30,000 公里，而不是真实的 40,000 公里（图 2.1）。<sup><a href="#note-37" aria-label="尾注 37">37</a></sup>这是欧洲历史上影响最为深远的错误之一。</p>
@@ -680,7 +680,100 @@ ways/sum(ways)</code></pre>
         <p>原因是，不同技术会产生不同错误与妥协。同一模型用不同技术拟合同一数据，可能给出不同答案。出了问题时，机器的每一部分都可能有嫌疑。因此，我们的魔像随身携带自己的更新引擎；它们既受制于自身工程结构，也受制于我们编入其中的先验和似然。</p>
       </aside>
     </section>
-  </section>
+
+    <section id="sec-2-4-3">
+      <h3>2.4.3 网格近似</h3>
+
+      <p>最简单的条件化技术之一是<strong>网格近似</strong>。多数参数都是连续的，可以取得无穷多个值；但事实表明，只考虑有限的参数值网格，也能极好地近似连续后验分布。在参数的任一特定取值 <span class="math-inline"><var>p</var><sub>i</sub></span> 上，计算后验概率很简单：把 <span class="math-inline"><var>p</var><sub>i</sub></span> 的先验概率乘以该点的似然即可。对网格中每个值重复这一过程，便得到精确后验分布的近似图像。这套程序称为网格近似。本小节将用几段简单 R 代码完成它。</p>
+
+      <p>网格近似主要是一种教学工具，因为学习它会迫使使用者真正理解贝叶斯更新的本质。但在多数真实建模中，它并不实用：随着参数数量增加，计算规模增长得非常糟糕。因此，后续章节中网格近似会逐渐退场，由更高效的技术取代；不过，当你转向其他技术时，本练习的概念价值仍会保留下来。</p>
+
+      <p>在地球仪投掷问题中，网格近似非常有效。下面为目前构建的模型建立网格近似。步骤如下：</p>
+
+      <ol class="grid-recipe">
+        <li><strong>定义网格。</strong>决定用多少个点估计后验，再列出网格上的参数值。</li>
+        <li>计算网格上每个参数值对应的先验值。</li>
+        <li>计算每个参数值处的似然。</li>
+        <li>把先验乘以似然，计算每个参数值处的未标准化后验。</li>
+        <li>最后，用每个值除以所有值之和，标准化后验。</li>
+      </ol>
+
+      <p>对于地球仪投掷，下面的代码完成全部五步：</p>
+
+      <figure class="code-listing" id="code-2-3">
+        <figcaption>R 代码 2.3</figcaption>
+        <pre><code># define grid
+p_grid &lt;- seq( from=0 , to=1 , length.out=20 )
+
+# define prior
+prior &lt;- rep( 1 , 20 )
+
+# compute likelihood at each value in grid
+likelihood &lt;- dbinom( 6 , size=9 , prob=p_grid )
+
+# compute product of likelihood and prior
+unstd.posterior &lt;- likelihood * prior
+
+# standardize the posterior, so it sums to 1
+posterior &lt;- unstd.posterior / sum(unstd.posterior)</code></pre>
+      </figure>
+      <p class="scroll-hint code-scroll-hint">代码较宽，可横向滚动查看完整行。</p>
+
+      <p>上面的代码只建立了包含 20 个点的网格。现在绘制后验分布：</p>
+
+      <figure class="code-listing" id="code-2-4">
+        <figcaption>R 代码 2.4</figcaption>
+        <pre><code>plot( p_grid , posterior , type="b" ,
+  xlab="probability of water" , ylab="posterior probability" )
+mtext( "20 points" )</code></pre>
+      </figure>
+      <p class="scroll-hint code-scroll-hint">代码较宽，可横向滚动查看完整行。</p>
+
+      <figure class="book-figure grid-figure" id="fig-2-7">
+        <div class="figure-scroll" tabindex="0" aria-label="可横向滚动的五点与二十点网格近似比较图">
+          <img src="/media/chapter-02-grid-approximation.svg" alt="左图用五个网格点近似后验，形状很粗糙；右图用二十个网格点，已经形成平滑的后验轮廓">
+        </div>
+        <p class="scroll-hint">图较宽，可横向滚动比较 5 点与 20 点网格。</p>
+        <figcaption><strong>图 2.7：</strong>用网格近似计算后验分布。每幅图都以有限个等距点近似地球仪投掷数据与模型的后验。只用 5 个点时，近似非常糟；用 20 个点时，近似已经相当好。可与图 2.5 中解析求得的精确后验比较。</figcaption>
+      </figure>
+
+      <p>R 代码 2.4 会得到图 2.7 右图。可以尝试更稀疏的网格（5 个点），也可以尝试更密的网格（100 或 1000 个点）。网格应当多密，取决于希望近似达到多高精度；点越多，精度越高。在这个简单例子中，甚至可以疯狂地使用 100,000 个点，但超过最初约 100 个点后，推断不会发生多少变化。</p>
+
+      <p>为了复现图 2.6 中的不同先验（原书此处误作图 2.5），可依次把下面两行中的一行用作先验网格：</p>
+
+      <figure class="code-listing" id="code-2-5">
+        <figcaption>R 代码 2.5</figcaption>
+        <pre><code>prior &lt;- ifelse( p_grid &lt; 0.5 , 0 , 1 )
+prior &lt;- exp( -5*abs( p_grid - 0.5 ) )</code></pre>
+      </figure>
+
+      <p>其余代码保持不变。</p>
+
+      <aside class="overthinking-box">
+        <h3>过度思考：向量化</h3>
+        <p>R 的一个有用特性，是让处理一列数几乎和处理单个值一样容易。所以上面两行代码虽然都没说明网格有多密，但 <code>p_grid</code> 向量的长度会决定 <code>prior</code> 向量的长度。用 R 的术语说，这些计算经过了<strong>向量化</strong>，因为它们作用于一列数，也就是向量。</p>
+        <p>向量化计算会对输入向量——本例中的 <code>p_grid</code>——每个元素执行同一计算，因此输出也有相同长度。在其他计算环境中，同样计算可能需要一个<strong>循环</strong>。R 也能使用循环，但向量化计算通常更快。刚开始学习 R 时，它们却可能更难读。保持耐心，很快就会习惯。</p>
+      </aside>
+    </section>
+
+    <section id="sec-2-4-4">
+      <h3>2.4.4 二次近似</h3>
+
+      <p>本章余下部分和下一章还会继续使用地球仪投掷后验的网格近似。但很快就必须转向另一种作出更强假设的近似，因为随着模型参数增加，网格中需要考虑的不同取值数会迅速增长。单参数地球仪模型计算 100 或 1000 个网格值毫无问题；两个参数若各近似为 100 个值，便已有 <span class="math-inline">100<sup>2</sup> = 10,000</span> 个组合；十个参数时，网格会达到数十亿个值。如今，包含数百甚至数千个参数的模型十分常见。网格近似随模型复杂度扩展得太差，无法带我们走远。</p>
+
+      <p>一种有用方法是<strong>二次近似</strong>。在相当一般的条件下，后验分布峰值附近会近似呈高斯形，也就是“正态”形。因此，可以用高斯分布有效近似后验分布。高斯分布很方便，因为只需两个数就能完整描述：中心位置（均值）和离散程度（方差）。</p>
+
+      <p>高斯近似之所以称为“二次近似”，是因为高斯分布的对数形成一条抛物线，而抛物线是二次函数。因此，这种近似本质上是用抛物线表示任意对数后验。</p>
+
+      <p>本书前半部分会大量使用二次近似。对应用统计中许多最常见的程序——例如线性回归——近似效果很好；它甚至经常完全正确，根本不是近似。从计算角度看，二次近似成本很低，至少与网格近似和稍后讨论的 MCMC 相比是如此。R 很乐意按你的命令执行这套程序，它包含两个步骤：</p>
+
+      <ol class="quadratic-steps">
+        <li><strong>找到后验众数。</strong>通常借助某种优化算法完成：它仿佛在后验分布这座山上向上“攀爬”。魔像不知道峰顶在哪里，却知道脚下的坡度。成熟的优化程序很多，大多比简单爬山聪明，但目标都是寻找峰值。</li>
+        <li><strong>估计峰值附近的曲率。</strong>找到后验峰值后，附近曲率就足以计算整个后验分布的二次近似。有时可以解析完成这些计算，但通常由计算机使用某种数值技术。</li>
+      </ol>
+
+      <p>为了计算地球仪投掷数据的二次近似，将使用 <code>rethinking</code> 包中的工具 <code>quap</code>。本书前半部分会频繁使用 <code>quap</code>。它是一种灵活的模型拟合工具，可以指定大量不同的“回归”模型，因此现在就值得试用；后面还会对它形成更深入的理解。</p>
+    </section>
   </section>
 
   <section class="endnotes" id="chapter-02-notes" role="doc-endnotes">
@@ -702,6 +795,6 @@ ways/sum(ways)</code></pre>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 35–55 页已完成翻译、逐页渲染对照和桌面/移动端视觉验收；下一批从 PDF 第 56 页开始。
+    <strong>译稿状态：</strong>PDF 第 35–58 页已完成翻译、逐页渲染对照和桌面/移动端视觉验收；下一批从 PDF 第 59 页开始。
   </aside>
 </article>
