@@ -534,7 +534,13 @@
     "causal reversal": "因果倒置",
     "territory size": "领地面积",
     "habitat quality": "栖息地质量",
-    "population density": "种群密度"
+    "population density": "种群密度",
+    "Berkson's paradox": "Berkson 悖论",
+    "selection-distortion effect": "选择扭曲效应",
+    "newsworthiness": "新闻价值",
+    "trustworthiness": "可信度",
+    "range restriction": "范围限制",
+    "multicollinear legs": "共线的双腿"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"

@@ -1,0 +1,51 @@
+<article class="book-article" data-chapter="chapter-06" data-source-pages="181-183">
+  <header class="chapter-header"><p class="eyebrow">第六章</p><h1>闹鬼的 DAG 与因果恐怖</h1><p class="source-range">当前译稿对应原书 PDF 第 181–183 页</p></header>
+
+  <p>最有新闻价值的科学研究，似乎也最不可信。如果一项研究为真时越可能要你的命，它反而越不可能为真；主题越无聊，结果似乎越严谨。这种广为相信的负相关怎么会存在？人们关心的主题并没有理由产生更不可靠的结果。也许热门主题吸引了更多、更糟糕的研究者，就像苍蝇被蜂蜜气味吸引一样？</p>
+
+  <p>其实，只要同行评审者同时在意新闻价值与可信度，这种负相关就会出现。无论基金评审还是期刊评审，只要编辑与审稿人同时看重二者，筛选行为本身就足以让最有新闻价值的研究显得最不可信。事实上，很难想象科学同行评审怎样才能完全避免制造这种负相关。亲爱的读者，这个事实也会帮助我们理解多元回归的危险。</p>
+
+  <p>下面用一个简单模拟说明。<sup id="note-85-ref"><a href="#note-85">85</a></sup> 假设基金评审小组收到 200 份科研提案。所有提案中，可信度（严谨性、学术水平、成功的可信程度）与新闻价值（社会福利价值、公众兴趣）完全不相关。小组给二者相同权重，按合计得分排序，并资助最高的 10%。</p>
+
+  <p>本节末尾给出模拟代码。<a href="#fig-6-1">图 6.1</a>显示全部提案，蓝色表示获选者，并为获选提案画出简单线性回归线。负相关出现了——本图约为 −0.78。强筛选会在筛选标准之间诱发负相关。为什么？若跨过门槛的唯一办法是高分，那么只在一项上得高分，会比两项都得高分更常见。因此，在获资助提案中，新闻价值最高的研究完全可能拥有低于平均的可信度；同样，最可信的研究也可能比平均水平更缺乏新闻价值。</p>
+
+  <figure class="book-figure selection-distortion-figure" id="fig-6-1"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的科研提案选择扭曲散点图"><img src="/media/chapter-06-selection-distortion.svg" alt="两百份提案中获选的百分之十显示新闻价值与可信度负相关"></div><p class="scroll-hint">图较宽，可横向滚动查看散点与回归线。</p><figcaption><strong>图 6.1：</strong>为什么最有新闻价值的研究可能最不可信。200 份提案按可信度与新闻价值的合计得分排序，最高 10% 获得资助。筛选前二者不相关，筛选后却强烈负相关；本次确定性重建中的相关约为 −0.78。</figcaption></figure>
+
+  <p>这一普遍现象早已为人所知，有时称为 <strong>Berkson 悖论</strong>。<sup id="note-86-ref"><a href="#note-86">86</a></sup> 不过，把它叫作<strong>选择扭曲效应</strong>更容易记忆。一旦理解它，就会到处看到它：为什么好地段的许多餐厅食物很差？食物不够好的餐厅只有位于好地段才能生存；食物极佳的餐厅则能在坏地段活下来。选择扭曲毁掉了你的城市。</p>
+
+  <p>这与多元回归有什么关系？不幸的是，关系无处不在。上一章展示了多元回归的一些惊人能力：它能揭穿虚假相关，也能澄清掩盖效应。这很容易诱使人相信，只要有疑问，就把一切都放进模型，让回归神谕自行整理。</p>
+
+  <p>回归不会替你整理。回归确实是神谕，却是残酷的神谕；它说谜语，并乐于惩罚提出坏问题的人。选择扭曲效应可以发生在多元回归内部，因为加入预测变量的行为会在模型中诱发统计筛选，这种现象有个并不友好的名字：<strong>碰撞点偏差</strong>。它可能误导我们，让我们相信新闻价值与可信度在总体上负相关，而实际上这只是以某个变量为条件的结果。这个事实既极其令人困惑，又是负责任地使用回归所必须理解的。</p>
+
+  <p>本章与下一章都讨论：在没有清晰因果模型时，仅仅向回归加入变量会发生哪些糟糕事情。本章考察三种危险：<strong>多重共线性</strong>、<strong>处理后偏差</strong>与<strong>碰撞点偏差</strong>。最后会把这些例子纳入一个框架，判断为了有效推断，哪些变量必须加入模型，哪些绝不能加入。但这个框架不会替我们完成最重要的一步：它不会凭空给出有效模型。</p>
+
+  <aside class="overthinking-box" id="overthinking-simulated-science-distortion"><h3>过度思考：模拟科学扭曲</h3><p>看过一些例子后，这类模拟很容易用 R 或任何脚本语言完成。本例只需为一组提案抽取随机高斯标准，再选出合计得分最高的 10%。</p><figure class="code-listing" id="code-6-1"><figcaption>R 代码 6.1</figcaption><pre><code>set.seed(1914)
+N &lt;- 200 # num grant proposals
+p &lt;- 0.1 # proportion to select
+# uncorrelated newsworthiness and trustworthiness
+nw &lt;- rnorm(N)
+tw &lt;- rnorm(N)
+# select top 10% of combined scores
+s &lt;- nw + tw # total score
+q &lt;- quantile( s , 1-p ) # top 10% threshold
+selected &lt;- ifelse( s &gt;= q , TRUE , FALSE )
+cor( tw[selected] , nw[selected] )</code></pre></figure><p>这里选择特定随机种子，以便复现图 6.1 的结果；去掉 <code>set.seed</code> 后反复运行，会发现这个种子没有任何特殊之处。</p></aside>
+
+  <section id="sec-6-1"><h2>6.1 多重共线性</h2><p>回归模型通常有许多潜在预测变量可供加入。例如，灵长类乳汁数据中有 7 个变量可以预测我们选作结果的任何一列。为什么不直接拟合包含全部 7 个变量的模型？因为存在若干危险。这里首先关注<strong>多重共线性</strong>：两个或更多预测变量之间存在非常强的相关。其后果是，后验分布似乎会表明没有任何变量可靠地与结果相关，即使现实中所有变量都与结果强相关。</p><p>这种令人沮丧的现象源于多元回归工作的细节。事实上，多重共线性本身没有“错误”；模型用于预测时仍能正常工作，只是会让解释变得令人抓狂。理解多重共线性之后，也会更深入地理解一般回归模型。先从简单模拟开始，再回到灵长类乳汁数据观察真实数据中的多重共线性。</p>
+
+    <section id="sec-6-1-1"><h3>6.1.1 共线的双腿</h3><p>模拟任务是用一个人的腿长预测身高。腿长当然应与身高正相关——至少模拟会这样假设。然而，把左右腿长同时放进模型后，会发生一件恼人的事。</p><p>下面模拟 100 个人的身高与腿长。先从高斯分布模拟每个人的身高，再给每个人模拟一个介于 0.4 与 0.5 的腿长占身高比例。最后给每条腿加一点测量或发育误差，因此左右腿不会完全等长，这也符合真实人群。代码最后把身高与两条腿长放入同一数据框：</p><figure class="code-listing" id="code-6-2"><figcaption>R 代码 6.2</figcaption><pre><code>N &lt;- 100                                    # number of individuals
+set.seed(909)
+height &lt;- rnorm(N,10,2)                     # sim total height of each
+leg_prop &lt;- runif(N,0.4,0.5)                # leg as proportion of height
+leg_left &lt;- leg_prop*height +               # sim left leg as proportion + error
+    rnorm( N , 0 , 0.02 )
+leg_right &lt;- leg_prop*height +              # sim right leg as proportion + error
+    rnorm( N , 0 , 0.02 )
+# combine into data frame
+d &lt;- data.frame(height,leg_left,leg_right)</code></pre></figure><p>接下来用 <code>leg_left</code> 与 <code>leg_right</code> 共同预测结果 <code>height</code>。在近似后验前，先想想预期。平均而言，腿长约为身高的 45%。因此，测量腿长与身高关联的系数应接近平均身高 10 除以平均腿长 4.5，即 <span class="math-inline">10 / 4.5 ≈ 2.2</span>。</p><p class="continuation-note">双腿回归模型及多重共线性后验将在原书 PDF 第 184 页继续。</p></section>
+  </section>
+
+  <section class="endnotes" id="chapter-06-notes" role="doc-endnotes"><h2>尾注</h2><ol start="85"><li id="note-85">本例与 Paul Smaldino 合作完成。 <a class="backref" href="#note-85-ref" aria-label="返回正文">↩</a></li><li id="note-86">参见 Berkson（1946）。相关现象还有筛选造成的范围限制，它会降低筛选标准与后续表现之间的相关；这也是标准化考试成绩与入学后表现可能不相关的原因之一。另见 Dawes（1975）。 <a class="backref" href="#note-86-ref" aria-label="返回正文">↩</a></li></ol></section>
+
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 181–183 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 184 页继续。</aside>
+</article>

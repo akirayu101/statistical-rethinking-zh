@@ -920,5 +920,38 @@
       ".fox-variables li": 5,
       ".endnotes li": 8
     }
+  },
+  "chapter-06": {
+    "required_status": "in_progress",
+    "source_pages": [181, 183],
+    "required_ids": [
+      "fig-6-1",
+      "overthinking-simulated-science-distortion",
+      "code-6-1",
+      "sec-6-1",
+      "sec-6-1-1",
+      "code-6-2",
+      "chapter-06-notes",
+      "note-85",
+      "note-86"
+    ],
+    "required_headings": [
+      "闹鬼的 DAG 与因果恐怖",
+      "过度思考：模拟科学扭曲",
+      "6.1 多重共线性",
+      "6.1.1 共线的双腿",
+      "尾注"
+    ],
+    "counts": {
+      "section": 3,
+      "figure": 3,
+      "figure img": 1,
+      "figure svg": 0,
+      ".selection-distortion-figure": 1,
+      ".code-listing": 2,
+      ".code-output": 0,
+      ".overthinking-box": 1,
+      ".endnotes li": 2
+    }
   }
 }
