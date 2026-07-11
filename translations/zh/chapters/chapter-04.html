@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-04" data-source-pages="89-121">
+<article class="book-article" data-chapter="chapter-04" data-source-pages="89-124">
   <header class="chapter-header">
     <p class="eyebrow">第四章</p>
     <h1>地心模型</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 89–121 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 89–124 页</p>
   </header>
 
   <p>历史对托勒密并不宽厚。克劳狄乌斯·托勒密（约公元 90 年生，168 年卒）是埃及数学家和天文学家，最著名的成就是太阳系地心模型。今天，科学家若想嘲讽某人，有时会把他比作地心模型的拥护者。但托勒密是位天才。他描述行星运动的数学模型（<a href="#fig-4-1">图 4.1</a>）极其准确。为了达到这种精度，模型采用了一种叫作<strong>本轮</strong>的装置，也就是圆上套圆。甚至还能有“本轮上的本轮”：圆上套圆再套圆。只要在适当位置放置足够多的本轮，托勒密模型的预测精度就能超过此前任何人。因此，这套模型沿用了一千多年。托勒密和许多与他相似的人历经数百年艰苦推演，在没有计算机帮助的条件下解决了这一切。任何人被比作托勒密，都应该感到受宠若惊。</p>
@@ -1176,13 +1176,118 @@ for ( i in 1:20 )
         <p>结果显示在图 4.7 左上角（见原书 PDF 第 122 页）。从后验中抽取多条回归线并画在一起，就能轻松看出关系中高度确定的部分和不太确定的部分。回归线云在体重极端值处显示出更大的不确定性。</p>
 
         <p>图 4.7 的其他面板展示同样的关系，但使用越来越多的数据。只需重用前面的代码，把 <code>N &lt;- 10</code> 改成其他值。注意，随着样本量增加，回归线云会变得更紧凑；这是模型对均值位置越来越有信心的结果。</p>
+
+        <figure class="book-figure regression-line-clouds-figure" id="fig-4-7">
+          <div class="figure-scroll" tabindex="0" aria-label="可横向滚动的四面板后验回归线云">
+            <img src="/media/chapter-04-regression-line-clouds.svg" alt="四个面板分别显示十、五十、一百五十和三百五十二个个体，以及每个样本量对应的二十条后验回归线">
+          </div>
+          <p class="scroll-hint">图较宽，可横向滚动比较四种样本量下的回归线不确定性。</p>
+          <figcaption><strong>图 4.7：</strong>身高/体重模型 <code>m4.3</code> 的二次近似后验分布样本，使用的数据量依次增加。每个面板都从后验分布抽取 20 条直线，展示回归关系中的不确定性。</figcaption>
+        </figure>
       </section>
 
       <section id="sec-4-4-3-4">
         <h4>4.4.3.4 绘制回归区间与等高线</h4>
 
-        <p>图 4.7 中的回归线云是一种很有吸引力的展示，因为它以许多人觉得直观的方式传达关系的不确定性。不过，更常见、也往往更清楚的做法，是绘制回归区间与等高线。</p>
-        <p class="continuation-note">图 4.7 与本节将在原书 PDF 第 122 页继续。</p>
+        <p><a href="#fig-4-7">图 4.7</a>中的回归线云是一种很有吸引力的展示，因为它以许多人觉得直观的方式传达关系的不确定性。不过，更常见、也往往更清楚的做法，是在平均回归线周围绘制区间或等高线来显示不确定性。本节将说明怎样利用后验分布所包含的回归线云，计算任意需要的区间。</p>
+
+        <p>暂时只关注一个体重值，例如 50 千克。利用后验样本，可以迅速为体重 50 千克的个体列出 10,000 个 <span class="math-inline"><var>μ</var></span> 值：</p>
+
+        <figure class="code-listing" id="code-4-50">
+          <figcaption>R 代码 4.50</figcaption>
+          <pre><code>post &lt;- extract.samples( m4.3 )
+mu_at_50 &lt;- post$a + post$b * ( 50 - xbar )</code></pre>
+        </figure>
+
+        <figure class="book-figure mean-height-density-figure" id="fig-4-8">
+          <div class="figure-scroll" tabindex="0" aria-label="可横向滚动的体重五十千克时平均身高后验密度图">
+            <img src="/media/chapter-04-mean-height-density.svg" alt="钟形密度曲线显示体重五十千克时平均身高的二次近似后验分布">
+          </div>
+          <p class="scroll-hint">图较宽，可横向滚动查看完整密度曲线和坐标。</p>
+          <figcaption><strong>图 4.8：</strong>体重为 50 千克时，平均身高 <span class="math-inline"><var>μ</var></span> 的二次近似后验分布。该分布表示不同均值的相对可信程度。</figcaption>
+        </figure>
+
+        <p><code>&lt;-</code> 右侧的代码来自 <span class="math-inline"><var>μ</var><sub>i</sub></span> 的方程：</p>
+
+        <div class="equation-block compact-equation" id="eq-4-linear-mean-at-x">
+          <span><var>μ</var><sub>i</sub></span>
+          <span>=</span>
+          <span><var>α</var> + <var>β</var>(<var>x</var><sub>i</sub> - <span class="overbar"><var>x</var></span>)</span>
+        </div>
+
+        <p>这里的 <span class="math-inline"><var>x</var><sub>i</sub></span> 等于 50。查看结果 <code>mu_at_50</code>，会得到一个预测均值向量；后验分布中的每个随机样本对应一个均值。每个均值都由联合的 <code>a</code> 和 <code>b</code> 算出，因此这些均值之间的变化同时包含两个参数的不确定性及其相关性。此时把该均值向量的密度实际画出来会很有帮助：</p>
+
+        <figure class="code-listing" id="code-4-51">
+          <figcaption>R 代码 4.51</figcaption>
+          <pre><code>dens( mu_at_50 , col=rangi2 , lwd=2 , xlab="mu|weight=50" )</code></pre>
+        </figure>
+
+        <p><a href="#fig-4-8">图 4.8</a>重现了这个结果。既然 <span class="math-inline"><var>μ</var></span> 的各个组成部分都有分布，<span class="math-inline"><var>μ</var></span> 本身当然也有分布。又因为 <span class="math-inline"><var>α</var></span> 与 <span class="math-inline"><var>β</var></span> 的分布都是高斯分布，所以 <span class="math-inline"><var>μ</var></span> 的分布也是高斯分布（高斯分布相加总会得到高斯分布）。</p>
+
+        <p>既然后验中的 <span class="math-inline"><var>μ</var></span> 是一个分布，就可以像处理其他后验分布一样为它求区间。要得到体重 50 千克时 <span class="math-inline"><var>μ</var></span> 的 89% 相容区间，照常使用 <code>PI</code> 命令：</p>
+
+        <figure class="code-listing" id="code-4-52">
+          <figcaption>R 代码 4.52</figcaption>
+          <pre><code>PI( mu_at_50 , prob=0.89 )</code></pre>
+          <pre class="code-output"><code>      5%      94%
+158.5860 159.6706</code></pre>
+        </figure>
+
+        <p>这些数字的含义是：在模型生成数据的各种方式中，中央 89% 把体重 50 千克时的平均身高放在大约 159 到 160 厘米之间——当然，这是以当前模型和数据为条件的。</p>
+
+        <p>到这里还不错，但还需要对横轴上的每个体重值重复上述计算，而不能只算 50 千克。目标是在<a href="#fig-4-6">图 4.6</a>的平均斜率周围绘制 89% 区间。</p>
+
+        <p>巧妙使用 <span class="code-name">rethinking</span> 包中的 <code>link</code> 函数，可以轻松完成这项工作。<code>link</code> 会接收 <code>quap</code> 近似，从后验分布抽样，再为数据中的每个案例和每个后验样本计算 <span class="math-inline"><var>μ</var></span>。下面先把拟合模型时使用的数据传给它：</p>
+
+        <figure class="code-listing" id="code-4-53">
+          <figcaption>R 代码 4.53</figcaption>
+          <pre><code>mu &lt;- link( m4.3 )
+str(mu)</code></pre>
+          <pre class="code-output"><code> num [1:1000, 1:352] 157 157 158 157 157 ...</code></pre>
+        </figure>
+
+        <p>结果是一个很大的 <span class="math-inline"><var>μ</var></span> 值矩阵。每一行都是后验分布的一个样本。默认抽取 1,000 个样本，也可以按需要增减。每一列对应数据中的一个案例（即一行）。<code>d2</code> 有 352 行，代表 352 个人，因此上面的 <code>mu</code> 矩阵有 352 列。</p>
+
+        <p>这个大矩阵能做什么？很多事情。对于传给 <code>link</code> 的每个案例，它都会给出一个 <span class="math-inline"><var>μ</var></span> 的后验分布。所以上面得到的是原始数据中每个人各自的 <span class="math-inline"><var>μ</var></span> 分布。真正需要的稍有不同：横轴上每个不同体重值都应有一个 <span class="math-inline"><var>μ</var></span> 分布。只要向 <code>link</code> 传入一些新数据，计算也只会稍微复杂一点：</p>
+
+        <figure class="code-listing" id="code-4-54">
+          <figcaption>R 代码 4.54</figcaption>
+          <pre><code># define sequence of weights to compute predictions for
+# these values will be on the horizontal axis
+weight.seq &lt;- seq( from=25 , to=70 , by=1 )
+
+# use link to compute mu
+# for each sample from posterior
+# and for each weight in weight.seq
+mu &lt;- link( m4.3 , data=data.frame(weight=weight.seq) )
+str(mu)</code></pre>
+          <pre class="code-output"><code> num [1:1000, 1:46] 136 136 138 136 137 ...</code></pre>
+        </figure>
+
+        <p>现在 <code>mu</code> 只剩 46 列，因为传入了 46 个不同的 <code>weight</code> 值。为了把结果可视化，下面绘制每个体重处的 <span class="math-inline"><var>μ</var></span> 值分布：</p>
+
+        <figure class="code-listing" id="code-4-55">
+          <figcaption>R 代码 4.55</figcaption>
+          <pre><code># use type="n" to hide raw data
+plot( height ~ weight , d2 , type="n" )
+
+# loop over samples and plot each mu value
+for ( i in 1:100 )
+    points( weight.seq , mu[i,] , pch=16 , col=col.alpha(rangi2,0.1) )</code></pre>
+        </figure>
+
+        <p>结果显示在图 4.9 左侧（见原书 PDF 第 125 页）。<code>weight.seq</code> 中的每个体重值上，都堆叠着一组计算出的 <span class="math-inline"><var>μ</var></span> 值。每一堆都是一个高斯分布，就像<a href="#fig-4-8">图 4.8</a>中的分布。现在可以清楚看到，<span class="math-inline"><var>μ</var></span> 的不确定性大小取决于体重；这与<a href="#fig-4-7">图 4.7</a>右下图展示的是同一件事。</p>
+
+        <p>最后一步，是汇总每个体重值上的分布。这里使用 <code>apply</code>，它会把选定函数应用到矩阵上：</p>
+
+        <figure class="code-listing" id="code-4-56">
+          <figcaption>R 代码 4.56</figcaption>
+          <pre><code># summarize the distribution of mu
+mu.mean &lt;- apply( mu , 2 , mean )
+mu.PI &lt;- apply( mu , 2 , PI , prob=0.89 )</code></pre>
+        </figure>
+
+        <p class="continuation-note">图 4.9、区间绘制代码与本节后续说明将在原书 PDF 第 125 页继续。</p>
       </section>
     </section>
   </section>
@@ -1205,6 +1310,6 @@ for ( i in 1:20 )
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 89–121 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 122 页继续。
+    <strong>译稿状态：</strong>PDF 第 89–124 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 125 页继续。
   </aside>
 </article>

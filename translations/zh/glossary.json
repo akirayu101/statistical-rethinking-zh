@@ -369,7 +369,14 @@
     "mean uncertainty": "均值不确定性",
     "correlated random sample": "相关随机样本",
     "joint posterior": "联合后验",
-    "regression interval": "回归区间"
+    "regression interval": "回归区间",
+    "contour": "等高线",
+    "arbitrary interval": "任意区间",
+    "compatibility interval": "相容区间",
+    "posterior distribution of the mean": "均值的后验分布",
+    "link function": "link 函数",
+    "posterior regression line": "后验回归线",
+    "prediction sequence": "预测序列"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"
