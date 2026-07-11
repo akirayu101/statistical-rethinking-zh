@@ -343,7 +343,7 @@
   },
   "chapter-04": {
     "required_status": "in_progress",
-    "source_pages": [89, 97],
+    "source_pages": [89, 100],
     "required_ids": [
       "fig-4-1",
       "sec-4-1",
@@ -375,13 +375,26 @@
       "sec-4-3",
       "sec-4-3-1",
       "code-4-7",
+      "code-4-8",
+      "code-4-9",
+      "code-4-10",
+      "overthinking-data-frames",
+      "code-4-11",
+      "overthinking-index-magic",
+      "sec-4-3-2",
+      "eq-4-height-likelihood",
+      "rethinking-iid",
+      "eq-4-height-iid",
+      "eq-4-height-model-priors",
       "chapter-04-notes",
       "note-64",
       "note-65",
       "note-66",
       "note-67",
       "note-68",
-      "note-69"
+      "note-69",
+      "note-70",
+      "note-71"
     ],
     "required_headings": [
       "地心模型",
@@ -399,26 +412,34 @@
       "过度思考：从模型定义到贝叶斯定理",
       "4.3 身高的高斯模型",
       "4.3.1 数据",
+      "过度思考：数据框",
+      "过度思考：索引魔法",
+      "4.3.2 模型",
+      "再思考：独立同分布",
       "尾注"
     ],
     "counts": {
-      "section": 12,
-      "figure": 9,
+      "section": 13,
+      "figure": 13,
       "figure img": 2,
       ".ptolemaic-figure": 1,
       ".random-walk-figure": 1,
-      ".equation-block": 7,
+      ".equation-block": 10,
       ".gaussian-density-equation": 1,
       ".gaussian-precision-equation": 1,
       ".model-system-equation": 2,
       ".model-to-bayes-equation": 1,
-      ".code-listing": 7,
-      ".rethinking-box": 1,
-      ".overthinking-box": 2,
+      ".height-likelihood-equation": 1,
+      ".iid-equation": 1,
+      ".annotated-model-equation": 1,
+      ".code-listing": 11,
+      ".code-output": 2,
+      ".rethinking-box": 2,
+      ".overthinking-box": 4,
       ".model-language-steps": 1,
       ".model-language-steps li": 3,
       ".model-reading": 1,
-      ".endnotes li": 6
+      ".endnotes li": 8
     }
   }
 }

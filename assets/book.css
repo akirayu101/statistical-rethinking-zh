@@ -113,6 +113,8 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .model-to-bayes-equation { display: flex; flex-wrap: wrap; justify-content: center; gap: .5rem; align-items: center; }
 .model-to-bayes-equation .fraction { min-width: min(100%, 30rem); overflow-wrap: anywhere; }
 .url-text { overflow-wrap: anywhere; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .88em; }
+.annotated-model-equation > div { display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: baseline; }
+.annotated-model-equation .equation-label { color: var(--muted); font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; font-size: .78rem; }
 .observation-sequence { display: flex; justify-content: center; gap: .75rem; margin: 1.5rem auto !important; padding: .75rem 1rem; max-width: 28rem; border-block: 1px solid var(--line); background: #fff; font: 700 1.1rem/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: .04em; }
 .model-loop { margin: 1.5rem 0; padding: 1rem 1rem 1rem 3.2rem; border-left: .25rem solid var(--blue); background: #f3f5fb; }
 .model-loop li { margin: .55rem 0; padding-left: .25rem; }

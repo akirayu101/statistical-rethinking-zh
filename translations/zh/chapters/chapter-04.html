@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-04" data-source-pages="89-97">
+<article class="book-article" data-chapter="chapter-04" data-source-pages="89-100">
   <header class="chapter-header">
     <p class="eyebrow">第四章</p>
     <h1>地心模型</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 89–97 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 89–100 页</p>
   </header>
 
   <p>历史对托勒密并不宽厚。克劳狄乌斯·托勒密（约公元 90 年生，168 年卒）是埃及数学家和天文学家，最著名的成就是太阳系地心模型。今天，科学家若想嘲讽某人，有时会把他比作地心模型的拥护者。但托勒密是位天才。他描述行星运动的数学模型（<a href="#fig-4-1">图 4.1</a>）极其准确。为了达到这种精度，模型采用了一种叫作<strong>本轮</strong>的装置，也就是圆上套圆。甚至还能有“本轮上的本轮”：圆上套圆再套圆。只要在适当位置放置足够多的本轮，托勒密模型的预测精度就能超过此前任何人。因此，这套模型沿用了一千多年。托勒密和许多与他相似的人历经数百年艰苦推演，在没有计算机帮助的条件下解决了这一切。任何人被比作托勒密，都应该感到受宠若惊。</p>
@@ -273,8 +273,101 @@ data(Howell1)
 d &lt;- Howell1</code></pre>
       </figure>
 
-      <p>现在得到一个名为 <code>d</code> 的数据框。本书会反复使用 <code>d</code> 表示当前正在处理的数据框；名称很短，可以少敲几次键。数据框是 R 中一种特殊对象。它是一个表，其中——</p>
-      <p class="continuation-note">此段将在原书 PDF 第 98 页继续。</p>
+      <p>现在得到一个名为 <code>d</code> 的数据框。本书会反复使用 <code>d</code> 表示当前正在处理的数据框；名称很短，可以少敲几次键。数据框是 R 中一种特殊对象。它是一个表：命名列对应变量，编号行对应各个案例。本例中的案例就是个体。可以像检查 R 中任何符号的结构一样，检查数据框结构：</p>
+
+      <figure class="code-listing" id="code-4-8">
+        <figcaption>R 代码 4.8</figcaption>
+        <pre><code>str( d )</code></pre>
+        <pre class="code-output"><code>'data.frame': 544 obs. of  4 variables:
+ $ height: num  152 140 137 157 145 ...
+ $ weight: num  47.8 36.5 31.9 53 41.3 ...
+ $ age   : num  63 63 65 41 51 35 32 27 19 54 ...
+ $ male  : int  1 0 0 1 0 1 0 1 0 1 ...</code></pre>
+      </figure>
+
+      <p>还可以使用 <code>rethinking</code> 包的 <code>precis</code> 汇总函数；后面也会用它汇总后验分布：</p>
+
+      <figure class="code-listing" id="code-4-9">
+        <figcaption>R 代码 4.9</figcaption>
+        <pre><code>precis( d )</code></pre>
+        <pre class="code-output"><code>'data.frame': 544 obs. of 4 variables:
+          mean    sd  5.5%  94.5%      histogram
+height  138.26 27.60 81.11 165.74  ▁▁▁▁▁▁▁▂▁▇▇▅▁
+weight   35.61 14.72  9.36  54.50  ▁▂▃▂▂▂▂▅▇▇▃▂▁
+age      29.34 20.75  1.00  66.13        ▇▅▅▃▅▂▂▁▁
+male      0.47  0.50  0.00   1.00     ▇▁▁▁▁▁▁▁▁▇</code></pre>
+      </figure>
+
+      <p>如果系统无法显示这些直方图，可以改用 <code>precis(d,hist=FALSE)</code>。这个数据框有 4 列，每列 544 项，因此数据中共有 544 个人。每个人都记录了身高（厘米）、体重（千克）、年龄（岁）和“男性指标”（0 表示女性，1 表示男性）。</p>
+
+      <p>目前只使用身高列。身高列其实就是普通的 R 向量，与许多代码例子中一直使用的列表相同。可以用列名访问这个向量：</p>
+
+      <figure class="code-listing" id="code-4-10">
+        <figcaption>R 代码 4.10</figcaption>
+        <pre><code>d$height</code></pre>
+      </figure>
+
+      <p>把符号 <code>$</code> 读作“提取”：从数据框 <code>d</code> 中提取名为 <code>height</code> 的列。它所做的，就只是返回跟在后面的那一列。</p>
+
+      <aside class="overthinking-box" id="overthinking-data-frames">
+        <h3>过度思考：数据框</h3>
+        <p>眼下，整套数据框做法可能显得有点烦人。既然只使用一列，为什么还要费心引入 <code>d</code>？你不必使用数据框；本书所有命令都可以直接传入原始向量。不过，把相关变量保存在同一个数据框中极其方便。等到变量不止一个，并希望把其中一个建模为其他变量的函数时，就会更清楚数据框的价值。无需等太久。</p>
+        <p>更严格地说，数据框是 R 中一种特殊列表。因此，可以使用通常的列表“双中括号”表示法访问单个变量，例如用 <code>d[[1]]</code> 访问第一个变量，或用 <code>d[['x']]</code> 访问名为 <code>x</code> 的变量。与普通列表不同，数据框强制所有变量长度相同；这并不总是好事。正因如此，一些统计软件包——例如强大的 Stan 马尔可夫链抽样器（mc-stan.org）——接受普通数据列表，而非正式数据框。</p>
+      </aside>
+
+      <p>现在只需要样本中成年人的身高。暂时滤掉未成年人，是因为成年以前身高与年龄高度相关。本章后面会要求你处理年龄问题，眼下最好先推迟。可以这样把数据框筛选为年龄至少 18 岁的个体：</p>
+
+      <figure class="code-listing" id="code-4-11">
+        <figcaption>R 代码 4.11</figcaption>
+        <pre><code>d2 &lt;- d[ d$age &gt;= 18 , ]</code></pre>
+      </figure>
+
+      <p>后面将使用数据框 <code>d2</code>。它应当包含 352 行，也就是 352 个个体。</p>
+
+      <aside class="overthinking-box" id="overthinking-index-magic">
+        <h3>过度思考：索引魔法</h3>
+        <p>上面代码中的方括号是<strong>索引表示法</strong>。它非常强大，却也紧凑得令人困惑。数据框 <code>d</code> 是一个矩阵，即由数值组成的矩形网格。可以用 <code>d[row,col]</code> 访问矩阵中的任意值，把 <code>row</code> 和 <code>col</code> 替换为行号、列号即可。若 <code>row</code> 或 <code>col</code> 是一组数字，就会得到多行或多列。若把行或列的位置留空，就会得到该维度的全部内容。例如，<code>d[ 3 , ]</code> 返回第 3 行的所有列；输入 <code>d[,]</code> 会返回整个矩阵，因为它选择了全部行和全部列。</p>
+        <p>因此，<code>d[ d$age &gt;= 18 , ]</code> 会返回 <code>d$age</code> 大于或等于 18 的全部行。逗号后的列位置为空，所以它也返回全部列。结果存入 <code>d2</code>，形成只包含成年人的新数据框。稍加练习，就能用这种方括号索引表示法对数据执行自定义搜索，很像数据库查询。</p>
+      </aside>
+    </section>
+
+    <section id="sec-4-3-2">
+      <h3>4.3.2 模型</h3>
+
+      <p>目标是用高斯分布建模这些身高值。先用 <code>dens(d2$height)</code> 绘制身高分布。数据形状相当接近高斯分布，这也是身高数据的典型情况。原因可能是身高由许多微小生长因子相加而成。正如本章开头所见，和分布往往会收敛到高斯分布。不论具体原因是什么，单一人群中的成人身高几乎总是近似正态。</p>
+
+      <p>因此，目前采用高斯分布作为数据的概率分布是合理的。不过，千万不要只在绘出的结果变量“看起来像高斯分布”时才选择高斯分布。盯着原始数据决定怎样建模，通常不是好主意。例如，数据可能是多个不同高斯分布的混合；在这种情况下，仅凭肉眼查看结果分布，无法发现底层的正态性。此外，正如本章前面所说，要证明使用高斯概率分布合理，经验分布并不需要真的呈高斯形状。</p>
+
+      <p>那么该用哪个高斯分布？可能的均值与标准差有无穷多个组合。现在可以写出一般模型，并计算每组 <span class="math-inline"><var>μ</var></span> 与 <span class="math-inline"><var>σ</var></span> 的可信度。要把身高定义为均值 <span class="math-inline"><var>μ</var></span>、标准差 <span class="math-inline"><var>σ</var></span> 的正态分布，写作：</p>
+
+      <div class="equation-block height-likelihood-equation" id="eq-4-height-likelihood">hᵢ ∼ Normal(μ, σ)</div>
+
+      <p>许多书会把同一模型写成 <span class="math-inline">hᵢ ∼ 𝒩(μ, σ)</span>，含义完全相同。符号 <span class="math-inline"><var>h</var></span> 指身高列表，下标 <span class="math-inline"><var>i</var></span> 表示列表中的每一个元素。按惯例使用 <span class="math-inline"><var>i</var></span>，因为它代表“索引”（index）。索引 <span class="math-inline"><var>i</var></span> 取行号，所以本例中可以是 1 到 352 的任意值，也就是 <code>d2$height</code> 中身高的数量。因此，上面的模型说：魔像关于每项身高测量所知道的一切，都由同一个均值为 <span class="math-inline"><var>μ</var></span>、标准差为 <span class="math-inline"><var>σ</var></span> 的正态分布定义。很快，这些小小的 <span class="math-inline"><var>i</var></span> 会出现在模型定义右侧，届时就会看出为何必须费心写它们。所以即使现在看似只是无用装饰，也不要忽略 <span class="math-inline"><var>i</var></span>。</p>
+
+      <aside class="rethinking-box" id="rethinking-iid">
+        <h3>再思考：独立同分布</h3>
+        <p>上面的短模型，有时被描述为假定各个 <span class="math-inline">hᵢ</span> 值<strong>独立同分布</strong>，可缩写为 i.i.d.、iid 或 IID。同一模型甚至可能写成：</p>
+
+        <div class="equation-block iid-equation" id="eq-4-height-iid">hᵢ ∼ⁱⁱᵈ Normal(μ, σ)</div>
+
+        <p>“iid”表示每个 <span class="math-inline">hᵢ</span> 都使用相同参数、拥有相同概率函数，并且独立于其他 <span class="math-inline"><var>h</var></span> 值。稍加思考便知道，这在物理意义上几乎从不成立。无论是反复测量同一段距离，还是研究人群身高，都很难主张每次测量与其他测量完全独立。例如，家庭成员会因近期共同祖先传下的等位基因而身高相关。</p>
+        <p>不过，只要记得概率存在于魔像内部，而非外部世界，i.i.d. 假设就不必显得尴尬。这个假设描述魔像怎样表示自身不确定性，是认识论假设；除非你坚持如此，否则它不是关于世界的物理假设，也不是本体论假设。E. T. Jaynes（1922–1998）把混淆认识论陈述与本体论主张的错误称为<strong>心智投射谬误</strong>。<sup><a id="note-70-ref" href="#note-70" aria-label="尾注 70">70</a></sup></p>
+        <p>重点并非认识论胜过现实，而是说：当我们不知道这些相关性时，i.i.d. 是最保守的分布选择。<sup><a id="note-71-ref" href="#note-71" aria-label="尾注 71">71</a></sup>第 10 章会再次讨论这个问题。还有一个称为 de Finetti 定理的数学结果告诉我们：可交换值可以由 i.i.d. 分布的混合来近似。通俗说，可交换值能够重新排序。实际影响是，不能把“i.i.d.”假设读得太字面，因为不同过程模型仍可能对应同一统计模型（正如第 1 章所论）。此外，许多类型的相关性几乎不影响分布整体形状，只影响数值出现的确切顺序。例如，姐妹之间的身高高度相关，但女性身高的总体分布仍然近乎完美正态。在这些情况下，即使忽略相关性，i.i.d. 依然非常有用。比如，马尔可夫链蒙特卡洛（第 9 章）就能使用高度相关的序列样本，估计几乎任何想要的 iid 分布。</p>
+      </aside>
+
+      <p>要完成模型，还需要先验。待估参数是 <span class="math-inline"><var>μ</var></span> 和 <span class="math-inline"><var>σ</var></span>，因此需要所有参数的联合先验概率 <span class="math-inline">Pr(<var>μ</var>, <var>σ</var>)</span>。多数情况下，会为每个参数独立指定先验，这等价于假定 <span class="math-inline">Pr(<var>μ</var>, <var>σ</var>) = Pr(<var>μ</var>) Pr(<var>σ</var>)</span>。于是可以写成：</p>
+
+      <div class="equation-block annotated-model-equation" id="eq-4-height-model-priors">
+        <div><span>hᵢ ∼ Normal(μ, σ)</span><span class="equation-label">[似然]</span></div>
+        <div><span>μ ∼ Normal(178, 20)</span><span class="equation-label">[μ 先验]</span></div>
+        <div><span>σ ∼ Uniform(0, 50)</span><span class="equation-label">[σ 先验]</span></div>
+      </div>
+
+      <p>右侧标签并非模型的一部分，只是帮助追踪每行用途的注释。<span class="math-inline"><var>μ</var></span> 的先验是一个宽广的高斯先验，以 178 厘米为中心，95% 的概率位于 <span class="math-inline">178 ± 40</span> 之间。</p>
+
+      <p>为什么是 178 厘米？因为作者身高 178 厘米。从 138 到 218 厘米，覆盖了人类群体平均身高极其宽广的可信范围。因此，这个先验融入了特定领域的信息。每个人都对人类身高有所了解，都能设定一个这类合理而模糊的先验。但后面会看到，在许多回归问题中使用先验信息更微妙，因为参数并不总有如此清晰的物理含义。</p>
+
+      <p class="continuation-note">第 4.3.2 节将在原书 PDF 第 101 页继续。</p>
     </section>
   </section>
 
@@ -287,10 +380,12 @@ d &lt;- Howell1</code></pre>
       <li id="note-67">这一主题最著名的非技术读物是 Taleb（2007），影响很大；相关技术文献也相当丰富。注意，“heavy tail（厚尾）”与“fat tail（肥尾）”有时具有精确的技术定义。 <a class="backref" href="#note-67-ref" aria-label="返回正文">↩</a></li>
       <li id="note-68">Pasquale Cirillo 与 Nassim Nicholas Taleb 的精彩文章《暴力冲突的衰落：数据究竟说明了什么？》集中讨论了这个问题。 <a class="backref" href="#note-68-ref" aria-label="返回正文">↩</a></li>
       <li id="note-69">参见 Howell（2010）和 Howell（2000），另见 Lee 和 DeVore（1976）。更多原始数据可从 <span class="url-text">https://tspace.library.utoronto.ca/handle/1807/10395</span> 下载。 <a class="backref" href="#note-69-ref" aria-label="返回正文">↩</a></li>
+      <li id="note-70">参见 Jaynes（2003）第 21–22 页；该书索引还列出这一概念在各种统计论证中的其他用例。 <a class="backref" href="#note-70-ref" aria-label="返回正文">↩</a></li>
+      <li id="note-71">参见 Jaynes（1986）关于“左撇子袋鼠偏好哪种啤酒”的有趣例子；这篇论文还有一份 1996 年更新版可在线获取。 <a class="backref" href="#note-71-ref" aria-label="返回正文">↩</a></li>
     </ol>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 89–97 页已完成翻译、逐页核对、阶段契约和桌面/移动端视觉验收。下一批从 PDF 第 98 页继续。
+    <strong>译稿状态：</strong>PDF 第 89–100 页已完成翻译、逐页核对、阶段契约和桌面/移动端视觉验收。下一批从 PDF 第 101 页继续。
   </aside>
 </article>

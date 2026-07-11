@@ -277,7 +277,19 @@
     "logical compatibility": "逻辑相容性",
     "partial census data": "部分人口普查资料",
     "foraging population": "采集狩猎群体",
-    "data frame": "数据框"
+    "data frame": "数据框",
+    "named column": "命名列",
+    "individual case": "个体案例",
+    "raw vector": "原始向量",
+    "double-bracket notation": "双中括号表示法",
+    "index notation": "索引表示法",
+    "adult sample": "成人样本",
+    "independent and identically distributed": "独立同分布",
+    "mind projection fallacy": "心智投射谬误",
+    "exchangeable": "可交换",
+    "de Finetti's theorem": "de Finetti 定理",
+    "joint prior": "联合先验",
+    "domain-specific information": "特定领域信息"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"
