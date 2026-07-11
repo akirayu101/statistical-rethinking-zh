@@ -52,8 +52,8 @@
     }
   },
   "chapter-02": {
-    "required_status": "in_progress",
-    "source_pages": [35, 61],
+    "required_status": "verified",
+    "source_pages": [35, 64],
     "required_ids": [
       "fig-2-1",
       "sec-2-1",
@@ -98,6 +98,27 @@
       "sec-2-4-5",
       "overthinking-mcmc-globe",
       "code-2-8",
+      "code-2-9",
+      "sec-2-5",
+      "sec-2-6",
+      "practice-easy",
+      "exercise-2e1",
+      "exercise-2e2",
+      "exercise-2e3",
+      "exercise-2e4",
+      "practice-medium",
+      "exercise-2m1",
+      "exercise-2m2",
+      "exercise-2m3",
+      "exercise-2m4",
+      "exercise-2m5",
+      "exercise-2m6",
+      "exercise-2m7",
+      "practice-hard",
+      "exercise-2h1",
+      "exercise-2h2",
+      "exercise-2h3",
+      "exercise-2h4",
       "chapter-02-notes"
     ],
     "required_headings": [
@@ -122,11 +143,16 @@
       "2.4.3 网格近似",
       "2.4.4 二次近似",
       "2.4.5 马尔可夫链蒙特卡洛",
+      "2.5 总结",
+      "2.6 练习",
+      "简单题",
+      "中等题",
+      "困难题",
       "尾注"
     ],
     "counts": {
-      "section": 21,
-      "figure": 16,
+      "section": 23,
+      "figure": 17,
       "figure img": 8,
       ".marble-tree svg": 2,
       ".garden-figure": 3,
@@ -140,7 +166,7 @@
       ".update-table": 2,
       ".probability-table": 1,
       ".equation-block": 13,
-      ".code-listing": 8,
+      ".code-listing": 9,
       ".term-definitions li": 4,
       ".component-counts": 1,
       ".parameter-questions li": 4,
@@ -151,6 +177,10 @@
       ".grid-recipe li": 5,
       ".quadratic-steps li": 2,
       ".precision-table": 1,
+      ".practice-group": 3,
+      ".exercise": 15,
+      ".exercise-options": 4,
+      ".test-accuracy-list": 1,
       ".endnotes li": 12
     }
   }

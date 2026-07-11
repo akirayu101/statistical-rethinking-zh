@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-02" data-source-pages="35-61">
+<article class="book-article" data-chapter="chapter-02" data-source-pages="35-64">
   <header class="chapter-header">
     <p class="eyebrow">第二章</p>
     <h1>小世界与大世界</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 35–61 页</p>
+    <p class="source-range">本章译稿对应原书 PDF 第 35–64 页</p>
   </header>
 
   <p>1492 年，Cristoforo Colombo（Christopher Columbus，中文常译“哥伦布”）那次声名狼藉的向西航行开始时，他相信地球是球形的。在这一点上，他和当时大多数受过教育的人一样。与大多数人不同的是，他还相信地球比实际小得多：赤道周长只有 30,000 公里，而不是真实的 40,000 公里（图 2.1）。<sup><a href="#note-37" aria-label="尾注 37">37</a></sup>这是欧洲历史上影响最为深远的错误之一。</p>
@@ -883,7 +883,150 @@ for ( i in 2:n_samples ) {
 }</code></pre>
         </figure>
         <p class="scroll-hint code-scroll-hint">代码较宽，可横向滚动查看完整行。</p>
+
+        <p><code>p</code> 中的数值就是从后验分布抽出的样本。可以用下面的代码将它们与解析后验比较：</p>
+
+        <figure class="code-listing" id="code-2-9">
+          <figcaption>R 代码 2.9</figcaption>
+          <pre><code>dens( p , xlim=c(0,1) )
+curve( dbeta( x , W+1 , L+1 ) , lty=2 , add=TRUE )</code></pre>
+        </figure>
+        <p class="scroll-hint code-scroll-hint">代码较宽，可横向滚动查看完整行。</p>
+
+        <p>这很古怪，但确实有效。第 9 章将解释这套算法，也就是<strong>Metropolis 算法</strong>。</p>
       </aside>
+    </section>
+
+    <section id="sec-2-5">
+      <h2>2.5 总结</h2>
+
+      <p>本章介绍了贝叶斯数据分析在概念上的运作机制。贝叶斯推断的目标是后验概率分布。后验概率表示：数据的每一种候选原因，分别有多少种相对方式能够产生这些数据。这些相对数量体现了不同猜想的可信程度。随着观测到来，可信程度会被更新；这个过程称为贝叶斯更新。</p>
+
+      <p>从更机械的角度说，贝叶斯模型由变量以及这些变量的分布定义组合而成。数据的概率通常称为似然；在参数取值固定时，它给出某项观测（数据）的可信程度。先验则在尚未考虑数据时，给出参数每个可能取值的可信程度。概率规则告诉我们：纳入数据后，计算这些可信程度的合乎逻辑的方法是使用贝叶斯定理，结果便是后验分布。</p>
+
+      <p>实践中，贝叶斯模型通过数值技术拟合数据，例如网格近似、二次近似和马尔可夫链蒙特卡洛。每种方法都带来不同的权衡。</p>
+    </section>
+
+    <section id="sec-2-6">
+      <h2>2.6 练习</h2>
+
+      <div class="practice-group" aria-labelledby="practice-easy">
+        <h3 id="practice-easy">简单题</h3>
+
+        <div class="exercise" id="exercise-2e1">
+          <h4>2E1</h4>
+          <p>下列哪些表达式对应这句话：“星期一下雨的概率”？</p>
+          <ol class="exercise-options">
+            <li><span class="math-inline">Pr(下雨)</span></li>
+            <li><span class="math-inline">Pr(下雨 | 星期一)</span></li>
+            <li><span class="math-inline">Pr(星期一 | 下雨)</span></li>
+            <li><span class="math-inline">Pr(下雨, 星期一) / Pr(星期一)</span></li>
+          </ol>
+        </div>
+
+        <div class="exercise" id="exercise-2e2">
+          <h4>2E2</h4>
+          <p>下列哪句话对应表达式 <span class="math-inline">Pr(星期一 | 下雨)</span>？</p>
+          <ol class="exercise-options">
+            <li>星期一下雨的概率。</li>
+            <li>已知今天是星期一时，下雨的概率。</li>
+            <li>已知正在下雨时，今天是星期一的概率。</li>
+            <li>今天是星期一并且正在下雨的概率。</li>
+          </ol>
+        </div>
+
+        <div class="exercise" id="exercise-2e3">
+          <h4>2E3</h4>
+          <p>下列哪些表达式对应这句话：“已知正在下雨时，今天是星期一的概率”？</p>
+          <ol class="exercise-options">
+            <li><span class="math-inline">Pr(星期一 | 下雨)</span></li>
+            <li><span class="math-inline">Pr(下雨 | 星期一)</span></li>
+            <li><span class="math-inline">Pr(下雨 | 星期一) Pr(星期一)</span></li>
+            <li><span class="math-inline">Pr(下雨 | 星期一) Pr(星期一) / Pr(下雨)</span></li>
+            <li><span class="math-inline">Pr(星期一 | 下雨) Pr(下雨) / Pr(星期一)</span></li>
+          </ol>
+        </div>
+
+        <div class="exercise" id="exercise-2e4">
+          <h4>2E4</h4>
+          <p>贝叶斯统计学家 Bruno de Finetti（1906–1985）在概率论著作开篇宣称：“概率并不存在。”原文使用了全大写，所以我猜 de Finetti 希望我们把这句话喊出来。他的意思是：概率是一个工具，用来从知识有限的观察者视角描述不确定性；它并不具有客观实在性。结合这句话讨论本章的地球仪投掷例子。说“水域的概率是 0.7”究竟意味着什么？</p>
+        </div>
+      </div>
+
+      <div class="practice-group" aria-labelledby="practice-medium">
+        <h3 id="practice-medium">中等题</h3>
+
+        <div class="exercise" id="exercise-2m1">
+          <h4>2M1</h4>
+          <p>回想本章的地球仪投掷模型。对下面每组观测，计算并绘制网格近似后验分布。每种情况下都假设 <span class="math-inline"><var>p</var></span> 服从均匀先验。</p>
+          <ol class="exercise-options">
+            <li>W, W, W</li>
+            <li>W, W, W, L</li>
+            <li>L, W, W, L, W, W, W</li>
+          </ol>
+        </div>
+
+        <div class="exercise" id="exercise-2m2">
+          <h4>2M2</h4>
+          <p>现在假设 <span class="math-inline"><var>p</var></span> 的先验在 <span class="math-inline"><var>p</var> &lt; 0.5</span> 时等于零，在 <span class="math-inline"><var>p</var> ≥ 0.5</span> 时等于某个正常数。再次为上一题的每组观测计算并绘制网格近似后验分布。</p>
+        </div>
+
+        <div class="exercise" id="exercise-2m3">
+          <h4>2M3</h4>
+          <p>假设有两个地球仪，一个代表地球，一个代表火星。地球仪有 70% 被水覆盖，火星仪则是 100% 陆地。再假设其中一个球被抛到空中并得到一次“陆地”观测，但你不知道抛的是哪一个；两个球被选中的先验概率相同。证明：在已经看到“陆地”的条件下，这个球是地球仪的后验概率 <span class="math-inline">Pr(地球 | 陆地)</span> 为 0.23。</p>
+        </div>
+
+        <div class="exercise" id="exercise-2m4">
+          <h4>2M4</h4>
+          <p>假设一副牌只有三张。每张牌有两面，每一面不是黑色就是白色。一张牌两面都是黑色，第二张一黑一白，第三张两面都是白色。现在把三张牌放进袋中摇匀。有人从袋中抽出一张牌，平放在桌上；朝上的一面是黑色，但你不知道朝下那面的颜色。证明另一面也是黑色的概率为 2/3。请用本章第 2 节的计数方法：数出每张牌能够产生已观测数据（桌上朝上的一面为黑色）的方式数。</p>
+        </div>
+
+        <div class="exercise" id="exercise-2m5">
+          <h4>2M5</h4>
+          <p>现在假设有四张牌：黑/黑、黑/白、白/白，以及另一张黑/黑。仍然从袋中抽一张牌，并看到黑色一面朝上。再次计算另一面是黑色的概率。</p>
+        </div>
+
+        <div class="exercise" id="exercise-2m6">
+          <h4>2M6</h4>
+          <p>设想黑色墨水很重，因此黑色面越多的牌越重，也就越不容易从袋中抽出。仍假设有三张牌：黑/黑、黑/白和白/白。多次实验后，你得出结论：每存在 1 种抽出黑/黑牌的方式，就有 2 种抽出黑/白牌的方式和 3 种抽出白/白牌的方式。现在抽出一张牌，黑色一面朝上。证明另一面为黑色的概率变为 0.5。仍请使用计数方法。</p>
+        </div>
+
+        <div class="exercise" id="exercise-2m7">
+          <h4>2M7</h4>
+          <p>再次采用最初的牌题：一张牌已经抽出，黑色一面朝上。在查看另一面之前，再从袋中抽一张牌，正面朝上放到桌上；新牌露出的一面是白色。证明第一张牌（露出黑色面的那张）另一面也是黑色的概率现在为 0.75。如果可以，请使用计数方法。提示：把它当作一串地球仪投掷；对每一种可能的第一张牌，数出看到每项观测的所有方式。</p>
+        </div>
+      </div>
+
+      <div class="practice-group" aria-labelledby="practice-hard">
+        <h3 id="practice-hard">困难题</h3>
+
+        <div class="exercise" id="exercise-2h1">
+          <h4>2H1</h4>
+          <p>假设有两个大熊猫物种。两者在野外同样常见，生活在相同地区，外表完全一样，也吃相同食物；目前还没有基因检测能够区分它们。不过，它们每胎幼崽数量不同：A 种有 10% 的概率生双胞胎，否则只生一只；B 种有 20% 的概率生双胞胎，否则也只生一只。假设这些数字来自多年野外研究，确定无疑。</p>
+          <p>现在假设你正在管理一个圈养大熊猫繁育项目。新来了一只物种未知的雌性大熊猫，它刚刚生下双胞胎。它下一胎仍是双胞胎的概率是多少？</p>
+        </div>
+
+        <div class="exercise" id="exercise-2h2">
+          <h4>2H2</h4>
+          <p>沿用上一题的全部事实。假设我们只观察到第一胎，而且是双胞胎；计算这只大熊猫属于 A 种的概率。</p>
+        </div>
+
+        <div class="exercise" id="exercise-2h3">
+          <h4>2H3</h4>
+          <p>继续上一题。假设同一只熊猫母亲第二胎不是双胞胎，而是单只幼崽。计算它属于 A 种的后验概率。</p>
+        </div>
+
+        <div class="exercise" id="exercise-2h4">
+          <h4>2H4</h4>
+          <p>贝叶斯统计学家常常自豪地说，贝叶斯推断很容易利用全部数据，即使数据类型彼此不同。</p>
+          <p>现在假设一位兽医带来一种新的基因检测，声称能识别这只熊猫母亲的物种。但这种检测和所有检测一样并不完美。你掌握的信息如下：</p>
+          <ul class="test-accuracy-list">
+            <li>它正确识别 A 种大熊猫的概率为 0.8。</li>
+            <li>它正确识别 B 种大熊猫的概率为 0.65。</li>
+          </ul>
+          <p>兽医给你的熊猫做了检测，并告诉你结果为 A 种阳性。先忽略此前的生育信息，计算这只熊猫属于 A 种的后验概率；然后把生育数据也纳入，再做一次计算。</p>
+        </div>
+      </div>
     </section>
   </section>
 
@@ -906,6 +1049,6 @@ for ( i in 2:n_samples ) {
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 35–61 页已完成翻译、逐页渲染对照和桌面/移动端视觉验收；下一批从 PDF 第 62 页开始。
+    <strong>译稿状态：</strong>第 2 章 PDF 第 35–64 页已完成整章翻译、逐页渲染对照、结构契约和桌面/移动端视觉验收。
   </aside>
 </article>
