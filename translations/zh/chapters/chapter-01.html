@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-01" data-source-pages="17-20">
+<article class="book-article" data-chapter="chapter-01" data-source-pages="17-23">
   <header class="chapter-header">
     <p class="eyebrow">第一章</p>
     <h1>布拉格魔像</h1>
-    <p class="source-range">当前译稿对应原书 PDF 第 17–20 页</p>
+    <p class="source-range">当前译稿对应原书 PDF 第 17–23 页</p>
   </header>
 
   <p>16 世纪，哈布斯堡王朝统治着中欧大部、尼德兰和西班牙，以及西班牙在美洲的殖民地。它或许是世界上第一个真正的全球强权；太阳总会照耀着其疆域的某个角落。王朝的统治者同时也是神圣罗马帝国皇帝，权力中心设在布拉格。16 世纪后期的皇帝鲁道夫二世热爱知识生活。他资助艺术、科学（包括占星术与炼金术）和数学，使布拉格成为世界性的学术中心。正是在这种崇尚学问的氛围中，早期的机器人——布拉格魔像——出现了。</p>
@@ -112,6 +112,81 @@
       <li><strong>假说不是模型。</strong>假说与不同类型模型之间的关系十分复杂：多个模型可能对应同一个假说，多个假说也可能对应同一个模型。因此，严格证伪不可能实现。</li>
       <li><strong>测量很重要。</strong>即使我们认为数据已经证伪了某个模型，另一位观察者仍可能质疑我们的方法和测量；他们不信任这些数据。有时，他们是对的。</li>
     </ol>
+
+    <p>由于这两个原因，演绎式证伪从来都行不通。科学方法无法被简化成某种统计程序，因此统计方法也不该装作自己能够做到。统计证据只是科学这锅滚烫乱炖的一部分，其中有争斗、自负，也有彼此施压。如果你和我一样相信科学往往确实有效，那么，得知科学并不是靠证伪运作，不应改变你的信念。但它或许能帮助你把科学做得更好，因为你会开始看见统计魔像许多合理而有用的功能。</p>
+
+    <aside class="rethinking-box">
+      <h3>再思考：NHST 是证伪主义的吗？</h3>
+      <p>零假设显著性检验（null hypothesis significance testing，NHST）常被视为证伪主义或 Popper 式科学哲学的体现。然而，NHST 通常被用来证伪零假设，而不是实际的研究假说。因此，被证伪的并不是解释模型，而是别的东西。<sup><a href="#note-5" aria-label="尾注 5">5</a></sup>这似乎恰好把 Karl Popper 的哲学倒了过来。</p>
+    </aside>
+
+    <section id="sec-1-2-1">
+      <h3>1.2.1 假说不是模型</h3>
+
+      <p>当我们试图证伪一个假说时，必须借助某种模型。即使这种尝试并未明确采用统计方法，也总有一个未明说的测量或证据模型，把假说转化为可操作的形式。所有模型都是错的，<sup><a href="#note-6" aria-label="尾注 6">6</a></sup>那么“证伪一个模型”究竟意味着什么？必须借助模型带来的一个后果是：仅仅因为拒绝了由某个假说导出的模型，我们便再也无法演绎出该假说为假。</p>
+
+      <p>下面用种群生物学的一个例子来探索这一后果（图 1.2）。从 20 世纪 60 年代开始，进化生物学家逐渐关注这样一种主张：基因频率的大多数进化变化并非由自然选择造成，而是来自突变和遗传漂变。几乎没有人真正怀疑自然选择塑造了功能性设计；争论针对的是遗传序列。围绕分子进化“中性”模型的学术交锋由此展开，并富有成果地持续了数十年。<sup><a href="#note-7" aria-label="尾注 7">7</a></sup>这场交锋与 Motoo Kimura（木村资生，1924–1994）的名字联系最为紧密；他或许是中性模型最坚定的倡导者，但许多其他种群遗传学家也参与其中。随着时间推移，群落生态学<sup><a href="#note-8" aria-label="尾注 8">8</a></sup>和人类学<sup><a href="#note-9" aria-label="尾注 9">9</a></sup>等相关学科也经历过——或正在经历——各自版本的中性论争。</p>
+
+      <p>我们用图 1.2 的示意图，在中性进化论争的背景下探索动机假说与不同模型之间的联系。左侧是两个典型化的非正式假说：要么进化是“中性的”（H<sub>0</sub>），要么自然选择以某种方式发挥作用（H<sub>1</sub>）。这些假说始于语言猜想而非精确模型，边界自然含混。仅仅改变种群结构、位点数量、每个位点的等位基因数量、突变率或重组方式等选择，就能得到数以千计可被称为“中性”的详细过程。</p>
+
+      <p>作出这些选择后，我们便得到图 1.2 中间一列的详细进化过程模型。P<sub>0A</sub> 与 P<sub>0B</sub> 的区别在于：前者假定种群规模和结构已经保持恒定足够长的时间，使等位基因分布达到稳态；后者则设想种群规模会随时间波动——即使不同等位基因之间没有选择差异，这也可能成立。“选择发挥作用”的假说 H<sub>1</sub> 同样对应许多过程模型。图中列出两个重要模型：一个假定选择总是偏爱某些等位基因，另一个则假定选择随时间波动，在不同时段偏爱不同的等位基因。<sup><a href="#note-10" aria-label="尾注 10">10</a></sup></p>
+
+      <figure class="book-figure relations-figure" id="fig-1-2">
+        <div class="figure-scroll" tabindex="0" aria-label="可横向滚动的假说、过程模型和统计模型关系图">
+          <svg viewBox="0 0 900 560" role="img" aria-labelledby="fig-1-2-title fig-1-2-desc">
+            <title id="fig-1-2-title">假说、过程模型与统计模型之间的多对多关系</title>
+            <desc id="fig-1-2-desc">中性假说 H0 对应两个中性过程模型，选择假说 H1 对应两个选择过程模型；不同过程模型又交叉连接三个统计模型，说明假说与模型之间并非一一对应。</desc>
+            <g class="relation-lines">
+              <path d="M245 155 L350 105"/><path d="M245 165 L350 220"/>
+              <path d="M245 390 L350 335"/><path d="M245 400 L350 450"/>
+              <path d="M530 105 L690 280"/><path d="M530 220 L690 145"/>
+              <path d="M530 335 L690 430"/><path d="M530 450 L690 280"/>
+            </g>
+            <g class="relation-heading"><text x="170" y="42">假说</text><text x="440" y="42">过程模型</text><text x="750" y="42">统计模型</text></g>
+            <g class="hypothesis-node"><ellipse cx="170" cy="160" rx="82" ry="58"/><text x="170" y="140"><tspan>H</tspan><tspan baseline-shift="sub" font-size="13">0</tspan><tspan x="170" dy="28">“进化是中性的”</tspan></text></g>
+            <g class="hypothesis-node"><ellipse cx="170" cy="395" rx="82" ry="58"/><text x="170" y="375"><tspan>H</tspan><tspan baseline-shift="sub" font-size="13">1</tspan><tspan x="170" dy="28">“选择发挥作用”</tspan></text></g>
+            <g class="process-node"><rect x="350" y="65" width="180" height="80"/><text x="440" y="88"><tspan>P</tspan><tspan baseline-shift="sub" font-size="13">0A</tspan><tspan x="440" dy="25">中性、稳态</tspan></text></g>
+            <g class="process-node"><rect x="350" y="180" width="180" height="80"/><text x="440" y="203"><tspan>P</tspan><tspan baseline-shift="sub" font-size="13">0B</tspan><tspan x="440" dy="25">中性、非稳态</tspan></text></g>
+            <g class="process-node"><rect x="350" y="295" width="180" height="80"/><text x="440" y="318"><tspan>P</tspan><tspan baseline-shift="sub" font-size="13">1A</tspan><tspan x="440" dy="25">恒定选择</tspan></text></g>
+            <g class="process-node"><rect x="350" y="410" width="180" height="80"/><text x="440" y="433"><tspan>P</tspan><tspan baseline-shift="sub" font-size="13">1B</tspan><tspan x="440" dy="25">波动选择</tspan></text></g>
+            <g class="stat-node"><circle cx="750" cy="145" r="58"/><text x="750" y="152"><tspan>M</tspan><tspan baseline-shift="sub" font-size="13">I</tspan></text></g>
+            <g class="stat-node"><circle cx="750" cy="280" r="58"/><text x="750" y="287"><tspan>M</tspan><tspan baseline-shift="sub" font-size="13">II</tspan></text></g>
+            <g class="stat-node"><circle cx="750" cy="430" r="58"/><text x="750" y="437"><tspan>M</tspan><tspan baseline-shift="sub" font-size="13">III</tspan></text></g>
+          </svg>
+        </div>
+        <p class="scroll-hint">图较宽，可横向滚动查看完整关系。</p>
+        <figcaption><strong>图 1.2：</strong>以进化“中性”模型为例，说明假说（左）、详细过程模型（中）与统计模型（右）之间的关系。假说 H 通常很含混，因此会对应多个过程模型 P。对假说的统计评估很少直接处理过程模型，而是依赖只反映过程模型某些方面的统计模型 M。于是，两个方向上都是多重关系：假说不能推出唯一模型，模型也不能推出唯一假说。这一事实使统计推断复杂得多。</figcaption>
+      </figure>
+
+      <p>这些过程模型的一个重要特征，是它们表达了因果结构。不同过程模型将不同的因果关系形式化。无论通过数学还是模拟进行分析，模型中的时间方向都意味着某些事物会导致另一些事物，而反向因果并不成立。我们可以用这类模型做实验，探查它们蕴含的因果后果。有时，甚至还没进入统计推断，这些探查就已经表明模型无法解释我们关心的现象。</p>
+
+      <p>要用数据挑战过程模型，就必须把它们转化成统计模型。遗憾的是，统计模型并不体现具体的因果关系，只表达变量之间的关联。因此，许多不同的过程模型都可能与同一个统计模型相容。</p>
+
+      <p>怎样从因果模型得到统计模型？一种办法，是从因果模型推导某个量——某个“统计量”——的预期频率分布。例如，在这里常用的统计量是不同遗传变体（等位基因）频率的频率分布，也就是直方图。有些等位基因很罕见，只出现在少数个体中；另一些则十分常见，出现在种群中的许多个体里。种群遗传学的一项著名结果是，P<sub>0A</sub> 一类模型会产生等位基因频率的幂律分布。由此得到统计模型 M<sub>II</sub>，它预测数据将呈幂律。相较之下，恒定选择过程模型 P<sub>1A</sub> 预测的是截然不同的 M<sub>III</sub>。</p>
+
+      <p>麻烦的是，其他选择模型 P<sub>1B</sub> 会推出与中性模型相同的统计模型 M<sub>II</sub>；它们同样会产生幂律。于是，我们得到一个令人不安的教训：</p>
+
+      <ol class="argument-list">
+        <li>任意给定的统计模型 M，都可能对应不止一个过程模型 P。</li>
+        <li>任意给定的假说 H，都可能对应不止一个过程模型 P。</li>
+        <li>任意给定的统计模型 M，都可能对应不止一个假说 H。</li>
+      </ol>
+
+      <p>现在看看把统计模型与数据比较时会发生什么。经典做法是把“中性”模型当作零假设。如果数据与零假设下的预期不够相似，我们就说“拒绝”零假设。假设沿用这一领域的历史，把 P<sub>0A</sub> 当作零假设，它会推出与 M<sub>II</sub> 相符的数据。但同一个统计模型也对应选择模型 P<sub>1B</sub>，于是，无论拒绝还是接受零假设，究竟该如何解释都很不清楚。这个零模型并不专属于某个过程模型或某个假说。</p>
+
+      <p>如果拒绝零假设，我们不能真正断定选择发挥了作用，因为还有其他中性模型会预测不同的等位基因分布。如果未能拒绝零假设，我们也不能真正断定进化是中性的，因为某些选择模型预期的频率分布与它完全相同。</p>
+
+      <p>这实在很麻烦。看着图 1.2，问题一目了然；但很少有人如此幸运。种群遗传学已经认识到这一问题，其他学科的研究者却仍在用幂律预期检验频率分布，甚至声称中性模型只有一个。<sup><a href="#note-11" aria-label="尾注 11">11</a></sup>即使真的只有一个中性模型，仍有众多非中性模型会模仿中性模型的预测，因此，无论拒绝还是未能拒绝零模型，都没有多大推断力。</p>
+
+      <p>那么能做些什么？如果手头有多个过程模型，其实能做很多事。若所有感兴趣的过程模型给出十分相似的预测，你就知道需要换一种方式描述证据，让不同过程在这种描述下呈现差异。例如，P<sub>0A</sub> 与 P<sub>1B</sub> 对等位基因频率分布给出的幂律预测非常相似，却对等位基因频率随时间变化的分布给出截然不同的预测。明确比较多个模型的预测，可以让你避开一些司空见惯的愚行。</p>
+
+      <p>统计模型还会受到其他混淆，例如未观测变量和抽样偏差造成的混淆。过程模型能让我们在设计统计模型时预先考虑这些问题。仅有统计模型是不够的。</p>
+
+      <aside class="rethinking-box">
+        <h3>再思考：熵与模型识别</h3>
+        <p>统计模型经常对应许多不同的详细过程模型，其中一个原因是它们依赖正态、二项、Poisson 等分布。这些分布都属于同一个家族——指数族。大自然偏爱这个家族的成员，因为大自然偏爱熵，而所有指数族分布都是最大熵分布。把这段解释中的大自然拟人化去掉，要等到第 10 章。实际含义是：我们无法根据幂律推断进化过程，正如无法根据身高服从正态分布推断发育过程一样。这个事实应使我们对典型回归模型——本书的主体——究竟能告诉我们多少机制过程保持谦逊。另一方面，这些分布的最大熵性质意味着，即使无法识别底层过程，我们仍能用它们完成有用的统计工作。我们不仅识别不了，而且不必识别。</p>
+      </aside>
+    </section>
   </section>
 
   <section class="endnotes" id="chapter-01-notes" role="doc-endnotes">
@@ -121,10 +196,17 @@
       <li id="note-2">大概不存在永远不会损坏、变形或故障的算法或机器。对此观察常见的引文是 Wittgenstein（1953）<cite>Philosophical Investigations</cite> 第 193 节。本书后面讨论更复杂的模型及其数据拟合方法时，故障问题还会再次出现。 <a class="backref" href="#sec-1-1" aria-label="返回正文">↩</a></li>
       <li id="note-3">参见 Mulkay 和 Gilbert（1981）。我有时会教授一门包含部分科学哲学内容的博士核心课程；博士生几乎无一例外会惊讶地发现，他们对因果的哲学看法与 Popper 或其他科学哲学家的观点相去甚远。要迅速进入科学哲学史，Ian Hacking 的 <cite>Representing and Intervening</cite>（1983）前半部分或许是最佳途径。内容虽已略显陈旧，却仍然易读而开阔。 <a class="backref" href="#sec-1-2" aria-label="返回正文">↩</a></li>
       <li id="note-4">或许最好从 Popper 的最后一本书 <cite>The Myth of the Framework</cite>（1996）读起。我也建议感兴趣的读者直接阅读其早期著作 <cite>Logic of Scientific Discovery</cite> 的现代译本，尤其是第 6、8、9、10 章；它们表明 Popper 很清楚，把科学描述成证伪练习会遇到哪些困难。他后期的其他作品——其中许多收入 <cite>Objective Knowledge: An Evolutionary Approach</cite>——还显示，Popper 把科学知识的产生看作一种允许多种方法并存的演化过程。 <a class="backref" href="#sec-1-2" aria-label="返回正文">↩</a></li>
+      <li id="note-5">Meehl（1967）指出，这会形成一个方法论悖论：测量越改进，就越容易拒绝零假设。但研究假说没有作出任何具体的定量预测，因此，更精确的测量并不会带来更强的佐证。另见 Andrew Gelman 于 2014 年 9 月 5 日发表的<a href="http://andrewgelman.com/2014/09/05/confirmationist-falsificationist-paradigms-science/">博客文章</a>。 <a class="backref" href="#sec-1-2" aria-label="返回正文">↩</a></li>
+      <li id="note-6">George E. P. Box 因“所有模型都是错的”这句话而闻名。据我所知，他最早公开使用它，是把它作为 1979 年一篇论文的节标题（Box，1979）。像我这样的种群生物学家更熟悉 Richard Levins 那篇在哲学上相近、讨论一般模型构建的文章“<cite>The Strategy of Model Building in Population Biology</cite>”（Levins，1966）。 <a class="backref" href="#sec-1-2-1" aria-label="返回正文">↩</a></li>
+      <li id="note-7">Ohta 和 Gillespie（1996）。 <a class="backref" href="#sec-1-2-1" aria-label="返回正文">↩</a></li>
+      <li id="note-8">Hubbell（2001）。这套理论促使人们更清楚地构建模型、理解理论与数据的关系，因此很有生产力；但它也遇到了困难，参见 Clark（2012）。关于对“中性”更一般的怀疑态度，参见 Proulx 和 Adler（2010）。 <a class="backref" href="#sec-1-2-1" aria-label="返回正文">↩</a></li>
+      <li id="note-9">关于把 Kimura 模型直接应用于文化变异的例子，参见 Hahn 和 Bentley（2003）。同样的认识论问题会在这里重现，只是理论精度低得多。Hahn 和 Bentley 后来对此采取了更细致的观点，参见他们对 Lansing 和 Cox（2011）的评论，以及 Feldman 的类似评论。 <a class="backref" href="#sec-1-2-1" aria-label="返回正文">↩</a></li>
+      <li id="note-10">Gillespie（1977）。 <a class="backref" href="#sec-1-2-1" aria-label="返回正文">↩</a></li>
+      <li id="note-11">Lansing 和 Cox（2011）。另见 Hahn、Bentley 与 Feldman 在该文同行评论中提出的异议。 <a class="backref" href="#sec-1-2-1" aria-label="返回正文">↩</a></li>
     </ol>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 17–20 页已完成文本层、页面渲染与人工语义核对；后续页面尚未进入本章稿件。
+    <strong>译稿状态：</strong>PDF 第 17–23 页已完成文本层、页面渲染与人工语义核对；后续页面尚未进入本章稿件。
   </aside>
 </article>

@@ -28,6 +28,7 @@ main { width: min(100% - 2rem, 72rem); margin: 0 auto; padding: 3.5rem 0 6rem; }
 h1, h2 { line-height: 1.25; text-wrap: balance; }
 h1 { margin: 0; font-size: clamp(2.25rem, 6vw, 4.5rem); letter-spacing: -.035em; }
 h2 { margin-top: 3.6rem; font-size: clamp(1.5rem, 4vw, 2.1rem); color: var(--blue); }
+h3 { margin: 2.6rem 0 1rem; font-size: 1.22rem; line-height: 1.4; }
 .subtitle, .source-range { color: var(--muted); }
 .progress-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: .7rem; margin: 2.25rem 0 1rem; }
 .progress-grid div { padding: 1rem; border: 1px solid var(--line); border-radius: .7rem; background: #fff; }
@@ -62,6 +63,16 @@ h2 { margin-top: 3.6rem; font-size: clamp(1.5rem, 4vw, 2.1rem); color: var(--blu
 .scroll-hint { display: none; margin: .45rem 0 0; color: var(--muted); font: .76rem/1.5 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; }
 .argument-list { margin: 1.5rem 0; padding-left: 2rem; }
 .argument-list li { margin: .75rem 0; padding-left: .4rem; }
+.rethinking-box { margin: 2rem 0; padding: 1.15rem 1.25rem; border: 1px solid #d9dcf0; border-radius: .35rem; background: #f0f1fa; }
+.rethinking-box h3 { margin: 0 0 .45rem; color: var(--blue); font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; font-size: 1rem; }
+.rethinking-box p { margin: 0; font-size: .96rem; line-height: 1.72; }
+.relations-figure svg { display: block; width: 100%; min-width: 48rem; height: auto; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; }
+.relations-figure .relation-lines { fill: none; stroke: #4a4c46; stroke-width: 2; }
+.relations-figure .relation-heading text { fill: var(--blue); font-size: 21px; font-weight: 700; text-anchor: middle; }
+.relations-figure .hypothesis-node ellipse { fill: #f7f4e9; stroke: #494b45; stroke-width: 2; }
+.relations-figure .process-node rect { fill: #fff; stroke: #494b45; stroke-width: 2; }
+.relations-figure .stat-node circle { fill: #f3f5fb; stroke: #494b45; stroke-width: 2; }
+.relations-figure .hypothesis-node text, .relations-figure .process-node text, .relations-figure .stat-node text { font-size: 19px; text-anchor: middle; }
 .endnotes { margin-top: 4.5rem; padding-top: 1rem; border-top: 1px solid var(--line); }
 .endnotes h2 { margin-top: 1.5rem; }
 .endnotes ol { padding-left: 1.5rem; color: #44453f; font-size: .9rem; line-height: 1.7; }

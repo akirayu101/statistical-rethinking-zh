@@ -41,7 +41,20 @@
     "ordinary linear regression": "普通线性回归",
     "measurement error": "测量误差",
     "statistical epistemology": "统计认识论",
-    "parametric assumptions": "参数假设"
+    "parametric assumptions": "参数假设",
+    "null hypothesis significance testing": "零假设显著性检验",
+    "process model": "过程模型",
+    "neutral model": "中性模型",
+    "natural selection": "自然选择",
+    "genetic drift": "遗传漂变",
+    "allele": "等位基因",
+    "steady state": "稳态",
+    "power law": "幂律",
+    "exponential family": "指数族",
+    "maximum entropy": "最大熵",
+    "sampling bias": "抽样偏差",
+    "unobserved variable": "未观测变量",
+    "model identification": "模型识别"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"
