@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="360" viewBox="0 0 900 360" role="img">
+<title>三个植物模型的 WAIC 比较</title>
+<desc>实心点为样本内离差，空心点为 WAIC，线段为标准误；浅色三角线段表示前两个模型 WAIC 差值的标准误。</desc>
+<rect width="100%" height="100%" fill="#fff"/>
+<text x="475" y="35" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="22" font-weight="700" fill="#263f86">WAIC</text>
+<line x1="190.6" y1="250" x2="190.6" y2="258" stroke="#333"/>
+<text x="190.6" y="282" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">350</text>
+<line x1="271.9" y1="250" x2="271.9" y2="258" stroke="#333"/>
+<text x="271.9" y="282" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">360</text>
+<line x1="353.1" y1="250" x2="353.1" y2="258" stroke="#333"/>
+<text x="353.1" y="282" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">370</text>
+<line x1="434.4" y1="250" x2="434.4" y2="258" stroke="#333"/>
+<text x="434.4" y="282" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">380</text>
+<line x1="515.6" y1="250" x2="515.6" y2="258" stroke="#333"/>
+<text x="515.6" y="282" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">390</text>
+<line x1="596.9" y1="250" x2="596.9" y2="258" stroke="#333"/>
+<text x="596.9" y="282" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">400</text>
+<line x1="678.1" y1="250" x2="678.1" y2="258" stroke="#333"/>
+<text x="678.1" y="282" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">410</text>
+<line x1="759.4" y1="250" x2="759.4" y2="258" stroke="#333"/>
+<text x="759.4" y="282" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">420</text>
+<line x1="150" y1="250" x2="800" y2="250" stroke="#333"/>
+<text x="120" y="91" text-anchor="end" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18">m6.7</text>
+<circle cx="223.1" cy="85" r="5" fill="#30332e"/>
+<line x1="171.9" y1="85" x2="404.3" y2="85" stroke="#30332e" stroke-width="2"/>
+<circle cx="288.1" cy="85" r="6" fill="#fff" stroke="#30332e" stroke-width="2"/>
+<text x="120" y="161" text-anchor="end" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18">m6.8</text>
+<circle cx="572.5" cy="155" r="5" fill="#30332e"/>
+<line x1="529.4" y1="155" x2="713.1" y2="155" stroke="#30332e" stroke-width="2"/>
+<circle cx="621.2" cy="155" r="6" fill="#fff" stroke="#30332e" stroke-width="2"/>
+<text x="120" y="231" text-anchor="end" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18">m6.6</text>
+<circle cx="605.0" cy="225" r="5" fill="#30332e"/>
+<line x1="550.6" y1="225" x2="740.7" y2="225" stroke="#30332e" stroke-width="2"/>
+<circle cx="645.6" cy="225" r="6" fill="#fff" stroke="#30332e" stroke-width="2"/>
+<line x1="288.1" y1="120" x2="621.2" y2="120" stroke="#a9aec0" stroke-width="3"/>
+<polygon points="450.6,112 385.6,128 515.6,128" fill="#6670ee"/>
+<text x="475" y="325" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="700" fill="#263f86">离差</text>
+</svg>

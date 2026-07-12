@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-07" data-source-pages="211-246">
-  <header class="chapter-header"><p class="eyebrow">第七章</p><h1>尤利西斯的罗盘</h1><p class="source-range">当前译稿对应原书 PDF 第 211–246 页</p></header>
+<article class="book-article" data-chapter="chapter-07" data-source-pages="211-249">
+  <header class="chapter-header"><p class="eyebrow">第七章</p><h1>尤利西斯的罗盘</h1><p class="source-range">当前译稿对应原书 PDF 第 211–249 页</p></header>
 
   <p>米科瓦伊·哥白尼（Mikołaj Kopernik，亦称 Nicolaus Copernicus，1473–1543）：波兰天文学家、教会法学家，以及亵渎神明者。他以太阳系日心模型闻名，主张用日心模型取代地心模型，因为前者更“和谐”。几十年后，这个立场最终导致伽利略与教会著名的不和，以及那场审判。</p><p>这个故事后来成了科学战胜意识形态与迷信的寓言。但撇开意识形态，哥白尼的论证如今看来并不充分，问题有两个：他的模型既不特别和谐，也不比地心模型更准确。哥白尼模型十分复杂，实际上与托勒密模型一样堆满本轮（图 7.1）。哥白尼把太阳移到中心，但仍坚持用完美圆形轨道，所以仍然需要本轮；“和谐”并不很能形容它的外观。与托勒密模型一样，哥白尼模型实质上也是傅里叶级数——一种近似周期函数的方法。</p><p>这又引出第二个问题：日心模型与地心模型给出完全相同的预测。无论假设地球静止还是运动，都可以构造等价近似，所以只凭准确性没有理由偏爱日心模型。</p><p>不过，哥白尼并非只诉诸含糊的和谐。他还以所需原因更少来论证模型优越：“我们由此追随自然；自然不做无用或多余之事，常常宁愿让一个原因产生许多效应。”<sup id="note-94-ref"><a href="#note-94">94</a></sup> 确实，要给出与地心模型相同的预测，日心模型需要的圆和本轮更少；从这个意义上说，它更简单。</p><p>学者常偏爱更简单的理论。有时这种偏好很模糊，只是一种审美；有时则退回实用主义，因为简单理论的模型更容易处理。科学家经常援引一个宽松原则——奥卡姆剃刀：应优先选择假设更少的模型。对哥白尼与托勒密而言，剃刀给出明确建议。它不能保证哥白尼正确（毕竟他并不完全正确），但既然日心与地心模型预测相同，至少能明确化解两难。</p><p>然而，更一般地使用剃刀很困难，因为通常要在准确性与简单性都不同的模型之间选择。二者怎样权衡？剃刀没有指引。本章介绍一些最常用的权衡工具。所有工具通常都包含某种简单性概念，所以常被比作奥卡姆剃刀；但它们同样关心提高预测准确性，并会明确权衡准确性与简单性，因此并不等同于剃刀。</p>
 
@@ -402,6 +402,46 @@ attr(,"lppd")</code></pre></figure>
   </section>
 
 
+  <div class="section-continuation" data-section="7.5.1">
+    <pre class="code-output" id="output-7-25-continuation"><code>[1] -177.1724
+attr(,"pWAIC")
+[1] 3.5532
+attr(,"se")
+[1] 14.17035</code></pre>
+    <p>第一个数是样本外离差的猜测；其余依次为 lppd、有效参数个数 <span class="math-inline"><var>p</var><sub>WAIC</sub></span> 和 WAIC 的标准误。上一节“过度思考”框展示了怎样从零计算。为了更容易比较多个模型，<code>rethinking</code> 包提供便利函数 <code>compare</code>：</p>
+    <figure class="code-listing" id="code-7-26"><figcaption>R 代码 7.26</figcaption><pre><code>set.seed(77)
+compare( m6.6 , m6.7 , m6.8 )</code></pre><pre class="code-output"><code>      WAIC pWAIC dWAIC weight    SE   dSE
+m6.7 361.9   3.8   0.0      1 14.26    NA
+m6.8 402.8   2.6  40.9      0 11.28 10.48
+m6.6 405.9   1.6  44.0      0 11.66 12.23</code></pre></figure>
+    <p>PSIS 会给出几乎相同的值，可给调用加上 <code>func=PSIS</code> 检查。第一列是 WAIC，越小越好，模型已由好到坏排序；包含真菌的模型最小。第二列 <code>pWAIC</code> 是惩罚项，略低于各线性回归后验的维数，符合正则化先验下的预期。</p><p><code>dWAIC</code> 是各模型 WAIC 与集合中最佳 WAIC 的差。最佳模型为零；<code>m6.7</code> 比另外两个小约 40 个离差单位，截距模型 <code>m6.6</code> 比 <code>m6.8</code> 差 3。要判断差异大小，应问：按预期样本外准确性，这些模型是否容易区分？这需要考虑 WAIC 估计误差。</p><p>最后两列 <code>SE</code> 与 <code>dSE</code> 用于此处。SE 是各 WAIC 的近似标准误。非常粗略地说，样本外准确性近似以报告的 WAIC 为均值、SE 为标准差正态分布；小样本时近似会很差，但仍胜过无法度量误差的 AIC。比较两个模型时，真正需要的不是各自标准误，而是二者差值的标准误。对 <code>m6.7</code> 与 <code>m6.8</code>，用逐点 WAIC 计算：</p>
+    <figure class="code-listing" id="code-7-27"><figcaption>R 代码 7.27</figcaption><pre><code>set.seed(91)
+waic_m6.7 &lt;- WAIC( m6.7 , pointwise=TRUE )$WAIC
+waic_m6.8 &lt;- WAIC( m6.8 , pointwise=TRUE )$WAIC
+n &lt;- length(waic_m6.7)
+diff_m6.7_m6.8 &lt;- waic_m6.7 - waic_m6.8
+sqrt( n*var( diff_m6.7_m6.8 ) )</code></pre><pre class="code-output"><code>[1] 10.35785</code></pre></figure>
+    <p>这与比较表第二行的值略有不同，只因模拟方差。模型差值为 40.9，标准误约 10.4。设想差值的 99% 区间（<span class="math-inline"><var>z</var> ≈ 2.6</span>）：</p>
+    <figure class="code-listing" id="code-7-28"><figcaption>R 代码 7.28</figcaption><pre><code>40.0 + c(-1,1)*10.4*2.6</code></pre><pre class="code-output"><code>[1] 12.96 67.04</code></pre></figure>
+    <p>因此，这两个模型按预期样本外准确性很容易区分，<code>m6.7</code> 好得多。把比较表画出来会更直观：</p>
+    <figure class="code-listing waic-compare-output" id="code-7-29"><figcaption>R 代码 7.29</figcaption><pre><code>plot( compare( m6.6 , m6.7 , m6.8 ) )</code></pre><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的三个植物模型 WAIC 比较图"><img src="/media/chapter-07-waic-compare.svg" alt="m6.7、m6.8、m6.6 的样本内离差、WAIC 与标准误比较"></div></figure>
+    <p>实心点是样本内离差，空心点是 WAIC；线段表示各 WAIC 的标准误，即表中 SE。较浅、带三角形的线段表示 <code>m6.7</code> 与 <code>m6.8</code> 的 WAIC 差值标准误。</p><p>这说明 WAIC 不能用于推断因果。模拟数据中处理确实重要；但真菌中介了处理——它位于处理到结果的管道上——以真菌为条件后，处理不再提供额外信息。真菌与结果相关更强，使用它的模型也更可能预测得好。WAIC 完成了自己的工作：猜测预测准确性，而不是推断因果。</p><p>这不意味着 WAIC（或 CV、PSIS）毫无用处。它度量了以真菌为条件带来的预期预测改善。处理并非百分之百有效，所以知道处理与知道是否存在真菌并不能互相替代。</p><p>再比较只有处理的 <code>m6.8</code> 与截距模型 <code>m6.6</code>。<code>m6.8</code> 的后验为处理有效提供了良好证据，但 WAIC 认为两模型很相似，差值只有 3。计算差值标准误：</p>
+    <figure class="code-listing" id="code-7-30"><figcaption>R 代码 7.30</figcaption><pre><code>set.seed(92)
+waic_m6.6 &lt;- WAIC( m6.6 , pointwise=TRUE )$WAIC
+diff_m6.6_m6.8 &lt;- waic_m6.6 - waic_m6.8
+sqrt( n*var( diff_m6.6_m6.8 ) )</code></pre><pre class="code-output"><code>[1] 4.858914</code></pre></figure>
+    <p>比较表没有显示此值，但已计算。查看返回对象的 <code>dSE</code> 槽：</p>
+    <figure class="code-listing" id="code-7-31"><figcaption>R 代码 7.31</figcaption><pre><code>set.seed(93)
+compare( m6.6 , m6.7 , m6.8 )@dSE</code></pre><pre class="code-output"><code>          m6.6     m6.7      m6.8
+m6.6        NA 12.20638 4.934353
+m6.7 12.206380       NA 10.426576
+m6.8 4.934353 10.42658         NA</code></pre></figure>
+    <p>矩阵包含所有成对差值标准误。<code>m6.6</code> 与 <code>m6.8</code> 的标准误大于差值本身，无法仅凭 WAIC 轻易区分。这当然不表示处理无效；模拟和 <code>m6.8</code> 中可靠为正的处理效应后验都说明它有效，只是效应不大，单独对植物高度预测改善有限。WAIC/CV/PSIS 猜的是预测准确性，不是因果真相。变量可以与结果有因果关系，却对结果影响相对很小；准则会告诉你预测差异有多大，却不能决定效应是否存在。为此需要多个模型的后验分布，或相关因果图隐含的条件独立性。</p><p>比较表最后一列是 <code>weight</code>，它以传统方式汇总各模型的相对支持度，在同一模型集合内总和为 1。模型 <span class="math-inline"><var>i</var></span> 的权重为：</p>
+    <div class="equation-block compact-equation" id="eq-7-model-weight"><span><var>w</var><sub>i</sub> = exp(−0.5<var>Δ</var><sub>i</sub>) / ∑<sub>j</sub> exp(−0.5<var>Δ</var><sub>j</sub>)</span></div>
+    <p>其中 <span class="math-inline"><var>Δ</var><sub>i</sub></span> 是模型 <span class="math-inline"><var>i</var></span> 的 WAIC 与集合中最佳 WAIC 的差，即表中的 <code>dWAIC</code>。权重能快速显示模型差异大小，但仍必须检查标准误；权重不反映标准误，因而不足以完成模型比较。权重也用于<strong>模型平均</strong>，即一族用于……</p><p class="continuation-note">模型平均及比较表的进一步解释，将在原书 PDF 第 250 页继续。</p>
+  </div>
+
+
   <section class="endnotes" id="chapter-07-notes" role="doc-endnotes"><h2>尾注</h2><ol start="94"><li id="note-94">《天体运行论》第 1 卷第 10 章。 <a class="backref" href="#note-94-ref" aria-label="返回正文">↩</a></li><li id="note-95">例如参见 Akaike（1978），以及 Burnham 与 Anderson（2002）的讨论。 <a class="backref" href="#note-95-ref" aria-label="返回正文">↩</a></li><li id="note-96">当先验平坦、模型简单时，这一点总是成立。但本书后面会使用多层回归等其他模型；对它们而言，加入参数不一定改善样本内拟合。 <a class="backref" href="#note-96-ref" aria-label="返回正文">↩</a></li><li id="note-97">数据来自 McHenry 与 Coffing（2000）的表 1。 <a class="backref" href="#note-97-ref" aria-label="返回正文">↩</a></li><li id="note-98">Gauss（1809），<cite>Theoria motus corporum coelestium in sectionibus conicis solem ambientum</cite>。 <a class="backref" href="#note-98-ref" aria-label="返回正文">↩</a></li><li id="note-99">关于这些思想的专著级讨论，参见 Grünwald（2007）。 <a class="backref" href="#note-99-ref" aria-label="返回正文">↩</a></li><li id="note-100">关于偏差与方差，文献中的讨论很多，有的数学性远强于其他。若想广泛了解，推荐 Hastie、Tibshirani 与 Friedman（2009）第 7 章；该章在偏差—方差权衡的语境下讨论 BIC、AIC、交叉验证及其他度量。 <a class="backref" href="#note-100-ref" aria-label="返回正文">↩</a></li><li id="note-101">作者最初在 Jaynes（1976，第 246 页）遇到这类例子；Jaynes 又把它归功于 G. David Forney 1972 年的信息论课程讲义。Forney 是信息论的重要人物，因其贡献获得过多个奖项。 <a class="backref" href="#note-101-ref" aria-label="返回正文">↩</a></li><li id="note-102">Shannon（1948）。更易读的导论可参见经典教材 Cover 与 Thomas 的 <cite>Elements of Information Theory</cite>；Jaynes（2003）第 11 章稍进阶，但增益很多。Kullback（1959）是把信息论用于统计推断的奠基性著作，不过并不好读。 <a class="backref" href="#note-102-ref" aria-label="返回正文">↩</a></li><li id="note-103">参见两篇著名社论：Shannon（1956）与 Elias（1958）。Elias 的社论是一篇巧妙的讽刺作品，时至今日依然切中时弊；这两篇单页社论都很容易在网上找到。 <a class="backref" href="#note-103-ref" aria-label="返回正文">↩</a></li><li id="note-104">很遗憾，作者尚未找到一本适合大多数自然科学家和社会科学家数学训练水平的最大熵入门。Jaynes（2003）是必读来源，但若积分学已经生疏，进展会很慢。Steven Frank（2009；2011）的论文也许更合适，它们解释这种方法并联系自然界的常见分布；略过大部分数学仍能掌握主要概念。生态学应用的教材式介绍另见 Harte（2011）。 <a class="backref" href="#note-104-ref" aria-label="返回正文">↩</a></li><li id="note-105">Kullback 与 Leibler（1951）。不过两人并未以自己的名字命名这个度量；关于命名，可参见 Kullback（1987）的回顾。Kullback 与 Leibler 在 1951 年论文中明确指出，Harold Jeffreys 早已在发展贝叶斯统计时使用过这一度量。 <a class="backref" href="#note-105-ref" aria-label="返回正文">↩</a></li><li id="note-106">在非贝叶斯统计中，在相当一般的条件下，两个离差之差服从卡方分布。乘以 2 是为了把尺度调整正确；通常追溯到 Wilks（1938）。 <a class="backref" href="#note-106-ref" aria-label="返回正文">↩</a></li></ol></section>
 
   <div class="endnotes endnotes-continuation" id="chapter-07-notes-continuation" role="doc-endnotes" aria-label="尾注续"><ol start="107"><li id="note-107">参见 Zhang 与 Yang（2015）。 <a class="backref" href="#note-107-ref" aria-label="返回正文">↩</a></li><li id="note-108">Gelfand（1996）。 <a class="backref" href="#note-108-ref" aria-label="返回正文">↩</a></li><li id="note-109">Vehtari 等（2016）。 <a class="backref" href="#note-109-ref" aria-label="返回正文">↩</a></li><li id="note-110">参见 Gelfand（1996）；Magnusson 等（2019）也给出了非常清晰的介绍。 <a class="backref" href="#note-110-ref" aria-label="返回正文">↩</a></li><li id="note-111">参见 Vehtari 等（2019b）。 <a class="backref" href="#note-111-ref" aria-label="返回正文">↩</a></li><li id="note-112">Akaike（1973）。另见 Akaike（1974、1978、1981a），其中进一步发展了 AIC，并把它与贝叶斯方法联系起来。生态学家往往通过 Burnham 与 Anderson（2002）了解 AIC。 <a class="backref" href="#note-112-ref" aria-label="返回正文">↩</a></li><li id="note-113">小 <span class="math-inline"><var>N</var></span> 情形下常用的近似是 <span class="math-inline">AICc = <var>D</var><sub>train</sub> + 2<var>k</var> / [1 − (<var>k</var> + 1)/<var>N</var>]</span>。随着 <span class="math-inline"><var>N</var></span> 增大，这个表达式趋近 AIC。参见 Burnham 与 Anderson（2002）。 <a class="backref" href="#note-113-ref" aria-label="返回正文">↩</a></li><li id="note-114">Lunn 等（2013）对 DIC 给出了相当易懂的介绍，其中包括多种计算方法。 <a class="backref" href="#note-114-ref" aria-label="返回正文">↩</a></li><li id="note-115">Watanabe（2010）。Gelman 等（2013b）把 WAIC 重新解释为“Watanabe–Akaike 信息准则”，以明确归功于 Watanabe，正如人们用 Akaike 的名字重命名 AIC。Gelman 等（2013b）对推断问题采取广阔视角，也值得阅读。 <a class="backref" href="#note-115-ref" aria-label="返回正文">↩</a></li><li id="note-116">引文见 Akaike（1981b）。 <a class="backref" href="#note-116-ref" aria-label="返回正文">↩</a></li></ol></div>
@@ -410,5 +450,5 @@ attr(,"lppd")</code></pre></figure>
 
   <div class="endnotes endnotes-continuation" id="chapter-07-notes-continuation-3" role="doc-endnotes" aria-label="尾注续三"><ol start="122"><li id="note-122">这与最小描述长度密切相关，参见 Grünwald（2007）。 <a class="backref" href="#note-122-ref" aria-label="返回正文">↩</a></li></ol></div>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 211–246 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 247 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 211–249 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 250 页继续。</aside>
 </article>
