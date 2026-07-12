@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-06" data-source-pages="181-192">
-  <header class="chapter-header"><p class="eyebrow">第六章</p><h1>闹鬼的 DAG 与因果恐怖</h1><p class="source-range">当前译稿对应原书 PDF 第 181–192 页</p></header>
+<article class="book-article" data-chapter="chapter-06" data-source-pages="181-195">
+  <header class="chapter-header"><p class="eyebrow">第六章</p><h1>闹鬼的 DAG 与因果恐怖</h1><p class="source-range">当前译稿对应原书 PDF 第 181–195 页</p></header>
 
   <p>最有新闻价值的科学研究，似乎也最不可信。如果一项研究为真时越可能要你的命，它反而越不可能为真；主题越无聊，结果似乎越严谨。这种广为相信的负相关怎么会存在？人们关心的主题并没有理由产生更不可靠的结果。也许热门主题吸引了更多、更糟糕的研究者，就像苍蝇被蜂蜜气味吸引一样？</p>
 
@@ -235,11 +235,75 @@ sim_p 1.03 0.26  0.67  1.48 ▁▃▇▇▃▁▁▁▁▁▁</code></pre></figu
     ), data=d )
 precis(m6.6)</code></pre><pre class="code-output"><code>      mean   sd  5.5% 94.5%
 p     1.43 0.02  1.40  1.45
-sigma 1.79 0.13  1.59  1.99</code></pre></figure><p>平均增长约 40%。接下来要加入处理与真菌变量，试图同时测量处理与真菌本身的影响；这些参数也会放在比例尺度上，表示比例生长的变化。</p><p class="continuation-note">包含处理与真菌的线性模型将在原书 PDF 第 193 页继续。</p>
+sigma 1.79 0.13  1.59  1.99</code></pre></figure><p>平均增长约 40%。接下来加入处理与真菌变量，试图同时测量处理与真菌本身的影响；这些参数也放在比例尺度上，表示比例生长的变化。于是 <span class="math-inline"><var>p</var></span> 的模型变为：</p>
+
+      <div class="equation-block model-system-equation" id="eq-6-plant-treatment-fungus-model"><div><var>h</var><sub>1,i</sub> ∼ Normal(<var>μ</var><sub>i</sub>, <var>σ</var>)</div><div><var>μ</var><sub>i</sub> = <var>h</var><sub>0,i</sub> × <var>p</var></div><div><var>p</var> = <var>α</var> + <var>β</var><sub>T</sub><var>T</var><sub>i</sub> + <var>β</var><sub>F</sub><var>F</var><sub>i</sub></div><div><var>α</var> ∼ Log-Normal(0, 0.25)</div><div><var>β</var><sub>T</sub> ∼ Normal(0, 0.5)</div><div><var>β</var><sub>F</sub> ∼ Normal(0, 0.5)</div><div><var>σ</var> ∼ Exponential(1)</div></div>
+      <p>生长比例 <span class="math-inline"><var>p</var></span> 现在是预测变量的函数，看起来与其他线性模型相同。斜率先验几乎肯定过于平坦：95% 的先验质量落在 −1（减少 100%）到 +1（增加 100%）之间，三分之二落在 −0.5 到 +0.5 之间。读完本节后，不妨回头从这些先验做模拟。下面近似后验：</p>
+      <figure class="code-listing" id="code-6-16"><figcaption>R 代码 6.16</figcaption><pre><code>m6.7 &lt;- quap(
+    alist(
+        h1 ~ dnorm( mu , sigma ),
+        mu &lt;- h0 * p,
+        p &lt;- a + bt*treatment + bf*fungus,
+        a ~ dlnorm( 0 , 0.2 ) ,
+        bt ~ dnorm( 0 , 0.5 ),
+        bf ~ dnorm( 0 , 0.5 ),
+        sigma ~ dexp( 1 )
+    ), data=d )
+precis(m6.7)</code></pre><pre class="code-output"><code>      mean   sd  5.5% 94.5%
+a     1.48 0.02  1.44  1.52
+bt    0.00 0.03 -0.05  0.05
+bf   -0.27 0.04 -0.33 -0.21
+sigma 1.41 0.10  1.25  1.57</code></pre></figure>
+      <p>参数 <code>a</code> 就是先前的 <span class="math-inline"><var>p</var></span>，后验也几乎相同。处理效应 <code>bt</code> 的边际后验稳稳落在零上，而且区间很窄：处理与生长没有关联。真菌似乎损害了生长。然而，我们亲手构造了模拟，知道处理确实有作用；究竟发生了什么？</p>
+    </section>
+
+    <section id="sec-6-2-2"><h3>6.2.2 被后果阻断</h3><p>问题在于，真菌主要是处理的后果，也就是说，真菌是处理后变量。因此，控制真菌时，模型暗中回答的是：“既然已经知道植物是否长了真菌，土壤处理还重要吗？”答案是“不重要”，因为土壤处理正是通过减少真菌来影响生长。但依据实验设计，我们真正想知道的是处理对生长的影响。要正确测量它，应省略处理后变量真菌。推断结果如下：</p>
+      <figure class="code-listing" id="code-6-17"><figcaption>R 代码 6.17</figcaption><pre><code>m6.8 &lt;- quap(
+    alist(
+        h1 ~ dnorm( mu , sigma ),
+        mu &lt;- h0 * p,
+        p &lt;- a + bt*treatment,
+        a ~ dlnorm( 0 , 0.2 ),
+        bt ~ dnorm( 0 , 0.5 ),
+        sigma ~ dexp( 1 )
+    ), data=d )
+precis(m6.8)</code></pre><pre class="code-output"><code>      mean   sd  5.5% 94.5%
+a     1.38 0.03  1.34  1.42
+bt    0.08 0.03  0.03  0.14
+sigma 1.75 0.12  1.55  1.94</code></pre></figure>
+      <p>现在处理的影响明显为正，正如它本应如此。控制处理前的差异是合理的，例如初始高度 <span class="math-inline"><var>h</var><sub>0</sub></span> 可能掩盖处理的因果影响；但纳入处理后变量反而会掩盖处理本身。这并不表示同时包含处理与真菌的模型没有用。加入真菌后处理系数归零，恰好说明处理按预期机制起作用，为我们提供了机制信息。不过，要正确推断处理效应，仍然必须省略处理后变量。</p>
+    </section>
+
+    <section id="sec-6-2-3"><h3>6.2.3 真菌与 d-分离</h3><p>用 DAG 来看这个问题会更清楚。下面也展示如何用 R 包 <code>dagitty</code> 绘图，因为接下来要用它做图分析：</p>
+      <figure class="code-listing" id="code-6-18"><figcaption>R 代码 6.18</figcaption><pre><code>library(dagitty)
+plant_dag &lt;- dagitty( "dag {
+    H_0 -&gt; H_1
+    F -&gt; H_1
+    T -&gt; F
+}")
+coordinates( plant_dag ) &lt;- list( x=c(H_0=0,T=2,F=1.5,H_1=1) ,
+                                  y=c(H_0=0,T=0,F=0,H_1=0) )
+drawdag( plant_dag )</code></pre></figure>
+      <figure class="book-figure dag-figure" id="dag-6-plant-treatment"><svg viewBox="0 0 900 220" role="img" aria-labelledby="dag-6-plant-title dag-6-plant-desc"><title id="dag-6-plant-title">植物处理、真菌与高度的 DAG</title><desc id="dag-6-plant-desc">初始高度 H0 指向最终高度 H1，处理 T 通过真菌 F 间接指向最终高度。</desc><defs><marker id="dag6-plant-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#3f4752"/></marker></defs><g stroke="#3f4752" stroke-width="4" marker-end="url(#dag6-plant-arrow)"><line x1="180" y1="110" x2="335" y2="110"/><line x1="720" y1="110" x2="575" y2="110"/><line x1="500" y1="110" x2="415" y2="110"/></g><g fill="#f0f1fa" stroke="#263f86" stroke-width="3"><circle cx="145" cy="110" r="38"/><circle cx="375" cy="110" r="38"/><circle cx="535" cy="110" r="38"/><circle cx="755" cy="110" r="38"/></g><g text-anchor="middle" font-size="30" font-weight="700" fill="#263f86"><text x="145" y="121">H₀</text><text x="375" y="121">H₁</text><text x="535" y="121">F</text><text x="755" y="121">T</text></g></svg><figcaption>处理 <span class="math-inline"><var>T</var></span> 影响真菌 <span class="math-inline"><var>F</var></span>，真菌再影响最终高度 <span class="math-inline"><var>H</var><sub>1</sub></span>；初始高度 <span class="math-inline"><var>H</var><sub>0</sub></span> 也影响最终高度。</figcaption></figure>
+      <p>把处理后效应 <span class="math-inline"><var>F</var></span> 纳入模型，就会阻断处理到结果的路径。换成 DAG 的说法：一旦知道真菌状态，再知道处理与否，就不能提供任何关于结果的新信息。</p><p>更具 DAG 味道的说法是，以 <span class="math-inline"><var>F</var></span> 为条件会产生 <strong>d-分离</strong>。“d”代表 directional（有向）。<sup id="note-88-ref"><a href="#note-88">88</a></sup> d-分离表示有向图中的某些变量与另一些变量独立，它们之间不存在开放路径。本例中，只有在以 <span class="math-inline"><var>F</var></span> 为条件时，<span class="math-inline"><var>H</var><sub>1</sub></span> 才与 <span class="math-inline"><var>T</var></span> d-分离。以 <span class="math-inline"><var>F</var></span> 为条件有效阻断了有向路径 <span class="math-inline"><var>T</var> → <var>F</var> → <var>H</var><sub>1</sub></span>，使 <span class="math-inline"><var>T</var></span> 与 <span class="math-inline"><var>H</var><sub>1</sub></span> 独立，即 <span class="math-inline"><var>H</var><sub>1</sub> ⫫ <var>T</var> | <var>F</var></span>。原因是 <span class="math-inline"><var>T</var></span> 中没有任何关于 <span class="math-inline"><var>H</var><sub>1</sub></span>、却不同时存在于 <span class="math-inline"><var>F</var></span> 中的信息。可以查询这个 DAG 隐含的条件独立性：</p>
+      <figure class="code-listing" id="code-6-19"><figcaption>R 代码 6.19</figcaption><pre><code>impliedConditionalIndependencies(plant_dag)</code></pre><pre class="code-output"><code>F _||_ H0
+H0 _||_ T
+H1 _||_ T | F</code></pre></figure>
+      <p>共有三条，第三条是当前讨论的重点；另外两条则提供了检验 DAG 的方法。<span class="math-inline"><var>F</var> ⫫ <var>H</var><sub>0</sub></span> 和 <span class="math-inline"><var>H</var><sub>0</sub> ⫫ <var>T</var></span> 表示：只要不以任何变量为条件，初始高度 <span class="math-inline"><var>H</var><sub>0</sub></span> 就不应与处理 <span class="math-inline"><var>T</var></span> 或真菌 <span class="math-inline"><var>F</var></span> 相关。</p><p>处理后变量的问题显然同样适用于观察研究和实验。实验中通常较容易区分初始高度这类处理前变量与真菌这类处理后变量；观察研究中则更难判断。不过，实验本身也有一些隐蔽陷阱。</p><p>例如，以处理后变量为条件，不仅可能让人误以为处理无效，还可能让人误以为处理有效。考虑下面的 DAG：</p>
+      <figure class="book-figure dag-figure" id="dag-6-post-treatment-collider"><svg viewBox="0 0 900 360" role="img" aria-labelledby="dag-6-collider-title dag-6-collider-desc"><title id="dag-6-collider-title">未观测湿度造成处理后碰撞点偏差的 DAG</title><desc id="dag-6-collider-desc">初始高度 H0 和未观测湿度 M 指向最终高度 H1；处理 T 与湿度 M 共同指向真菌 F。</desc><defs><marker id="dag6-collider-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#3f4752"/></marker></defs><g stroke="#3f4752" stroke-width="4" marker-end="url(#dag6-collider-arrow)"><line x1="180" y1="90" x2="335" y2="90"/><line x1="720" y1="90" x2="575" y2="90"/><line x1="445" y1="275" x2="390" y2="130"/><line x1="475" y1="275" x2="525" y2="130"/></g><g fill="#f0f1fa" stroke="#263f86" stroke-width="3"><circle cx="145" cy="90" r="38"/><circle cx="375" cy="90" r="38"/><circle cx="535" cy="90" r="38"/><circle cx="755" cy="90" r="38"/><circle cx="460" cy="310" r="38" fill="#fff" stroke-dasharray="7 5"/></g><g text-anchor="middle" font-size="30" font-weight="700" fill="#263f86"><text x="145" y="101">H₀</text><text x="375" y="101">H₁</text><text x="535" y="101">F</text><text x="755" y="101">T</text><text x="460" y="321">M</text></g></svg><figcaption>处理 <span class="math-inline"><var>T</var></span> 影响真菌 <span class="math-inline"><var>F</var></span>，但真菌不影响生长；未观测湿度 <span class="math-inline"><var>M</var></span> 同时影响真菌和最终高度。</figcaption></figure>
+      <p>在这张图中，处理 <span class="math-inline"><var>T</var></span> 影响真菌 <span class="math-inline"><var>F</var></span>，但真菌不影响植物生长——也许这种植物根本不怕这种真菌。新变量 <span class="math-inline"><var>M</var></span> 是湿度，同时影响 <span class="math-inline"><var>H</var><sub>1</sub></span> 与 <span class="math-inline"><var>F</var></span>。虚线圆表示它未被观测；任何同时影响二者的未观测共同原因都可以，不一定非得是湿度。让 <span class="math-inline"><var>H</var><sub>1</sub></span> 对 <span class="math-inline"><var>T</var></span> 回归，不会显示处理与生长的关联；但一旦把 <span class="math-inline"><var>F</var></span> 纳入模型，关联就会突然出现。修改植物生长模拟，让真菌不影响生长，而湿度同时影响 <span class="math-inline"><var>H</var><sub>1</sub></span> 与 <span class="math-inline"><var>F</var></span>：</p>
+      <figure class="code-listing" id="code-6-20"><figcaption>R 代码 6.20</figcaption><pre><code>set.seed(71)
+N &lt;- 1000
+h0 &lt;- rnorm(N,10,2)
+treatment &lt;- rep( 0:1 , each=N/2 )
+M &lt;- rbern(N)
+fungus &lt;- rbinom( N , size=1 , prob=0.5 - treatment*0.4 + 0.4*M )
+h1 &lt;- h0 + rnorm( N , 5 + 3*M )
+d2 &lt;- data.frame( h0=h0 , h1=h1 , treatment=treatment , fungus=fungus )</code></pre></figure><p class="continuation-note">比较含有和不含真菌变量的模型将在原书 PDF 第 196 页继续。</p>
     </section>
   </section>
 
-  <section class="endnotes" id="chapter-06-notes" role="doc-endnotes"><h2>尾注</h2><ol start="85"><li id="note-85">本例与 Paul Smaldino 合作完成。 <a class="backref" href="#note-85-ref" aria-label="返回正文">↩</a></li><li id="note-86">参见 Berkson（1946）。相关现象还有筛选造成的范围限制，它会降低筛选标准与后续表现之间的相关；这也是标准化考试成绩与入学后表现可能不相关的原因之一。另见 Dawes（1975）。 <a class="backref" href="#note-86-ref" aria-label="返回正文">↩</a></li><li id="note-87">Rosenbaum（1984）称之为伴随变量偏差；另见 Gelman 与 Hill（2007）第 9 章。这个问题没有统一术语，也是广义中介分析的一部分。 <a class="backref" href="#note-87-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section class="endnotes" id="chapter-06-notes" role="doc-endnotes"><h2>尾注</h2><ol start="85"><li id="note-85">本例与 Paul Smaldino 合作完成。 <a class="backref" href="#note-85-ref" aria-label="返回正文">↩</a></li><li id="note-86">参见 Berkson（1946）。相关现象还有筛选造成的范围限制，它会降低筛选标准与后续表现之间的相关；这也是标准化考试成绩与入学后表现可能不相关的原因之一。另见 Dawes（1975）。 <a class="backref" href="#note-86-ref" aria-label="返回正文">↩</a></li><li id="note-87">Rosenbaum（1984）称之为伴随变量偏差；另见 Gelman 与 Hill（2007）第 9 章。这个问题没有统一术语，也是广义中介分析的一部分。 <a class="backref" href="#note-87-ref" aria-label="返回正文">↩</a></li><li id="note-88">参见 Pearl（2016）第 2 章。常有人把 d-分离中的 d 解释为 dependency（依赖），这确实更顺耳；但 d-分离源于更一般的图论：有向图涉及 d-分离，无向图则涉及 u-分离。无论如何，若称它为“依赖分离”，作者也不介意。 <a class="backref" href="#note-88-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 181–192 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 193 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 181–195 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 196 页继续。</aside>
 </article>

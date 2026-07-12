@@ -923,7 +923,7 @@
   },
   "chapter-06": {
     "required_status": "in_progress",
-    "source_pages": [181, 192],
+    "source_pages": [181, 195],
     "required_ids": [
       "fig-6-1",
       "overthinking-simulated-science-distortion",
@@ -955,10 +955,21 @@
       "eq-6-plant-growth-model",
       "code-6-14",
       "code-6-15",
+      "eq-6-plant-treatment-fungus-model",
+      "code-6-16",
+      "sec-6-2-2",
+      "code-6-17",
+      "sec-6-2-3",
+      "code-6-18",
+      "dag-6-plant-treatment",
+      "code-6-19",
+      "dag-6-post-treatment-collider",
+      "code-6-20",
       "chapter-06-notes",
       "note-85",
       "note-86",
-      "note-87"
+      "note-87",
+      "note-88"
     ],
     "required_headings": [
       "闹鬼的 DAG 与因果恐怖",
@@ -970,25 +981,27 @@
       "过度思考：模拟共线性",
       "6.2 处理后偏差",
       "6.2.1 先验诞生",
+      "6.2.2 被后果阻断",
+      "6.2.3 真菌与 d-分离",
       "尾注"
     ],
     "counts": {
-      "section": 6,
-      "figure": 19,
+      "section": 8,
+      "figure": 26,
       "figure img": 3,
-      "figure svg": 1,
+      "figure svg": 3,
       ".selection-distortion-figure": 1,
       ".multicollinear-legs-figure": 1,
       ".milk-pairs-figure": 1,
-      ".dag-figure": 1,
-      ".equation-block": 3,
-      ".model-system-equation": 3,
-      ".code-listing": 15,
-      ".code-output": 7,
+      ".dag-figure": 3,
+      ".equation-block": 4,
+      ".model-system-equation": 4,
+      ".code-listing": 20,
+      ".code-output": 10,
       ".rethinking-box": 1,
       ".overthinking-box": 2,
       ".source-erratum": 1,
-      ".endnotes li": 3
+      ".endnotes li": 4
     }
   }
 }
