@@ -1344,32 +1344,53 @@
   },
   "chapter-08": {
     "required_status": "in_progress",
-    "source_pages": [257, 259],
+    "source_pages": [257, 262],
     "required_ids": [
       "fig-8-1",
       "rethinking-abraham-wald",
       "sec-8-1",
+      "fig-8-2",
+      "dag-8-ruggedness-simple",
+      "reasons-not-to-split-data",
+      "overthinking-rugged-causation",
+      "dag-8-ruggedness-history",
+      "sec-8-1-1",
+      "code-8-1",
+      "eq-8-rugged-base",
+      "eq-8-rugged-alpha-prior",
       "chapter-08-notes",
       "note-128",
       "note-129",
       "note-130",
       "note-131",
-      "note-132"
+      "note-132",
+      "note-133"
     ],
     "required_headings": [
       "条件海牛",
       "再思考：统计学全明星 Abraham Wald",
       "8.1 构建交互作用",
+      "过度思考：因果关系没那么简单",
+      "8.1.1 建立崎岖度模型",
       "尾注"
     ],
     "counts": {
-      "section": 2,
-      "figure": 1,
-      "figure img": 1,
-      ".book-figure": 1,
+      "section": 3,
+      "figure": 5,
+      "figure svg": 2,
+      "figure img": 2,
+      ".book-figure": 2,
       ".survivor-damage-figure": 1,
+      ".ruggedness-gdp-figure": 1,
+      ".dag-figure": 2,
+      ".code-listing": 1,
+      ".equation-block": 2,
+      ".model-system-equation": 1,
       ".rethinking-box": 1,
-      ".endnotes li": 5
+      ".overthinking-box": 1,
+      ".argument-list": 1,
+      ".argument-list li": 4,
+      ".endnotes li": 6
     }
   }
 }
