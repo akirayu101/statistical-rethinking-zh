@@ -1341,5 +1341,35 @@
       ".practice-continuation": 1,
       ".endnotes li": 34
     }
+  },
+  "chapter-08": {
+    "required_status": "in_progress",
+    "source_pages": [257, 259],
+    "required_ids": [
+      "fig-8-1",
+      "rethinking-abraham-wald",
+      "sec-8-1",
+      "chapter-08-notes",
+      "note-128",
+      "note-129",
+      "note-130",
+      "note-131",
+      "note-132"
+    ],
+    "required_headings": [
+      "条件海牛",
+      "再思考：统计学全明星 Abraham Wald",
+      "8.1 构建交互作用",
+      "尾注"
+    ],
+    "counts": {
+      "section": 2,
+      "figure": 1,
+      "figure img": 1,
+      ".book-figure": 1,
+      ".survivor-damage-figure": 1,
+      ".rethinking-box": 1,
+      ".endnotes li": 5
+    }
   }
 }
