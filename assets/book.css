@@ -140,6 +140,8 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .target-dimensions li { margin: .6rem 0; padding-left: .25rem; }
 .entropy-desiderata { margin: 1.5rem 0; padding: 1rem 1rem 1rem 3.2rem; border: 1px solid var(--line); border-radius: .35rem; background: #fff; }
 .entropy-desiderata li { margin: .75rem 0; padding-left: .25rem; }
+.divergence-objectives, .train-test-steps { margin: 1.5rem 0; padding: 1rem 1rem 1rem 3.2rem; border-left: .25rem solid var(--blue); background: #f3f5fb; }
+.divergence-objectives li, .train-test-steps li { margin: .7rem 0; padding-left: .25rem; }
 .model-system-equation { font-size: 1.08rem; }
 .model-reading { margin: 1.4rem auto; padding: .9rem 1.1rem; max-width: 38rem; border-left: .22rem solid var(--blue); background: #f7f7f3; }
 .model-reading p { margin: .35rem 0; font-style: italic; text-align: left; }

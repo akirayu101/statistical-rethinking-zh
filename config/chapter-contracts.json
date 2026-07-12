@@ -1078,7 +1078,7 @@
   },
   "chapter-07": {
     "required_status": "in_progress",
-    "source_pages": [211, 228],
+    "source_pages": [211, 231],
     "required_ids": [
       "fig-7-1",
       "rethinking-stargazing",
@@ -1134,6 +1134,14 @@
       "eq-7-cross-entropy",
       "eq-7-cross-entropy-divergence",
       "rethinking-divergence-direction",
+      "sec-7-2-4",
+      "eq-7-log-probability-score",
+      "code-7-13",
+      "overthinking-computing-lppd",
+      "eq-7-lppd",
+      "code-7-14",
+      "sec-7-2-5",
+      "code-7-15",
       "chapter-07-notes",
       "note-94",
       "note-95",
@@ -1146,7 +1154,8 @@
       "note-102",
       "note-103",
       "note-104",
-      "note-105"
+      "note-105",
+      "note-106"
     ],
     "required_headings": [
       "尤利西斯的罗盘",
@@ -1170,11 +1179,14 @@
       "7.2.3 从熵到准确性",
       "过度思考：交叉熵与散度",
       "再思考：散度取决于方向",
+      "7.2.4 估计散度",
+      "过度思考：计算 lppd",
+      "7.2.5 为正确的数据评分",
       "尾注"
     ],
     "counts": {
-      "section": 10,
-      "figure": 17,
+      "section": 12,
+      "figure": 20,
       "figure svg": 1,
       "figure img": 4,
       ".flowchart-figure": 1,
@@ -1183,14 +1195,15 @@
       ".hominin-polynomial-figure": 1,
       ".hominin-loo-figure": 1,
       ".divergence-figure": 1,
-      ".equation-block": 11,
+      ".equation-block": 13,
       ".model-system-equation": 3,
       ".entropy-equation": 1,
       ".kl-equation": 2,
-      ".code-listing": 12,
-      ".code-output": 2,
+      ".lppd-equation": 1,
+      ".code-listing": 15,
+      ".code-output": 4,
       ".rethinking-box": 8,
-      ".overthinking-box": 3,
+      ".overthinking-box": 4,
       ".target-dimensions": 1,
       "table": 3,
       ".table-wrap": 3,
@@ -1198,8 +1211,10 @@
       ".weather-score-equation": 1,
       ".formula-reading": 3,
       ".entropy-desiderata": 1,
+      ".divergence-objectives": 1,
+      ".train-test-steps": 1,
       ".source-erratum": 2,
-      ".endnotes li": 12
+      ".endnotes li": 13
     }
   }
 }
