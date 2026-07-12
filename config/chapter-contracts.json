@@ -923,7 +923,7 @@
   },
   "chapter-06": {
     "required_status": "in_progress",
-    "source_pages": [181, 183],
+    "source_pages": [181, 186],
     "required_ids": [
       "fig-6-1",
       "overthinking-simulated-science-distortion",
@@ -931,6 +931,15 @@
       "sec-6-1",
       "sec-6-1-1",
       "code-6-2",
+      "code-6-3",
+      "code-6-4",
+      "code-6-5",
+      "fig-6-2",
+      "eq-6-duplicated-predictor",
+      "eq-6-summed-coefficients",
+      "code-6-6",
+      "code-6-7",
+      "sec-6-1-2",
       "chapter-06-notes",
       "note-85",
       "note-86"
@@ -940,16 +949,20 @@
       "过度思考：模拟科学扭曲",
       "6.1 多重共线性",
       "6.1.1 共线的双腿",
+      "6.1.2 共线的乳汁",
       "尾注"
     ],
     "counts": {
-      "section": 3,
-      "figure": 3,
-      "figure img": 1,
+      "section": 4,
+      "figure": 9,
+      "figure img": 2,
       "figure svg": 0,
       ".selection-distortion-figure": 1,
-      ".code-listing": 2,
-      ".code-output": 0,
+      ".multicollinear-legs-figure": 1,
+      ".equation-block": 2,
+      ".model-system-equation": 2,
+      ".code-listing": 7,
+      ".code-output": 2,
       ".overthinking-box": 1,
       ".endnotes li": 2
     }

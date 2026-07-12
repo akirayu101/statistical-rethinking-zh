@@ -122,6 +122,7 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .milk-priors-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
 .milk-relationships-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
 .selection-distortion-figure .figure-scroll img { display: block; width: 45rem; max-width: none; height: auto; margin: 0 auto; }
+.multicollinear-legs-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
 .dag-figure svg { display: block; width: min(100%, 32rem); height: auto; margin: 0 auto; }
 .gaussian-density-equation { display: flex; flex-wrap: wrap; justify-content: center; gap: .35rem; align-items: center; }
 .gaussian-density-equation .fraction { min-width: 5.5rem; }

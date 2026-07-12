@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-06" data-source-pages="181-183">
-  <header class="chapter-header"><p class="eyebrow">第六章</p><h1>闹鬼的 DAG 与因果恐怖</h1><p class="source-range">当前译稿对应原书 PDF 第 181–183 页</p></header>
+<article class="book-article" data-chapter="chapter-06" data-source-pages="181-186">
+  <header class="chapter-header"><p class="eyebrow">第六章</p><h1>闹鬼的 DAG 与因果恐怖</h1><p class="source-range">当前译稿对应原书 PDF 第 181–186 页</p></header>
 
   <p>最有新闻价值的科学研究，似乎也最不可信。如果一项研究为真时越可能要你的命，它反而越不可能为真；主题越无聊，结果似乎越严谨。这种广为相信的负相关怎么会存在？人们关心的主题并没有理由产生更不可靠的结果。也许热门主题吸引了更多、更糟糕的研究者，就像苍蝇被蜂蜜气味吸引一样？</p>
 
@@ -42,10 +42,60 @@ leg_left &lt;- leg_prop*height +               # sim left leg as proportion + er
 leg_right &lt;- leg_prop*height +              # sim right leg as proportion + error
     rnorm( N , 0 , 0.02 )
 # combine into data frame
-d &lt;- data.frame(height,leg_left,leg_right)</code></pre></figure><p>接下来用 <code>leg_left</code> 与 <code>leg_right</code> 共同预测结果 <code>height</code>。在近似后验前，先想想预期。平均而言，腿长约为身高的 45%。因此，测量腿长与身高关联的系数应接近平均身高 10 除以平均腿长 4.5，即 <span class="math-inline">10 / 4.5 ≈ 2.2</span>。</p><p class="continuation-note">双腿回归模型及多重共线性后验将在原书 PDF 第 184 页继续。</p></section>
+d &lt;- data.frame(height,leg_left,leg_right)</code></pre></figure><p>接下来用 <code>leg_left</code> 与 <code>leg_right</code> 共同预测结果 <code>height</code>。在近似后验前，先想想预期。平均而言，腿长约为身高的 45%。因此，测量腿长与身高关联的系数应接近平均身高 10 除以平均腿长 4.5，即 <span class="math-inline">10 / 4.5 ≈ 2.2</span>。下面看看实际会发生什么。这里故意使用非常模糊、很糟糕的先验，以确认即将出现的现象不是先验造成的。</p>
+
+      <figure class="code-listing" id="code-6-3"><figcaption>R 代码 6.3</figcaption><pre><code>m6.1 &lt;- quap(
+    alist(
+        height ~ dnorm( mu , sigma ) ,
+        mu &lt;- a + bl*leg_left + br*leg_right ,
+        a ~ dnorm( 10 , 100 ) ,
+        bl ~ dnorm( 2 , 10 ) ,
+        br ~ dnorm( 2 , 10 ) ,
+        sigma ~ dexp( 1 )
+    ) , data=d )
+precis(m6.1)</code></pre><pre class="code-output"><code>       mean   sd  5.5% 94.5%
+a      0.98 0.28  0.53  1.44
+bl     0.21 2.53 -3.83  4.25
+br     1.78 2.53 -2.26  5.83
+sigma  0.62 0.04  0.55  0.69</code></pre></figure>
+
+      <p>这些后验均值和标准差看起来很疯狂。此时把 <code>precis</code> 输出画出来更有帮助，因为后验均值与 89% 区间能让我们一眼看出哪里出了问题：</p>
+      <figure class="code-listing" id="code-6-4"><figcaption>R 代码 6.4</figcaption><pre><code>plot(precis(m6.1))</code></pre></figure>
+
+      <p>可以去掉 <code>set.seed</code> 再模拟几次。如果两条腿几乎等长，而身高又与腿长如此强烈相关，为什么后验分布这么古怪？后验近似正确工作了吗？</p><p>它确实正确工作了；这个后验正是我们所提问题的正确答案。问题出在提问本身。多元线性回归回答的是：已经知道所有其他预测变量后，再知道每个预测变量有何价值？本例就变成：已经知道另一条腿的长度后，再知道每条腿长有何价值？</p><p>这个怪问题的答案同样怪，却完全合乎逻辑。后验会考虑参数的每一种可能组合，并在给定模型与数据后为每种组合分配相对可信程度。查看 <code>bl</code> 与 <code>br</code> 的二元后验会有所帮助：</p>
+
+      <figure class="code-listing" id="code-6-5"><figcaption>R 代码 6.5</figcaption><pre><code>post &lt;- extract.samples(m6.1)
+plot( bl ~ br , post , col=col.alpha(rangi2,0.1) , pch=16 )</code></pre></figure>
+
+      <figure class="book-figure multicollinear-legs-figure" id="fig-6-2"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的双腿参数联合后验与参数和密度图"><img src="/media/chapter-06-multicollinear-legs.svg" alt="左图为 bl 与 br 的狭长负相关后验脊，右图为二者之和在 2 附近的密度"></div><p class="scroll-hint">图较宽，可横向滚动比较联合后验与参数和。</p><figcaption><strong>图 6.2：</strong>左：模型 <code>m6.1</code> 中每条腿与身高关联的后验。两个变量包含几乎相同的信息，因此后验形成一条负相关的狭长脊。右：两个参数之和的后验集中在任意一条腿与身高的正确关联附近。</figcaption></figure>
+
+      <p>图 6.2 左侧显示，两个参数的后验高度相关，所有可信的 <code>bl</code> 与 <code>br</code> 值都沿着一条狭长脊分布：<code>bl</code> 大时，<code>br</code> 必须小。因为两条腿几乎包含完全相同的信息，坚持把二者都放入模型，就会有近乎无穷多组 <code>bl</code> 与 <code>br</code> 产生相同预测。</p>
+
+      <p>可以把这种现象理解为近似了下面的模型：</p><div class="equation-block model-system-equation" id="eq-6-duplicated-predictor"><div><var>y</var><sub>i</sub> ∼ Normal(<var>μ</var><sub>i</sub>, <var>σ</var>)</div><div><var>μ</var><sub>i</sub> = <var>α</var> + <var>β</var><sub>1</sub><var>x</var><sub>i</sub> + <var>β</var><sub>2</sub><var>x</var><sub>i</sub></div></div><p><span class="math-inline"><var>y</var></span> 是身高之类的结果，<span class="math-inline"><var>x</var></span> 是腿长之类的单一预测变量。这里把 <span class="math-inline"><var>x</var></span> 用了两次，是两条近乎相同的腿造成问题的完美例子。从计算机角度看，这个模型只是：</p><div class="equation-block model-system-equation" id="eq-6-summed-coefficients"><div><var>y</var><sub>i</sub> ∼ Normal(<var>μ</var><sub>i</sub>, <var>σ</var>)</div><div><var>μ</var><sub>i</sub> = <var>α</var> + (<var>β</var><sub>1</sub> + <var>β</var><sub>2</sub>)<var>x</var><sub>i</sub></div></div><p>这里只是从两项中提出了 <span class="math-inline"><var>x</var><sub>i</sub></span>。<span class="math-inline"><var>β</var><sub>1</sub></span> 与 <span class="math-inline"><var>β</var><sub>2</sub></span> 无法分开，因为它们从不单独影响均值；只有二者之和影响 <span class="math-inline"><var>μ</var></span>。因此后验会报告大量组合，只要它们的和接近 <span class="math-inline"><var>x</var></span> 与 <span class="math-inline"><var>y</var></span> 的实际关联即可。</p>
+
+      <p>模拟后验确实很好地估计了 <code>bl</code> 与 <code>br</code> 之和。计算并绘制其后验分布：</p><figure class="code-listing" id="code-6-6"><figcaption>R 代码 6.6</figcaption><pre><code>sum_blbr &lt;- post$bl + post$br
+dens( sum_blbr , col=rangi2 , lwd=2 , xlab="sum of bl and br" )</code></pre></figure><p>图 6.2 右侧显示，后验均值略高于 2，处在正确范围；标准差也远小于和的任一分量。若只用一条腿拟合回归，会得到几乎相同的均值：</p>
+
+      <figure class="code-listing" id="code-6-7"><figcaption>R 代码 6.7</figcaption><pre><code>m6.2 &lt;- quap(
+    alist(
+        height ~ dnorm( mu , sigma ) ,
+        mu &lt;- a + bl*leg_left,
+        a ~ dnorm( 10 , 100 ) ,
+        bl ~ dnorm( 2 , 10 ) ,
+        sigma ~ dexp( 1 )
+    ) , data=d )
+precis(m6.2)</code></pre><pre class="code-output"><code>       mean   sd  5.5% 94.5%
+a      1.00 0.28  0.54  1.45
+bl     1.99 0.06  1.89  2.09
+sigma  0.62 0.04  0.55  0.69</code></pre></figure>
+
+      <p><code>1.99</code> 几乎与 <code>sum_blbr</code> 的均值相同。不同模拟会因随机变异而略有差异，但基本教训不变：两个预测变量高度相关时，同时纳入模型可能造成困惑。后验没有错；它在告诉你，凭这些数据无法回答所提问题。模型能说“我无法回答”，其实是件好事。若只关心预测，这个双腿模型的预测完全正常；它只是不会声称哪条腿更重要。</p><p>双腿例子清楚又可爱，但纯粹是统计问题，并没有提出严肃的因果问题。接下来换一个因果意义更强的例子。</p>
+    </section>
+
+    <section id="sec-6-1-2"><h3>6.1.2 共线的乳汁</h3><p>双腿例子中，很容易看出把两条腿都放入模型有些荒唐。但真实数据的问题在于，我们可能没有预料到高度相关预测变量之间会冲突，于是误把后验解读为两个预测变量都不重要。本节用真实数据观察这一问题。</p><p>再次回到本章前面使用的灵长类乳汁数据。先重新载入原始数据；代码与后验比较将在原书 PDF 第 187 页继续。</p></section>
   </section>
 
   <section class="endnotes" id="chapter-06-notes" role="doc-endnotes"><h2>尾注</h2><ol start="85"><li id="note-85">本例与 Paul Smaldino 合作完成。 <a class="backref" href="#note-85-ref" aria-label="返回正文">↩</a></li><li id="note-86">参见 Berkson（1946）。相关现象还有筛选造成的范围限制，它会降低筛选标准与后续表现之间的相关；这也是标准化考试成绩与入学后表现可能不相关的原因之一。另见 Dawes（1975）。 <a class="backref" href="#note-86-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 181–183 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 184 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 181–186 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 187 页继续。</aside>
 </article>

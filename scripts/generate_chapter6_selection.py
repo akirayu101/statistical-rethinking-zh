@@ -10,6 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "translations" / "zh" / "media" / "chapter-06-selection-distortion.svg"
+LEGS_OUT = ROOT / "translations" / "zh" / "media" / "chapter-06-multicollinear-legs.svg"
 FONT = "PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif"
 
 
@@ -67,7 +68,42 @@ def main() -> int:
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text("\n".join(body), encoding="utf-8")
     print(f"generated {OUT}")
+    LEGS_OUT.write_text(multicollinear_legs(), encoding="utf-8")
+    print(f"generated {LEGS_OUT}")
     return 0
+
+
+def multicollinear_legs() -> str:
+    rng = random.Random(909)
+    samples = []
+    for _ in range(1200):
+        total = rng.gauss(2.0, 0.065)
+        difference = rng.gauss(-1.55, 5.0)
+        samples.append(((total + difference) / 2, (total - difference) / 2))
+    width, height = 1200, 620
+    body = ['<?xml version="1.0" encoding="UTF-8"?>', f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">', '<title>共线双腿模型的联合后验与参数和</title>', '<desc>左图显示 bl 与 br 的狭长负相关后验脊，右图显示二者之和集中在 2 附近。</desc>', '<rect width="100%" height="100%" fill="#fff"/>']
+    lx, top, pw, ph = 95, 60, 440, 430
+    rx = 700
+    def sx(v): return lx + (v + 6) / 12 * pw
+    def sy(v): return top + ph - (v + 6) / 12 * ph
+    body.append(f'<rect x="{lx}" y="{top}" width="{pw}" height="{ph}" fill="#fff" stroke="#343732"/>')
+    for bl, br in samples:
+        body.append(f'<circle cx="{sx(br):.2f}" cy="{sy(bl):.2f}" r="2.2" fill="#6670ee" opacity="0.12"/>')
+    for t in [-6,-4,-2,0,2,4,6]:
+        body.extend([f'<text x="{sx(t):.2f}" y="520" text-anchor="middle" font-family="{FONT}" font-size="15">{t}</text>',f'<text x="75" y="{sy(t)+5:.2f}" text-anchor="end" font-family="{FONT}" font-size="15">{t}</text>'])
+    body.extend([f'<text x="315" y="565" text-anchor="middle" font-family="{FONT}" font-size="19" font-weight="700" fill="#263f86">br</text>',f'<text x="38" y="275" transform="rotate(-90 38 275)" text-anchor="middle" font-family="{FONT}" font-size="19" font-weight="700" fill="#263f86">bl</text>'])
+    def px(v): return rx + (v - 1.75) / 0.5 * 390
+    def py(v): return top + ph - v / 6.5 * ph
+    grid=[1.75+i*0.5/160 for i in range(161)]
+    pts=[]
+    sd=.065
+    for v in grid:
+        d=math.exp(-0.5*((v-2)/sd)**2)/(sd*math.sqrt(2*math.pi))
+        pts.append(f'{px(v):.2f},{py(d):.2f}')
+    body.extend([f'<rect x="{rx}" y="{top}" width="390" height="{ph}" fill="#fff" stroke="#343732"/>',f'<polyline points="{" ".join(pts)}" fill="none" stroke="#263f86" stroke-width="4"/>'])
+    for t in [1.8,1.9,2.0,2.1,2.2]: body.append(f'<text x="{px(t):.2f}" y="520" text-anchor="middle" font-family="{FONT}" font-size="15">{t:.1f}</text>')
+    body.extend([f'<text x="895" y="565" text-anchor="middle" font-family="{FONT}" font-size="19" font-weight="700" fill="#263f86">bl 与 br 之和</text>',f'<text x="650" y="275" transform="rotate(-90 650 275)" text-anchor="middle" font-family="{FONT}" font-size="19" font-weight="700" fill="#263f86">密度</text>','</svg>',''])
+    return "\n".join(body)
 
 
 if __name__ == "__main__":

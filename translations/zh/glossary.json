@@ -540,7 +540,11 @@
     "newsworthiness": "新闻价值",
     "trustworthiness": "可信度",
     "range restriction": "范围限制",
-    "multicollinear legs": "共线的双腿"
+    "multicollinear legs": "共线的双腿",
+    "posterior ridge": "后验脊",
+    "duplicated predictor": "重复预测变量",
+    "sum of coefficients": "系数之和",
+    "multicollinear milk": "共线的乳汁"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"
