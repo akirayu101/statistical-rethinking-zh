@@ -923,7 +923,7 @@
   },
   "chapter-06": {
     "required_status": "in_progress",
-    "source_pages": [181, 189],
+    "source_pages": [181, 192],
     "required_ids": [
       "fig-6-1",
       "overthinking-simulated-science-distortion",
@@ -946,9 +946,19 @@
       "code-6-11",
       "fig-6-3",
       "dag-6-milk-density",
+      "rethinking-identification-guaranteed",
+      "overthinking-simulating-collinearity",
+      "code-6-12",
+      "sec-6-2",
+      "code-6-13",
+      "sec-6-2-1",
+      "eq-6-plant-growth-model",
+      "code-6-14",
+      "code-6-15",
       "chapter-06-notes",
       "note-85",
-      "note-86"
+      "note-86",
+      "note-87"
     ],
     "required_headings": [
       "闹鬼的 DAG 与因果恐怖",
@@ -956,23 +966,29 @@
       "6.1 多重共线性",
       "6.1.1 共线的双腿",
       "6.1.2 共线的乳汁",
+      "再思考：识别有保证，理解靠自己",
+      "过度思考：模拟共线性",
+      "6.2 处理后偏差",
+      "6.2.1 先验诞生",
       "尾注"
     ],
     "counts": {
-      "section": 4,
-      "figure": 15,
+      "section": 6,
+      "figure": 19,
       "figure img": 3,
       "figure svg": 1,
       ".selection-distortion-figure": 1,
       ".multicollinear-legs-figure": 1,
       ".milk-pairs-figure": 1,
       ".dag-figure": 1,
-      ".equation-block": 2,
-      ".model-system-equation": 2,
-      ".code-listing": 11,
-      ".code-output": 4,
-      ".overthinking-box": 1,
-      ".endnotes li": 2
+      ".equation-block": 3,
+      ".model-system-equation": 3,
+      ".code-listing": 15,
+      ".code-output": 7,
+      ".rethinking-box": 1,
+      ".overthinking-box": 2,
+      ".source-erratum": 1,
+      ".endnotes li": 3
     }
   }
 }

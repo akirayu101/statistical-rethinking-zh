@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-06" data-source-pages="181-189">
-  <header class="chapter-header"><p class="eyebrow">第六章</p><h1>闹鬼的 DAG 与因果恐怖</h1><p class="source-range">当前译稿对应原书 PDF 第 181–189 页</p></header>
+<article class="book-article" data-chapter="chapter-06" data-source-pages="181-192">
+  <header class="chapter-header"><p class="eyebrow">第六章</p><h1>闹鬼的 DAG 与因果恐怖</h1><p class="source-range">当前译稿对应原书 PDF 第 181–192 页</p></header>
 
   <p>最有新闻价值的科学研究，似乎也最不可信。如果一项研究为真时越可能要你的命，它反而越不可能为真；主题越无聊，结果似乎越严谨。这种广为相信的负相关怎么会存在？人们关心的主题并没有理由产生更不可靠的结果。也许热门主题吸引了更多、更糟糕的研究者，就像苍蝇被蜂蜜气味吸引一样？</p>
 
@@ -168,11 +168,78 @@ sigma  0.38 0.05  0.30  0.46</code></pre></figure>
 
       <p>若能测量 <span class="math-inline"><var>D</var></span>，或用物种的其他特征建立演化与经济模型来预测它，会比在回归中摸索更好。只需让 <span class="math-inline"><var>K</var></span> 对 <span class="math-inline"><var>D</var></span> 回归，并忽略作为中介的 <span class="math-inline"><var>L</var></span> 与 <span class="math-inline"><var>F</var></span>，就能估计密度对能量的因果影响。</p>
 
-      <p>多重共线性属于一族模型拟合问题，这族问题常称为<strong>不可识别性</strong>。参数不可识别，意味着数据与模型的结构无法估计参数值。有时这是模型编码错误造成的，但许多重要模型本身就包含不可识别或弱可识别参数；后文将继续讨论。</p><p class="continuation-note">不可识别性的进一步解释将在原书 PDF 第 190 页继续。</p>
+      <p>多重共线性属于一族模型拟合问题，这族问题常称为<strong>不可识别性</strong>。参数不可识别，意味着数据与模型的结构无法估计参数值。有时这是模型编码错误造成的，但许多重要模型即使编码完全正确，也包含不可识别或弱可识别参数。即使模型正确，自然也不欠我们容易的推断。</p><p>一般而言，现有数据不保证包含很多关于目标参数的信息。若信息很少，贝叶斯机器会返回与先验非常相似的后验。因此比较后验与先验是个好主意，可以看出模型从数据中提取了多少信息。二者相似并不表示计算错误——你得到了所提问题的正确答案；但它可能促使你提出更好的问题。</p>
+    </section>
+
+    <aside class="rethinking-box" id="rethinking-identification-guaranteed"><h3>再思考：识别有保证，理解靠自己</h3><p>严格说来，可识别性不是贝叶斯模型的问题。只要后验分布是正规的——也就是积分为 1——所有参数就在技术上都已识别。但这并不意味着后验一定容易理解。因此，在贝叶斯语境中称其为<strong>弱识别参数</strong>通常更合适；后续还会看到多个例子。</p></aside>
+
+    <aside class="overthinking-box" id="overthinking-simulating-collinearity"><h3>过度思考：模拟共线性</h3><p>下面代码定义一个函数：生成相关预测变量、拟合模型，并返回脂肪百分比预测千卡时斜率后验的标准差。随后用不同相关程度反复调用函数并收集结果。</p><p class="source-erratum"><strong>原文勘误：</strong>原书称这段代码生成“Figure ??”，但该编号仍是未解析占位符；译稿保留代码和图形含义，不虚构图号。</p><figure class="code-listing" id="code-6-12"><figcaption>R 代码 6.12</figcaption><pre><code>library(rethinking)
+data(milk)
+d &lt;- milk
+sim.coll &lt;- function( r=0.9 ) {
+    d$x &lt;- rnorm( nrow(d) , mean=r*d$perc.fat ,
+        sd=sqrt( (1-r^2)*var(d$perc.fat) ) )
+    m &lt;- lm( kcal.per.g ~ perc.fat + x , data=d )
+    sqrt( diag( vcov(m) ) )[2] # stddev of parameter
+}
+rep.sim.coll &lt;- function( r=0.9 , n=100 ) {
+    stddev &lt;- replicate( n , sim.coll(r) )
+    mean(stddev)
+}
+r.seq &lt;- seq(from=0,to=0.99,by=0.01)
+stddev &lt;- sapply( r.seq , function(z) rep.sim.coll(r=z,n=100) )
+plot( stddev ~ r.seq , type="l" , col=rangi2, lwd=2 , xlab="correlation" )</code></pre></figure><p>对 <code>r.seq</code> 中每个相关值，代码生成 100 次回归并返回平均标准差。这里使用隐式平坦先验，它们是坏先验，因此会夸大共线变量的影响；使用信息先验时，标准差膨胀可能慢得多。</p></aside>
+  </section>
+
+  <section id="sec-6-2"><h2>6.2 处理后偏差</h2><p>人们通常会担心遗漏预测变量造成的错误推断，这类错误常称为遗漏变量偏差，上一章已有示例。相比之下，人们较少担心把其他变量的后果纳入模型所造成的错误推断。这里称之为<strong>处理后偏差</strong>。<sup id="note-87-ref"><a href="#note-87">87</a></sup> 所有类型的研究都必须警惕它。精心控制的实验和无控制的观察研究一样容易被毁掉；无论怎样收集数据，把变量盲目扔进因果沙拉都不是好主意。</p>
+
+    <p>“处理后”这个说法来自实验设计。设想在温室里种植物，想知道不同抗真菌土壤处理对生长的影响，因为真菌会降低生长。植物播种发芽后先测初始高度，再施加不同土壤处理，最后测量高度与是否出现真菌。四个变量是初始高度、最终高度、处理和真菌存在。结果是最终高度。若目标是对处理做因果推断，就不应纳入真菌，因为它是处理后的效应。</p><p>下面模拟数据，看看加入处理后变量究竟会怎样出错：</p>
+
+    <figure class="code-listing" id="code-6-13"><figcaption>R 代码 6.13</figcaption><pre><code>set.seed(71)
+# number of plants
+N &lt;- 100
+
+# simulate initial heights
+h0 &lt;- rnorm(N,10,2)
+
+# assign treatments and simulate fungus and growth
+treatment &lt;- rep( 0:1 , each=N/2 )
+fungus &lt;- rbinom( N , size=1 , prob=0.5 - treatment*0.4 )
+h1 &lt;- h0 + rnorm(N, 5 - 3*fungus)
+
+# compose a clean data frame
+d &lt;- data.frame( h0=h0 , h1=h1 , treatment=treatment , fungus=fungus )
+precis(d)</code></pre><pre class="code-output"><code>           mean   sd  5.5% 94.5%    histogram
+h0         9.96 2.10  6.57 13.08 ▁▂▂▂▇▃▂▃▁▁▁▁
+h1        14.40 2.69 10.62 17.93    ▁▁▃▇▇▇▁▁
+treatment  0.50 0.50  0.00  1.00     ▇▁▁▁▁▁▁▁▁▇
+fungus     0.23 0.42  0.00  1.00    ▇▁▁▁▁▁▁▁▁▂</code></pre></figure><p>现在数据框 <code>d</code> 中包含模拟植物实验数据。</p>
+
+    <section id="sec-6-2-1"><h3>6.2.1 先验诞生</h3><p>设计模型时，最好假装并不知道上面的真实数据生成过程。真实研究中也不会知道它，但会有大量科学信息指导建模。因此认真对待这次模拟分析。</p><p>无论测量尺度是什么，时间 <span class="math-inline"><var>t</var> = 1</span> 时植物都应比 <span class="math-inline"><var>t</var> = 0</span> 更高。若把参数放在相对于初始高度的比例尺度，而非数据的绝对尺度上，先验会更容易指定。暂时忽略预测变量，只关注高度，可以建立：</p>
+
+      <div class="equation-block model-system-equation" id="eq-6-plant-growth-model"><div><var>h</var><sub>1,i</sub> ∼ Normal(<var>μ</var><sub>i</sub>, <var>σ</var>)</div><div><var>μ</var><sub>i</sub> = <var>h</var><sub>0,i</sub> × <var>p</var></div></div>
+
+      <p><span class="math-inline"><var>p</var> = <var>h</var><sub>1,i</sub>/<var>h</var><sub>0,i</sub></span> 测量最终高度相对初始高度的比例。<span class="math-inline"><var>p</var> = 1</span> 表示没有变化，<span class="math-inline"><var>p</var> = 2</span> 表示高度翻倍。以 1 为先验中心意味着预期不生长，这比已有知识更保守；同时应允许 <span class="math-inline"><var>p</var> &lt; 1</span>，以防实验灾难性地杀死植物，并保证 <span class="math-inline"><var>p</var> &gt; 0</span>。对数正态分布始终为正，因此令 <span class="math-inline"><var>p</var> ∼ Log-Normal(0, 0.25)</span>：</p>
+
+      <figure class="code-listing" id="code-6-14"><figcaption>R 代码 6.14</figcaption><pre><code>sim_p &lt;- rlnorm( 1e4 , 0 , 0.25 )
+precis( data.frame(sim_p) )</code></pre><pre class="code-output"><code>'data.frame': 10000 obs. of 1 variables:
+      mean   sd  5.5% 94.5%   histogram
+sim_p 1.03 0.26  0.67  1.48 ▁▃▇▇▃▁▁▁▁▁▁</code></pre></figure><p>这个先验容许从缩短约 40% 到增长约 50%。拟合模型，看看它怎样测量实验中的平均生长：</p>
+
+      <figure class="code-listing" id="code-6-15"><figcaption>R 代码 6.15</figcaption><pre><code>m6.6 &lt;- quap(
+    alist(
+        h1 ~ dnorm( mu , sigma ),
+        mu &lt;- h0*p,
+        p ~ dlnorm( 0 , 0.25 ),
+        sigma ~ dexp( 1 )
+    ), data=d )
+precis(m6.6)</code></pre><pre class="code-output"><code>      mean   sd  5.5% 94.5%
+p     1.43 0.02  1.40  1.45
+sigma 1.79 0.13  1.59  1.99</code></pre></figure><p>平均增长约 40%。接下来要加入处理与真菌变量，试图同时测量处理与真菌本身的影响；这些参数也会放在比例尺度上，表示比例生长的变化。</p><p class="continuation-note">包含处理与真菌的线性模型将在原书 PDF 第 193 页继续。</p>
     </section>
   </section>
 
-  <section class="endnotes" id="chapter-06-notes" role="doc-endnotes"><h2>尾注</h2><ol start="85"><li id="note-85">本例与 Paul Smaldino 合作完成。 <a class="backref" href="#note-85-ref" aria-label="返回正文">↩</a></li><li id="note-86">参见 Berkson（1946）。相关现象还有筛选造成的范围限制，它会降低筛选标准与后续表现之间的相关；这也是标准化考试成绩与入学后表现可能不相关的原因之一。另见 Dawes（1975）。 <a class="backref" href="#note-86-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section class="endnotes" id="chapter-06-notes" role="doc-endnotes"><h2>尾注</h2><ol start="85"><li id="note-85">本例与 Paul Smaldino 合作完成。 <a class="backref" href="#note-85-ref" aria-label="返回正文">↩</a></li><li id="note-86">参见 Berkson（1946）。相关现象还有筛选造成的范围限制，它会降低筛选标准与后续表现之间的相关；这也是标准化考试成绩与入学后表现可能不相关的原因之一。另见 Dawes（1975）。 <a class="backref" href="#note-86-ref" aria-label="返回正文">↩</a></li><li id="note-87">Rosenbaum（1984）称之为伴随变量偏差；另见 Gelman 与 Hill（2007）第 9 章。这个问题没有统一术语，也是广义中介分析的一部分。 <a class="backref" href="#note-87-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 181–189 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 190 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 181–192 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 193 页继续。</aside>
 </article>
