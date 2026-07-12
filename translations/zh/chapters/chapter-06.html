@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-06" data-source-pages="181-198">
-  <header class="chapter-header"><p class="eyebrow">第六章</p><h1>闹鬼的 DAG 与因果恐怖</h1><p class="source-range">当前译稿对应原书 PDF 第 181–198 页</p></header>
+<article class="book-article" data-chapter="chapter-06" data-source-pages="181-201">
+  <header class="chapter-header"><p class="eyebrow">第六章</p><h1>闹鬼的 DAG 与因果恐怖</h1><p class="source-range">当前译稿对应原书 PDF 第 181–201 页</p></header>
 
   <p>最有新闻价值的科学研究，似乎也最不可信。如果一项研究为真时越可能要你的命，它反而越不可能为真；主题越无聊，结果似乎越严谨。这种广为相信的负相关怎么会存在？人们关心的主题并没有理由产生更不可靠的结果。也许热门主题吸引了更多、更糟糕的研究者，就像苍蝇被蜂蜜气味吸引一样？</p>
 
@@ -332,11 +332,62 @@ happiness   0.0  1.21 -1.79  1.79         ▇▅▇▅▅▇▅▇</code></pre><
       <div class="equation-block" id="eq-6-happiness-age-marriage"><var>μ</var><sub>i</sub> = <var>α</var><sub>MID[i]</sub> + <var>β</var><sub>A</sub><var>A</var><sub>i</sub></div>
       <p>其中 <span class="math-inline">MID[<var>i</var>]</span> 是个体 <span class="math-inline"><var>i</var></span> 的婚姻状态索引：1 表示未婚，2 表示已婚。这就是第 4 章的类别变量策略。每个类别使用一个截距，会比使用指示变量更容易设定先验。</p><p>现在履行职责，认真考虑先验。先看斜率 <span class="math-inline"><var>β</var><sub>A</sub></span>，因为预测变量 <span class="math-inline"><var>A</var></span> 的缩放方式会决定截距的含义。只关注 18 岁及以上的成年人。设想年龄与幸福感之间存在非常强的关系：幸福感在 18 岁达到最大，在 65 岁达到最小。若把 18 到 65 岁的范围缩放成一个单位，会更方便：</p>
       <figure class="code-listing" id="code-6-22"><figcaption>R 代码 6.22</figcaption><pre><code>d2 &lt;- d[ d$age&gt;17 , ] # only adults
-d2$A &lt;- ( d2$age - 18 ) / ( 65 - 18 )</code></pre></figure><p class="continuation-note">年龄斜率的先验预测模拟将在原书 PDF 第 199 页继续。</p>
+d2$A &lt;- ( d2$age - 18 ) / ( 65 - 18 )</code></pre></figure>
+      <p>新变量 <span class="math-inline"><var>A</var></span> 的范围现在是 0 到 1：0 表示 18 岁，1 表示 65 岁。幸福感采用任意尺度，本数据中从 −2 到 +2。因此，设想中最强的关系——让幸福感从最大降至最小——其斜率为升高量除以水平变化量，即 <span class="math-inline">(2 − (−2))/1 = 4</span>。正态分布约 95% 的质量落在两个标准差内，所以把斜率先验的标准差设为 4 的一半，表示我们预计 95% 的可信斜率不会强过这个最大关系。这不算很强的先验，但至少把推断限制在现实范围内。</p><p>再看截距。每个 <span class="math-inline"><var>α</var></span> 都是 <span class="math-inline"><var>A</var><sub>i</sub> = 0</span> 时的 <span class="math-inline"><var>μ</var><sub>i</sub></span>，本例就是 18 岁时的平均幸福感。因此需要让 <span class="math-inline"><var>α</var></span> 覆盖完整的幸福感范围。Normal(0, 1) 会把约 95% 的质量放在 −2 到 +2 之间。</p><p>最后近似后验。还要构造婚姻状态索引变量，然后立即给出 <code>quap</code> 代码：</p>
+      <figure class="code-listing" id="code-6-23"><figcaption>R 代码 6.23</figcaption><pre><code>d2$mid &lt;- d2$married + 1
+m6.9 &lt;- quap(
+    alist(
+        happiness ~ dnorm( mu , sigma ),
+        mu &lt;- a[mid] + bA*A,
+        a[mid] ~ dnorm( 0 , 1 ),
+        bA ~ dnorm( 0 , 2 ),
+        sigma ~ dexp(1)
+    ) , data=d2 )
+precis(m6.9,depth=2)</code></pre><pre class="code-output"><code>      mean   sd  5.5% 94.5%
+a[1] -0.23 0.06 -0.34 -0.13
+a[2]  1.26 0.08  1.12  1.40
+bA   -0.75 0.11 -0.93 -0.57
+sigma 0.99 0.02  0.95  1.03</code></pre></figure>
+      <p>模型非常确信年龄与幸福感负相关。为了比较，应再看一个省略婚姻状态的模型，随后比较边际后验分布：</p>
+      <figure class="code-listing" id="code-6-24"><figcaption>R 代码 6.24</figcaption><pre><code>m6.10 &lt;- quap(
+    alist(
+        happiness ~ dnorm( mu , sigma ),
+        mu &lt;- a + bA*A,
+        a ~ dnorm( 0 , 1 ),
+        bA ~ dnorm( 0 , 2 ),
+        sigma ~ dexp(1)
+    ) , data=d2 )
+precis(m6.10)</code></pre><pre class="code-output"><code>      mean   sd  5.5% 94.5%
+a     0.00 0.08 -0.12 0.12
+bA    0.00 0.13 -0.21 0.21
+sigma 1.21 0.03  1.17 1.26</code></pre></figure>
+      <p>与之相反，这个模型没有发现年龄与幸福感之间的关联。</p><p>上述模式正是以碰撞点为条件时应有的结果。碰撞点是婚姻状态，它是年龄与幸福感的共同后果。因此，以婚姻为条件会在两个原因之间诱导虚假关联。于是模型 <code>m6.9</code> 看起来像是年龄与幸福感负相关，但这只是统计关联，不是因果关联。一旦知道某人是否已婚，其年龄确实能提供有关幸福程度的信息。</p><p>图 6.4 清楚展示了这一点。先只看蓝色点，也就是已婚者：其中年龄较大者的平均幸福感较低。因为随着时间推移，更多人结婚，已婚者的平均幸福感逐渐接近总体均值零。再只看空心点，也就是未婚者：平均幸福感同样随年龄下降，因为更幸福的人会随时间迁入已婚子总体。因此，无论已婚还是未婚子总体，年龄与幸福感都呈负关系；但两个子总体中的关系都不能正确反映因果。</p><p>很容易对这个例子提出异议：婚姻难道不会影响幸福感吗？幸福感若会随年龄变化呢？但这错过了重点。没有因果模型，就无法从多元回归做出因果推断；而回归本身也不能提供证明因果模型所需的证据。你需要的是科学知识。</p>
+    </section>
+
+    <section id="sec-6-3-2"><h3>6.3.2 闹鬼的 DAG</h3><p>碰撞点偏差来自以共同后果为条件，上一例便是如此。如果能把图理清，就能避开它。但潜在碰撞点并不总是容易看见，因为可能存在未测量的原因，而这些原因仍然能诱导碰撞点偏差。很遗憾，我们还必须考虑 DAG 被“幽灵”缠上的可能性。</p><p>例如，假设我们想推断父母 <span class="math-inline"><var>P</var></span> 与祖父母 <span class="math-inline"><var>G</var></span> 对儿童教育成就 <span class="math-inline"><var>C</var></span> 的直接影响。<sup id="note-90-ref"><a href="#note-90">90</a></sup> 祖父母想必也会影响自己子女的教育，所以有箭头 <span class="math-inline"><var>G</var> → <var>P</var></span>。到这里还很简单，结构类似上一章离婚率例子：</p>
+      <figure class="book-figure dag-figure" id="dag-6-generations-observed"><svg viewBox="0 0 700 430" role="img" aria-labelledby="dag-6-generations-title dag-6-generations-desc"><title id="dag-6-generations-title">祖父母、父母与儿童教育成就的 DAG</title><desc id="dag-6-generations-desc">祖父母 G 同时影响父母 P 和儿童 C，父母 P 也影响儿童 C。</desc><defs><marker id="dag6-generations-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#3f4752"/></marker></defs><g stroke="#3f4752" stroke-width="4" marker-end="url(#dag6-generations-arrow)"><line x1="235" y1="105" x2="455" y2="105"/><line x1="220" y1="135" x2="455" y2="320"/><line x1="490" y1="145" x2="490" y2="300"/></g><g fill="#f0f1fa" stroke="#263f86" stroke-width="3"><circle cx="195" cy="105" r="38"/><circle cx="490" cy="105" r="38"/><circle cx="490" cy="340" r="38"/></g><g text-anchor="middle" font-size="30" font-weight="700" fill="#263f86"><text x="195" y="116">G</text><text x="490" y="116">P</text><text x="490" y="351">C</text></g></svg><figcaption>祖父母 <span class="math-inline"><var>G</var></span> 影响父母 <span class="math-inline"><var>P</var></span> 与儿童 <span class="math-inline"><var>C</var></span> 的教育成就，父母也影响儿童。</figcaption></figure>
+      <p>但假设还存在未测量的共同影响，例如社区环境，同时影响父母及其子女，却不影响祖父母（他们如今住在西班牙南部海岸）。于是 DAG 被未观测变量 <span class="math-inline"><var>U</var></span> 缠上：</p>
+      <figure class="book-figure dag-figure" id="dag-6-generations-haunted"><svg viewBox="0 0 820 500" role="img" aria-labelledby="dag-6-haunted-title dag-6-haunted-desc"><title id="dag-6-haunted-title">未观测共同原因缠绕三代教育成就的 DAG</title><desc id="dag-6-haunted-desc">除祖父母 G 与父母 P 对儿童 C 的影响外，未观测 U 同时影响父母 P 和儿童 C。</desc><defs><marker id="dag6-haunted-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#3f4752"/></marker></defs><g stroke="#3f4752" stroke-width="4" marker-end="url(#dag6-haunted-arrow)"><line x1="205" y1="105" x2="425" y2="105"/><line x1="190" y1="135" x2="425" y2="365"/><line x1="460" y1="145" x2="460" y2="345"/><line x1="655" y1="185" x2="495" y2="125"/><line x1="655" y1="225" x2="495" y2="365"/></g><g fill="#f0f1fa" stroke="#263f86" stroke-width="3"><circle cx="165" cy="105" r="38"/><circle cx="460" cy="105" r="38"/><circle cx="460" cy="385" r="38"/><circle cx="695" cy="205" r="38" fill="#fff" stroke-dasharray="7 5"/></g><g text-anchor="middle" font-size="30" font-weight="700" fill="#263f86"><text x="165" y="116">G</text><text x="460" y="116">P</text><text x="460" y="396">C</text><text x="695" y="216">U</text></g></svg><figcaption>未观测共同原因 <span class="math-inline"><var>U</var></span> 同时影响父母 <span class="math-inline"><var>P</var></span> 与儿童 <span class="math-inline"><var>C</var></span>，使 <span class="math-inline"><var>P</var></span> 成为 <span class="math-inline"><var>G</var></span> 与 <span class="math-inline"><var>U</var></span> 的共同后果。</figcaption></figure>
+      <p>现在 <span class="math-inline"><var>P</var></span> 是 <span class="math-inline"><var>G</var></span> 与 <span class="math-inline"><var>U</var></span> 的共同后果，所以即使永远测不到 <span class="math-inline"><var>U</var></span>，以 <span class="math-inline"><var>P</var></span> 为条件仍会使对 <span class="math-inline"><var>G</var> → <var>C</var></span> 的推断产生偏差。这个事实并不直观，下面慢慢走过一个定量例子。</p><p>先模拟 200 个祖父母—父母—儿童三元组。模拟很简单：把 DAG 投影成一系列隐含的函数关系：</p>
+      <ol><li><span class="math-inline"><var>P</var></span> 是 <span class="math-inline"><var>G</var></span> 与 <span class="math-inline"><var>U</var></span> 的某个函数；</li><li><span class="math-inline"><var>C</var></span> 是 <span class="math-inline"><var>G</var></span>、<span class="math-inline"><var>P</var></span> 与 <span class="math-inline"><var>U</var></span> 的某个函数；</li><li><span class="math-inline"><var>G</var></span> 与 <span class="math-inline"><var>U</var></span> 不是其他任何已知变量的函数。</li></ol>
+      <p>可以用 <code>rnorm</code> 生成模拟观测，把这些含义写成简单模拟。但“某个函数”还不够精确，所以人为指定一些关联强度：</p>
+      <figure class="code-listing" id="code-6-25"><figcaption>R 代码 6.25</figcaption><pre><code>N &lt;- 200 # number of grandparent-parent-child triads
+b_GP &lt;- 1 # direct effect of G on P
+b_GC &lt;- 0 # direct effect of G on C
+b_PC &lt;- 1 # direct effect of P on C
+b_U &lt;- 2 # direct effect of U on P and C</code></pre></figure>
+      <p>这些参数类似回归模型中的斜率。这里假设祖父母 <span class="math-inline"><var>G</var></span> 对孙辈 <span class="math-inline"><var>C</var></span> 的效应为零。例子的结论并不依赖它恰好为零，但这样更容易看清要点。接着用这些斜率抽取随机观测：</p>
+      <figure class="code-listing" id="code-6-26"><figcaption>R 代码 6.26</figcaption><pre><code>set.seed(1)
+U &lt;- 2*rbern( N , 0.5 ) - 1
+G &lt;- rnorm( N )
+P &lt;- rnorm( N , b_GP*G + b_U*U )
+C &lt;- rnorm( N , b_PC*P + b_GC*G + b_U*U )
+d &lt;- data.frame( C=C , P=P , G=G , U=U )</code></pre></figure>
+      <p>这里把社区效应 <span class="math-inline"><var>U</var></span> 设为二元变量，使例子更容易理解；结论并不依赖这一假设。其余各行只是嵌在 <code>rnorm</code> 中的线性模型。</p><p>现在尝试推断祖父母的影响。由于祖父母的部分总效应会经父母传递，我们意识到需要控制父母，于是让 <span class="math-inline"><var>C</var></span> 对 <span class="math-inline"><var>P</var></span> 与 <span class="math-inline"><var>G</var></span> 做简单回归。通常应先标准化变量，因为这样更容易建立合理先验；但这里保留模拟数据的原始尺度，以便直接观察上面的斜率能否恢复。若改变尺度，就不应期待得到那些原值。为了推进例子，暂时使用宽泛先验。</p><p class="continuation-note">三代教育成就回归模型 R 代码 6.27 将在原书 PDF 第 202 页完整继续。</p>
     </section>
   </section>
 
-  <section class="endnotes" id="chapter-06-notes" role="doc-endnotes"><h2>尾注</h2><ol start="85"><li id="note-85">本例与 Paul Smaldino 合作完成。 <a class="backref" href="#note-85-ref" aria-label="返回正文">↩</a></li><li id="note-86">参见 Berkson（1946）。相关现象还有筛选造成的范围限制，它会降低筛选标准与后续表现之间的相关；这也是标准化考试成绩与入学后表现可能不相关的原因之一。另见 Dawes（1975）。 <a class="backref" href="#note-86-ref" aria-label="返回正文">↩</a></li><li id="note-87">Rosenbaum（1984）称之为伴随变量偏差；另见 Gelman 与 Hill（2007）第 9 章。这个问题没有统一术语，也是广义中介分析的一部分。 <a class="backref" href="#note-87-ref" aria-label="返回正文">↩</a></li><li id="note-88">参见 Pearl（2016）第 2 章。常有人把 d-分离中的 d 解释为 dependency（依赖），这确实更顺耳；但 d-分离源于更一般的图论：有向图涉及 d-分离，无向图则涉及 u-分离。无论如何，若称它为“依赖分离”，作者也不介意。 <a class="backref" href="#note-88-ref" aria-label="返回正文">↩</a></li><li id="note-89">这个例子由 Julia Rohrer 博士介绍给作者。参见她 2017 年的博客文章 <span class="url-text">http://www.the100.ci/2017/04/21/whats-an-age-effect-net-of-all-time-varying-covariates/</span>，以及 Rohrer（2017）和 Glenn（2009）。 <a class="backref" href="#note-89-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section class="endnotes" id="chapter-06-notes" role="doc-endnotes"><h2>尾注</h2><ol start="85"><li id="note-85">本例与 Paul Smaldino 合作完成。 <a class="backref" href="#note-85-ref" aria-label="返回正文">↩</a></li><li id="note-86">参见 Berkson（1946）。相关现象还有筛选造成的范围限制，它会降低筛选标准与后续表现之间的相关；这也是标准化考试成绩与入学后表现可能不相关的原因之一。另见 Dawes（1975）。 <a class="backref" href="#note-86-ref" aria-label="返回正文">↩</a></li><li id="note-87">Rosenbaum（1984）称之为伴随变量偏差；另见 Gelman 与 Hill（2007）第 9 章。这个问题没有统一术语，也是广义中介分析的一部分。 <a class="backref" href="#note-87-ref" aria-label="返回正文">↩</a></li><li id="note-88">参见 Pearl（2016）第 2 章。常有人把 d-分离中的 d 解释为 dependency（依赖），这确实更顺耳；但 d-分离源于更一般的图论：有向图涉及 d-分离，无向图则涉及 u-分离。无论如何，若称它为“依赖分离”，作者也不介意。 <a class="backref" href="#note-88-ref" aria-label="返回正文">↩</a></li><li id="note-89">这个例子由 Julia Rohrer 博士介绍给作者。参见她 2017 年的博客文章 <span class="url-text">http://www.the100.ci/2017/04/21/whats-an-age-effect-net-of-all-time-varying-covariates/</span>，以及 Rohrer（2017）和 Glenn（2009）。 <a class="backref" href="#note-89-ref" aria-label="返回正文">↩</a></li><li id="note-90">本例来自 Breen（2018）。 <a class="backref" href="#note-90-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 181–198 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 199 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 181–201 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 202 页继续。</aside>
 </article>

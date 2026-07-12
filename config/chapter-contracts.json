@@ -923,7 +923,7 @@
   },
   "chapter-06": {
     "required_status": "in_progress",
-    "source_pages": [181, 198],
+    "source_pages": [181, 201],
     "required_ids": [
       "fig-6-1",
       "overthinking-simulated-science-distortion",
@@ -974,12 +974,20 @@
       "fig-6-4",
       "eq-6-happiness-age-marriage",
       "code-6-22",
+      "code-6-23",
+      "code-6-24",
+      "sec-6-3-2",
+      "dag-6-generations-observed",
+      "dag-6-generations-haunted",
+      "code-6-25",
+      "code-6-26",
       "chapter-06-notes",
       "note-85",
       "note-86",
       "note-87",
       "note-88",
-      "note-89"
+      "note-89",
+      "note-90"
     ],
     "required_headings": [
       "闹鬼的 DAG 与因果恐怖",
@@ -996,26 +1004,27 @@
       "再思考：模型选择也无济于事",
       "6.3 碰撞点偏差",
       "6.3.1 虚假悲伤的碰撞点",
+      "6.3.2 闹鬼的 DAG",
       "尾注"
     ],
     "counts": {
-      "section": 10,
-      "figure": 31,
+      "section": 11,
+      "figure": 37,
       "figure img": 4,
-      "figure svg": 5,
+      "figure svg": 7,
       ".selection-distortion-figure": 1,
       ".multicollinear-legs-figure": 1,
       ".milk-pairs-figure": 1,
       ".happiness-marriage-figure": 1,
-      ".dag-figure": 5,
+      ".dag-figure": 7,
       ".equation-block": 5,
       ".model-system-equation": 4,
-      ".code-listing": 22,
-      ".code-output": 11,
+      ".code-listing": 26,
+      ".code-output": 13,
       ".rethinking-box": 2,
       ".overthinking-box": 2,
       ".source-erratum": 1,
-      ".endnotes li": 5
+      ".endnotes li": 6
     }
   }
 }
