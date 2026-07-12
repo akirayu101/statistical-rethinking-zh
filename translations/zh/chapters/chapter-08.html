@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-08" data-source-pages="257-262">
-  <header class="chapter-header"><p class="eyebrow">第八章</p><h1>条件海牛</h1><p class="source-range">当前译稿对应原书 PDF 第 257–262 页</p></header>
+<article class="book-article" data-chapter="chapter-08" data-source-pages="257-265">
+  <header class="chapter-header"><p class="eyebrow">第八章</p><h1>条件海牛</h1><p class="source-range">当前译稿对应原书 PDF 第 257–265 页</p></header>
 
   <p>海牛（<i>Trichechus manatus</i>）是一种行动缓慢、生活在温暖浅水中的水生哺乳动物。海牛没有天敌，却与摩托艇共享水域，而摩托艇装有螺旋桨。海牛虽与大象有亲缘关系、皮肤也很厚，螺旋桨叶片仍然能够而且确实会杀死它们。大多数成年海牛身上都有与船只相撞留下的某种伤疤（图 8.1，上）。<sup id="note-128-ref"><a href="#note-128">128</a></sup></p>
   <p>阿姆斯特朗—惠特沃思 A.W.38“惠特利”是英国皇家空军的一线轰炸机。第二次世界大战期间，A.W.38 把炸弹和传单带入德国领土。与海牛不同，A.W.38 有凶猛的天敌：高射炮火和截击机火力。许多飞机执行任务后再也没有回来；幸存者身上的伤痕足以证明它们经历过什么（图 8.1，下）。</p>
@@ -56,10 +56,70 @@ dd$rugged_std &lt;- dd$rugged / max(dd$rugged)</code></pre></figure>
       <p>其中，<span class="math-inline"><var>y</var><sub>i</sub></span> 是国家 <span class="math-inline"><var>i</var></span> 的 GDP，<span class="math-inline"><var>r</var><sub>i</sub></span> 是国家 <span class="math-inline"><var>i</var></span> 的地形崎岖度，<span class="math-inline"><span class="overbar">r</span></span> 是全样本的平均崎岖度，值为 0.215——大多数国家并不那么崎岖。请记住，使用 <span class="math-inline"><span class="overbar">r</span></span> 只是为了更容易给截距 <span class="math-inline"><var>α</var></span> 指定先验。</p>
       <p>真正需要费心思的是指定先验。如果你与我一样，对数 GDP 与地形崎岖度之间可能存在何种关联没有多少科学信息，那么仍可利用测量尺度本身，以有用的方式约束先验。缩放后的结果和预测变量会让这件事更容易。先看截距 <span class="math-inline"><var>α</var></span>：它定义为崎岖度等于样本均值时的对数 GDP。由于结果已经缩放到均值为 1，它必定接近 1。先从下面这个猜测开始：</p>
       <div class="equation-block" id="eq-8-rugged-alpha-prior"><span><var>α</var> ∼ Normal(1, 1)</span></div>
+      <p>现在来看斜率 <span class="math-inline"><var>β</var></span>。把先验中心放在 0，表示既不偏向正关联也不偏向负关联，这很合理。但标准差该是多少？先猜 1：</p>
+      <div class="equation-block" id="eq-8-rugged-beta-prior-wide"><span><var>β</var> ∼ Normal(0, 1)</span></div>
+      <p>我们将通过模拟先验预测分布来评估这个猜测。最后还需要 <span class="math-inline"><var>σ</var></span> 的先验。先指定一个很宽的 <span class="math-inline"><var>σ</var> ∼ Exponential(1)</span>；章末练习会要求你也直面这个先验，但本例余下部分暂且忽略它。</p>
+      <p>合在一起，第一个用于拟合地形崎岖度数据直线的候选模型是：</p>
+      <figure class="code-listing" id="code-8-2"><figcaption>R 代码 8.2</figcaption><pre><code>m8.1 &lt;- quap(
+    alist(
+        log_gdp_std ~ dnorm( mu , sigma ) ,
+        mu &lt;- a + b*( rugged_std - 0.215 ) ,
+        a ~ dnorm( 1 , 1 ) ,
+        b ~ dnorm( 0 , 1 ) ,
+        sigma ~ dexp( 1 )
+    ) , data=dd )</code></pre></figure>
+      <p>暂时不看后验预测，而看先验预测。像前几章一样，用 <code>link</code> 提取先验并绘制它所隐含的直线：</p>
+      <figure class="code-listing" id="code-8-3"><figcaption>R 代码 8.3</figcaption><pre><code>set.seed(7)
+prior &lt;- extract.prior( m8.1 )
+
+# set up the plot dimensions
+plot( NULL , xlim=c(0,1) , ylim=c(0.5,1.5) ,
+    xlab="ruggedness" , ylab="log GDP" )
+abline( h=min(dd$log_gdp_std) , lty=2 )
+abline( h=max(dd$log_gdp_std) , lty=2 )
+
+# draw 50 lines from the prior
+rugged_seq &lt;- seq( from=-0.1 , to=1.1 , length.out=30 )
+mu &lt;- link( m8.1 , post=prior , data=data.frame(rugged_std=rugged_seq) )
+for ( i in 1:50 ) lines( rugged_seq , mu[i,] , col=col.alpha("black",0.3) )</code></pre></figure>
+
+      <figure class="book-figure ruggedness-prior-figure" id="fig-8-3"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的宽松与改进先验预测直线比较"><img src="/media/chapter-08-ruggedness-priors.svg" alt="左侧宽松先验产生许多超出观测范围的回归线，右侧收紧先验后回归线大多集中在合理范围"></div><p class="scroll-hint">图较宽，可横向滚动比较两组先验预测。</p><figcaption><strong>图 8.3：</strong>用模拟寻找地形崎岖度示例的合理先验。水平虚线表示观测 GDP 的最小值与最大值。左：采用非常宽松先验的第一次猜测。右：采用可信得多的先验后得到的改进模型。</figcaption></figure>
+
+      <p>结果见图 8.3 左侧。水平虚线表示观测对数 GDP 的最大值与最小值。回归线既有正趋势也有负趋势，这一点符合预期；但许多直线进入了不可能的区域。仅从测量尺度考虑，直线就应更靠近“崎岖度为平均值（横轴 0.215）、比例对数 GDP 为 1”这个点。现在却有许多直线预期平均 GDP 落在观测范围之外。因此，需要收紧 <span class="math-inline"><var>α</var></span> 先验的标准差。像 <span class="math-inline"><var>α</var> ∼ Normal(1, 0.1)</span> 这样的先验，会把大多数可信度放在观测 GDP 范围内。高斯分布 95% 的质量位于均值两个标准差之内，所以它把 95% 的可信度分配给 0.8 到 1.2。这个先验仍很宽松，但至少不荒唐。</p>
+      <p class="source-erratum"><strong>原文勘误：</strong>正文两处把改进后的截距先验写成 <span class="math-inline">Normal(0, 0.1)</span>，但随后的 0.8–1.2 区间、图 8.3 标题和代码 8.5 都表明均值应为 1；译稿按 <span class="math-inline">Normal(1, 0.1)</span> 更正。</p>
+      <p>与此同时，斜率的变异也太大。地形崎岖度不太可能解释对数 GDP 的大部分观测变异。例如，一条强得不可信的关联线，会从最小崎岖度与一端极端 GDP 延伸到最大崎岖度与另一端相反的极端 GDP。图中用蓝色突出了一条这样的直线。其斜率约为 <span class="math-inline">1.3 − 0.7 = 0.6</span>，也就是观测比例对数 GDP 最大值与最小值之差；但先验中许多直线的斜率远比这更极端。在 <span class="math-inline"><var>β</var> ∼ Normal(0, 1)</span> 下，超过一半斜率的绝对值大于 0.6：</p>
+      <figure class="code-listing" id="code-8-4"><figcaption>R 代码 8.4</figcaption><pre><code>sum( abs(prior$b) &gt; 0.6 ) / length(prior$b)</code></pre><pre class="code-output"><code>[1] 0.545</code></pre></figure>
+      <p>改用 <span class="math-inline"><var>β</var> ∼ Normal(0, 0.3)</span>。在这个先验下，斜率 0.6 距离均值两个标准差；对现实而言仍稍嫌可信，但已经好得多。作出这两项修改后，模型变为：</p>
+      <figure class="code-listing" id="code-8-5"><figcaption>R 代码 8.5</figcaption><pre><code>m8.1 &lt;- quap(
+    alist(
+        log_gdp_std ~ dnorm( mu , sigma ) ,
+        mu &lt;- a + b*( rugged_std - 0.215 ) ,
+        a ~ dnorm( 1 , 0.1 ) ,
+        b ~ dnorm( 0 , 0.3 ) ,
+        sigma ~ dexp(1)
+    ) , data=dd )</code></pre></figure>
+      <p>可以用与之前相同的代码提取先验并绘制隐含直线，结果见图 8.3 右侧。其中有些斜率仍强得不可信，但总体而言，这是一组好得多的先验。</p>
+      <p>现在查看后验分布：</p>
+      <figure class="code-listing" id="code-8-6"><figcaption>R 代码 8.6</figcaption><pre><code>precis( m8.1 )</code></pre><pre class="code-output"><code>      mean   sd 5.5% 94.5%
+a     1.00 0.01 0.98 1.02
+b     0.00 0.05 -0.09 0.09
+sigma 0.14 0.01 0.12 0.15</code></pre></figure>
+      <p>地形崎岖度与对数 GDP 在总体上确实毫无关联。接下来把不同大洲拆开来看。</p>
+
+      <aside class="rethinking-box" id="rethinking-practice-when-it-matters"><h3>再思考：为关键时刻练习</h3><p>图 8.3 的练习对本例其实并非必要，因为数据足够多，模型又足够简单，即使糟糕的先验也会被数据冲淡。甚至使用完全平坦的先验（别这么做！）也不会出问题。但我们把事情做对，并不是因为它每次都至关重要；我们练习把事情做对，是为了在真正重要时已有准备。</p></aside>
+    </section>
+
+    <section id="sec-8-1-2"><h3>8.1.2 只添加指示变量还不够</h3><p>首先要意识到，只为非洲国家加入一个指示变量——这里是 <code>cont_africa</code>——并不能揭示反转的斜率。不过仍值得拟合这个模型，亲自证明这一点。我会把它当作一个简单的模型比较练习讲解，让你开始看到前几章积累的概念怎样应用。请注意，这里的模型比较并不是为了<strong>选择</strong>模型；科学考虑已经选出了相关模型。这里的目的，是在计入过拟合风险的同时，度量模型差异的影响。</p>
+      <p>要让非洲内外国家具有不同截距，需要修改 <span class="math-inline"><var>μ</var><sub>i</sub></span> 的模型，使均值以大洲为条件。传统做法是在模型中再加一项：</p>
+      <div class="equation-block" id="eq-8-indicator-intercept"><span><var>μ</var><sub>i</sub> = <var>α</var> + <var>β</var>(<var>r</var><sub>i</sub> − <span class="overbar">r</span>) + <var>γA</var><sub>i</sub></span></div>
+      <p>其中 <span class="math-inline"><var>A</var><sub>i</sub></span> 是 <code>cont_africa</code>，取 0/1 的指示变量。但我们不采用这个惯例。事实上，它往往是坏主意。我花了很多年才明白这一点，现在想让你免受我见过的那些恐怖。一般性问题在于，我们需要给 <span class="math-inline"><var>γ</var></span> 一个先验。先验当然能做；但在看到数据之前，它必然告诉模型：非洲国家的 <span class="math-inline"><var>μ</var><sub>i</sub></span> 比非洲之外国家的更不确定。这毫无道理。第 4 章引入分类变量时，我们遇到过同一个问题。</p>
+      <p>解决办法很简单：非洲国家得到一个截距，非洲之外国家得到另一个截距。此时：</p>
+      <div class="equation-block" id="eq-8-indexed-intercepts"><span><var>μ</var><sub>i</sub> = <var>α</var><sub>cid[i]</sub> + <var>β</var>(<var>r</var><sub>i</sub> − <span class="overbar">r</span>)</span></div>
+      <p>这里 <code>cid</code> 是索引变量，即大洲 ID：非洲国家取 1，其他国家取 2。因此共有两个参数 <span class="math-inline"><var>α</var><sub>1</sub></span> 与 <span class="math-inline"><var>α</var><sub>2</sub></span>，每个唯一索引值对应一个。记法 <code>cid[i]</code> 表示第 <span class="math-inline"><var>i</var></span> 行的 <code>cid</code> 值；方括号记法将在原书 PDF 第 266 页继续说明。</p>
     </section>
   </section>
 
   <section class="endnotes" id="chapter-08-notes" role="doc-endnotes"><h2>尾注</h2><ol start="128"><li id="note-128">这里关于海牛的事实均取自 Lightsey 等（2006）和 Rommel 等（2007）。图中的伤痕图取自 <span class="url-text">http://www.learner.org/jnorth/tm/manatee/RollCall.html</span> 的免费教育材料。 <a class="backref" href="#note-128-ref" aria-label="返回正文">↩</a></li><li id="note-129">Wald（1943）。更易懂的介绍和历史背景可参见 Mangel 与 Samaniego（1984）。 <a class="backref" href="#note-129-ref" aria-label="返回正文">↩</a></li><li id="note-130">Wald（1950）。Wald 的奠基论文是 Wald（1939）；强烈推荐 Fienberg（2006）的历史回顾。更技术性的讨论可参见 Berger（1985）、Robert（2007）以及 Jaynes（2003）第 406 页。 <a class="backref" href="#note-130-ref" aria-label="返回正文">↩</a></li><li id="note-131">GDP 即国内生产总值（Gross Domestic Product）。它是最常用的经济表现度量，也是最荒唐的度量之一。用 GDP 衡量经济健康，就像用热量衡量化学反应的质量。 <a class="backref" href="#note-131-ref" aria-label="返回正文">↩</a></li><li id="note-132">Riley 等（1999）。 <a class="backref" href="#note-132-ref" aria-label="返回正文">↩</a></li><li id="note-133">数据来自 Nunn 与 Puga（2011）。 <a class="backref" href="#note-133-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 257–262 页已完成翻译、逐页核对、结构契约及桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 263 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 257–265 页已完成翻译、逐页核对、结构契约及桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 266 页继续。</aside>
 </article>
