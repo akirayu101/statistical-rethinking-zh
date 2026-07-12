@@ -1077,8 +1077,8 @@
     }
   },
   "chapter-07": {
-    "required_status": "in_progress",
-    "source_pages": [211, 255],
+    "required_status": "verified",
+    "source_pages": [211, 256],
     "required_ids": [
       "fig-7-1",
       "rethinking-stargazing",
@@ -1201,6 +1201,9 @@
       "sec-7-7",
       "practice-7-easy",
       "practice-7-medium",
+      "practice-7-hard",
+      "fig-7-practice-laffer",
+      "table-7-island-birds",
       "chapter-07-notes-continuation-5",
       "chapter-07-notes-continuation-4",
       "chapter-07-notes-continuation-3",
@@ -1289,12 +1292,13 @@
       "7.7 练习",
       "简单题",
       "中等题",
+      "困难题",
       "尾注"
     ],
     "counts": {
       "section": 22,
-      "figure": 46,
-      "figure svg": 1,
+      "figure": 47,
+      "figure svg": 2,
       "figure img": 11,
       ".flowchart-figure": 1,
       ".solar-models-figure": 1,
@@ -1309,6 +1313,7 @@
       ".waic-compare-output": 1,
       ".influence-figure": 1,
       ".student-t-figure": 1,
+      ".laffer-practice-figure": 1,
       ".equation-block": 23,
       ".model-system-equation": 5,
       ".entropy-equation": 1,
@@ -1321,8 +1326,8 @@
       ".section-continuation": 4,
       ".code-message": 1,
       ".target-dimensions": 1,
-      "table": 3,
-      ".table-wrap": 3,
+      "table": 4,
+      ".table-wrap": 4,
       ".weather-table": 3,
       ".weather-score-equation": 1,
       ".formula-reading": 3,
@@ -1331,8 +1336,9 @@
       ".train-test-steps": 1,
       ".aic-assumptions": 1,
       ".source-erratum": 3,
-      ".practice-list": 2,
-      ".practice-list li": 10,
+      ".practice-list": 3,
+      ".practice-list li": 15,
+      ".practice-continuation": 1,
       ".endnotes li": 34
     }
   }
