@@ -1075,5 +1075,34 @@
       ".source-placeholder": 2,
       ".endnotes li": 9
     }
+  },
+  "chapter-07": {
+    "required_status": "in_progress",
+    "source_pages": [211, 213],
+    "required_ids": [
+      "fig-7-1",
+      "rethinking-stargazing",
+      "rethinking-is-aic-bayesian",
+      "sec-7-1",
+      "chapter-07-notes",
+      "note-94",
+      "note-95"
+    ],
+    "required_headings": [
+      "尤利西斯的罗盘",
+      "再思考：数星星",
+      "再思考：AIC 是贝叶斯的吗？",
+      "7.1 参数的问题",
+      "尾注"
+    ],
+    "counts": {
+      "section": 2,
+      "figure": 1,
+      "figure svg": 1,
+      ".flowchart-figure": 1,
+      ".solar-models-figure": 1,
+      ".rethinking-box": 2,
+      ".endnotes li": 2
+    }
   }
 }

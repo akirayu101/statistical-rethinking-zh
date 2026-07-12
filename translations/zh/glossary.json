@@ -538,6 +538,11 @@
     "dynamical system": "动力系统",
     "mechanistic model": "机制模型",
     "causal intervention": "因果干预",
+    "Ockham's razor": "奥卡姆剃刀",
+    "regularizing prior": "正则化先验",
+    "cross validation": "交叉验证",
+    "stargazing": "数星星",
+    "Bayesian information criterion": "贝叶斯信息准则",
     "unconfounded causal effect": "无混杂因果效应",
     "simulating counterfactuals": "模拟反事实",
     "masked relationship": "被掩盖的关系",
@@ -590,6 +595,6 @@
     "weakly identifiable": "弱可识别"
   },
   "protected": [
-    "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"
+    "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "AIC", "DIC", "WAIC", "BIC", "PSIS-LOO", "MCMC", "HMC"
   ]
 }
