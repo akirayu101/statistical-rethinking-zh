@@ -1078,31 +1078,51 @@
   },
   "chapter-07": {
     "required_status": "in_progress",
-    "source_pages": [211, 213],
+    "source_pages": [211, 216],
     "required_ids": [
       "fig-7-1",
       "rethinking-stargazing",
       "rethinking-is-aic-bayesian",
       "sec-7-1",
+      "eq-7-r-squared",
+      "sec-7-1-1",
+      "fig-7-2",
+      "code-7-1",
+      "code-7-2",
+      "eq-7-linear-brain-model",
+      "code-7-3",
+      "rethinking-ols-bayesian-anti-essentialism",
+      "code-7-4",
       "chapter-07-notes",
       "note-94",
-      "note-95"
+      "note-95",
+      "note-96",
+      "note-97",
+      "note-98"
     ],
     "required_headings": [
       "尤利西斯的罗盘",
       "再思考：数星星",
       "再思考：AIC 是贝叶斯的吗？",
       "7.1 参数的问题",
+      "7.1.1 更多参数（几乎）总会改善拟合",
+      "再思考：OLS 与贝叶斯反本质主义",
       "尾注"
     ],
     "counts": {
-      "section": 2,
-      "figure": 1,
+      "section": 3,
+      "figure": 6,
       "figure svg": 1,
+      "figure img": 1,
       ".flowchart-figure": 1,
       ".solar-models-figure": 1,
-      ".rethinking-box": 2,
-      ".endnotes li": 2
+      ".hominin-brain-figure": 1,
+      ".equation-block": 2,
+      ".model-system-equation": 1,
+      ".code-listing": 4,
+      ".rethinking-box": 3,
+      ".source-erratum": 1,
+      ".endnotes li": 5
     }
   }
 }

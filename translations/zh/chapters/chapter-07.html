@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-07" data-source-pages="211-213">
-  <header class="chapter-header"><p class="eyebrow">第七章</p><h1>尤利西斯的罗盘</h1><p class="source-range">当前译稿对应原书 PDF 第 211–213 页</p></header>
+<article class="book-article" data-chapter="chapter-07" data-source-pages="211-216">
+  <header class="chapter-header"><p class="eyebrow">第七章</p><h1>尤利西斯的罗盘</h1><p class="source-range">当前译稿对应原书 PDF 第 211–216 页</p></header>
 
   <p>米科瓦伊·哥白尼（Mikołaj Kopernik，亦称 Nicolaus Copernicus，1473–1543）：波兰天文学家、教会法学家，以及亵渎神明者。他以太阳系日心模型闻名，主张用日心模型取代地心模型，因为前者更“和谐”。几十年后，这个立场最终导致伽利略与教会著名的不和，以及那场审判。</p><p>这个故事后来成了科学战胜意识形态与迷信的寓言。但撇开意识形态，哥白尼的论证如今看来并不充分，问题有两个：他的模型既不特别和谐，也不比地心模型更准确。哥白尼模型十分复杂，实际上与托勒密模型一样堆满本轮（图 7.1）。哥白尼把太阳移到中心，但仍坚持用完美圆形轨道，所以仍然需要本轮；“和谐”并不很能形容它的外观。与托勒密模型一样，哥白尼模型实质上也是傅里叶级数——一种近似周期函数的方法。</p><p>这又引出第二个问题：日心模型与地心模型给出完全相同的预测。无论假设地球静止还是运动，都可以构造等价近似，所以只凭准确性没有理由偏爱日心模型。</p><p>不过，哥白尼并非只诉诸含糊的和谐。他还以所需原因更少来论证模型优越：“我们由此追随自然；自然不做无用或多余之事，常常宁愿让一个原因产生许多效应。”<sup id="note-94-ref"><a href="#note-94">94</a></sup> 确实，要给出与地心模型相同的预测，日心模型需要的圆和本轮更少；从这个意义上说，它更简单。</p><p>学者常偏爱更简单的理论。有时这种偏好很模糊，只是一种审美；有时则退回实用主义，因为简单理论的模型更容易处理。科学家经常援引一个宽松原则——奥卡姆剃刀：应优先选择假设更少的模型。对哥白尼与托勒密而言，剃刀给出明确建议。它不能保证哥白尼正确（毕竟他并不完全正确），但既然日心与地心模型预测相同，至少能明确化解两难。</p><p>然而，更一般地使用剃刀很困难，因为通常要在准确性与简单性都不同的模型之间选择。二者怎样权衡？剃刀没有指引。本章介绍一些最常用的权衡工具。所有工具通常都包含某种简单性概念，所以常被比作奥卡姆剃刀；但它们同样关心提高预测准确性，并会明确权衡准确性与简单性，因此并不等同于剃刀。</p>
 
@@ -11,9 +11,55 @@
 
   <aside class="rethinking-box" id="rethinking-is-aic-bayesian"><h3>再思考：AIC 是贝叶斯的吗？</h3><p>AIC 通常不被视为贝叶斯工具，既有历史原因，也有统计原因。历史上，AIC 最初推导时没有引用贝叶斯概率；统计上，它使用 MAP 估计而非完整后验，而且要求平坦先验，所以看起来并不特别贝叶斯。另一个名为贝叶斯信息准则（BIC）的模型比较指标，也强化了这种印象；然而 BIC 同样要求平坦先验和 MAP 估计，而且其实并不是“信息准则”。</p><p>尽管如此，AIC 在贝叶斯概率下有清晰、务实的解释，Akaike 等人也长期为它提出其他贝叶斯论证。<sup id="note-95-ref"><a href="#note-95">95</a></sup> 本书后面还会看到，当 AIC 的假设成立时，WAIC 这类更明显的贝叶斯信息准则给出的结果几乎与 AIC 完全相同。从这个角度，完全可以把 AIC 看作 WAIC 一类贝叶斯准则的特殊极限，即使它最初并非如此推导。这也体现了统计程序的常见特征：同一程序可以从多种、甚至哲学上不相容的视角推导和论证。</p></aside>
 
-  <section id="sec-7-1"><h2>7.1 参数的问题</h2><p>前几章看到，向模型加入变量与参数可以揭示隐藏效应、改善估计；也看到加入变量可能有害，尤其在缺乏可信因果模型时。碰撞点是真实存在的。但有时我们并不关心因果推断，只想做出好预测。以前一章的祖父母—父母—儿童例子为例，把所有变量都加入模型，确实会得到良好预测；至于我们是否理解发生了什么，并不重要。那么，把一切都加入模型可以吗？</p><p>答案是“不可以”。不断加入变量有两个相互关联的问题。第一个是：加入参数、使模型更复杂，几乎总会改善——</p><p class="continuation-note">参数数量与样本内拟合的关系将在原书 PDF 第 214 页继续。</p></section>
+  <section id="sec-7-1"><h2>7.1 参数的问题</h2><p>前几章看到，向模型加入变量与参数可以揭示隐藏效应、改善估计；也看到加入变量可能有害，尤其在缺乏可信因果模型时。碰撞点是真实存在的。但有时我们并不关心因果推断，只想做出好预测。以前一章的祖父母—父母—儿童例子为例，把所有变量都加入模型，确实会得到良好预测；至于我们是否理解发生了什么，并不重要。那么，把一切都加入模型可以吗？</p><p>答案是“不可以”。不断加入变量有两个相互关联的问题。第一个是：加入参数、使模型更复杂，几乎总会改善模型对数据的拟合。<sup id="note-96-ref"><a href="#note-96">96</a></sup> 这里的“拟合”是指模型对拟合它所用数据进行<strong>回溯预测</strong>的好坏程度。这样的度量有很多，每一种都有自己的怪脾气。在线性高斯模型中，最常用的是 <span class="math-inline"><var>R</var><sup>2</sup></span>，它常被描述为“解释的方差”，定义为：</p>
 
-  <section class="endnotes" id="chapter-07-notes" role="doc-endnotes"><h2>尾注</h2><ol start="94"><li id="note-94">《天体运行论》第 1 卷第 10 章。 <a class="backref" href="#note-94-ref" aria-label="返回正文">↩</a></li><li id="note-95">例如参见 Akaike（1978），以及 Burnham 与 Anderson（2002）的讨论。 <a class="backref" href="#note-95-ref" aria-label="返回正文">↩</a></li></ol></section>
+    <div class="equation-block normalized-equation" id="eq-7-r-squared"><span><var>R</var><sup>2</sup> =</span><span class="fraction"><span>var(结果) − var(残差)</span><span>var(结果)</span></span><span>= 1 −</span><span class="fraction"><span>var(残差)</span><span>var(结果)</span></span></div>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 211–213 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 214 页继续。</aside>
+    <p><span class="math-inline"><var>R</var><sup>2</sup></span> 容易计算，因此很受欢迎。但它和其他样本内拟合度量一样，会随着预测变量的增加而上升；即使新加入的变量只是与结果毫无关系的随机数，也是如此。因此，只看模型对现有数据的拟合，不能用来选择模型。</p><p>第二，复杂模型虽然对现有数据拟合得更好，预测新数据时却往往更差。参数很多的模型通常比简单模型更容易过拟合：它会对用于拟合的确切样本极其敏感；未来数据只要和过去不完全相同，就可能产生巨大错误。参数过少的简单模型则更容易欠拟合：无论未来数据多么像过去数据，它都会系统性地高估或低估。因此，不能总偏爱简单模型，也不能总偏爱复杂模型。</p><p>下面用一个简单例子同时考察这两个问题。</p>
+
+    <section id="sec-7-1-1"><h3>7.1.1 更多参数（几乎）总会改善拟合</h3><p>当模型从样本中学得太多时，就发生了过拟合。每个样本都同时具有<strong>规则特征</strong>和<strong>不规则特征</strong>。规则特征是我们想学习的目标，因为它们能很好地推广，或者能回答感兴趣的问题；在我们选定的目标下，它们是有用的。不规则特征则是数据中不能推广的部分，因此可能误导我们。</p><p>遗憾的是，过拟合会自动发生。在本书目前见过的这类统计模型中，加入额外参数总会改善模型对样本的拟合。本书后面从第 13 章开始，会遇到另一类模型：加入参数不一定改善样本内拟合，却很可能提高预测准确性。</p>
+
+      <figure class="book-figure hominin-brain-figure" id="fig-7-2"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的七种人族脑容量与体重散点图"><img src="/media/chapter-07-hominin-brains.svg" alt="七种人族的平均脑容量随体重变化的散点图"></div><p class="scroll-hint">图较宽，可横向滚动查看全部物种标签。</p><figcaption><strong>图 7.2：</strong>七种人族的平均脑容量（立方厘米）与体重（千克）。哪一种模型最适合描述脑大小和身体大小之间的关系？</figcaption></figure>
+      <p class="source-erratum"><strong>原文勘误：</strong>图注写作“六种人族”，但图中散点及紧随其后的代码都包含七种；译稿按实际数据写作“七种”。</p>
+
+      <p>图 7.2 展示了七种人族的平均脑容量和体重。<sup id="note-97-ref"><a href="#note-97">97</a></sup> 先把数据直接输入 R，而不是加载预制数据框；这样也能演示怎样从零开始构造数据框。</p>
+
+      <figure class="code-listing" id="code-7-1"><figcaption>R 代码 7.1</figcaption><pre><code>sppnames &lt;- c( "afarensis","africanus","habilis","boisei",
+    "rudolfensis","ergaster","sapiens")
+brainvolcc &lt;- c( 438 , 452 , 612, 521, 752, 871, 1350 )
+masskg &lt;- c( 37.0 , 35.5 , 34.5 , 41.5 , 55.5 , 61.0 , 53.5 )
+d &lt;- data.frame( species=sppnames , brain=brainvolcc , mass=masskg )</code></pre></figure>
+
+      <p>现在数据框 <code>d</code> 中包含脑大小和身体大小。这样的数据高度相关并不罕见——跨物种看，脑大小与身体大小相关。但一个经久不衰的问题是：把身体大小考虑进去以后，特定物种的脑是否仍比预期更大？常见做法是拟合线性回归，把脑大小建模为身体大小的线性函数；脑大小的剩余变异再由生态、饮食等其他变量来解释。这正是前几章介绍的“统计控制”策略。</p><p>然而，对身体大小的控制依赖于一个良好的函数映射，来表达身体大小与脑大小之间的关联。我们目前只用过线性函数，但自然界为何非得让不同物种之间呈直线关系？为什么不考虑抛物线这样的曲线模型？又为什么不用身体大小的三次函数，甚至五次模型？的确，目前没有先验理由认为脑大小只随身体大小线性缩放。许多读者会更愿意建模对数脑容量与对数体重之间的线性关系，也就是原尺度上的指数关系。但这个例子的方向并不在此：无论怎样变换数据，教训都一样。即使两个变量都取对数，也没有理由坚持线性是唯一可想象的关系。</p><p>下面拟合一系列复杂度逐渐增加的模型族，看哪一种函数对数据拟合最好。我们会使用多项式回归，必要时可回顾 4.5 节（原书第 113 页）。要特别记住：多项式回归很常见，但通常不是好主意。这个例子会表明，盲目使用它们可能尤其糟糕。</p><p>脑大小与身体大小之间最简单的模型是线性模型，我们先从它开始。写出模型之前，先重新缩放变量。前几章已说明，重新缩放预测变量和结果变量，往往有助于模型拟合，也有助于指定和理解先验。这里把体重标准化为均值 0、标准差 1；脑容量则除以观测到的最大值，让最大值变为 1。为什么不把脑容量也标准化？因为我们想保留零这个参照点——完全没有脑。脑不可能是负的。我想是这样。</p>
+
+      <figure class="code-listing" id="code-7-2"><figcaption>R 代码 7.2</figcaption><pre><code>d$mass_std &lt;- (d$mass - mean(d$mass))/sd(d$mass)
+d$brain_std &lt;- d$brain / max(d$brain)</code></pre></figure>
+
+      <p>第一个线性模型的数学表达为：</p>
+
+      <div class="equation-block model-system-equation" id="eq-7-linear-brain-model"><div><var>b</var><sub>i</sub> ∼ Normal(<var>μ</var><sub>i</sub>, <var>σ</var>)</div><div><var>μ</var><sub>i</sub> = <var>α</var> + <var>βm</var><sub>i</sub></div><div><var>α</var> ∼ Normal(0.5, 1)</div><div><var>β</var> ∼ Normal(0, 10)</div><div><var>σ</var> ∼ Log-Normal(0, 1)</div></div>
+
+      <p>这个模型只是说，物种 <span class="math-inline"><var>i</var></span> 的平均脑容量 <span class="math-inline"><var>b</var><sub>i</sub></span> 是其体重 <span class="math-inline"><var>m</var><sub>i</sub></span> 的线性函数。再看这些先验意味着什么。<span class="math-inline"><var>α</var></span> 的先验以数据中重新缩放后的平均脑容量为中心；也就是说，具有平均体重的普通物种，其脑容量的 89% 相容区间大约从 −1 到 2。这个范围荒谬地宽，还包含不可能的负值。<span class="math-inline"><var>β</var></span> 的先验非常平坦，以 0 为中心，允许荒谬巨大的正关联和负关联。尤其当模型越来越复杂时，这些先验会允许荒谬的推断。这正是本例教训的一部分，所以先继续拟合：</p>
+
+      <figure class="code-listing" id="code-7-3"><figcaption>R 代码 7.3</figcaption><pre><code>m7.1 &lt;- quap(
+    alist(
+        brain_std ~ dnorm( mu , exp(log_sigma) ),
+        mu &lt;- a + b*mass_std,
+        a ~ dnorm( 0.5 , 1 ),
+        b ~ dnorm( 0 , 10 ),
+        log_sigma ~ dnorm( 0 , 1 )
+    ), data=d )</code></pre></figure>
+
+      <p>先不急着像前几章那样停下来画后验分布，而是聚焦于 <span class="math-inline"><var>R</var><sup>2</sup></span>，也就是模型“解释”的方差比例。它真正表示的是：这个线性模型能回溯预测拟合数据中总变异的多少；剩余变异就是残差的变异（原书第 139 页）。</p>
+
+      <aside class="rethinking-box" id="rethinking-ols-bayesian-anti-essentialism"><h3>再思考：OLS 与贝叶斯反本质主义</h3><p>也可以用非贝叶斯的普通最小二乘法（ordinary least squares，OLS），为这些脑大小模型取得后验分布。例如，用 R 的简单函数 <code>lm</code> 就能得到 <code>m7.1</code> 的后验分布；不过得不到 <span class="math-inline"><var>σ</var></span> 的后验。原文此处误写为 <code>m6.1</code>，代码与上下文都表明应为 <code>m7.1</code>。</p><figure class="code-listing" id="code-7-4"><figcaption>R 代码 7.4</figcaption><pre><code>m7.1_OLS &lt;- lm( brain_std ~ mass_std , data=d )
+post &lt;- extract.samples( m7.1_OLS )</code></pre></figure><p>只要先验足够模糊，使观测值到回归线的平方偏差之和最小，就等价于寻找后验均值。事实上，卡尔·弗里德里希·高斯最初正是在贝叶斯框架中推导 OLS 的。<sup id="note-98-ref"><a href="#note-98">98</a></sup> 当时几乎所有概率论都是贝叶斯式的，尽管“贝叶斯”这个词要到 20 世纪才广泛使用。</p><p>多数情况下，非贝叶斯程序都有近似的贝叶斯解释；这一点对两个方向都很有力量。把非贝叶斯程序改写成贝叶斯解释，会把假设重新表述为信息，因而非常有助于理解程序为何有效。反过来，贝叶斯模型也可以由效率更高、但近似的非贝叶斯程序来体现。贝叶斯推断的含义是近似后验分布，并不规定必须怎样完成这种近似。</p></aside>
+
+      <p class="continuation-note">线性模型的样本内解释方差计算将在原书 PDF 第 217 页继续。</p>
+    </section>
+  </section>
+
+  <section class="endnotes" id="chapter-07-notes" role="doc-endnotes"><h2>尾注</h2><ol start="94"><li id="note-94">《天体运行论》第 1 卷第 10 章。 <a class="backref" href="#note-94-ref" aria-label="返回正文">↩</a></li><li id="note-95">例如参见 Akaike（1978），以及 Burnham 与 Anderson（2002）的讨论。 <a class="backref" href="#note-95-ref" aria-label="返回正文">↩</a></li><li id="note-96">当先验平坦、模型简单时，这一点总是成立。但本书后面会使用多层回归等其他模型；对它们而言，加入参数不一定改善样本内拟合。 <a class="backref" href="#note-96-ref" aria-label="返回正文">↩</a></li><li id="note-97">数据来自 McHenry 与 Coffing（2000）的表 1。 <a class="backref" href="#note-97-ref" aria-label="返回正文">↩</a></li><li id="note-98">Gauss（1809），<cite>Theoria motus corporum coelestium in sectionibus conicis solem ambientum</cite>。 <a class="backref" href="#note-98-ref" aria-label="返回正文">↩</a></li></ol></section>
+
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 211–216 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 217 页继续。</aside>
 </article>

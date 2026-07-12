@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="650" viewBox="0 0 900 650" role="img">
+<title>七种人族的脑容量与体重</title>
+<desc>横轴是体重千克，纵轴是脑容量立方厘米；七个散点分别标注物种名。</desc>
+<rect width="100%" height="100%" fill="#fff"/>
+<rect x="112" y="62" width="720" height="500" fill="#fff" stroke="#343732" stroke-width="1.5"/>
+<line x1="112.0" y1="562" x2="112.0" y2="569" stroke="#343732"/>
+<text x="112.0" y="592" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="17">30</text>
+<line x1="292.0" y1="562" x2="292.0" y2="569" stroke="#343732"/>
+<text x="292.0" y="592" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="17">40</text>
+<line x1="472.0" y1="562" x2="472.0" y2="569" stroke="#343732"/>
+<text x="472.0" y="592" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="17">50</text>
+<line x1="652.0" y1="562" x2="652.0" y2="569" stroke="#343732"/>
+<text x="652.0" y="592" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="17">60</text>
+<line x1="832.0" y1="562" x2="832.0" y2="569" stroke="#343732"/>
+<text x="832.0" y="592" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="17">70</text>
+<line x1="105" y1="562.0" x2="112" y2="562.0" stroke="#343732"/>
+<text x="96" y="568.0" text-anchor="end" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="17">400</text>
+<line x1="105" y1="462.0" x2="112" y2="462.0" stroke="#343732"/>
+<text x="96" y="468.0" text-anchor="end" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="17">600</text>
+<line x1="105" y1="362.0" x2="112" y2="362.0" stroke="#343732"/>
+<text x="96" y="368.0" text-anchor="end" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="17">800</text>
+<line x1="105" y1="262.0" x2="112" y2="262.0" stroke="#343732"/>
+<text x="96" y="268.0" text-anchor="end" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="17">1000</text>
+<line x1="105" y1="162.0" x2="112" y2="162.0" stroke="#343732"/>
+<text x="96" y="168.0" text-anchor="end" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="17">1200</text>
+<line x1="105" y1="62.0" x2="112" y2="62.0" stroke="#343732"/>
+<text x="96" y="68.0" text-anchor="end" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="17">1400</text>
+<circle cx="238.0" cy="543.0" r="6.5" fill="#30332e"/>
+<text x="252.0" y="577.0" text-anchor="start" font-family="Georgia, Times New Roman, serif" font-size="19" font-style="italic" fill="#263f86">afarensis</text>
+<circle cx="211.0" cy="536.0" r="6.5" fill="#30332e"/>
+<text x="101.0" y="549.0" text-anchor="end" font-family="Georgia, Times New Roman, serif" font-size="19" font-style="italic" fill="#263f86">africanus</text>
+<circle cx="193.0" cy="456.0" r="6.5" fill="#30332e"/>
+<text x="121.0" y="438.0" text-anchor="end" font-family="Georgia, Times New Roman, serif" font-size="19" font-style="italic" fill="#263f86">habilis</text>
+<circle cx="319.0" cy="501.5" r="6.5" fill="#30332e"/>
+<text x="333.0" y="525.5" text-anchor="start" font-family="Georgia, Times New Roman, serif" font-size="19" font-style="italic" fill="#263f86">boisei</text>
+<circle cx="571.0" cy="386.0" r="6.5" fill="#30332e"/>
+<text x="453.0" y="414.0" text-anchor="end" font-family="Georgia, Times New Roman, serif" font-size="19" font-style="italic" fill="#263f86">rudolfensis</text>
+<circle cx="670.0" cy="326.5" r="6.5" fill="#30332e"/>
+<text x="684.0" y="310.5" text-anchor="start" font-family="Georgia, Times New Roman, serif" font-size="19" font-style="italic" fill="#263f86">ergaster</text>
+<circle cx="535.0" cy="87.0" r="6.5" fill="#30332e"/>
+<text x="549.0" y="70.0" text-anchor="start" font-family="Georgia, Times New Roman, serif" font-size="19" font-style="italic" fill="#263f86">sapiens</text>
+<text x="472.0" y="625" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="21" font-weight="700" fill="#263f86">体重（千克）</text>
+<text x="36" y="312.0" transform="rotate(-90 36 312.0)" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="21" font-weight="700" fill="#263f86">脑容量（立方厘米）</text>
+</svg>
