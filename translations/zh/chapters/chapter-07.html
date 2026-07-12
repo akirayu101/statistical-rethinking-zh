@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-07" data-source-pages="211-216">
-  <header class="chapter-header"><p class="eyebrow">第七章</p><h1>尤利西斯的罗盘</h1><p class="source-range">当前译稿对应原书 PDF 第 211–216 页</p></header>
+<article class="book-article" data-chapter="chapter-07" data-source-pages="211-219">
+  <header class="chapter-header"><p class="eyebrow">第七章</p><h1>尤利西斯的罗盘</h1><p class="source-range">当前译稿对应原书 PDF 第 211–219 页</p></header>
 
   <p>米科瓦伊·哥白尼（Mikołaj Kopernik，亦称 Nicolaus Copernicus，1473–1543）：波兰天文学家、教会法学家，以及亵渎神明者。他以太阳系日心模型闻名，主张用日心模型取代地心模型，因为前者更“和谐”。几十年后，这个立场最终导致伽利略与教会著名的不和，以及那场审判。</p><p>这个故事后来成了科学战胜意识形态与迷信的寓言。但撇开意识形态，哥白尼的论证如今看来并不充分，问题有两个：他的模型既不特别和谐，也不比地心模型更准确。哥白尼模型十分复杂，实际上与托勒密模型一样堆满本轮（图 7.1）。哥白尼把太阳移到中心，但仍坚持用完美圆形轨道，所以仍然需要本轮；“和谐”并不很能形容它的外观。与托勒密模型一样，哥白尼模型实质上也是傅里叶级数——一种近似周期函数的方法。</p><p>这又引出第二个问题：日心模型与地心模型给出完全相同的预测。无论假设地球静止还是运动，都可以构造等价近似，所以只凭准确性没有理由偏爱日心模型。</p><p>不过，哥白尼并非只诉诸含糊的和谐。他还以所需原因更少来论证模型优越：“我们由此追随自然；自然不做无用或多余之事，常常宁愿让一个原因产生许多效应。”<sup id="note-94-ref"><a href="#note-94">94</a></sup> 确实，要给出与地心模型相同的预测，日心模型需要的圆和本轮更少；从这个意义上说，它更简单。</p><p>学者常偏爱更简单的理论。有时这种偏好很模糊，只是一种审美；有时则退回实用主义，因为简单理论的模型更容易处理。科学家经常援引一个宽松原则——奥卡姆剃刀：应优先选择假设更少的模型。对哥白尼与托勒密而言，剃刀给出明确建议。它不能保证哥白尼正确（毕竟他并不完全正确），但既然日心与地心模型预测相同，至少能明确化解两难。</p><p>然而，更一般地使用剃刀很困难，因为通常要在准确性与简单性都不同的模型之间选择。二者怎样权衡？剃刀没有指引。本章介绍一些最常用的权衡工具。所有工具通常都包含某种简单性概念，所以常被比作奥卡姆剃刀；但它们同样关心提高预测准确性，并会明确权衡准确性与简单性，因此并不等同于剃刀。</p>
 
@@ -55,11 +55,109 @@ d$brain_std &lt;- d$brain / max(d$brain)</code></pre></figure>
       <aside class="rethinking-box" id="rethinking-ols-bayesian-anti-essentialism"><h3>再思考：OLS 与贝叶斯反本质主义</h3><p>也可以用非贝叶斯的普通最小二乘法（ordinary least squares，OLS），为这些脑大小模型取得后验分布。例如，用 R 的简单函数 <code>lm</code> 就能得到 <code>m7.1</code> 的后验分布；不过得不到 <span class="math-inline"><var>σ</var></span> 的后验。原文此处误写为 <code>m6.1</code>，代码与上下文都表明应为 <code>m7.1</code>。</p><figure class="code-listing" id="code-7-4"><figcaption>R 代码 7.4</figcaption><pre><code>m7.1_OLS &lt;- lm( brain_std ~ mass_std , data=d )
 post &lt;- extract.samples( m7.1_OLS )</code></pre></figure><p>只要先验足够模糊，使观测值到回归线的平方偏差之和最小，就等价于寻找后验均值。事实上，卡尔·弗里德里希·高斯最初正是在贝叶斯框架中推导 OLS 的。<sup id="note-98-ref"><a href="#note-98">98</a></sup> 当时几乎所有概率论都是贝叶斯式的，尽管“贝叶斯”这个词要到 20 世纪才广泛使用。</p><p>多数情况下，非贝叶斯程序都有近似的贝叶斯解释；这一点对两个方向都很有力量。把非贝叶斯程序改写成贝叶斯解释，会把假设重新表述为信息，因而非常有助于理解程序为何有效。反过来，贝叶斯模型也可以由效率更高、但近似的非贝叶斯程序来体现。贝叶斯推断的含义是近似后验分布，并不规定必须怎样完成这种近似。</p></aside>
 
-      <p class="continuation-note">线性模型的样本内解释方差计算将在原书 PDF 第 217 页继续。</p>
+      <p>这个例子并不是要赞美 <span class="math-inline"><var>R</var><sup>2</sup></span>，而是要埋葬它。但下葬之前仍得先计算它，好在这很容易。先为每个观测计算后验预测分布——前几章已经用 <code>sim</code> 做过。再从每个预测中减去对应观测，得到残差。接着需要残差和结果变量各自的方差。这里要的是实际的经验方差，而不是 R 函数 <code>var</code> 返回的方差；后者是频率学派估计量，分母不适合这里的目的。因此用老办法计算方差：到均值的平方偏差的平均值。<code>rethinking</code> 包为此提供了 <code>var2</code> 函数。</p><p>原则上，贝叶斯方法要求对后验的每一个样本都这样计算。不过传统上，<span class="math-inline"><var>R</var><sup>2</sup></span> 只在平均预测处计算，所以这里也照此办理。</p>
+
+      <figure class="code-listing" id="code-7-5"><figcaption>R 代码 7.5</figcaption><pre><code>set.seed(12)
+s &lt;- sim( m7.1 )
+r &lt;- apply(s,2,mean) - d$brain_std
+resid_var &lt;- var2(r)
+outcome_var &lt;- var2( d$brain_std )
+1 - resid_var/outcome_var</code></pre><pre class="code-output"><code>[1] 0.4774589</code></pre></figure>
+
+      <p>接下来几个模型还会反复用到这个计算，因此把它写成函数：</p>
+
+      <figure class="code-listing" id="code-7-6"><figcaption>R 代码 7.6</figcaption><pre><code>R2_is_bad &lt;- function( quap_fit ) {
+    s &lt;- sim( quap_fit , refresh=0 )
+    r &lt;- apply(s,2,mean) - d$brain_std
+    1 - var2(r)/var2(d$brain_std)
+}</code></pre></figure>
+
+      <p>现在构造其他模型与 <code>m7.1</code> 比较。再考虑五个模型，每一个都比前一个更复杂；它们只是次数越来越高的多项式。例如，用二次多项式联系身体大小与脑大小，就是一条抛物线。数学形式为：</p>
+
+      <div class="equation-block model-system-equation" id="eq-7-quadratic-brain-model"><div><var>b</var><sub>i</sub> ∼ Normal(<var>μ</var><sub>i</sub>, <var>σ</var>)</div><div><var>μ</var><sub>i</sub> = <var>α</var> + <var>β</var><sub>1</sub><var>m</var><sub>i</sub> + <var>β</var><sub>2</sub><var>m</var><sub>i</sub><sup>2</sup></div><div><var>α</var> ∼ Normal(0.5, 1)</div><div><var>β</var><sub>j</sub> ∼ Normal(0, 10)　其中 <var>j</var> = 1, 2</div><div><var>σ</var> ∼ Log-Normal(0, 1)</div></div>
+
+      <p>这个模型族只多了一个参数 <span class="math-inline"><var>β</var><sub>2</sub></span>，使用的数据却与 <code>m7.1</code> 完全相同。在 <code>quap</code> 中，可以把 <span class="math-inline"><var>β</var></span> 定义成向量；唯一的技巧是用起始值列表 <code>start</code> 告诉 <code>quap</code> 这个向量有多长：</p>
+
+      <figure class="code-listing" id="code-7-7"><figcaption>R 代码 7.7</figcaption><pre><code>m7.2 &lt;- quap(
+    alist(
+        brain_std ~ dnorm( mu , exp(log_sigma) ),
+        mu &lt;- a + b[1]*mass_std + b[2]*mass_std^2,
+        a ~ dnorm( 0.5 , 1 ),
+        b ~ dnorm( 0 , 10 ),
+        log_sigma ~ dnorm( 0 , 1 )
+    ), data=d , start=list(b=rep(0,2)) )</code></pre></figure>
+
+      <p>接下来的四个模型用相似方式构造。<code>m7.3</code> 到 <code>m7.6</code> 依次是三次、四次、五次和六次多项式。前三个模型的代码如下：</p>
+
+      <figure class="code-listing" id="code-7-8"><figcaption>R 代码 7.8</figcaption><pre><code>m7.3 &lt;- quap(
+    alist(
+        brain_std ~ dnorm( mu , exp(log_sigma) ),
+        mu &lt;- a + b[1]*mass_std + b[2]*mass_std^2 +
+                  b[3]*mass_std^3,
+        a ~ dnorm( 0.5 , 1 ),
+        b ~ dnorm( 0 , 10 ),
+        log_sigma ~ dnorm( 0 , 1 )
+    ), data=d , start=list(b=rep(0,3)) )
+
+m7.4 &lt;- quap(
+    alist(
+        brain_std ~ dnorm( mu , exp(log_sigma) ),
+        mu &lt;- a + b[1]*mass_std + b[2]*mass_std^2 +
+                  b[3]*mass_std^3 + b[4]*mass_std^4,
+        a ~ dnorm( 0.5 , 1 ),
+        b ~ dnorm( 0 , 10 ),
+        log_sigma ~ dnorm( 0 , 1 )
+    ), data=d , start=list(b=rep(0,4)) )
+
+m7.5 &lt;- quap(
+    alist(
+        brain_std ~ dnorm( mu , exp(log_sigma) ),
+        mu &lt;- a + b[1]*mass_std + b[2]*mass_std^2 +
+                  b[3]*mass_std^3 + b[4]*mass_std^4 +
+                  b[5]*mass_std^5,
+        a ~ dnorm( 0.5 , 1 ),
+        b ~ dnorm( 0 , 10 ),
+        log_sigma ~ dnorm( 0 , 1 )
+    ), data=d , start=list(b=rep(0,5)) )</code></pre></figure>
+
+      <p>最后一个模型 <code>m7.6</code> 有个技巧：把标准差替换成常数 0.001。否则模型无法工作，原因非常重要；画出这些怪物时就会明白。最后一个模型是：</p>
+
+      <figure class="code-listing" id="code-7-9"><figcaption>R 代码 7.9</figcaption><pre><code>m7.6 &lt;- quap(
+    alist(
+        brain_std ~ dnorm( mu , 0.001 ),
+        mu &lt;- a + b[1]*mass_std + b[2]*mass_std^2 +
+                  b[3]*mass_std^3 + b[4]*mass_std^4 +
+                  b[5]*mass_std^5 + b[6]*mass_std^6,
+        a ~ dnorm( 0.5 , 1 ),
+        b ~ dnorm( 0 , 10 )
+    ), data=d , start=list(b=rep(0,6)) )</code></pre></figure>
+
+      <p>现在绘制每个模型。沿用前几章的步骤：从后验中抽取样本，在横轴的若干位置计算后验预测分布，再汇总并绘图。对 <code>m7.1</code>：</p>
+
+      <figure class="code-listing" id="code-7-10"><figcaption>R 代码 7.10</figcaption><pre><code>post &lt;- extract.samples(m7.1)
+mass_seq &lt;- seq( from=min(d$mass_std) , to=max(d$mass_std) , length.out=100 )
+l &lt;- link( m7.1 , data=list( mass_std=mass_seq ) )
+mu &lt;- apply( l , 2 , mean )
+ci &lt;- apply( l , 2 , PI )
+plot( brain_std ~ mass_std , data=d )
+lines( mass_seq , mu )
+shade( ci , mass_seq )</code></pre></figure>
+
+      <p>图 7.3 汇集了这张图和其他所有模型，并做了一些外观改进（相关代码见 <code>brain_plot</code>）。每个面板也显示 <span class="math-inline"><var>R</var><sup>2</sup></span>。定义均值的多项式次数越高，<span class="math-inline"><var>R</var><sup>2</sup></span> 总会改善，说明对现有数据的回溯预测更好。五次多项式的 <span class="math-inline"><var>R</var><sup>2</sup></span> 为 0.99，几乎精确穿过每个点；六次多项式则真的穿过了全部数据点，没有任何残差方差，是 <span class="math-inline"><var>R</var><sup>2</sup> = 1</span> 的完美拟合。这就是必须固定 <span class="math-inline"><var>σ</var></span> 的原因：若估计它，它会缩到零，因为曲线穿过每个点的中心时，残差方差就是零。</p><p>然而，从预测均值的路径就能看出，高次多项式越来越荒谬。图 7.3 的面板 (f) 展示最复杂的模型 <code>m7.6</code>，最容易看清这种荒谬：拟合完美，模型却很可笑。体重数据中存在一个缺口，因为没有体重在 55 千克至约 60 千克之间的化石人族。在这一区域，高次多项式预测均值没有观测可预测，所以曲线即使疯狂摆动也不用付出任何代价。摆动幅度如此极端，以至于图的纵轴必须向下延伸，才能显示预测均值最终转回来的深度。约在 58 千克处，模型竟然预测负的脑大小！模型暂时不必为这种荒谬付出代价，因为数据中没有体重接近 58 千克的案例。</p>
+
+      <p class="source-erratum"><strong>原文勘误：</strong>上述图 7.3 面板 (f) 的模型在原文中误写为 <code>m6.6</code>；按本节模型编号与代码 7.9，应为 <code>m7.6</code>。</p>
+
+      <p>为什么六次多项式能完美拟合？因为它有足够的参数，可以给每个数据点分配一个。模型的均值方程有 7 个参数：</p>
+
+      <div class="equation-block compact-equation" id="eq-7-sixth-degree-mean"><span><var>μ</var><sub>i</sub> = <var>α</var> + <var>β</var><sub>1</sub><var>m</var><sub>i</sub> + <var>β</var><sub>2</sub><var>m</var><sub>i</sub><sup>2</sup> + <var>β</var><sub>3</sub><var>m</var><sub>i</sub><sup>3</sup> + <var>β</var><sub>4</sub><var>m</var><sub>i</sub><sup>4</sup> + <var>β</var><sub>5</sub><var>m</var><sub>i</sub><sup>5</sup> + <var>β</var><sub>6</sub><var>m</var><sub>i</sub><sup>6</sup></span></div>
+
+      <p>而需要预测脑大小的物种恰好也有 7 个。因此，这个模型实际上给每个观测到的脑大小分配了一个独有参数，用来逐一重现它们。这是普遍现象：只要采用参数足够多的模型族，就能精确拟合数据。但这样的模型会对尚未观测的案例做出相当荒谬的预测。</p>
+
+      <p class="continuation-note">图 7.3 及过拟合如何损害样本外预测的讨论将在原书 PDF 第 220 页继续。</p>
     </section>
   </section>
 
   <section class="endnotes" id="chapter-07-notes" role="doc-endnotes"><h2>尾注</h2><ol start="94"><li id="note-94">《天体运行论》第 1 卷第 10 章。 <a class="backref" href="#note-94-ref" aria-label="返回正文">↩</a></li><li id="note-95">例如参见 Akaike（1978），以及 Burnham 与 Anderson（2002）的讨论。 <a class="backref" href="#note-95-ref" aria-label="返回正文">↩</a></li><li id="note-96">当先验平坦、模型简单时，这一点总是成立。但本书后面会使用多层回归等其他模型；对它们而言，加入参数不一定改善样本内拟合。 <a class="backref" href="#note-96-ref" aria-label="返回正文">↩</a></li><li id="note-97">数据来自 McHenry 与 Coffing（2000）的表 1。 <a class="backref" href="#note-97-ref" aria-label="返回正文">↩</a></li><li id="note-98">Gauss（1809），<cite>Theoria motus corporum coelestium in sectionibus conicis solem ambientum</cite>。 <a class="backref" href="#note-98-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 211–216 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 217 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 211–219 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 220 页继续。</aside>
 </article>
