@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900" role="img">
+<title>WAIC 与交叉验证对样本外离差的估计</title>
+<desc>四个面板比较样本量二十和一百时，CV、PSIS、WAIC 对平坦和正则化先验模型测试离差及误差的估计。</desc>
+<rect width="100%" height="100%" fill="#fff"/>
+<text x="320.0" y="45" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="23" font-weight="700" fill="#263f86">N = 20</text>
+<rect x="105" y="75" width="430" height="300" fill="#fff" stroke="#343732" stroke-width="1.4"/>
+<line x1="133" y1="375" x2="133" y2="381" stroke="#343732"/>
+<text x="133" y="403" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">1</text>
+<line x1="226.5" y1="375" x2="226.5" y2="381" stroke="#343732"/>
+<text x="226.5" y="403" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">2</text>
+<line x1="320" y1="375" x2="320" y2="381" stroke="#343732"/>
+<text x="320" y="403" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">3</text>
+<line x1="413.5" y1="375" x2="413.5" y2="381" stroke="#343732"/>
+<text x="413.5" y="403" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">4</text>
+<line x1="507" y1="375" x2="507" y2="381" stroke="#343732"/>
+<text x="507" y="403" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">5</text>
+<polyline points="133,213.46 226.5,190.38 320,359.62 413.5,221.15 507,151.92" fill="none" stroke="#30332e" stroke-width="2.5"/>
+<polyline points="133,267.31 226.5,198.08 320,328.85 413.5,205.77 507,90.38" fill="none" stroke="#6670ee" stroke-width="2.2"/>
+<polyline points="133,267.31 226.5,198.08 320,305.77 413.5,236.54 507,105.77" fill="none" stroke="#6670ee" stroke-width="2.2" stroke-dasharray="7 6"/>
+<polyline points="133,267.31 226.5,205.77 320,344.23 413.5,313.46 507,244.23" fill="none" stroke="#30332e" stroke-width="1.7"/>
+<circle cx="133" cy="213.46" r="4.5" fill="#fff" stroke="#30332e" stroke-width="1.7"/>
+<circle cx="226.5" cy="190.38" r="4.5" fill="#fff" stroke="#30332e" stroke-width="1.7"/>
+<circle cx="320" cy="359.62" r="4.5" fill="#fff" stroke="#30332e" stroke-width="1.7"/>
+<circle cx="413.5" cy="221.15" r="4.5" fill="#fff" stroke="#30332e" stroke-width="1.7"/>
+<circle cx="507" cy="151.92" r="4.5" fill="#fff" stroke="#30332e" stroke-width="1.7"/>
+<circle cx="133" cy="267.31" r="4.5" fill="#30332e"/>
+<circle cx="226.5" cy="205.77" r="4.5" fill="#30332e"/>
+<circle cx="320" cy="344.23" r="4.5" fill="#30332e"/>
+<circle cx="413.5" cy="313.46" r="4.5" fill="#30332e"/>
+<circle cx="507" cy="244.23" r="4.5" fill="#30332e"/>
+<text x="320.0" y="432" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="700" fill="#263f86">参数个数</text>
+<text x="43" y="225.0" transform="rotate(-90 43 225.0)" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="700" fill="#263f86">平均离差</text>
+<text x="865.0" y="45" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="23" font-weight="700" fill="#263f86">N = 20</text>
+<rect x="650" y="75" width="430" height="300" fill="#fff" stroke="#343732" stroke-width="1.4"/>
+<line x1="678" y1="375" x2="678" y2="381" stroke="#343732"/>
+<text x="678" y="403" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">1</text>
+<line x1="771.5" y1="375" x2="771.5" y2="381" stroke="#343732"/>
+<text x="771.5" y="403" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">2</text>
+<line x1="865" y1="375" x2="865" y2="381" stroke="#343732"/>
+<text x="865" y="403" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">3</text>
+<line x1="958.5" y1="375" x2="958.5" y2="381" stroke="#343732"/>
+<text x="958.5" y="403" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">4</text>
+<line x1="1052" y1="375" x2="1052" y2="381" stroke="#343732"/>
+<text x="1052" y="403" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">5</text>
+<polyline points="678,187.5 771.5,131.25 865,300 958.5,262.5 1052,187.5" fill="none" stroke="#30332e" stroke-width="2.5"/>
+<polyline points="678,75 771.5,150 865,300 958.5,262.5 1052,206.25" fill="none" stroke="#6670ee" stroke-width="2.2"/>
+<polyline points="678,75 771.5,131.25 865,300 958.5,262.5 1052,196.88" fill="none" stroke="#6670ee" stroke-width="2.2" stroke-dasharray="7 6"/>
+<polyline points="678,187.5 771.5,140.63 865,356.25 958.5,337.5 1052,281.25" fill="none" stroke="#30332e" stroke-width="1.7"/>
+<text x="865.0" y="432" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="700" fill="#263f86">参数个数</text>
+<text x="588" y="225.0" transform="rotate(-90 588 225.0)" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="700" fill="#263f86">平均误差（测试离差）</text>
+<text x="320.0" y="455" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="23" font-weight="700" fill="#263f86">N = 100</text>
+<rect x="105" y="485" width="430" height="300" fill="#fff" stroke="#343732" stroke-width="1.4"/>
+<line x1="133" y1="785" x2="133" y2="791" stroke="#343732"/>
+<text x="133" y="813" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">1</text>
+<line x1="226.5" y1="785" x2="226.5" y2="791" stroke="#343732"/>
+<text x="226.5" y="813" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">2</text>
+<line x1="320" y1="785" x2="320" y2="791" stroke="#343732"/>
+<text x="320" y="813" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">3</text>
+<line x1="413.5" y1="785" x2="413.5" y2="791" stroke="#343732"/>
+<text x="413.5" y="813" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">4</text>
+<line x1="507" y1="785" x2="507" y2="791" stroke="#343732"/>
+<text x="507" y="813" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">5</text>
+<polyline points="133,506.67 226.5,525 320,776.67 413.5,765 507,745" fill="none" stroke="#30332e" stroke-width="2.5"/>
+<polyline points="133,505 226.5,506.67 320,770 413.5,761.67 507,743.33" fill="none" stroke="#6670ee" stroke-width="2.2"/>
+<polyline points="133,505 226.5,506.67 320,771.67 413.5,761.67 507,743.33" fill="none" stroke="#6670ee" stroke-width="2.2" stroke-dasharray="7 6"/>
+<polyline points="133,508.33 226.5,528.33 320,773.33 413.5,765 507,745" fill="none" stroke="#30332e" stroke-width="1.7"/>
+<circle cx="133" cy="506.67" r="4.5" fill="#fff" stroke="#30332e" stroke-width="1.7"/>
+<circle cx="226.5" cy="525" r="4.5" fill="#fff" stroke="#30332e" stroke-width="1.7"/>
+<circle cx="320" cy="776.67" r="4.5" fill="#fff" stroke="#30332e" stroke-width="1.7"/>
+<circle cx="413.5" cy="765" r="4.5" fill="#fff" stroke="#30332e" stroke-width="1.7"/>
+<circle cx="507" cy="745" r="4.5" fill="#fff" stroke="#30332e" stroke-width="1.7"/>
+<circle cx="133" cy="508.33" r="4.5" fill="#30332e"/>
+<circle cx="226.5" cy="528.33" r="4.5" fill="#30332e"/>
+<circle cx="320" cy="773.33" r="4.5" fill="#30332e"/>
+<circle cx="413.5" cy="765" r="4.5" fill="#30332e"/>
+<circle cx="507" cy="745" r="4.5" fill="#30332e"/>
+<text x="320.0" y="842" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="700" fill="#263f86">参数个数</text>
+<text x="43" y="635.0" transform="rotate(-90 43 635.0)" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="700" fill="#263f86">平均离差</text>
+<text x="865.0" y="455" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="23" font-weight="700" fill="#263f86">N = 100</text>
+<rect x="650" y="485" width="430" height="300" fill="#fff" stroke="#343732" stroke-width="1.4"/>
+<line x1="678" y1="785" x2="678" y2="791" stroke="#343732"/>
+<text x="678" y="813" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">1</text>
+<line x1="771.5" y1="785" x2="771.5" y2="791" stroke="#343732"/>
+<text x="771.5" y="813" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">2</text>
+<line x1="865" y1="785" x2="865" y2="791" stroke="#343732"/>
+<text x="865" y="813" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">3</text>
+<line x1="958.5" y1="785" x2="958.5" y2="791" stroke="#343732"/>
+<text x="958.5" y="813" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">4</text>
+<line x1="1052" y1="785" x2="1052" y2="791" stroke="#343732"/>
+<text x="1052" y="813" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">5</text>
+<polyline points="678,494.68 771.5,572.1 865,726.94 958.5,755.97 1052,707.58" fill="none" stroke="#30332e" stroke-width="2.5"/>
+<polyline points="678,494.68 771.5,533.39 865,717.26 958.5,707.58 1052,765.65" fill="none" stroke="#6670ee" stroke-width="2.2"/>
+<polyline points="678,494.68 771.5,533.39 865,717.26 958.5,707.58 1052,765.65" fill="none" stroke="#6670ee" stroke-width="2.2" stroke-dasharray="7 6"/>
+<polyline points="678,494.68 771.5,572.1 865,726.94 958.5,755.97 1052,707.58" fill="none" stroke="#30332e" stroke-width="1.7"/>
+<text x="865.0" y="842" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="700" fill="#263f86">参数个数</text>
+<text x="588" y="635.0" transform="rotate(-90 588 635.0)" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="700" fill="#263f86">平均误差（测试离差）</text>
+<line x1="245" y1="870" x2="293" y2="870" stroke="#6670ee" stroke-width="2.4"/>
+<text x="303" y="876" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="17">CV</text>
+<line x1="390" y1="870" x2="438" y2="870" stroke="#6670ee" stroke-width="2.4" stroke-dasharray="7 6"/>
+<text x="448" y="876" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="17">PSIS</text>
+<line x1="555" y1="870" x2="603" y2="870" stroke="#30332e" stroke-width="2.4"/>
+<text x="613" y="876" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="17">WAIC</text>
+<line x1="720" y1="870" x2="768" y2="870" stroke="#30332e" stroke-width="2.4"/>
+<text x="778" y="876" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="17">测试离差</text>
+</svg>
