@@ -1078,7 +1078,7 @@
   },
   "chapter-07": {
     "required_status": "in_progress",
-    "source_pages": [211, 222],
+    "source_pages": [211, 225],
     "required_ids": [
       "fig-7-1",
       "rethinking-stargazing",
@@ -1110,6 +1110,15 @@
       "rethinking-bias-and-variance",
       "sec-7-2",
       "sec-7-2-1",
+      "table-7-weather-current",
+      "table-7-weather-newcomer",
+      "sec-7-2-1-1",
+      "table-7-weather-utility",
+      "sec-7-2-1-2",
+      "eq-7-weather-joint-accuracy",
+      "rethinking-what-is-a-true-model",
+      "sec-7-2-2",
+      "definition-7-information",
       "chapter-07-notes",
       "note-94",
       "note-95",
@@ -1117,7 +1126,10 @@
       "note-97",
       "note-98",
       "note-99",
-      "note-100"
+      "note-100",
+      "note-101",
+      "note-102",
+      "note-103"
     ],
     "required_headings": [
       "尤利西斯的罗盘",
@@ -1132,10 +1144,14 @@
       "再思考：偏差与方差",
       "7.2 熵与准确性",
       "7.2.1 解雇天气预报员",
+      "7.2.1.1 成本与收益",
+      "7.2.1.2 度量准确性",
+      "再思考：什么是真模型？",
+      "7.2.2 信息与不确定性",
       "尾注"
     ],
     "counts": {
-      "section": 6,
+      "section": 9,
       "figure": 15,
       "figure svg": 1,
       "figure img": 3,
@@ -1144,15 +1160,21 @@
       ".hominin-brain-figure": 1,
       ".hominin-polynomial-figure": 1,
       ".hominin-loo-figure": 1,
-      ".equation-block": 4,
+      ".equation-block": 5,
       ".model-system-equation": 2,
       ".code-listing": 11,
       ".code-output": 1,
-      ".rethinking-box": 5,
+      ".rethinking-box": 6,
       ".overthinking-box": 1,
       ".target-dimensions": 1,
+      "table": 3,
+      ".table-wrap": 3,
+      ".weather-table": 3,
+      ".weather-score-equation": 1,
+      ".formula-reading": 1,
+      ".entropy-desiderata": 1,
       ".source-erratum": 2,
-      ".endnotes li": 7
+      ".endnotes li": 10
     }
   }
 }
