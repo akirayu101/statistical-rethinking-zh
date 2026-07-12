@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="620" viewBox="0 0 900 620" role="img">
+<title>高影响力观测与样本外预测</title>
+<desc>横轴是 PSIS 的 Pareto k，纵轴是 WAIC 惩罚项；爱达荷位于右上角，缅因也被标出。</desc>
+<rect width="100%" height="100%" fill="#fff"/>
+<rect x="120" y="70" width="690" height="430" fill="#fff" stroke="#343732" stroke-width="1.5"/>
+<line x1="420.0" y1="70" x2="420.0" y2="500" stroke="#777" stroke-dasharray="7 6"/>
+<circle cx="150.0" cy="490.9" r="4.5" fill="#6670ee"/>
+<circle cx="192.0" cy="478.0" r="4.5" fill="#6670ee"/>
+<circle cx="228.0" cy="463.4" r="4.5" fill="#6670ee"/>
+<circle cx="252.0" cy="472.6" r="4.5" fill="#6670ee"/>
+<circle cx="300.0" cy="452.4" r="4.5" fill="#6670ee"/>
+<circle cx="330.0" cy="467.1" r="4.5" fill="#6670ee"/>
+<circle cx="372.0" cy="441.4" r="4.5" fill="#6670ee"/>
+<circle cx="408.0" cy="448.8" r="4.5" fill="#6670ee"/>
+<circle cx="450.0" cy="432.3" r="4.5" fill="#6670ee"/>
+<circle cx="492.0" cy="421.3" r="4.5" fill="#6670ee"/>
+<circle cx="540.0" cy="412.2" r="4.5" fill="#6670ee"/>
+<circle cx="276.0" cy="399.4" r="4.5" fill="#6670ee"/>
+<circle cx="348.0" cy="386.6" r="4.5" fill="#6670ee"/>
+<circle cx="480.0" cy="371.9" r="4.5" fill="#6670ee"/>
+<circle cx="210.0" cy="436.0" r="4.5" fill="#6670ee"/>
+<circle cx="180.0" cy="467.1" r="4.5" fill="#6670ee"/>
+<circle cx="588.0" cy="404.9" r="4.5" fill="#6670ee"/>
+<circle cx="660.0" cy="381.1" r="4.5" fill="#6670ee"/>
+<circle cx="312.0" cy="381.1" r="6" fill="#6670ee"/>
+<text x="322.0" y="371.1" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="700">ME</text>
+<circle cx="750.0" cy="106.6" r="6" fill="#6670ee"/>
+<text x="760.0" y="96.6" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="700">ID</text>
+<line x1="120.0" y1="500" x2="120.0" y2="507" stroke="#333"/>
+<text x="120.0" y="530" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">0</text>
+<line x1="270.0" y1="500" x2="270.0" y2="507" stroke="#333"/>
+<text x="270.0" y="530" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">0.25</text>
+<line x1="420.0" y1="500" x2="420.0" y2="507" stroke="#333"/>
+<text x="420.0" y="530" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">0.5</text>
+<line x1="570.0" y1="500" x2="570.0" y2="507" stroke="#333"/>
+<text x="570.0" y="530" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">0.75</text>
+<line x1="720.0" y1="500" x2="720.0" y2="507" stroke="#333"/>
+<text x="720.0" y="530" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">1</text>
+<line x1="113" y1="500.0" x2="120" y2="500.0" stroke="#333"/>
+<text x="105" y="505.0" text-anchor="end" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">0.0</text>
+<line x1="113" y1="408.5" x2="120" y2="408.5" stroke="#333"/>
+<text x="105" y="413.5" text-anchor="end" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">0.5</text>
+<line x1="113" y1="317.0" x2="120" y2="317.0" stroke="#333"/>
+<text x="105" y="322.0" text-anchor="end" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">1.0</text>
+<line x1="113" y1="225.5" x2="120" y2="225.5" stroke="#333"/>
+<text x="105" y="230.5" text-anchor="end" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">1.5</text>
+<line x1="113" y1="134.0" x2="120" y2="134.0" stroke="#333"/>
+<text x="105" y="139.0" text-anchor="end" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16">2.0</text>
+<text x="465.0" y="570" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="21" font-weight="700" fill="#263f86">PSIS Pareto k</text>
+<text x="38" y="285.0" transform="rotate(-90 38 285.0)" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="21" font-weight="700" fill="#263f86">WAIC 惩罚项</text>
+</svg>

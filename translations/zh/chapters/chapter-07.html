@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-07" data-source-pages="211-249">
-  <header class="chapter-header"><p class="eyebrow">第七章</p><h1>尤利西斯的罗盘</h1><p class="source-range">当前译稿对应原书 PDF 第 211–249 页</p></header>
+<article class="book-article" data-chapter="chapter-07" data-source-pages="211-252">
+  <header class="chapter-header"><p class="eyebrow">第七章</p><h1>尤利西斯的罗盘</h1><p class="source-range">当前译稿对应原书 PDF 第 211–252 页</p></header>
 
   <p>米科瓦伊·哥白尼（Mikołaj Kopernik，亦称 Nicolaus Copernicus，1473–1543）：波兰天文学家、教会法学家，以及亵渎神明者。他以太阳系日心模型闻名，主张用日心模型取代地心模型，因为前者更“和谐”。几十年后，这个立场最终导致伽利略与教会著名的不和，以及那场审判。</p><p>这个故事后来成了科学战胜意识形态与迷信的寓言。但撇开意识形态，哥白尼的论证如今看来并不充分，问题有两个：他的模型既不特别和谐，也不比地心模型更准确。哥白尼模型十分复杂，实际上与托勒密模型一样堆满本轮（图 7.1）。哥白尼把太阳移到中心，但仍坚持用完美圆形轨道，所以仍然需要本轮；“和谐”并不很能形容它的外观。与托勒密模型一样，哥白尼模型实质上也是傅里叶级数——一种近似周期函数的方法。</p><p>这又引出第二个问题：日心模型与地心模型给出完全相同的预测。无论假设地球静止还是运动，都可以构造等价近似，所以只凭准确性没有理由偏爱日心模型。</p><p>不过，哥白尼并非只诉诸含糊的和谐。他还以所需原因更少来论证模型优越：“我们由此追随自然；自然不做无用或多余之事，常常宁愿让一个原因产生许多效应。”<sup id="note-94-ref"><a href="#note-94">94</a></sup> 确实，要给出与地心模型相同的预测，日心模型需要的圆和本轮更少；从这个意义上说，它更简单。</p><p>学者常偏爱更简单的理论。有时这种偏好很模糊，只是一种审美；有时则退回实用主义，因为简单理论的模型更容易处理。科学家经常援引一个宽松原则——奥卡姆剃刀：应优先选择假设更少的模型。对哥白尼与托勒密而言，剃刀给出明确建议。它不能保证哥白尼正确（毕竟他并不完全正确），但既然日心与地心模型预测相同，至少能明确化解两难。</p><p>然而，更一般地使用剃刀很困难，因为通常要在准确性与简单性都不同的模型之间选择。二者怎样权衡？剃刀没有指引。本章介绍一些最常用的权衡工具。所有工具通常都包含某种简单性概念，所以常被比作奥卡姆剃刀；但它们同样关心提高预测准确性，并会明确权衡准确性与简单性，因此并不等同于剃刀。</p>
 
@@ -442,6 +442,63 @@ m6.8 4.934353 10.42658         NA</code></pre></figure>
   </div>
 
 
+  <div class="section-continuation" data-section="7.5.1">
+    <p>组合多个模型的预测。限于篇幅，本书不再讨论；入门资料见尾注。<sup id="note-123-ref"><a href="#note-123">123</a></sup></p>
+  </div>
+  <aside class="rethinking-box" id="rethinking-waic-metaphors"><h3>再思考：WAIC 的比喻</h3><p>把模型想成赛马。任何一场比赛中，最好的马未必获胜，却比最差的马更可能获胜。若冠军用亚军一半的时间完赛，就相当有把握它也是最好的马；若只以照片判定的微弱差距获胜，就很难确信。WAIC 值类似完赛时间——越小越好，马/模型之间的距离也包含信息。Akaike 权重把完赛时间差转成未来数据/比赛中成为最佳模型/赛马的概率。但跑道条件或骑师改变时，这些概率可能误导；根据单场比赛/单次拟合预测未来，没有任何保证。</p><p>也可以把模型想成在池塘打水漂的石头。没有石头能抵达彼岸（完美预测），但某些石头平均能走得更远（测试预测更好）。任一次投掷都有独特条件：风向会变、鸭子可能冒头拦截、投掷者也可能手滑。因此哪块石头走最远并不确定；但相对距离仍告诉我们哪种石头平均表现最好。除非石头之间距离很大，否则不能对任何单块石头过度自信。</p><p>两个比喻当然都不完美，比喻从来如此；但许多人发现它们有助于解释信息准则。</p></aside>
+  <section id="sec-7-5-2"><h3>7.5.2 离群点与其他幻象</h3><p>第 5 章的离婚例子中，后验预测显示少数州很难建模，爱达荷州尤其像离群点。爱达荷这样的单个点往往对普通回归模型影响很大。看看 PSIS 与 WAIC 怎样表示这种重要性。先重新拟合第 5 章的三个离婚模型：</p>
+    <figure class="code-listing" id="code-7-32"><figcaption>R 代码 7.32</figcaption><pre><code>library(rethinking)
+data(WaffleDivorce)
+d &lt;- WaffleDivorce
+d$A &lt;- standardize( d$MedianAgeMarriage )
+d$D &lt;- standardize( d$Divorce )
+d$M &lt;- standardize( d$Marriage )
+
+m5.1 &lt;- quap(
+    alist(
+        D ~ dnorm( mu , sigma ) ,
+        mu &lt;- a + bA * A ,
+        a ~ dnorm( 0 , 0.2 ) ,
+        bA ~ dnorm( 0 , 0.5 ) ,
+        sigma ~ dexp( 1 )
+    ) , data = d )
+
+m5.2 &lt;- quap(
+    alist(
+        D ~ dnorm( mu , sigma ) ,
+        mu &lt;- a + bM * M ,
+        a ~ dnorm( 0 , 0.2 ) ,
+        bM ~ dnorm( 0 , 0.5 ) ,
+        sigma ~ dexp( 1 )
+    ) , data = d )
+
+m5.3 &lt;- quap(
+    alist(
+        D ~ dnorm( mu , sigma ) ,
+        mu &lt;- a + bM*M + bA*A ,
+        a ~ dnorm( 0 , 0.2 ) ,
+        bM ~ dnorm( 0 , 0.5 ) ,
+        bA ~ dnorm( 0 , 0.5 ) ,
+        sigma ~ dexp( 1 )
+    ) , data = d )</code></pre></figure>
+    <p>后验摘要会提醒你：在 <code>m5.3</code> 纳入结婚年龄 <code>A</code> 后，结婚率 <code>M</code> 与离婚率 <code>D</code> 几乎没有关联。用 PSIS 比较：</p>
+    <figure class="code-listing" id="code-7-33"><figcaption>R 代码 7.33</figcaption><pre><code>set.seed(24071847)
+compare( m5.1 , m5.2 , m5.3 , func=PSIS )</code></pre><pre class="code-output"><code>      PSIS pPSIS dPSIS weight    SE   dSE
+m5.1 127.6   4.7   0.0   0.71 14.69    NA
+m5.3 129.4   5.9   1.8   0.29 15.10  0.90
+m5.2 140.6   3.8  13.1   0.00 11.21 10.82</code></pre></figure>
+    <p>第一，省略结婚率的 <code>m5.1</code> 排名第一，因为结婚率与结果关联很小；即使它对样本的实际拟合略差于含两个预测变量的 <code>m5.3</code>，预期样本外表现仍略好。前两模型只差 1.8，标准误 0.9，预测非常相似；预测变量与结果关联很小时，通常如此。</p><p>第二，除表格外还会收到消息：</p><p class="code-message"><code>Some Pareto k values are very high (&gt;1).</code></p><p>这表示 PSIS 的平滑近似对某些点不可靠。Pareto <span class="math-inline"><var>k</var> &gt; 0.5</span> 时重要性权重可能不可靠；这些点往往也是模型认为数值不太可能的离群点，影响力很大，使样本外预测准确性难以估计。新样本不太可能包含同样的离群点，而训练样本中的离群点又强烈影响后验，样本外预测就可能比预期更差。WAIC 同样易受离群点影响，虽没有自动警告，却能通过过拟合惩罚估计度量风险。</p><p>给 <code>PSIS()</code> 加 <code>pointwise=TRUE</code>，可获得每行一个州、各列含 PSIS 信息与 Pareto <span class="math-inline"><var>k</var></span> 的矩阵。再画出 WAIC 各州的惩罚值，观察二者关系：</p>
+    <figure class="code-listing" id="code-7-34"><figcaption>R 代码 7.34</figcaption><pre><code>set.seed(24071847)
+PSIS_m5.3 &lt;- PSIS(m5.3,pointwise=TRUE)
+set.seed(24071847)
+WAIC_m5.3 &lt;- WAIC(m5.3,pointwise=TRUE)
+plot( PSIS_m5.3$k , WAIC_m5.3$penalty , xlab="PSIS Pareto k" ,
+    ylab="WAIC penalty" , col=rangi2 , lwd=2 )</code></pre></figure>
+    <figure class="book-figure influence-figure" id="fig-7-10"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的 Pareto k 与 WAIC 惩罚散点图"><img src="/media/chapter-07-influence.svg" alt="爱达荷州同时具有极高 Pareto k 和极大 WAIC 惩罚，缅因州也被标出"></div><p class="scroll-hint">图较宽，可横向滚动查看全部州点与标签。</p><figcaption><strong>图 7.10：</strong>高影响力观测与样本外预测。横轴为 PSIS 的 Pareto <span class="math-inline"><var>k</var></span>，纵轴为 WAIC 惩罚项。爱达荷州（ID）具有模型看来极不可能的数值，因此 <span class="math-inline"><var>k</var></span> 极高、WAIC 惩罚也很大；这种点影响力很高，可能损害预测。</figcaption></figure>
+    <p>每个点是一个州。右上角的爱达荷州（ID）既有超过 1 的 Pareto <span class="math-inline"><var>k</var></span>，也有超过 2 的大惩罚项。第 5 章已看到，按其结婚年龄，爱达荷的离婚率非常低，因此它对后验的影响远大于其他州。它的 <span class="math-inline"><var>k</var></span> 是方差变为无穷的理论点（虚线）的两倍。WAIC 也给它超过 2 的惩罚。这个惩罚有时称“有效参数个数”；普通线性回归中，各点惩罚之和往往等于自由参数个数。但这里模型有 4 个参数，总惩罚却接近 6；爱达荷这个离群点造成了额外过拟合风险。</p><p>该怎么办？传统做法是删除离群点，有时甚至只按结果距均值多少个标准差，在拟合模型前就删。绝不能这样做——只有在模型背景下，一个点才会显得意外且高影响。拟合后情况不同：若只有少量离群点，并确保同时报告保留与删除后的结果，删除也许可以接受。但若离群点有好几个、确实需要建模，又该怎么办？</p><p>一个基本问题是，高斯误差模型很容易受惊。高斯分布的尾部很薄，远离均值的观测只得到极少概率质量。许多自然现象确实如此，例如人类身高；但许多现象并非如此……</p><p class="continuation-note">厚尾误差模型与稳健回归将在原书 PDF 第 253 页继续。</p>
+  </section>
+
+
   <section class="endnotes" id="chapter-07-notes" role="doc-endnotes"><h2>尾注</h2><ol start="94"><li id="note-94">《天体运行论》第 1 卷第 10 章。 <a class="backref" href="#note-94-ref" aria-label="返回正文">↩</a></li><li id="note-95">例如参见 Akaike（1978），以及 Burnham 与 Anderson（2002）的讨论。 <a class="backref" href="#note-95-ref" aria-label="返回正文">↩</a></li><li id="note-96">当先验平坦、模型简单时，这一点总是成立。但本书后面会使用多层回归等其他模型；对它们而言，加入参数不一定改善样本内拟合。 <a class="backref" href="#note-96-ref" aria-label="返回正文">↩</a></li><li id="note-97">数据来自 McHenry 与 Coffing（2000）的表 1。 <a class="backref" href="#note-97-ref" aria-label="返回正文">↩</a></li><li id="note-98">Gauss（1809），<cite>Theoria motus corporum coelestium in sectionibus conicis solem ambientum</cite>。 <a class="backref" href="#note-98-ref" aria-label="返回正文">↩</a></li><li id="note-99">关于这些思想的专著级讨论，参见 Grünwald（2007）。 <a class="backref" href="#note-99-ref" aria-label="返回正文">↩</a></li><li id="note-100">关于偏差与方差，文献中的讨论很多，有的数学性远强于其他。若想广泛了解，推荐 Hastie、Tibshirani 与 Friedman（2009）第 7 章；该章在偏差—方差权衡的语境下讨论 BIC、AIC、交叉验证及其他度量。 <a class="backref" href="#note-100-ref" aria-label="返回正文">↩</a></li><li id="note-101">作者最初在 Jaynes（1976，第 246 页）遇到这类例子；Jaynes 又把它归功于 G. David Forney 1972 年的信息论课程讲义。Forney 是信息论的重要人物，因其贡献获得过多个奖项。 <a class="backref" href="#note-101-ref" aria-label="返回正文">↩</a></li><li id="note-102">Shannon（1948）。更易读的导论可参见经典教材 Cover 与 Thomas 的 <cite>Elements of Information Theory</cite>；Jaynes（2003）第 11 章稍进阶，但增益很多。Kullback（1959）是把信息论用于统计推断的奠基性著作，不过并不好读。 <a class="backref" href="#note-102-ref" aria-label="返回正文">↩</a></li><li id="note-103">参见两篇著名社论：Shannon（1956）与 Elias（1958）。Elias 的社论是一篇巧妙的讽刺作品，时至今日依然切中时弊；这两篇单页社论都很容易在网上找到。 <a class="backref" href="#note-103-ref" aria-label="返回正文">↩</a></li><li id="note-104">很遗憾，作者尚未找到一本适合大多数自然科学家和社会科学家数学训练水平的最大熵入门。Jaynes（2003）是必读来源，但若积分学已经生疏，进展会很慢。Steven Frank（2009；2011）的论文也许更合适，它们解释这种方法并联系自然界的常见分布；略过大部分数学仍能掌握主要概念。生态学应用的教材式介绍另见 Harte（2011）。 <a class="backref" href="#note-104-ref" aria-label="返回正文">↩</a></li><li id="note-105">Kullback 与 Leibler（1951）。不过两人并未以自己的名字命名这个度量；关于命名，可参见 Kullback（1987）的回顾。Kullback 与 Leibler 在 1951 年论文中明确指出，Harold Jeffreys 早已在发展贝叶斯统计时使用过这一度量。 <a class="backref" href="#note-105-ref" aria-label="返回正文">↩</a></li><li id="note-106">在非贝叶斯统计中，在相当一般的条件下，两个离差之差服从卡方分布。乘以 2 是为了把尺度调整正确；通常追溯到 Wilks（1938）。 <a class="backref" href="#note-106-ref" aria-label="返回正文">↩</a></li></ol></section>
 
   <div class="endnotes endnotes-continuation" id="chapter-07-notes-continuation" role="doc-endnotes" aria-label="尾注续"><ol start="107"><li id="note-107">参见 Zhang 与 Yang（2015）。 <a class="backref" href="#note-107-ref" aria-label="返回正文">↩</a></li><li id="note-108">Gelfand（1996）。 <a class="backref" href="#note-108-ref" aria-label="返回正文">↩</a></li><li id="note-109">Vehtari 等（2016）。 <a class="backref" href="#note-109-ref" aria-label="返回正文">↩</a></li><li id="note-110">参见 Gelfand（1996）；Magnusson 等（2019）也给出了非常清晰的介绍。 <a class="backref" href="#note-110-ref" aria-label="返回正文">↩</a></li><li id="note-111">参见 Vehtari 等（2019b）。 <a class="backref" href="#note-111-ref" aria-label="返回正文">↩</a></li><li id="note-112">Akaike（1973）。另见 Akaike（1974、1978、1981a），其中进一步发展了 AIC，并把它与贝叶斯方法联系起来。生态学家往往通过 Burnham 与 Anderson（2002）了解 AIC。 <a class="backref" href="#note-112-ref" aria-label="返回正文">↩</a></li><li id="note-113">小 <span class="math-inline"><var>N</var></span> 情形下常用的近似是 <span class="math-inline">AICc = <var>D</var><sub>train</sub> + 2<var>k</var> / [1 − (<var>k</var> + 1)/<var>N</var>]</span>。随着 <span class="math-inline"><var>N</var></span> 增大，这个表达式趋近 AIC。参见 Burnham 与 Anderson（2002）。 <a class="backref" href="#note-113-ref" aria-label="返回正文">↩</a></li><li id="note-114">Lunn 等（2013）对 DIC 给出了相当易懂的介绍，其中包括多种计算方法。 <a class="backref" href="#note-114-ref" aria-label="返回正文">↩</a></li><li id="note-115">Watanabe（2010）。Gelman 等（2013b）把 WAIC 重新解释为“Watanabe–Akaike 信息准则”，以明确归功于 Watanabe，正如人们用 Akaike 的名字重命名 AIC。Gelman 等（2013b）对推断问题采取广阔视角，也值得阅读。 <a class="backref" href="#note-115-ref" aria-label="返回正文">↩</a></li><li id="note-116">引文见 Akaike（1981b）。 <a class="backref" href="#note-116-ref" aria-label="返回正文">↩</a></li></ol></div>
@@ -450,5 +507,7 @@ m6.8 4.934353 10.42658         NA</code></pre></figure>
 
   <div class="endnotes endnotes-continuation" id="chapter-07-notes-continuation-3" role="doc-endnotes" aria-label="尾注续三"><ol start="122"><li id="note-122">这与最小描述长度密切相关，参见 Grünwald（2007）。 <a class="backref" href="#note-122-ref" aria-label="返回正文">↩</a></li></ol></div>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 211–249 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 250 页继续。</aside>
+  <div class="endnotes endnotes-continuation" id="chapter-07-notes-continuation-4" role="doc-endnotes" aria-label="尾注续四"><ol start="123"><li id="note-123">第一版曾有一节讨论模型平均，本版为节省篇幅而删除。该方法真正聚焦预测而非推断，不适合第二版的行文脉络，但仍是重要方法。传统做法用权重平均各模型的预测（而非参数）；若模型集合没有仔细选择，模型“堆叠”可能做得更好。参见 Yao 等（2018）。 <a class="backref" href="#note-123-ref" aria-label="返回正文">↩</a></li></ol></div>
+
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 211–252 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 253 页继续。</aside>
 </article>
