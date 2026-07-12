@@ -923,7 +923,7 @@
   },
   "chapter-06": {
     "required_status": "in_progress",
-    "source_pages": [181, 201],
+    "source_pages": [181, 204],
     "required_ids": [
       "fig-6-1",
       "overthinking-simulated-science-distortion",
@@ -981,13 +981,22 @@
       "dag-6-generations-haunted",
       "code-6-25",
       "code-6-26",
+      "code-6-27",
+      "fig-6-5",
+      "code-6-28",
+      "rethinking-statistical-paradoxes",
+      "sec-6-4",
+      "dag-6-education-wages-confounded",
+      "dag-6-education-wages-manipulated",
       "chapter-06-notes",
       "note-85",
       "note-86",
       "note-87",
       "note-88",
       "note-89",
-      "note-90"
+      "note-90",
+      "note-91",
+      "note-92"
     ],
     "required_headings": [
       "闹鬼的 DAG 与因果恐怖",
@@ -1005,26 +1014,29 @@
       "6.3 碰撞点偏差",
       "6.3.1 虚假悲伤的碰撞点",
       "6.3.2 闹鬼的 DAG",
+      "再思考：统计悖论与因果解释",
+      "6.4 直面混杂",
       "尾注"
     ],
     "counts": {
-      "section": 11,
-      "figure": 37,
-      "figure img": 4,
-      "figure svg": 7,
+      "section": 12,
+      "figure": 42,
+      "figure img": 5,
+      "figure svg": 9,
       ".selection-distortion-figure": 1,
       ".multicollinear-legs-figure": 1,
       ".milk-pairs-figure": 1,
       ".happiness-marriage-figure": 1,
-      ".dag-figure": 7,
+      ".grandparents-collider-figure": 1,
+      ".dag-figure": 9,
       ".equation-block": 5,
       ".model-system-equation": 4,
-      ".code-listing": 26,
-      ".code-output": 13,
-      ".rethinking-box": 2,
+      ".code-listing": 28,
+      ".code-output": 15,
+      ".rethinking-box": 3,
       ".overthinking-box": 2,
       ".source-erratum": 1,
-      ".endnotes li": 6
+      ".endnotes li": 8
     }
   }
 }
