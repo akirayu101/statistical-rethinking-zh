@@ -11,6 +11,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "translations" / "zh" / "media" / "chapter-06-selection-distortion.svg"
 LEGS_OUT = ROOT / "translations" / "zh" / "media" / "chapter-06-multicollinear-legs.svg"
+MILK_PAIRS_OUT = ROOT / "translations" / "zh" / "media" / "chapter-06-milk-pairs.svg"
 FONT = "PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif"
 
 
@@ -70,6 +71,8 @@ def main() -> int:
     print(f"generated {OUT}")
     LEGS_OUT.write_text(multicollinear_legs(), encoding="utf-8")
     print(f"generated {LEGS_OUT}")
+    MILK_PAIRS_OUT.write_text(milk_pairs(), encoding="utf-8")
+    print(f"generated {MILK_PAIRS_OUT}")
     return 0
 
 
@@ -103,6 +106,36 @@ def multicollinear_legs() -> str:
     body.extend([f'<rect x="{rx}" y="{top}" width="390" height="{ph}" fill="#fff" stroke="#343732"/>',f'<polyline points="{" ".join(pts)}" fill="none" stroke="#263f86" stroke-width="4"/>'])
     for t in [1.8,1.9,2.0,2.1,2.2]: body.append(f'<text x="{px(t):.2f}" y="520" text-anchor="middle" font-family="{FONT}" font-size="15">{t:.1f}</text>')
     body.extend([f'<text x="895" y="565" text-anchor="middle" font-family="{FONT}" font-size="19" font-weight="700" fill="#263f86">bl 与 br 之和</text>',f'<text x="650" y="275" transform="rotate(-90 650 275)" text-anchor="middle" font-family="{FONT}" font-size="19" font-weight="700" fill="#263f86">密度</text>','</svg>',''])
+    return "\n".join(body)
+
+
+def milk_pairs() -> str:
+    rng = random.Random(613)
+    rows = []
+    for _ in range(29):
+        fat = rng.uniform(5, 58)
+        lactose = 77 - 0.82 * fat + rng.gauss(0, 4)
+        kcal = 0.38 + 0.010 * fat - 0.002 * lactose + rng.gauss(0, 0.055)
+        rows.append((kcal, fat, lactose))
+    names = ["每克乳汁千卡", "脂肪百分比", "乳糖百分比"]
+    ranges = [(0.35, 1.0), (0, 60), (25, 80)]
+    width, height = 1000, 920
+    body = ['<?xml version="1.0" encoding="UTF-8"?>', f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">', '<title>灵长类乳汁能量、脂肪和乳糖的变量对图</title>', '<desc>脂肪与乳糖强烈负相关，并分别与乳汁能量正相关和负相关。</desc>', '<rect width="100%" height="100%" fill="#fff"/>']
+    starts = [75, 375, 675]
+    size = 245
+    for row in range(3):
+        for col in range(3):
+            x, y = starts[col], starts[row]
+            body.append(f'<rect x="{x}" y="{y}" width="{size}" height="{size}" fill="#fff" stroke="#d0d2cf"/>')
+            if row == col:
+                body.append(f'<text x="{x+size/2}" y="{y+size/2}" text-anchor="middle" font-family="{FONT}" font-size="22" font-weight="700" fill="#263f86">{names[row]}</text>')
+                continue
+            xmin, xmax = ranges[col]; ymin, ymax = ranges[row]
+            for values in rows:
+                px = x + 12 + (values[col]-xmin)/(xmax-xmin)*(size-24)
+                py = y + size - 12 - (values[row]-ymin)/(ymax-ymin)*(size-24)
+                body.append(f'<circle cx="{px:.2f}" cy="{py:.2f}" r="4.2" fill="#fff" stroke="#6670ee" stroke-width="1.8"/>')
+    body.extend(['</svg>', ''])
     return "\n".join(body)
 
 

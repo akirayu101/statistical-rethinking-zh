@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-06" data-source-pages="181-186">
-  <header class="chapter-header"><p class="eyebrow">第六章</p><h1>闹鬼的 DAG 与因果恐怖</h1><p class="source-range">当前译稿对应原书 PDF 第 181–186 页</p></header>
+<article class="book-article" data-chapter="chapter-06" data-source-pages="181-189">
+  <header class="chapter-header"><p class="eyebrow">第六章</p><h1>闹鬼的 DAG 与因果恐怖</h1><p class="source-range">当前译稿对应原书 PDF 第 181–189 页</p></header>
 
   <p>最有新闻价值的科学研究，似乎也最不可信。如果一项研究为真时越可能要你的命，它反而越不可能为真；主题越无聊，结果似乎越严谨。这种广为相信的负相关怎么会存在？人们关心的主题并没有理由产生更不可靠的结果。也许热门主题吸引了更多、更糟糕的研究者，就像苍蝇被蜂蜜气味吸引一样？</p>
 
@@ -92,10 +92,87 @@ sigma  0.62 0.04  0.55  0.69</code></pre></figure>
       <p><code>1.99</code> 几乎与 <code>sum_blbr</code> 的均值相同。不同模拟会因随机变异而略有差异，但基本教训不变：两个预测变量高度相关时，同时纳入模型可能造成困惑。后验没有错；它在告诉你，凭这些数据无法回答所提问题。模型能说“我无法回答”，其实是件好事。若只关心预测，这个双腿模型的预测完全正常；它只是不会声称哪条腿更重要。</p><p>双腿例子清楚又可爱，但纯粹是统计问题，并没有提出严肃的因果问题。接下来换一个因果意义更强的例子。</p>
     </section>
 
-    <section id="sec-6-1-2"><h3>6.1.2 共线的乳汁</h3><p>双腿例子中，很容易看出把两条腿都放入模型有些荒唐。但真实数据的问题在于，我们可能没有预料到高度相关预测变量之间会冲突，于是误把后验解读为两个预测变量都不重要。本节用真实数据观察这一问题。</p><p>再次回到本章前面使用的灵长类乳汁数据。先重新载入原始数据；代码与后验比较将在原书 PDF 第 187 页继续。</p></section>
+    <section id="sec-6-1-2"><h3>6.1.2 共线的乳汁</h3><p>双腿例子中，很容易看出把两条腿都放入模型有些荒唐。但真实数据的问题在于，我们可能没有预料到高度相关预测变量之间会冲突，于是误把后验解读为两个预测变量都不重要。本节用真实数据观察这一问题。</p><p>再次回到本章前面使用的灵长类乳汁数据，重新载入并标准化关心的变量：</p>
+
+      <figure class="code-listing" id="code-6-8"><figcaption>R 代码 6.8</figcaption><pre><code>library(rethinking)
+data(milk)
+d &lt;- milk
+d$K &lt;- scale( d$kcal.per.g )
+d$F &lt;- scale( d$perc.fat )
+d$L &lt;- scale( d$perc.lactose )</code></pre></figure>
+
+      <p>这里关心 <code>perc.fat</code>（脂肪百分比）与 <code>perc.lactose</code>（乳糖百分比），用它们预测总能量 <code>kcal.per.g</code>。三者都已标准化。它们构成一个自然的多重共线性例子。这几列没有缺失值 <code>NA</code>，因此无需提取完整案例；而且可以放心，<code>quap</code> 不像 <code>lm</code> 那些鲁莽函数，绝不会默默丢弃个案。</p>
+
+      <p>先分别用脂肪和乳糖预测千卡，拟合两个二元回归：</p>
+      <figure class="code-listing" id="code-6-9"><figcaption>R 代码 6.9</figcaption><pre><code># kcal.per.g regressed on perc.fat
+m6.3 &lt;- quap(
+    alist(
+        K ~ dnorm( mu , sigma ) ,
+        mu &lt;- a + bF*F ,
+        a ~ dnorm( 0 , 0.2 ) ,
+        bF ~ dnorm( 0 , 0.5 ) ,
+        sigma ~ dexp( 1 )
+    ) , data=d )
+
+# kcal.per.g regressed on perc.lactose
+m6.4 &lt;- quap(
+    alist(
+        K ~ dnorm( mu , sigma ) ,
+        mu &lt;- a + bL*L ,
+        a ~ dnorm( 0 , 0.2 ) ,
+        bL ~ dnorm( 0 , 0.5 ) ,
+        sigma ~ dexp( 1 )
+    ) , data=d )
+
+precis( m6.3 )
+precis( m6.4 )</code></pre><pre class="code-output"><code>      mean   sd  5.5% 94.5%
+a     0.00 0.08 -0.12  0.12
+bF    0.86 0.08  0.73  1.00
+sigma 0.45 0.06  0.36  0.54
+
+      mean   sd  5.5% 94.5%
+a     0.00 0.07 -0.11  0.11
+bL   -0.90 0.07 -1.02 -0.79
+sigma 0.38 0.05  0.30  0.46</code></pre></figure>
+
+      <p><code>bF</code> 与 <code>bL</code> 的后验几乎互为镜像：前者的均值有多正，后者就有多负；两个狭窄后验几乎完全位于零的两侧。由此似乎可以断定，跨物种看，二者都是乳汁总能量的可靠预测变量：脂肪越多，千卡越高；乳糖越多，千卡越低。但把二者同时放进回归后会怎样？</p>
+
+      <figure class="code-listing" id="code-6-10"><figcaption>R 代码 6.10</figcaption><pre><code>m6.5 &lt;- quap(
+    alist(
+        K ~ dnorm( mu , sigma ) ,
+        mu &lt;- a + bF*F + bL*L ,
+        a ~ dnorm( 0 , 0.2 ) ,
+        bF ~ dnorm( 0 , 0.5 ) ,
+        bL ~ dnorm( 0 , 0.5 ) ,
+        sigma ~ dexp( 1 )
+    ) , data=d )
+precis( m6.5 )</code></pre><pre class="code-output"><code>       mean   sd  5.5% 94.5%
+a      0.00 0.07 -0.11  0.11
+bF     0.24 0.18 -0.05  0.54
+bL    -0.68 0.18 -0.97 -0.38
+sigma  0.38 0.05  0.30  0.46</code></pre></figure>
+
+      <p>现在 <code>bF</code> 与 <code>bL</code> 的后验均值都更靠近零，两个参数的标准差也都变成二元模型中的两倍。这与双腿例子是同一个统计现象：<code>perc.fat</code> 与 <code>perc.lactose</code> 包含大量相同信息，几乎可以互相替代。同时放进回归后，后验会描述一条由同样可信的 <code>bF</code>/<code>bL</code> 组合形成的长脊。脂肪与乳糖本质上构成单一变异轴，变量对图最容易展示这一点：</p>
+
+      <figure class="code-listing" id="code-6-11"><figcaption>R 代码 6.11</figcaption><pre><code>pairs( ~ kcal.per.g + perc.fat + perc.lactose , data=d , col=rangi2 )</code></pre></figure>
+
+      <figure class="book-figure milk-pairs-figure" id="fig-6-3"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的乳汁能量、脂肪和乳糖变量对图"><img src="/media/chapter-06-milk-pairs.svg" alt="脂肪与乳糖强烈负相关，并分别与乳汁能量正相关和负相关"></div><p class="scroll-hint">图较宽，可横向滚动查看九个面板。</p><figcaption><strong>图 6.3：</strong>灵长类乳汁数据中总能量、脂肪百分比与乳糖百分比的变量对图。脂肪和乳糖彼此强烈负相关，因而提供的大多是同一份信息。</figcaption></figure>
+
+      <p>对角线上是变量名；非对角散点图的纵轴变量对应所在行，横轴变量对应所在列。第一行两个散点图分别是千卡对脂肪、千卡对乳糖：脂肪与结果正相关，乳糖与结果负相关。中间一行最右侧是脂肪对乳糖，点几乎完全排成直线。二者强烈负相关，几乎冗余；任一个都能帮助预测千卡，但已经知道另一个后，再知道它几乎没有额外帮助。</p>
+
+      <p>科学文献中能见到各种应对多重共线性的可疑方法，很少采取因果视角。有些领域教学生在拟合模型前检查成对相关，删除高度相关的预测变量。这是错误的。成对相关本身不是问题；真正重要的是条件关联，而不是相关。即便如此，正确做法仍取决于共线性由什么造成。仅凭数据内部的关联不足以决定怎样处理。</p>
+
+      <p>乳汁例子中，可能存在哺乳动物母亲必须遵守的乳汁组成核心权衡。某物种若频繁哺乳，乳汁往往更稀、能量更低，并富含糖（乳糖）；若哺乳次数少而每次时间短，乳汁就需要更高能量，因此脂肪很高。这意味着类似下面的因果模型：</p>
+
+      <figure class="book-figure dag-figure" id="dag-6-milk-density"><svg viewBox="0 0 760 360" role="img" aria-labelledby="dag-6-milk-title dag-6-milk-desc"><title id="dag-6-milk-title">乳汁密度、脂肪、乳糖与千卡的 DAG</title><desc id="dag-6-milk-desc">未观测密度 D 同时影响乳糖 L 与脂肪 F，二者再共同影响千卡 K。</desc><defs><marker id="dag6-milk-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#3f4752"/></marker></defs><g stroke="#3f4752" stroke-width="4" marker-end="url(#dag6-milk-arrow)"><line x1="350" y1="90" x2="195" y2="90"/><line x1="410" y1="90" x2="565" y2="90"/><line x1="195" y1="125" x2="350" y2="275"/><line x1="565" y1="125" x2="410" y2="275"/></g><g fill="#f0f1fa" stroke="#263f86" stroke-width="3"><circle cx="160" cy="90" r="38"/><circle cx="380" cy="90" r="38" fill="#fff" stroke-dasharray="7 5"/><circle cx="600" cy="90" r="38"/><circle cx="380" cy="305" r="38"/></g><g text-anchor="middle" font-size="30" font-weight="700" fill="#263f86"><text x="160" y="101">L</text><text x="380" y="101">D</text><text x="600" y="101">F</text><text x="380" y="316">K</text></g></svg><figcaption>未观测的核心权衡决定乳汁所需密度 <span class="math-inline"><var>D</var></span>，进而决定脂肪 <span class="math-inline"><var>F</var></span> 与乳糖 <span class="math-inline"><var>L</var></span>；二者的组成最终决定千卡 <span class="math-inline"><var>K</var></span>。</figcaption></figure>
+
+      <p>若能测量 <span class="math-inline"><var>D</var></span>，或用物种的其他特征建立演化与经济模型来预测它，会比在回归中摸索更好。只需让 <span class="math-inline"><var>K</var></span> 对 <span class="math-inline"><var>D</var></span> 回归，并忽略作为中介的 <span class="math-inline"><var>L</var></span> 与 <span class="math-inline"><var>F</var></span>，就能估计密度对能量的因果影响。</p>
+
+      <p>多重共线性属于一族模型拟合问题，这族问题常称为<strong>不可识别性</strong>。参数不可识别，意味着数据与模型的结构无法估计参数值。有时这是模型编码错误造成的，但许多重要模型本身就包含不可识别或弱可识别参数；后文将继续讨论。</p><p class="continuation-note">不可识别性的进一步解释将在原书 PDF 第 190 页继续。</p>
+    </section>
   </section>
 
   <section class="endnotes" id="chapter-06-notes" role="doc-endnotes"><h2>尾注</h2><ol start="85"><li id="note-85">本例与 Paul Smaldino 合作完成。 <a class="backref" href="#note-85-ref" aria-label="返回正文">↩</a></li><li id="note-86">参见 Berkson（1946）。相关现象还有筛选造成的范围限制，它会降低筛选标准与后续表现之间的相关；这也是标准化考试成绩与入学后表现可能不相关的原因之一。另见 Dawes（1975）。 <a class="backref" href="#note-86-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 181–186 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 187 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 181–189 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 190 页继续。</aside>
 </article>

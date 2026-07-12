@@ -544,7 +544,12 @@
     "posterior ridge": "后验脊",
     "duplicated predictor": "重复预测变量",
     "sum of coefficients": "系数之和",
-    "multicollinear milk": "共线的乳汁"
+    "multicollinear milk": "共线的乳汁",
+    "pairs plot": "变量对图",
+    "conditional association": "条件关联",
+    "core tradeoff": "核心权衡",
+    "non-identifiability": "不可识别性",
+    "weakly identifiable": "弱可识别"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "PSIS-LOO", "MCMC", "HMC"

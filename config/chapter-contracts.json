@@ -923,7 +923,7 @@
   },
   "chapter-06": {
     "required_status": "in_progress",
-    "source_pages": [181, 186],
+    "source_pages": [181, 189],
     "required_ids": [
       "fig-6-1",
       "overthinking-simulated-science-distortion",
@@ -940,6 +940,12 @@
       "code-6-6",
       "code-6-7",
       "sec-6-1-2",
+      "code-6-8",
+      "code-6-9",
+      "code-6-10",
+      "code-6-11",
+      "fig-6-3",
+      "dag-6-milk-density",
       "chapter-06-notes",
       "note-85",
       "note-86"
@@ -954,15 +960,17 @@
     ],
     "counts": {
       "section": 4,
-      "figure": 9,
-      "figure img": 2,
-      "figure svg": 0,
+      "figure": 15,
+      "figure img": 3,
+      "figure svg": 1,
       ".selection-distortion-figure": 1,
       ".multicollinear-legs-figure": 1,
+      ".milk-pairs-figure": 1,
+      ".dag-figure": 1,
       ".equation-block": 2,
       ".model-system-equation": 2,
-      ".code-listing": 7,
-      ".code-output": 2,
+      ".code-listing": 11,
+      ".code-output": 4,
       ".overthinking-box": 1,
       ".endnotes li": 2
     }
