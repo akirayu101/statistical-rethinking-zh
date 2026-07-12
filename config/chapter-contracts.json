@@ -922,8 +922,8 @@
     }
   },
   "chapter-06": {
-    "required_status": "in_progress",
-    "source_pages": [181, 207],
+    "required_status": "verified",
+    "source_pages": [181, 210],
     "required_ids": [
       "fig-6-1",
       "overthinking-simulated-science-distortion",
@@ -995,6 +995,21 @@
       "code-6-29",
       "sec-6-4-3",
       "dag-6-waffle-backdoor",
+      "code-6-30",
+      "code-6-31",
+      "rethinking-dags-not-enough",
+      "overthinking-do-operator",
+      "eq-6-do-operator",
+      "sec-6-5",
+      "sec-6-6",
+      "chapter-06-exercises-easy",
+      "exercise-6e-placeholder",
+      "chapter-06-exercises-medium",
+      "exercise-6m1",
+      "chapter-06-exercises-hard",
+      "exercise-6h1",
+      "exercise-6h2",
+      "exercise-6h3",
       "chapter-06-notes",
       "note-85",
       "note-86",
@@ -1003,7 +1018,8 @@
       "note-89",
       "note-90",
       "note-91",
-      "note-92"
+      "note-92",
+      "note-93"
     ],
     "required_headings": [
       "闹鬼的 DAG 与因果恐怖",
@@ -1026,11 +1042,18 @@
       "6.4.1 关闭后门",
       "6.4.2 两条路",
       "6.4.3 华夫饼后门",
+      "再思考：仅有 DAG 还不够",
+      "过度思考：平滑算子",
+      "6.5 总结",
+      "6.6 练习",
+      "简单题",
+      "中等题",
+      "困难题",
       "尾注"
     ],
     "counts": {
-      "section": 15,
-      "figure": 46,
+      "section": 17,
+      "figure": 48,
       "figure img": 5,
       "figure svg": 12,
       ".selection-distortion-figure": 1,
@@ -1040,14 +1063,17 @@
       ".grandparents-collider-figure": 1,
       ".dag-figure": 11,
       ".flowchart-figure": 1,
-      ".equation-block": 5,
+      ".equation-block": 6,
       ".model-system-equation": 4,
-      ".code-listing": 29,
-      ".code-output": 16,
-      ".rethinking-box": 3,
-      ".overthinking-box": 2,
-      ".source-erratum": 1,
-      ".endnotes li": 8
+      ".code-listing": 31,
+      ".code-output": 18,
+      ".rethinking-box": 4,
+      ".overthinking-box": 3,
+      ".source-erratum": 2,
+      ".exercise-group": 3,
+      ".exercise": 5,
+      ".source-placeholder": 2,
+      ".endnotes li": 9
     }
   }
 }
