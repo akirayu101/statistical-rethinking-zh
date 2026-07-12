@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-07" data-source-pages="211-219">
-  <header class="chapter-header"><p class="eyebrow">第七章</p><h1>尤利西斯的罗盘</h1><p class="source-range">当前译稿对应原书 PDF 第 211–219 页</p></header>
+<article class="book-article" data-chapter="chapter-07" data-source-pages="211-222">
+  <header class="chapter-header"><p class="eyebrow">第七章</p><h1>尤利西斯的罗盘</h1><p class="source-range">当前译稿对应原书 PDF 第 211–222 页</p></header>
 
   <p>米科瓦伊·哥白尼（Mikołaj Kopernik，亦称 Nicolaus Copernicus，1473–1543）：波兰天文学家、教会法学家，以及亵渎神明者。他以太阳系日心模型闻名，主张用日心模型取代地心模型，因为前者更“和谐”。几十年后，这个立场最终导致伽利略与教会著名的不和，以及那场审判。</p><p>这个故事后来成了科学战胜意识形态与迷信的寓言。但撇开意识形态，哥白尼的论证如今看来并不充分，问题有两个：他的模型既不特别和谐，也不比地心模型更准确。哥白尼模型十分复杂，实际上与托勒密模型一样堆满本轮（图 7.1）。哥白尼把太阳移到中心，但仍坚持用完美圆形轨道，所以仍然需要本轮；“和谐”并不很能形容它的外观。与托勒密模型一样，哥白尼模型实质上也是傅里叶级数——一种近似周期函数的方法。</p><p>这又引出第二个问题：日心模型与地心模型给出完全相同的预测。无论假设地球静止还是运动，都可以构造等价近似，所以只凭准确性没有理由偏爱日心模型。</p><p>不过，哥白尼并非只诉诸含糊的和谐。他还以所需原因更少来论证模型优越：“我们由此追随自然；自然不做无用或多余之事，常常宁愿让一个原因产生许多效应。”<sup id="note-94-ref"><a href="#note-94">94</a></sup> 确实，要给出与地心模型相同的预测，日心模型需要的圆和本轮更少；从这个意义上说，它更简单。</p><p>学者常偏爱更简单的理论。有时这种偏好很模糊，只是一种审美；有时则退回实用主义，因为简单理论的模型更容易处理。科学家经常援引一个宽松原则——奥卡姆剃刀：应优先选择假设更少的模型。对哥白尼与托勒密而言，剃刀给出明确建议。它不能保证哥白尼正确（毕竟他并不完全正确），但既然日心与地心模型预测相同，至少能明确化解两难。</p><p>然而，更一般地使用剃刀很困难，因为通常要在准确性与简单性都不同的模型之间选择。二者怎样权衡？剃刀没有指引。本章介绍一些最常用的权衡工具。所有工具通常都包含某种简单性概念，所以常被比作奥卡姆剃刀；但它们同样关心提高预测准确性，并会明确权衡准确性与简单性，因此并不等同于剃刀。</p>
 
@@ -153,11 +153,27 @@ shade( ci , mass_seq )</code></pre></figure>
 
       <p>而需要预测脑大小的物种恰好也有 7 个。因此，这个模型实际上给每个观测到的脑大小分配了一个独有参数，用来逐一重现它们。这是普遍现象：只要采用参数足够多的模型族，就能精确拟合数据。但这样的模型会对尚未观测的案例做出相当荒谬的预测。</p>
 
-      <p class="continuation-note">图 7.3 及过拟合如何损害样本外预测的讨论将在原书 PDF 第 220 页继续。</p>
+      <figure class="book-figure hominin-polynomial-figure" id="fig-7-3"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的六个脑容量多项式模型面板"><img src="/media/chapter-07-polynomial-overfit.svg" alt="一次至六次多项式对七种人族脑容量数据的拟合，次数越高曲线越曲折"></div><p class="scroll-hint">图较宽，可横向滚动比较六个模型。</p><figcaption><strong>图 7.3：</strong>次数递增的人族数据多项式线性模型。每个面板以黑线显示后验均值，并用灰色显示均值的 89% 区间；上方标出 <span class="math-inline"><var>R</var><sup>2</sup></span>。从左上到右下依次为一次、二次、三次、四次、五次和六次多项式。</figcaption></figure>
+
+      <aside class="rethinking-box" id="rethinking-model-fitting-as-compression"><h3>再思考：把模型拟合看作压缩</h3><p>还可以换个角度理解上面的荒谬模型：模型拟合可被视为一种<strong>数据压缩</strong>。参数汇总数据之间的关系，把数据压缩成更简单的形式，不过会丢失样本的一些信息，也就是“有损”压缩。随后又可用这些参数生成新数据，相当于把数据解压。</p><p>当模型像 <code>m7.6</code> 一样，每个数据点都有一个对应参数时，实际上没有发生压缩；模型只是用参数把原始数据换一种形式编码。因此，我们无法从这样的模型中学到有关数据的任何东西。要了解数据，必须使用更简单的模型，实现一定程度、但又不过度的压缩。这种模型选择观点通常称为<strong>最小描述长度</strong>（Minimum Description Length，MDL）。<sup id="note-99-ref"><a href="#note-99">99</a></sup></p></aside>
+    </section>
+
+    <section id="sec-7-1-2"><h3>7.1.2 参数太少也有害</h3><p>过拟合的多项式模型能极好地拟合数据，却以这种样本内准确性为代价，做出毫无意义的样本外预测。相比之下，欠拟合产生的模型在样本内和样本外都不准确：它们学得太少，未能恢复样本中的规则特征。</p><p>理解欠拟合模型的另一个办法，是注意它对样本不敏感。从样本中删除任意一个点，得到的回归线几乎一样。相反，最复杂的模型 <code>m7.6</code> 对样本极其敏感；删除任意一点，预测均值都会大幅改道。</p><p>图 7.4 清楚展示了这一点。两幅图都逐次删除数据的一行，并重新推导后验分布。左图每条线都是一次多项式 <code>m7.1</code>，分别拟合由删除一行产生的七套可能数据；右图的曲线则是不同的四次多项式 <code>m7.4</code>。直线几乎不变，曲线却四处乱飞。这是欠拟合与过拟合模型之间的一般差异：它们对用于拟合的确切样本构成，敏感程度不同。</p>
+
+      <figure class="book-figure hominin-loo-figure" id="fig-7-4"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的欠拟合与过拟合样本敏感性比较"><img src="/media/chapter-07-loo-sensitivity.svg" alt="删除一个物种后一次模型的直线变化很小，四次模型的曲线变化剧烈"></div><p class="scroll-hint">图较宽，可横向滚动比较两个模型。</p><figcaption><strong>图 7.4：</strong>把欠拟合与过拟合理解为对样本的低敏感与高敏感。两图都对从原数据逐次删除一行形成的七套数据拟合回归。左：欠拟合模型对样本不敏感，删除单个点后变化很小。右：过拟合模型对样本敏感，删除点后发生剧烈变化。</figcaption></figure>
+
+      <aside class="overthinking-box" id="overthinking-dropping-rows"><h3>过度思考：删除数据行</h3><p>生成图 7.4 所需的计算，可以借助 R 索引记号的一个技巧轻松完成。要从数据框 <code>d</code> 删除第 <code>i</code> 行，只需：</p><figure class="code-listing" id="code-7-11"><figcaption>R 代码 7.11</figcaption><pre><code>d_minus_i &lt;- d[ -i , ]</code></pre></figure><p>它表示删除第 <code>i</code> 行，同时保留所有列。重复回归只需循环遍历各行。可以查看 <code>rethinking</code> 包中的 <code>brain_loo_plot</code> 函数，了解图形怎样绘制并探索其他模型；函数末尾附近会有一个循环承担主要工作。</p></aside>
+
+      <aside class="rethinking-box" id="rethinking-bias-and-variance"><h3>再思考：偏差与方差</h3><p>欠拟合与过拟合的二分，经常被描述为<strong>偏差—方差权衡</strong>。<sup id="note-100-ref"><a href="#note-100">100</a></sup> 两者虽不完全相同，偏差—方差权衡处理的却是同一个问题：“偏差”与欠拟合有关，“方差”与过拟合有关。</p><p>不过这些术语容易混淆，因为即使在统计学内部，它们在不同语境中的用法也各不相同。“偏差”听起来还像坏事，尽管提高偏差往往能带来更好的预测。因此本书更喜欢欠拟合/过拟合，但应当预期会看到类似例子被称为偏差/方差。</p></aside>
     </section>
   </section>
 
-  <section class="endnotes" id="chapter-07-notes" role="doc-endnotes"><h2>尾注</h2><ol start="94"><li id="note-94">《天体运行论》第 1 卷第 10 章。 <a class="backref" href="#note-94-ref" aria-label="返回正文">↩</a></li><li id="note-95">例如参见 Akaike（1978），以及 Burnham 与 Anderson（2002）的讨论。 <a class="backref" href="#note-95-ref" aria-label="返回正文">↩</a></li><li id="note-96">当先验平坦、模型简单时，这一点总是成立。但本书后面会使用多层回归等其他模型；对它们而言，加入参数不一定改善样本内拟合。 <a class="backref" href="#note-96-ref" aria-label="返回正文">↩</a></li><li id="note-97">数据来自 McHenry 与 Coffing（2000）的表 1。 <a class="backref" href="#note-97-ref" aria-label="返回正文">↩</a></li><li id="note-98">Gauss（1809），<cite>Theoria motus corporum coelestium in sectionibus conicis solem ambientum</cite>。 <a class="backref" href="#note-98-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section id="sec-7-2"><h2>7.2 熵与准确性</h2><p>那么，怎样在过拟合的多头怪兽与欠拟合的漩涡之间航行？无论最终使用正则化、信息准则，还是两者并用，第一件事都是选定模型表现的判据。你希望模型在哪件事上做得好？我们把这个判据称为<strong>目标</strong>；本节会说明信息论怎样提供一个通用而有用的目标。</p><p>不过，通往样本外离差的道路颇为曲折，前方分三步。第一，需要建立一个度量尺度，衡量离完美准确还有多远。这要借助一点信息论，因为它能为两个概率分布之间的距离提供自然尺度。第二，需要把离差确立为“离完美准确的相对距离”的近似。最后，还要说明我们真正关心的只有样本外离差。掌握以离差度量模型表现后，后续小节会展示正则化先验与信息准则怎样帮助改善并估计模型的样本外离差。</p><p>这部分材料很复杂，不必第一次就全部理解。</p>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 211–219 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 220 页继续。</aside>
+    <section id="sec-7-2-1"><h3>7.2.1 解雇天气预报员</h3><p>准确性取决于怎样定义目标，不存在普遍最优的目标。定义目标时，需要操心两个主要维度：</p><ol class="target-dimensions"><li><strong>成本—收益分析。</strong>预测错误要付出多大代价？预测正确又能获得多大收益？多数科学家从未正式提出这些问题，但应用科学家必须经常回答它们。</li></ol><p class="continuation-note">目标的第二个维度及天气预报示例将在原书 PDF 第 223 页继续。</p></section>
+  </section>
+
+  <section class="endnotes" id="chapter-07-notes" role="doc-endnotes"><h2>尾注</h2><ol start="94"><li id="note-94">《天体运行论》第 1 卷第 10 章。 <a class="backref" href="#note-94-ref" aria-label="返回正文">↩</a></li><li id="note-95">例如参见 Akaike（1978），以及 Burnham 与 Anderson（2002）的讨论。 <a class="backref" href="#note-95-ref" aria-label="返回正文">↩</a></li><li id="note-96">当先验平坦、模型简单时，这一点总是成立。但本书后面会使用多层回归等其他模型；对它们而言，加入参数不一定改善样本内拟合。 <a class="backref" href="#note-96-ref" aria-label="返回正文">↩</a></li><li id="note-97">数据来自 McHenry 与 Coffing（2000）的表 1。 <a class="backref" href="#note-97-ref" aria-label="返回正文">↩</a></li><li id="note-98">Gauss（1809），<cite>Theoria motus corporum coelestium in sectionibus conicis solem ambientum</cite>。 <a class="backref" href="#note-98-ref" aria-label="返回正文">↩</a></li><li id="note-99">关于这些思想的专著级讨论，参见 Grünwald（2007）。 <a class="backref" href="#note-99-ref" aria-label="返回正文">↩</a></li><li id="note-100">关于偏差与方差，文献中的讨论很多，有的数学性远强于其他。若想广泛了解，推荐 Hastie、Tibshirani 与 Friedman（2009）第 7 章；该章在偏差—方差权衡的语境下讨论 BIC、AIC、交叉验证及其他度量。 <a class="backref" href="#note-100-ref" aria-label="返回正文">↩</a></li></ol></section>
+
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 211–222 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 223 页继续。</aside>
 </article>

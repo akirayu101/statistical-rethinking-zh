@@ -1078,7 +1078,7 @@
   },
   "chapter-07": {
     "required_status": "in_progress",
-    "source_pages": [211, 219],
+    "source_pages": [211, 222],
     "required_ids": [
       "fig-7-1",
       "rethinking-stargazing",
@@ -1101,12 +1101,23 @@
       "code-7-9",
       "code-7-10",
       "eq-7-sixth-degree-mean",
+      "fig-7-3",
+      "rethinking-model-fitting-as-compression",
+      "sec-7-1-2",
+      "fig-7-4",
+      "overthinking-dropping-rows",
+      "code-7-11",
+      "rethinking-bias-and-variance",
+      "sec-7-2",
+      "sec-7-2-1",
       "chapter-07-notes",
       "note-94",
       "note-95",
       "note-96",
       "note-97",
-      "note-98"
+      "note-98",
+      "note-99",
+      "note-100"
     ],
     "required_headings": [
       "尤利西斯的罗盘",
@@ -1115,23 +1126,33 @@
       "7.1 参数的问题",
       "7.1.1 更多参数（几乎）总会改善拟合",
       "再思考：OLS 与贝叶斯反本质主义",
+      "再思考：把模型拟合看作压缩",
+      "7.1.2 参数太少也有害",
+      "过度思考：删除数据行",
+      "再思考：偏差与方差",
+      "7.2 熵与准确性",
+      "7.2.1 解雇天气预报员",
       "尾注"
     ],
     "counts": {
-      "section": 3,
-      "figure": 12,
+      "section": 6,
+      "figure": 15,
       "figure svg": 1,
-      "figure img": 1,
+      "figure img": 3,
       ".flowchart-figure": 1,
       ".solar-models-figure": 1,
       ".hominin-brain-figure": 1,
+      ".hominin-polynomial-figure": 1,
+      ".hominin-loo-figure": 1,
       ".equation-block": 4,
       ".model-system-equation": 2,
-      ".code-listing": 10,
+      ".code-listing": 11,
       ".code-output": 1,
-      ".rethinking-box": 3,
+      ".rethinking-box": 5,
+      ".overthinking-box": 1,
+      ".target-dimensions": 1,
       ".source-erratum": 2,
-      ".endnotes li": 5
+      ".endnotes li": 7
     }
   }
 }
