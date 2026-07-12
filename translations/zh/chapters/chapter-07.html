@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-07" data-source-pages="211-231">
-  <header class="chapter-header"><p class="eyebrow">第七章</p><h1>尤利西斯的罗盘</h1><p class="source-range">当前译稿对应原书 PDF 第 211–231 页</p></header>
+<article class="book-article" data-chapter="chapter-07" data-source-pages="211-234">
+  <header class="chapter-header"><p class="eyebrow">第七章</p><h1>尤利西斯的罗盘</h1><p class="source-range">当前译稿对应原书 PDF 第 211–234 页</p></header>
 
   <p>米科瓦伊·哥白尼（Mikołaj Kopernik，亦称 Nicolaus Copernicus，1473–1543）：波兰天文学家、教会法学家，以及亵渎神明者。他以太阳系日心模型闻名，主张用日心模型取代地心模型，因为前者更“和谐”。几十年后，这个立场最终导致伽利略与教会著名的不和，以及那场审判。</p><p>这个故事后来成了科学战胜意识形态与迷信的寓言。但撇开意识形态，哥白尼的论证如今看来并不充分，问题有两个：他的模型既不特别和谐，也不比地心模型更准确。哥白尼模型十分复杂，实际上与托勒密模型一样堆满本轮（图 7.1）。哥白尼把太阳移到中心，但仍坚持用完美圆形轨道，所以仍然需要本轮；“和谐”并不很能形容它的外观。与托勒密模型一样，哥白尼模型实质上也是傅里叶级数——一种近似周期函数的方法。</p><p>这又引出第二个问题：日心模型与地心模型给出完全相同的预测。无论假设地球静止还是运动，都可以构造等价近似，所以只凭准确性没有理由偏爱日心模型。</p><p>不过，哥白尼并非只诉诸含糊的和谐。他还以所需原因更少来论证模型优越：“我们由此追随自然；自然不做无用或多余之事，常常宁愿让一个原因产生许多效应。”<sup id="note-94-ref"><a href="#note-94">94</a></sup> 确实，要给出与地心模型相同的预测，日心模型需要的圆和本轮更少；从这个意义上说，它更简单。</p><p>学者常偏爱更简单的理论。有时这种偏好很模糊，只是一种审美；有时则退回实用主义，因为简单理论的模型更容易处理。科学家经常援引一个宽松原则——奥卡姆剃刀：应优先选择假设更少的模型。对哥白尼与托勒密而言，剃刀给出明确建议。它不能保证哥白尼正确（毕竟他并不完全正确），但既然日心与地心模型预测相同，至少能明确化解两难。</p><p>然而，更一般地使用剃刀很困难，因为通常要在准确性与简单性都不同的模型之间选择。二者怎样权衡？剃刀没有指引。本章介绍一些最常用的权衡工具。所有工具通常都包含某种简单性概念，所以常被比作奥卡姆剃刀；但它们同样关心提高预测准确性，并会明确权衡准确性与简单性，因此并不等同于剃刀。</p>
 
@@ -265,10 +265,67 @@ f &lt;- function( i ) log_sum_exp( logprob[,i] ) - log(ns)
       <figure class="code-listing" id="code-7-15"><figcaption>R 代码 7.15</figcaption><pre><code>set.seed(1)
 sapply( list(m7.1,m7.2,m7.3,m7.4,m7.5,m7.6) , function(m) sum(lppd(m)) )</code></pre><pre class="code-output"><code>[1]  2.490390  2.565982  3.695910  5.380871 14.089261 39.445390</code></pre></figure>
 
-      <p>更复杂的模型分数更大！但已经知道它们很荒谬。绝不能按模型在训练数据上的表现给它们评分；那条路通向吞食天真数据科学家的斯库拉怪兽。</p><p>真正感兴趣的是新数据上的分数。在考察改善与度量样本外分数的工具之前，先同时模拟样本内与样本外分数，把问题聚焦得更清楚。通常得到数据并拟合统计模型时，这些数据组成<strong>训练样本</strong>；从中估计参数，再设想用这些估计预测新样本的结果，新样本称为<strong>测试样本</strong>。R 会替你完成所有计算，但完整步骤如下：</p><ol class="train-test-steps"><li>假设有一个大小为 <span class="math-inline"><var>N</var></span> 的训练样本。</li><li>根据训练样本计算模型的后验分布，并计算训练样本上的分数，记作 <span class="math-inline"><var>D</var><sub>train</sub></span>。</li><li>再从同一过程取得一个大小为 <span class="math-inline"><var>N</var></span> 的样本，这就是测试样本。</li><li>使用在训练样本上训练的后验，计算测试样本的分数，记作 <span class="math-inline"><var>D</var><sub>test</sub></span>。</li></ol><p>以上是一个思想实验。它让我们在简单预测情境中探索样本内与样本外准确性的区别。</p><p class="continuation-note">训练与测试离差的模拟结果将在原书 PDF 第 232 页继续。</p></section>
+      <p>更复杂的模型分数更大！但已经知道它们很荒谬。绝不能按模型在训练数据上的表现给它们评分；那条路通向吞食天真数据科学家的斯库拉怪兽。</p><p>真正感兴趣的是新数据上的分数。在考察改善与度量样本外分数的工具之前，先同时模拟样本内与样本外分数，把问题聚焦得更清楚。通常得到数据并拟合统计模型时，这些数据组成<strong>训练样本</strong>；从中估计参数，再设想用这些估计预测新样本的结果，新样本称为<strong>测试样本</strong>。R 会替你完成所有计算，但完整步骤如下：</p><ol class="train-test-steps"><li>假设有一个大小为 <span class="math-inline"><var>N</var></span> 的训练样本。</li><li>根据训练样本计算模型的后验分布，并计算训练样本上的分数，记作 <span class="math-inline"><var>D</var><sub>train</sub></span>。</li><li>再从同一过程取得一个大小为 <span class="math-inline"><var>N</var></span> 的样本，这就是测试样本。</li><li>使用在训练样本上训练的后验，计算测试样本的分数，记作 <span class="math-inline"><var>D</var><sub>test</sub></span>。</li></ol><p>以上是一个思想实验。它让我们在简单预测情境中探索样本内与样本外准确性的区别。</p>
+
+      <figure class="book-figure train-test-deviance-figure" id="fig-7-6"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的训练与测试离差双面板图"><img src="/media/chapter-07-train-test-deviance.svg" alt="样本量二十和一百时，训练离差随参数增多而下降，测试离差在三个参数附近最低"></div><p class="scroll-hint">图较宽，可横向滚动比较两个样本量。</p><figcaption><strong>图 7.6：</strong>样本内与样本外离差。每个面板的横轴表示预测变量个数不同的模型，纵轴表示 10,000 次模拟中的离差。蓝色表示样本内离差，即训练数据；黑色表示样本外离差，即测试数据。点表示均值，线段表示 ±1 个标准差。</figcaption></figure>
+
+      <p>为了把这个思想实验的结果可视化，现在对五种不同的线性回归模型分别重复上述思想实验 10,000 次。生成数据的模型是：</p>
+
+      <div class="equation-block model-system-equation" id="eq-7-simulation-data-generator"><div><var>y</var><sub>i</sub> ∼ Normal(<var>μ</var><sub>i</sub>, 1)</div><div><var>μ</var><sub>i</sub> = (0.15)<var>x</var><sub>1,<var>i</var></sub> − (0.4)<var>x</var><sub>2,<var>i</var></sub></div></div>
+
+      <p>这对应一个高斯结果 <span class="math-inline"><var>y</var></span>：截距 <span class="math-inline"><var>α</var> = 0</span>，两个预测变量的斜率分别为 <span class="math-inline"><var>β</var><sub>1</sub> = 0.15</span> 与 <span class="math-inline"><var>β</var><sub>2</sub> = −0.4</span>。用于分析数据的是具有 1 到 5 个自由参数的线性回归。第一个模型只有 1 个待估自由参数，它只是均值未知、<span class="math-inline"><var>σ</var> = 1</span> 固定的线性回归。模型每增加一个参数，就增加一个预测变量及其 β 系数。由于只有前两个预测变量的系数在“真”模型中非零，可以说真模型有 3 个参数。把这五个模型分别拟合到同一过程产生的训练样本，就能了解分数在训练样本内外如何表现。</p>
+
+      <p>图 7.6 展示了两种样本量下，每类模型各 10,000 次模拟的结果。模拟由 <code>rethinking</code> 包中的 <code>sim_train_test</code> 函数完成；若想进行更多此类模拟，完整代码见下一页的“过度思考”框。纵轴按 <span class="math-inline">−2 lppd</span>，也就是“离差”来缩放，因此数值越大越差。图 7.6 左图中，训练样本和测试样本都包含 20 个案例。蓝点与线段表示在训练数据上计算的离差均值及其正负一个标准差。从左向右，参数个数增加，平均离差下降；离差越小，拟合越好。因此，模型复杂度上升时离差下降，与本章前面看到的 <span class="math-inline"><var>R</var><sup>2</sup></span> 现象相同。</p>
+
+      <p>但现在看空心点和黑色线段。它们表示每种参数个数下样本外离差的分布。训练离差总会随着参数增加而改善；测试离差的平均值却在 3 个参数时最小，而这正是此处生成数据的模型。第三个参数之后，每增加一个参数，样本外离差都会变差（增大）。这些新增参数拟合的是附加预测变量中的噪声。因此，训练样本中的离差会持续改善（下降），测试样本中的离差平均而言却会变差。右图对更大的 <span class="math-inline"><var>N</var> = 100</span> 样本显示了同样的关系。</p>
+
+      <p>标准差线段的大小也许会让你吃惊。平均而言，样本外离差总是比样本内离差更差；但任意一对具体的训练样本和测试样本，都可能反转这种预期。原因是，任何一个训练样本都可能极具误导性，任何一个测试样本也可能缺乏代表性。后面构造模型比较装置时，要记住这个事实，因为它应当阻止你对任何特定样本的分析抱有过多信心。与所有统计推断一样，这里没有保证。</p>
+
+      <p>同样，也不能保证“真正”的数据生成模型拥有最小的平均样本外离差。2 参数模型的离差就显露了这一点：即使真模型确实包含新增的预测变量，它的预测仍比只有 1 个参数的模型更差。这是因为只有 <span class="math-inline"><var>N</var> = 20</span> 个案例时，对第一个预测变量的估计不够精确，带来的误差比直接忽略它还多。相比之下，右图有足够数据精确估计第一个预测变量与结果之间的关联；此时 2 参数模型的离差就优于 1 参数模型。</p>
+
+      <p>离差评估的是预测准确性，而不是真理。就纳入了哪些预测变量而言，真模型并不保证产生最佳预测；同样，就纳入了哪些预测变量而言，假模型也不保证产生糟糕预测。</p>
+
+      <p>这个思想实验的目的，是展示离差在理论上如何表现。训练数据上的离差总会随着预测变量增加而改善；未来数据上的离差则可能改善，也可能不改善，这取决于真正的数据生成过程，以及精确估计参数所需的数据是否充足。这些事实构成理解正则化先验与信息准则的基础。</p>
+
+      <aside class="overthinking-box" id="overthinking-simulated-training-testing"><h3>过度思考：模拟训练与测试</h3><p>为复现图 7.6，对 5 个模型中的每一个都运行 <code>sim_train_test</code> 10,000（<code>1e4</code>）次。下面代码足以完成全部模拟：</p>
+
+        <figure class="code-listing" id="code-7-16"><figcaption>R 代码 7.16</figcaption><pre><code>N &lt;- 20
+kseq &lt;- 1:5
+dev &lt;- sapply( kseq , function(k) {
+    print(k);
+    r &lt;- replicate( 1e4 , sim_train_test( N=N, k=k ) );
+    c( mean(r[1,]) , mean(r[2,]) , sd(r[1,]) , sd(r[2,]) )
+} )</code></pre></figure>
+
+        <p>若使用 macOS 或 Linux，可以用下面一行替换 <code>replicate</code> 那一行，并行运行模拟：</p>
+
+        <figure class="code-listing" id="code-7-17"><figcaption>R 代码 7.17</figcaption><pre><code>r &lt;- mcreplicate( 1e4 , sim_train_test( N=N, k=k ) , mc.cores=4 )</code></pre></figure>
+
+        <p>把 <code>mc.cores</code> 设为希望用于模拟的处理器核心数。模拟完成后，<code>dev</code> 会是一个 4 × 5 的均值和标准差矩阵。用下面代码复现图形：</p>
+
+        <figure class="code-listing" id="code-7-18"><figcaption>R 代码 7.18</figcaption><pre><code>plot( 1:5 , dev[1,] , ylim=c( min(dev[1:2,])-5 , max(dev[1:2,])+10 ) ,
+    xlim=c(1,5.1) , xlab="number of parameters" , ylab="deviance" ,
+    pch=16 , col=rangi2 )
+mtext( concat( "N = ",N ) )
+points( (1:5)+0.1 , dev[2,] )
+for ( i in kseq ) {
+    pts_in &lt;- dev[1,i] + c(-1,+1)*dev[3,i]
+    pts_out &lt;- dev[2,i] + c(-1,+1)*dev[4,i]
+    lines( c(i,i) , pts_in , col=rangi2 )
+    lines( c(i,i)+0.1 , pts_out )
+}</code></pre></figure>
+
+        <p>修改这段代码，就可以模拟许多不同的训练—测试情境；更多选项见 <code>?sim_train_test</code>。</p></aside></section>
+  </section>
+
+  <section id="sec-7-3"><h2>7.3 驯服魔像：正则化</h2><p>如果我告诉你，让模型对样本拟合得更差，反而能产生更好的预测，你会相信吗？本节就来演示这一点。</p><p>过拟合的根源，是模型很容易被训练样本弄得过度兴奋。当先验平坦或近乎平坦时，机器把它解释为每个参数值都同样可信。结果，模型返回的后验会尽可能多地编码训练样本——训练样本由似然函数表示。</p><p>防止模型被训练样本弄得过度兴奋的一种方法，是采用<strong>怀疑性先验</strong>。所谓“怀疑性”，是指一种减缓从样本学习速度的先验。最常见的怀疑性先验是<strong>正则化先验</strong>。调校得当时，这种先验会减少过拟合，同时仍允许模型学习样本中的规则特征。但如果先验过于怀疑，就会漏掉规则特征，导致欠拟合。因此，问题其实在于调校。不过将会看到，即使温和的怀疑也能帮助模型做得更好；在没有任何模型或先验是最优的大世界中，做得更好就是我们真正能期待的一切。</p><p>前几章中，我一直要求我们修改先验，直到先验预测分布只产生合理结果。因此，那些先验已经正则化了推断。在极小样本中，它们会大有帮助。下面用更多模拟来说明原因。考虑这个高斯模型：</p>
+
+    <div class="equation-block model-system-equation" id="eq-7-regularized-gaussian-model"><div><var>y</var><sub>i</sub> ∼ Normal(<var>μ</var><sub>i</sub>, <var>σ</var>)</div><div><var>μ</var><sub>i</sub> = <var>α</var> + <var>βx</var><sub>i</sub></div><div><var>α</var> ∼ Normal(0, 100)</div><div><var>β</var> ∼ Normal(0, 1)</div><div><var>σ</var> ∼ Exponential(1)</div></div>
+
+    <p class="continuation-note">正则化先验如何约束斜率，将在原书 PDF 第 235 页继续。</p>
   </section>
 
   <section class="endnotes" id="chapter-07-notes" role="doc-endnotes"><h2>尾注</h2><ol start="94"><li id="note-94">《天体运行论》第 1 卷第 10 章。 <a class="backref" href="#note-94-ref" aria-label="返回正文">↩</a></li><li id="note-95">例如参见 Akaike（1978），以及 Burnham 与 Anderson（2002）的讨论。 <a class="backref" href="#note-95-ref" aria-label="返回正文">↩</a></li><li id="note-96">当先验平坦、模型简单时，这一点总是成立。但本书后面会使用多层回归等其他模型；对它们而言，加入参数不一定改善样本内拟合。 <a class="backref" href="#note-96-ref" aria-label="返回正文">↩</a></li><li id="note-97">数据来自 McHenry 与 Coffing（2000）的表 1。 <a class="backref" href="#note-97-ref" aria-label="返回正文">↩</a></li><li id="note-98">Gauss（1809），<cite>Theoria motus corporum coelestium in sectionibus conicis solem ambientum</cite>。 <a class="backref" href="#note-98-ref" aria-label="返回正文">↩</a></li><li id="note-99">关于这些思想的专著级讨论，参见 Grünwald（2007）。 <a class="backref" href="#note-99-ref" aria-label="返回正文">↩</a></li><li id="note-100">关于偏差与方差，文献中的讨论很多，有的数学性远强于其他。若想广泛了解，推荐 Hastie、Tibshirani 与 Friedman（2009）第 7 章；该章在偏差—方差权衡的语境下讨论 BIC、AIC、交叉验证及其他度量。 <a class="backref" href="#note-100-ref" aria-label="返回正文">↩</a></li><li id="note-101">作者最初在 Jaynes（1976，第 246 页）遇到这类例子；Jaynes 又把它归功于 G. David Forney 1972 年的信息论课程讲义。Forney 是信息论的重要人物，因其贡献获得过多个奖项。 <a class="backref" href="#note-101-ref" aria-label="返回正文">↩</a></li><li id="note-102">Shannon（1948）。更易读的导论可参见经典教材 Cover 与 Thomas 的 <cite>Elements of Information Theory</cite>；Jaynes（2003）第 11 章稍进阶，但增益很多。Kullback（1959）是把信息论用于统计推断的奠基性著作，不过并不好读。 <a class="backref" href="#note-102-ref" aria-label="返回正文">↩</a></li><li id="note-103">参见两篇著名社论：Shannon（1956）与 Elias（1958）。Elias 的社论是一篇巧妙的讽刺作品，时至今日依然切中时弊；这两篇单页社论都很容易在网上找到。 <a class="backref" href="#note-103-ref" aria-label="返回正文">↩</a></li><li id="note-104">很遗憾，作者尚未找到一本适合大多数自然科学家和社会科学家数学训练水平的最大熵入门。Jaynes（2003）是必读来源，但若积分学已经生疏，进展会很慢。Steven Frank（2009；2011）的论文也许更合适，它们解释这种方法并联系自然界的常见分布；略过大部分数学仍能掌握主要概念。生态学应用的教材式介绍另见 Harte（2011）。 <a class="backref" href="#note-104-ref" aria-label="返回正文">↩</a></li><li id="note-105">Kullback 与 Leibler（1951）。不过两人并未以自己的名字命名这个度量；关于命名，可参见 Kullback（1987）的回顾。Kullback 与 Leibler 在 1951 年论文中明确指出，Harold Jeffreys 早已在发展贝叶斯统计时使用过这一度量。 <a class="backref" href="#note-105-ref" aria-label="返回正文">↩</a></li><li id="note-106">在非贝叶斯统计中，在相当一般的条件下，两个离差之差服从卡方分布。乘以 2 是为了把尺度调整正确；通常追溯到 Wilks（1938）。 <a class="backref" href="#note-106-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 211–231 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 232 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 211–234 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 235 页继续。</aside>
 </article>
