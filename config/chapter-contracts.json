@@ -1078,7 +1078,7 @@
   },
   "chapter-07": {
     "required_status": "in_progress",
-    "source_pages": [211, 234],
+    "source_pages": [211, 237],
     "required_ids": [
       "fig-7-1",
       "rethinking-stargazing",
@@ -1150,6 +1150,15 @@
       "code-7-18",
       "sec-7-3",
       "eq-7-regularized-gaussian-model",
+      "fig-7-7",
+      "fig-7-8",
+      "rethinking-ridge-regression",
+      "sec-7-4",
+      "sec-7-4-1",
+      "chapter-07-notes-continuation",
+      "note-107",
+      "note-108",
+      "note-109",
       "chapter-07-notes",
       "note-94",
       "note-95",
@@ -1192,13 +1201,16 @@
       "7.2.5 为正确的数据评分",
       "过度思考：模拟训练与测试",
       "7.3 驯服魔像：正则化",
+      "再思考：岭回归",
+      "7.4 预测预测准确性",
+      "7.4.1 交叉验证",
       "尾注"
     ],
     "counts": {
-      "section": 13,
-      "figure": 24,
+      "section": 15,
+      "figure": 26,
       "figure svg": 1,
-      "figure img": 5,
+      "figure img": 7,
       ".flowchart-figure": 1,
       ".solar-models-figure": 1,
       ".hominin-brain-figure": 1,
@@ -1206,6 +1218,8 @@
       ".hominin-loo-figure": 1,
       ".divergence-figure": 1,
       ".train-test-deviance-figure": 1,
+      ".regularizing-priors-figure": 1,
+      ".regularized-deviance-figure": 1,
       ".equation-block": 15,
       ".model-system-equation": 5,
       ".entropy-equation": 1,
@@ -1213,7 +1227,7 @@
       ".lppd-equation": 1,
       ".code-listing": 18,
       ".code-output": 4,
-      ".rethinking-box": 8,
+      ".rethinking-box": 9,
       ".overthinking-box": 5,
       ".target-dimensions": 1,
       "table": 3,
@@ -1225,7 +1239,7 @@
       ".divergence-objectives": 1,
       ".train-test-steps": 1,
       ".source-erratum": 2,
-      ".endnotes li": 13
+      ".endnotes li": 16
     }
   }
 }
