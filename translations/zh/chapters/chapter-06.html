@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-06" data-source-pages="181-195">
-  <header class="chapter-header"><p class="eyebrow">第六章</p><h1>闹鬼的 DAG 与因果恐怖</h1><p class="source-range">当前译稿对应原书 PDF 第 181–195 页</p></header>
+<article class="book-article" data-chapter="chapter-06" data-source-pages="181-198">
+  <header class="chapter-header"><p class="eyebrow">第六章</p><h1>闹鬼的 DAG 与因果恐怖</h1><p class="source-range">当前译稿对应原书 PDF 第 181–198 页</p></header>
 
   <p>最有新闻价值的科学研究，似乎也最不可信。如果一项研究为真时越可能要你的命，它反而越不可能为真；主题越无聊，结果似乎越严谨。这种广为相信的负相关怎么会存在？人们关心的主题并没有理由产生更不可靠的结果。也许热门主题吸引了更多、更糟糕的研究者，就像苍蝇被蜂蜜气味吸引一样？</p>
 
@@ -299,11 +299,44 @@ treatment &lt;- rep( 0:1 , each=N/2 )
 M &lt;- rbern(N)
 fungus &lt;- rbinom( N , size=1 , prob=0.5 - treatment*0.4 + 0.4*M )
 h1 &lt;- h0 + rnorm( N , 5 + 3*M )
-d2 &lt;- data.frame( h0=h0 , h1=h1 , treatment=treatment , fungus=fungus )</code></pre></figure><p class="continuation-note">比较含有和不含真菌变量的模型将在原书 PDF 第 196 页继续。</p>
+d2 &lt;- data.frame( h0=h0 , h1=h1 , treatment=treatment , fungus=fungus )</code></pre></figure><p>现在用数据框 <code>d2</code> 重新运行先前的模型 <code>m6.7</code> 和 <code>m6.8</code>。你会看到，纳入真菌再次混杂了对处理的推断；这一次，明明处理毫无作用，模型却让它看起来帮助了植物。</p><p>这个结果颇为神秘。为什么 <span class="math-inline"><var>M</var></span> 会产生这种效果？下一节将专门讨论这类效应。</p>
     </section>
   </section>
 
-  <section class="endnotes" id="chapter-06-notes" role="doc-endnotes"><h2>尾注</h2><ol start="85"><li id="note-85">本例与 Paul Smaldino 合作完成。 <a class="backref" href="#note-85-ref" aria-label="返回正文">↩</a></li><li id="note-86">参见 Berkson（1946）。相关现象还有筛选造成的范围限制，它会降低筛选标准与后续表现之间的相关；这也是标准化考试成绩与入学后表现可能不相关的原因之一。另见 Dawes（1975）。 <a class="backref" href="#note-86-ref" aria-label="返回正文">↩</a></li><li id="note-87">Rosenbaum（1984）称之为伴随变量偏差；另见 Gelman 与 Hill（2007）第 9 章。这个问题没有统一术语，也是广义中介分析的一部分。 <a class="backref" href="#note-87-ref" aria-label="返回正文">↩</a></li><li id="note-88">参见 Pearl（2016）第 2 章。常有人把 d-分离中的 d 解释为 dependency（依赖），这确实更顺耳；但 d-分离源于更一般的图论：有向图涉及 d-分离，无向图则涉及 u-分离。无论如何，若称它为“依赖分离”，作者也不介意。 <a class="backref" href="#note-88-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <aside class="rethinking-box" id="rethinking-model-selection-does-not-help"><h3>再思考：模型选择也无济于事</h3><p>下一章会介绍用信息准则进行模型选择。与其他模型比较和选择方案一样，这些准则有助于对照和选择模型结构；但它们救不了刚才的例子，因为包含真菌的模型不仅对样本拟合更好，还会做出更好的样本外预测。模型 <code>m6.7</code> 之所以误导，是因为它问错了问题，而不是因为预测很差。正如第 1 章所论证的，预测与因果推断根本不是同一项任务。任何统计程序都无法替代科学知识以及对它的认真运用。我们需要多个模型，是因为它们帮助理解因果路径，而不只是为了挑一个模型做预测。</p></aside>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 181–195 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 196 页继续。</aside>
+  <section id="sec-6-3"><h2>6.3 碰撞点偏差</h2><p>本章开头说过：只要资助评审和期刊评审这些筛选过程同时看重可信度与新闻价值，科学研究就会在二者之间表现出负关联。现在要解释，同样的筛选现象如何发生在统计模型内部。它一旦发生，就会严重扭曲推断，这种现象称为<strong>碰撞点偏差</strong>。</p><p>为这个例子画一张 DAG。假设提交给资助评审委员会的全部研究计划中，可信度 <span class="math-inline"><var>T</var></span> 与新闻价值 <span class="math-inline"><var>N</var></span> 在统计上独立；二者都会影响计划是否获资助，即筛选 <span class="math-inline"><var>S</var></span>：</p>
+
+    <figure class="book-figure dag-figure" id="dag-6-proposal-selection"><svg viewBox="0 0 900 220" role="img" aria-labelledby="dag-6-selection-title dag-6-selection-desc"><title id="dag-6-selection-title">可信度与新闻价值共同影响筛选的 DAG</title><desc id="dag-6-selection-desc">可信度 T 与新闻价值 N 都指向筛选 S，因此 S 是碰撞点。</desc><defs><marker id="dag6-selection-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#3f4752"/></marker></defs><g stroke="#3f4752" stroke-width="4" marker-end="url(#dag6-selection-arrow)"><line x1="205" y1="110" x2="410" y2="110"/><line x1="695" y1="110" x2="490" y2="110"/></g><g fill="#f0f1fa" stroke="#263f86" stroke-width="3"><circle cx="165" cy="110" r="38"/><circle cx="450" cy="110" r="38"/><circle cx="735" cy="110" r="38"/></g><g text-anchor="middle" font-size="30" font-weight="700" fill="#263f86"><text x="165" y="121">T</text><text x="450" y="121">S</text><text x="735" y="121">N</text></g></svg><figcaption>可信度 <span class="math-inline"><var>T</var></span> 与新闻价值 <span class="math-inline"><var>N</var></span> 都影响资助筛选 <span class="math-inline"><var>S</var></span>，因此 <span class="math-inline"><var>S</var></span> 是碰撞点。</figcaption></figure>
+
+    <p>两支箭头都射入 <span class="math-inline"><var>S</var></span>，说明它是碰撞点。核心概念不难：以碰撞点为条件，会在它的各个原因之间制造统计关联，但不一定制造因果关联。本例中，一旦知道某项计划已获选 <span class="math-inline"><var>S</var></span>，再知道它的可信度 <span class="math-inline"><var>T</var></span>，也就能提供新闻价值 <span class="math-inline"><var>N</var></span> 的信息。为什么？例如，获选计划若可信度低，新闻价值就必定高，否则不会得到资助。反过来也一样：若新闻价值低，我们会推断它的可信度必定高于平均水平，否则不可能获选。</p><p>正是这种信息现象，在获选计划中产生了 <span class="math-inline"><var>T</var></span> 与 <span class="math-inline"><var>N</var></span> 的负关联。因此必须留意筛选观测样本的过程，因为它们可能扭曲变量之间的关联。同样的现象还会在把碰撞点作为预测变量纳入统计模型时，制造误导性关联；稍不留神，就会得出错误的因果推断。下面看一个扩展示例。</p>
+
+    <section id="sec-6-3-1"><h3>6.3.1 虚假悲伤的碰撞点</h3><p>考虑衰老如何影响幸福感。如果有一项大型调查，让人们给自己的幸福程度评分，年龄会与幸福感相关吗？如果相关，这种关联是因果的吗？这里要展示：控制一个看似合理的幸福感混杂因素，实际上反而会使年龄影响的推断产生偏差。<sup id="note-89-ref"><a href="#note-89">89</a></sup></p><p>为制造一点挑衅性，假设一个人的平均幸福感是出生时决定、不会随年龄改变的特质。不过，幸福感会影响人生事件，婚姻就是其中之一：更幸福的人更容易结婚。年龄也会因果影响婚姻——活得越久，最终结婚的可能性越高。把三个变量放在一起，因果模型是：</p>
+
+      <figure class="book-figure dag-figure" id="dag-6-happiness-marriage-age"><svg viewBox="0 0 900 220" role="img" aria-labelledby="dag-6-hma-title dag-6-hma-desc"><title id="dag-6-hma-title">幸福感、婚姻与年龄的 DAG</title><desc id="dag-6-hma-desc">幸福感 H 与年龄 A 都指向婚姻 M，因此婚姻是碰撞点。</desc><defs><marker id="dag6-hma-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#3f4752"/></marker></defs><g stroke="#3f4752" stroke-width="4" marker-end="url(#dag6-hma-arrow)"><line x1="205" y1="110" x2="410" y2="110"/><line x1="695" y1="110" x2="490" y2="110"/></g><g fill="#f0f1fa" stroke="#263f86" stroke-width="3"><circle cx="165" cy="110" r="38"/><circle cx="450" cy="110" r="38"/><circle cx="735" cy="110" r="38"/></g><g text-anchor="middle" font-size="30" font-weight="700" fill="#263f86"><text x="165" y="121">H</text><text x="450" y="121">M</text><text x="735" y="121">A</text></g></svg><figcaption>幸福感 <span class="math-inline"><var>H</var></span> 与年龄 <span class="math-inline"><var>A</var></span> 都影响婚姻 <span class="math-inline"><var>M</var></span>；婚姻因此成为碰撞点。</figcaption></figure>
+
+      <p>幸福感 <span class="math-inline"><var>H</var></span> 与年龄 <span class="math-inline"><var>A</var></span> 都造成婚姻 <span class="math-inline"><var>M</var></span>，所以婚姻是碰撞点。尽管幸福感与年龄之间没有因果关联，但若以婚姻为条件——在这里就是把它作为回归预测变量——就会在年龄和幸福感之间诱导出统计关联，让人误以为幸福感随年龄变化，实际上它保持不变。</p><p>再做一次模拟来说明。模拟在这些例子中特别有用，因为只有这时我们知道真正的因果模型。如果某种程序连模拟例子里的真相都找不出来，就不该在真实研究中信任它。这次模拟更复杂：用一个基于智能体的衰老与婚姻模型生成回归数据。设计如下：</p>
+      <ol><li>每年出生 20 人，其幸福感服从均匀分布。</li><li>每年每个人长一岁，幸福感不变。</li><li>从 18 岁起可以结婚，每年的结婚几率与个人幸福感成比例。</li><li>一旦结婚，就保持已婚状态。</li><li>65 岁以后离开样本（他们搬去了西班牙）。</li></ol>
+      <p>这个算法已经写进 <code>rethinking</code> 包。运行 1000 年并收集结果：</p>
+      <figure class="code-listing" id="code-6-21"><figcaption>R 代码 6.21</figcaption><pre><code>library(rethinking)
+d &lt;- sim_happiness( seed=1977 , N_years=1000 )
+precis(d)</code></pre><pre class="code-output"><code>'data.frame': 1300 obs. of 3 variables:
+           mean    sd  5.5% 94.5%       histogram
+age        33.0 18.77  4.00 62.00 ▇▇▇▇▇▇▇▇▇▇▇▇▇
+married     0.3  0.46  0.00  1.00       ▇▁▁▁▁▁▁▁▁▃
+happiness   0.0  1.21 -1.79  1.79         ▇▅▇▅▅▇▅▇</code></pre></figure>
+      <p>数据包含 1300 名从出生到 65 岁、年龄各异的人。变量对应上面 DAG 中的变量，模拟本身也遵循该 DAG。</p><p>图 6.4 把每个人画成一个点，实心点表示已婚者。横轴是年龄，纵轴是幸福感，越幸福的人越靠上。到 18 岁后人们可以结婚，随后每年逐渐有更多人进入婚姻，因此年龄越大，已婚者越多；但在任何年龄，最幸福的人都更容易结婚。</p>
+      <figure class="book-figure happiness-marriage-figure" id="fig-6-4"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的年龄、幸福感与婚姻状态模拟图"><img src="/media/chapter-06-happiness-marriage.svg" alt="幸福感终生不变，但年龄越大且幸福感越高的人越可能已婚"></div><p class="scroll-hint">图较宽，可横向滚动查看全部年龄。</p><figcaption><strong>图 6.4：</strong>模拟数据假设幸福感均匀分布且终生不变。每个点代表一个人，蓝色实心点为已婚者。18 岁以后，每个年龄中最幸福的人更容易结婚；年龄越大，已婚者通常越多。婚姻状态是年龄和幸福感的碰撞点：<span class="math-inline"><var>A</var> → <var>M</var> ← <var>H</var></span>。若在回归中以婚姻为条件，会误导我们相信幸福感随年龄下降。</figcaption></figure>
+
+      <p>假设偶然得到这些数据，想问年龄是否与幸福感有关。你不知道真正的因果模型，却合情合理地认为婚姻状态可能是重要混杂因素：若已婚者平均而言更幸福或更不幸福，就需要以婚姻状态为条件，才能推断年龄与幸福感的关系。</p><p>因此考虑一个多元回归模型，在控制婚姻状态的同时推断年龄对幸福感的影响。它与本章及上一章的其他模型一样，只是普通多元回归。线性模型为：</p>
+      <div class="equation-block" id="eq-6-happiness-age-marriage"><var>μ</var><sub>i</sub> = <var>α</var><sub>MID[i]</sub> + <var>β</var><sub>A</sub><var>A</var><sub>i</sub></div>
+      <p>其中 <span class="math-inline">MID[<var>i</var>]</span> 是个体 <span class="math-inline"><var>i</var></span> 的婚姻状态索引：1 表示未婚，2 表示已婚。这就是第 4 章的类别变量策略。每个类别使用一个截距，会比使用指示变量更容易设定先验。</p><p>现在履行职责，认真考虑先验。先看斜率 <span class="math-inline"><var>β</var><sub>A</sub></span>，因为预测变量 <span class="math-inline"><var>A</var></span> 的缩放方式会决定截距的含义。只关注 18 岁及以上的成年人。设想年龄与幸福感之间存在非常强的关系：幸福感在 18 岁达到最大，在 65 岁达到最小。若把 18 到 65 岁的范围缩放成一个单位，会更方便：</p>
+      <figure class="code-listing" id="code-6-22"><figcaption>R 代码 6.22</figcaption><pre><code>d2 &lt;- d[ d$age&gt;17 , ] # only adults
+d2$A &lt;- ( d2$age - 18 ) / ( 65 - 18 )</code></pre></figure><p class="continuation-note">年龄斜率的先验预测模拟将在原书 PDF 第 199 页继续。</p>
+    </section>
+  </section>
+
+  <section class="endnotes" id="chapter-06-notes" role="doc-endnotes"><h2>尾注</h2><ol start="85"><li id="note-85">本例与 Paul Smaldino 合作完成。 <a class="backref" href="#note-85-ref" aria-label="返回正文">↩</a></li><li id="note-86">参见 Berkson（1946）。相关现象还有筛选造成的范围限制，它会降低筛选标准与后续表现之间的相关；这也是标准化考试成绩与入学后表现可能不相关的原因之一。另见 Dawes（1975）。 <a class="backref" href="#note-86-ref" aria-label="返回正文">↩</a></li><li id="note-87">Rosenbaum（1984）称之为伴随变量偏差；另见 Gelman 与 Hill（2007）第 9 章。这个问题没有统一术语，也是广义中介分析的一部分。 <a class="backref" href="#note-87-ref" aria-label="返回正文">↩</a></li><li id="note-88">参见 Pearl（2016）第 2 章。常有人把 d-分离中的 d 解释为 dependency（依赖），这确实更顺耳；但 d-分离源于更一般的图论：有向图涉及 d-分离，无向图则涉及 u-分离。无论如何，若称它为“依赖分离”，作者也不介意。 <a class="backref" href="#note-88-ref" aria-label="返回正文">↩</a></li><li id="note-89">这个例子由 Julia Rohrer 博士介绍给作者。参见她 2017 年的博客文章 <span class="url-text">http://www.the100.ci/2017/04/21/whats-an-age-effect-net-of-all-time-varying-covariates/</span>，以及 Rohrer（2017）和 Glenn（2009）。 <a class="backref" href="#note-89-ref" aria-label="返回正文">↩</a></li></ol></section>
+
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 181–198 页已完成翻译、逐页核对、阶段契约及桌面/移动端视觉验收。下一批从 PDF 第 199 页继续。</aside>
 </article>

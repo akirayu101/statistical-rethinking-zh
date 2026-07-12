@@ -923,7 +923,7 @@
   },
   "chapter-06": {
     "required_status": "in_progress",
-    "source_pages": [181, 195],
+    "source_pages": [181, 198],
     "required_ids": [
       "fig-6-1",
       "overthinking-simulated-science-distortion",
@@ -965,11 +965,21 @@
       "code-6-19",
       "dag-6-post-treatment-collider",
       "code-6-20",
+      "rethinking-model-selection-does-not-help",
+      "sec-6-3",
+      "dag-6-proposal-selection",
+      "sec-6-3-1",
+      "dag-6-happiness-marriage-age",
+      "code-6-21",
+      "fig-6-4",
+      "eq-6-happiness-age-marriage",
+      "code-6-22",
       "chapter-06-notes",
       "note-85",
       "note-86",
       "note-87",
-      "note-88"
+      "note-88",
+      "note-89"
     ],
     "required_headings": [
       "闹鬼的 DAG 与因果恐怖",
@@ -983,25 +993,29 @@
       "6.2.1 先验诞生",
       "6.2.2 被后果阻断",
       "6.2.3 真菌与 d-分离",
+      "再思考：模型选择也无济于事",
+      "6.3 碰撞点偏差",
+      "6.3.1 虚假悲伤的碰撞点",
       "尾注"
     ],
     "counts": {
-      "section": 8,
-      "figure": 26,
-      "figure img": 3,
-      "figure svg": 3,
+      "section": 10,
+      "figure": 31,
+      "figure img": 4,
+      "figure svg": 5,
       ".selection-distortion-figure": 1,
       ".multicollinear-legs-figure": 1,
       ".milk-pairs-figure": 1,
-      ".dag-figure": 3,
-      ".equation-block": 4,
+      ".happiness-marriage-figure": 1,
+      ".dag-figure": 5,
+      ".equation-block": 5,
       ".model-system-equation": 4,
-      ".code-listing": 20,
-      ".code-output": 10,
-      ".rethinking-box": 1,
+      ".code-listing": 22,
+      ".code-output": 11,
+      ".rethinking-box": 2,
       ".overthinking-box": 2,
       ".source-erratum": 1,
-      ".endnotes li": 4
+      ".endnotes li": 5
     }
   }
 }
