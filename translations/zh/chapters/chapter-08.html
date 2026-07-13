@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-08" data-source-pages="257-274">
-  <header class="chapter-header"><p class="eyebrow">第八章</p><h1>条件海牛</h1><p class="source-range">当前译稿对应原书 PDF 第 257–274 页</p></header>
+<article class="book-article" data-chapter="chapter-08" data-source-pages="257-277">
+  <header class="chapter-header"><p class="eyebrow">第八章</p><h1>条件海牛</h1><p class="source-range">当前译稿对应原书 PDF 第 257–277 页</p></header>
 
   <p>海牛（<i>Trichechus manatus</i>）是一种行动缓慢、生活在温暖浅水中的水生哺乳动物。海牛没有天敌，却与摩托艇共享水域，而摩托艇装有螺旋桨。海牛虽与大象有亲缘关系、皮肤也很厚，螺旋桨叶片仍然能够而且确实会杀死它们。大多数成年海牛身上都有与船只相撞留下的某种伤疤（图 8.1，上）。<sup id="note-128-ref"><a href="#note-128">128</a></sup></p>
   <p>阿姆斯特朗—惠特沃思 A.W.38“惠特利”是英国皇家空军的一线轰炸机。第二次世界大战期间，A.W.38 把炸弹和传单带入德国领土。与海牛不同，A.W.38 有凶猛的天敌：高射炮火和截击机火力。许多飞机执行任务后再也没有回来；幸存者身上的伤痕足以证明它们经历过什么（图 8.1，下）。</p>
@@ -285,11 +285,59 @@ d$shade_cent &lt;- d$shade - mean(d$shade)</code></pre></figure>
       <p>像所有变量缩放一样，目标是创造一些在看到实际数据值之前就可能拥有先验信息的焦点。这样才能指定不明显疯狂的先验；思考这些先验时，也可能发现模型根本不合理。但只有认真思考测量与参数之间的关系，这才可能做到。即使数据多到先验选择并不关键，缩放和指定合理先验的思维练习仍然有用。</p>
       <p>这个模型除 <span class="math-inline"><var>σ</var></span> 外有三个参数，所以需要三个先验。先作宽松猜测：</p>
       <div class="equation-block model-system-equation" id="eq-8-tulips-vague-priors"><div><var>α</var> ∼ Normal(0.5, 1)</div><div><var>β</var><sub>W</sub> ∼ Normal(0, 1)</div><div><var>β</var><sub>S</sub> ∼ Normal(0, 1)</div></div>
-      <p class="continuation-note">先验预测检查与模型拟合将在原书 PDF 第 275 页继续。</p>
+      <p>把 <span class="math-inline"><var>α</var></span> 的先验中心放在 0.5，意味着水量与遮阴都处于均值时，模型预期花朵达到观测最大值的一半。两个斜率都以 0 为中心，表示先验中没有方向信息。显然，我们知道的不止这些——基础植物学告诉我们，水量斜率应为正，遮阴斜率应为负；但这些先验允许样本自行显示趋势，同时仍把斜率限制在合理范围。章末练习会要求你真正运用植物学知识。</p>
+      <p>参数的先验边界来自先验标准差，这里全设为 1，肯定太宽。例如截距 <span class="math-inline"><var>α</var></span> 必须大于 0、小于 1，但这个先验把大多数概率放在范围之外：</p>
+      <figure class="code-listing" id="code-8-21"><figcaption>R 代码 8.21</figcaption><pre><code>a &lt;- rnorm( 1e4 , 0.5 , 1 )
+sum( a &lt; 0 | a &gt; 1 ) / length( a )</code></pre><pre class="code-output"><code>[1] 0.6126</code></pre></figure>
+      <p>均值 0.5 到零相距 0.5，因此标准差 0.25 应让有效区间之外只剩约 5% 的质量。验证一下：</p>
+      <figure class="code-listing" id="code-8-22"><figcaption>R 代码 8.22</figcaption><pre><code>a &lt;- rnorm( 1e4 , 0.5 , 0.25 )
+sum( a &lt; 0 | a &gt; 1 ) / length( a )</code></pre><pre class="code-output"><code>[1] 0.0486</code></pre></figure>
+      <p>好多了。</p>
+      <p>那么斜率呢？水和遮阴的极强效应会是什么样？理论上斜率能有多大？水量与遮阴的范围都是 2——从 −1 到 1 相差 2 个单位。要让花朵从一端理论最小值 0 变到另一端观测最大值 1，需要任一变量的斜率为 0.5，因为 <span class="math-inline">0.5 × 2 = 1</span>。若分别指定标准差 0.25，95% 的先验斜率就在 −0.5 到 0.5 之间；任一变量原则上都能解释整个范围，但这种情况不太可能。这里的目标仍是指定弱信息先验以抑制过拟合——不可能大的效应应得到很低的先验概率——同时迫使自己思考模型究竟意味着什么。</p>
+      <p>合起来写成代码：</p>
+      <figure class="code-listing" id="code-8-23"><figcaption>R 代码 8.23</figcaption><pre><code>m8.4 &lt;- quap(
+    alist(
+        blooms_std ~ dnorm( mu , sigma ) ,
+        mu &lt;- a + bw*water_cent + bs*shade_cent ,
+        a ~ dnorm( 0.5 , 0.25 ) ,
+        bw ~ dnorm( 0 , 0.25 ) ,
+        bs ~ dnorm( 0 , 0.25 ) ,
+        sigma ~ dexp( 1 )
+    ) , data=d )</code></pre></figure>
+      <p>此时最好从先验模拟直线。不过在那之前，先把交互模型也定义出来；随后可以讨论怎样绘制交互预测，并把先验与后验预测放在一起看。</p>
+      <p>要加入水量与遮阴的交互，需要构造 <span class="math-inline"><var>μ</var></span>，让改变任一变量的影响取决于另一个变量的值。例如水量低时，减少遮阴（增加光照）的帮助不如水量高时大。所以希望水量斜率 <span class="math-inline"><var>β</var><sub>W</sub></span> 以遮阴为条件；同样，遮阴也应以水量为条件（还记得布里丹的交互作用）。该怎样做？</p>
+      <p>前一个地形崎岖度示例让斜率以类别值为条件。当类别原则上无限多时，问题更难。这里遮阴与水量的“类别”原则上无限且有序。我们只观测到三个水量等级，但模型应能预测任意两个观测等级之间的中间水量。连续交互作用的困难并不主要在“无限”，而在“有序”；即使只关心三个观测值，仍要保留哪个大、哪个小的次序。</p>
+      <p>传统答案是再次使用支撑线性回归的原始地心主义。只有结果和连续预测变量 <span class="math-inline"><var>x</var></span> 时，可用 <span class="math-inline"><var>μ</var><sub>i</sub> = <var>α</var> + <var>βx</var><sub>i</sub></span> 让结果均值以 <span class="math-inline"><var>x</var></span> 为条件。要让斜率 <span class="math-inline"><var>β</var></span> 再以另一个变量为条件，只需递归应用同一个技巧。</p>
+      <p>为简洁起见，用 <span class="math-inline"><var>W</var><sub>i</sub></span> 与 <span class="math-inline"><var>S</var><sub>i</sub></span> 表示中心化变量。若用自己的线性模型 <span class="math-inline"><var>γ</var><sub>W</sub></span> 定义水量斜率：</p>
+      <div class="equation-block model-system-equation" id="eq-8-water-slope-model"><div><var>μ</var><sub>i</sub> = <var>α</var> + <var>γ</var><sub>W,i</sub><var>W</var><sub>i</sub> + <var>β</var><sub>S</sub><var>S</var><sub>i</sub></div><div><var>γ</var><sub>W,i</sub> = <var>β</var><sub>W</sub> + <var>β</var><sub>WS</sub><var>S</var><sub>i</sub></div></div>
+      <p>现在 <span class="math-inline"><var>γ</var><sub>W,i</sub></span> 是花朵随水量变化快慢的斜率。参数 <span class="math-inline"><var>β</var><sub>W</sub></span> 是遮阴处于均值时的变化率；<span class="math-inline"><var>β</var><sub>WS</sub></span> 则是遮阴变化时，<span class="math-inline"><var>γ</var><sub>W,i</sub></span> 的变化率——也就是“遮阴对水量斜率”的斜率。记住：乌龟下面还是乌龟。<span class="math-inline"><var>γ</var><sub>W,i</sub></span> 带有 <span class="math-inline"><var>i</var></span>，因为它含有 <span class="math-inline"><var>S</var><sub>i</sub></span>，所以依赖第 <span class="math-inline"><var>i</var></span> 行。</p>
+      <p>我们也希望遮阴关联 <span class="math-inline"><var>β</var><sub>S</sub></span> 依赖水量。幸运的是，由于简单交互作用的对称性，这一点免费获得。无法指定一种简单线性交互，说 <span class="math-inline"><var>x</var></span> 的效应依赖 <span class="math-inline"><var>z</var></span>，但 <span class="math-inline"><var>z</var></span> 的效应不依赖 <span class="math-inline"><var>x</var></span>。本节末“过度思考”侧栏会更详细解释。因此，惯例是把 <span class="math-inline"><var>γ</var><sub>W,i</sub></span> 代回 <span class="math-inline"><var>μ</var><sub>i</sub></span>：</p>
+      <div class="equation-block continuous-interaction-equation" id="eq-8-continuous-interaction-expanded"><span><var>μ</var><sub>i</sub> = <var>α</var> + (<var>β</var><sub>W</sub> + <var>β</var><sub>WS</sub><var>S</var><sub>i</sub>)<var>W</var><sub>i</sub> + <var>β</var><sub>S</sub><var>S</var><sub>i</sub></span><span>= <var>α</var> + <var>β</var><sub>W</sub><var>W</var><sub>i</sub> + <var>β</var><sub>S</sub><var>S</var><sub>i</sub> + <var>β</var><sub>WS</sub><var>S</var><sub>i</sub><var>W</var><sub>i</sub></span></div>
+      <p>这就是连续交互作用的传统形式，最右侧新增项包含两个变量的乘积。</p>
+      <p>把它用于郁金香。交互模型为：</p>
+      <div class="equation-block model-system-equation" id="eq-8-tulips-interaction"><div><var>B</var><sub>i</sub> ∼ Normal(<var>μ</var><sub>i</sub>, <var>σ</var>)</div><div><var>μ</var><sub>i</sub> = <var>α</var> + <var>β</var><sub>W</sub><var>W</var><sub>i</sub> + <var>β</var><sub>S</sub><var>S</var><sub>i</sub> + <var>β</var><sub>WS</sub><var>W</var><sub>i</sub><var>S</var><sub>i</sub></div></div>
+      <p>最后还需要新交互参数 <span class="math-inline"><var>β</var><sub>WS</sub></span> 的先验。这很难，因为这类本轮参数没有清晰的自然含义，不过隐含预测仍能帮助我们。假设最强的可信交互是：遮阴足够高时，水量效应变成零。这意味着：</p>
+      <div class="equation-block" id="eq-8-zero-water-effect"><span><var>γ</var><sub>W,i</sub> = <var>β</var><sub>W</sub> + <var>β</var><sub>WS</sub><var>S</var><sub>i</sub> = 0</span></div>
+      <p>令 <span class="math-inline"><var>S</var><sub>i</sub> = 1</span>（样本最大值），交互项就需与主效应大小相同、方向相反：<span class="math-inline"><var>β</var><sub>WS</sub> = −<var>β</var><sub>W</sub></span>。这是可以想象的最大交互作用。因此，把 <span class="math-inline"><var>β</var><sub>WS</sub></span> 的先验标准差设成与 <span class="math-inline"><var>β</var><sub>W</sub></span> 相同，也许不算荒唐。完整代码如下：</p>
+      <figure class="code-listing" id="code-8-24"><figcaption>R 代码 8.24</figcaption><pre><code>m8.5 &lt;- quap(
+    alist(
+        blooms_std ~ dnorm( mu , sigma ) ,
+        mu &lt;- a + bw*water_cent + bs*shade_cent + bws*water_cent*shade_cent ,
+        a ~ dnorm( 0.5 , 0.25 ) ,
+        bw ~ dnorm( 0 , 0.25 ) ,
+        bs ~ dnorm( 0 , 0.25 ) ,
+        bws ~ dnorm( 0 , 0.25 ) ,
+        sigma ~ dexp( 1 )
+    ) , data=d )</code></pre></figure>
+      <p>这就是简单连续交互作用的结构。接下来要弄清怎样绘制这些生物。</p>
+
+      <aside class="overthinking-box" id="overthinking-interaction-formed"><h3>过度思考：交互作用是怎样形成的？</h3><p>如正文所示，把 <span class="math-inline"><var>γ</var><sub>W,i</sub></span> 代入 <span class="math-inline"><var>μ</var><sub>i</sub></span> 并展开：</p><div class="equation-block" id="eq-8-overthinking-water-expanded"><span><var>μ</var><sub>i</sub> = <var>α</var> + (<var>β</var><sub>W</sub> + <var>β</var><sub>WS</sub><var>S</var><sub>i</sub>)<var>W</var><sub>i</sub> + <var>β</var><sub>S</sub><var>S</var><sub>i</sub> = <var>α</var> + <var>β</var><sub>W</sub><var>W</var><sub>i</sub> + <var>β</var><sub>S</sub><var>S</var><sub>i</sub> + <var>β</var><sub>WS</sub><var>S</var><sub>i</sub><var>W</var><sub>i</sub></span></div><p>也可以重新因式分解，构造 <span class="math-inline"><var>γ</var><sub>S,i</sub></span>，让遮阴与花朵的关联依赖水量：</p><div class="equation-block model-system-equation" id="eq-8-overthinking-shade-slope"><div><var>μ</var><sub>i</sub> = <var>α</var> + <var>β</var><sub>W</sub><var>W</var><sub>i</sub> + <var>γ</var><sub>S,i</sub><var>S</var><sub>i</sub></div><div><var>γ</var><sub>S,i</sub> = <var>β</var><sub>S</sub> + <var>β</var><sub>SW</sub><var>W</var><sub>i</sub></div></div><p>所以两种解释同时成立。甚至可以把两个 <span class="math-inline"><var>γ</var></span> 定义同时放进 <span class="math-inline"><var>μ</var></span>：</p><div class="equation-block model-system-equation" id="eq-8-overthinking-two-gammas"><div><var>μ</var><sub>i</sub> = <var>α</var> + <var>γ</var><sub>W,i</sub><var>W</var><sub>i</sub> + <var>γ</var><sub>S,i</sub><var>S</var><sub>i</sub></div><div><var>γ</var><sub>W,i</sub> = <var>β</var><sub>W</sub> + <var>β</var><sub>WS</sub><var>S</var><sub>i</sub></div><div><var>γ</var><sub>S,i</sub> = <var>β</var><sub>S</sub> + <var>β</var><sub>SW</sub><var>W</var><sub>i</sub></div></div><p>这里定义了两个不同交互参数 <span class="math-inline"><var>β</var><sub>WS</sub></span> 与 <span class="math-inline"><var>β</var><sub>SW</sub></span>。把 <span class="math-inline"><var>γ</var></span> 定义代回 <span class="math-inline"><var>μ</var></span> 并整理：</p><div class="equation-block continuous-interaction-equation" id="eq-8-overthinking-interaction-sum"><span><var>μ</var><sub>i</sub> = <var>α</var> + (<var>β</var><sub>W</sub> + <var>β</var><sub>WS</sub><var>S</var><sub>i</sub>)<var>W</var><sub>i</sub> + (<var>β</var><sub>S</sub> + <var>β</var><sub>SW</sub><var>W</var><sub>i</sub>)<var>S</var><sub>i</sub></span><span>= <var>α</var> + <var>β</var><sub>W</sub><var>W</var><sub>i</sub> + <var>β</var><sub>S</sub><var>S</var><sub>i</sub> + (<var>β</var><sub>WS</sub> + <var>β</var><sub>SW</sub>)<var>W</var><sub>i</sub><var>S</var><sub>i</sub></span></div><p>这种模型中唯一可识别的是和 <span class="math-inline"><var>β</var><sub>WS</sub> + <var>β</var><sub>SW</sub></span>，所以这个和实际上就是一个参数（后验中的一个维度）。它仍是同一个交互模型；我们无法区分“水量依赖遮阴”与“遮阴依赖水量”。</p></aside>
     </section>
+
+    <section id="sec-8-3-3"><h3>8.3.3 绘制后验预测</h3><p>魔像（模型）推理能力惊人，人际交往能力却糟糕透顶。魔像给出参数值组合的后验可信度分布；但我们人类若想理解它的含义，还需要在原书 PDF 第 278 页继续把预测画出来。</p></section>
   </section>
 
   <section class="endnotes" id="chapter-08-notes" role="doc-endnotes"><h2>尾注</h2><ol start="128"><li id="note-128">这里关于海牛的事实均取自 Lightsey 等（2006）和 Rommel 等（2007）。图中的伤痕图取自 <span class="url-text">http://www.learner.org/jnorth/tm/manatee/RollCall.html</span> 的免费教育材料。 <a class="backref" href="#note-128-ref" aria-label="返回正文">↩</a></li><li id="note-129">Wald（1943）。更易懂的介绍和历史背景可参见 Mangel 与 Samaniego（1984）。 <a class="backref" href="#note-129-ref" aria-label="返回正文">↩</a></li><li id="note-130">Wald（1950）。Wald 的奠基论文是 Wald（1939）；强烈推荐 Fienberg（2006）的历史回顾。更技术性的讨论可参见 Berger（1985）、Robert（2007）以及 Jaynes（2003）第 406 页。 <a class="backref" href="#note-130-ref" aria-label="返回正文">↩</a></li><li id="note-131">GDP 即国内生产总值（Gross Domestic Product）。它是最常用的经济表现度量，也是最荒唐的度量之一。用 GDP 衡量经济健康，就像用热量衡量化学反应的质量。 <a class="backref" href="#note-131-ref" aria-label="返回正文">↩</a></li><li id="note-132">Riley 等（1999）。 <a class="backref" href="#note-132-ref" aria-label="返回正文">↩</a></li><li id="note-133">数据来自 Nunn 与 Puga（2011）。 <a class="backref" href="#note-133-ref" aria-label="返回正文">↩</a></li><li id="note-134">一个很好的例子是法罗群岛大规模的现代隧道系统。群岛的天然地质非常崎岖，历史上走水路一直比走陆路容易得多；但 20 世纪后期，丹麦政府大力投资隧道建设，显著降低了群岛的有效崎岖度。 <a class="backref" href="#note-134-ref" aria-label="返回正文">↩</a></li><li id="note-135">本例改编自 Grafen 与 Hails（2002）；这是一本出色的非贝叶斯应用统计学著作，读者也许会喜欢。它对一些标准线性模型采用了相当独特的几何呈现。 <a class="backref" href="#note-135-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 257–274 页已完成翻译、逐页核对、结构契约及桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 275 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 257–277 页已完成翻译、逐页核对、结构契约及桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 278 页继续。</aside>
 </article>
