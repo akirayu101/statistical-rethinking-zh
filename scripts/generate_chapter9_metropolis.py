@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate deterministic Chinese SVGs for Chapter 9 Figures 9.2 and 9.3."""
+"""Generate deterministic Chinese SVGs for Chapter 9 Figures 9.2 through 9.6."""
 from pathlib import Path
 import math
 import random
@@ -9,6 +9,7 @@ OUT2 = ROOT / "translations/zh/media/chapter-09-metropolis-king.svg"
 OUT3 = ROOT / "translations/zh/media/chapter-09-correlated-chains.svg"
 OUT4 = ROOT / "translations/zh/media/chapter-09-concentration.svg"
 OUT5 = ROOT / "translations/zh/media/chapter-09-royal-drive.svg"
+OUT6 = ROOT / "translations/zh/media/chapter-09-hmc-trajectories.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 BLUE = "#6670ee"
 INK = "#30332e"
@@ -181,15 +182,143 @@ def figure_9_5() -> None:
     OUT5.write_text('\n'.join(body),encoding='utf-8')
 
 
+def hmc_trajectory(q, rng, step, leapfrog_steps, rho=0.0, scale=1.0):
+    """Return one two-dimensional leapfrog path and its accepted endpoint."""
+    def gradient(point):
+        x, y = point
+        factor = 1 / (scale * scale * (1 - rho * rho))
+        return ((x - rho * y) * factor, (y - rho * x) * factor)
+
+    def energy(point, momentum):
+        x, y = point
+        px, py = momentum
+        potential = (x * x - 2 * rho * x * y + y * y) / (2 * scale * scale * (1 - rho * rho))
+        return potential + (px * px + py * py) / 2
+
+    start = q
+    p = (rng.gauss(0, 1), rng.gauss(0, 1))
+    start_p = p
+    gx, gy = gradient(q)
+    p = (p[0] - step * gx / 2, p[1] - step * gy / 2)
+    path = [q]
+    momenta = [p]
+    for i in range(leapfrog_steps):
+        q = (q[0] + step * p[0], q[1] + step * p[1])
+        path.append(q)
+        if i != leapfrog_steps - 1:
+            gx, gy = gradient(q)
+            p = (p[0] - step * gx, p[1] - step * gy)
+        momenta.append(p)
+    gx, gy = gradient(q)
+    p = (p[0] - step * gx / 2, p[1] - step * gy / 2)
+    accept_probability = min(1.0, math.exp(energy(start, start_p) - energy(q, p)))
+    accepted = rng.random() < accept_probability
+    return (q if accepted else start), path, momenta, accepted
+
+
+def figure_9_6() -> None:
+    """Show HMC trajectories, U-turns, and efficient exploration of correlation."""
+    w, h = 1200, 1030
+    panel_w, panel_h = 455, 380
+    panels = [(95, 85), (670, 85), (95, 565), (670, 565)]
+    body = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" role="img">',
+        '<title>哈密顿蒙特卡洛的四组轨迹</title>',
+        '<desc>上排比较合适与过长的蛙跳路径，下排显示 HMC 在高度相关后验中的单条轨迹和五十个样本。</desc>',
+        '<rect width="100%" height="100%" fill="#fff"/>',
+    ]
+
+    def draw_axes(index, title, limit, rho):
+        nonlocal body
+        left, top = panels[index]
+        sx = lambda x: left + (x + limit) / (2 * limit) * panel_w
+        sy = lambda y: top + (limit - y) / (2 * limit) * panel_h
+        body.append(f'<defs><clipPath id="hmc-clip-{index}"><rect x="{left}" y="{top}" width="{panel_w}" height="{panel_h}"/></clipPath></defs>')
+        body.append(f'<rect x="{left}" y="{top}" width="{panel_w}" height="{panel_h}" fill="#fff" stroke="{INK}"/>')
+        for level in (limit * .28, limit * .52, limit * .76, limit, limit * 1.24):
+            points = []
+            for i in range(121):
+                angle = i * 2 * math.pi / 120
+                if rho == 0:
+                    x, y = level * math.cos(angle), level * math.sin(angle)
+                else:
+                    long = level * math.sqrt(1 - rho)
+                    short = level * math.sqrt(1 + rho)
+                    x = (long * math.cos(angle) + short * math.sin(angle)) / math.sqrt(2)
+                    y = (-long * math.cos(angle) + short * math.sin(angle)) / math.sqrt(2)
+                points.append(f'{sx(x):.1f},{sy(y):.1f}')
+            body.append(f'<polyline points="{" ".join(points)}" fill="none" stroke="#a4a6a0" stroke-width="1" clip-path="url(#hmc-clip-{index})"/>')
+        ticks = (-limit, -limit / 2, 0, limit / 2, limit)
+        for tick in ticks:
+            label = f'{tick:.1f}'
+            body += [
+                f'<line x1="{sx(tick):.1f}" y1="{top+panel_h}" x2="{sx(tick):.1f}" y2="{top+panel_h+6}" stroke="{INK}"/>',
+                f'<text x="{sx(tick):.1f}" y="{top+panel_h+27}" text-anchor="middle" font-family="{FONT}" font-size="15">{label}</text>',
+                f'<line x1="{left-6}" y1="{sy(tick):.1f}" x2="{left}" y2="{sy(tick):.1f}" stroke="{INK}"/>',
+                f'<text x="{left-12}" y="{sy(tick)+5:.1f}" text-anchor="end" font-family="{FONT}" font-size="15">{label}</text>',
+            ]
+        body += [
+            f'<text x="{left+panel_w/2}" y="{top-28}" text-anchor="middle" font-family="{FONT}" font-size="22" fill="#263f86">{title}</text>',
+            f'<text x="{left+panel_w/2}" y="{top+panel_h+55}" text-anchor="middle" font-family="{FONT}" font-size="20" fill="#263f86">{("μₓ" if index < 2 else "a₁")}</text>',
+            f'<text x="{left-62}" y="{top+panel_h/2}" transform="rotate(-90 {left-62} {top+panel_h/2})" text-anchor="middle" font-family="{FONT}" font-size="20" fill="#263f86">{("μᵧ" if index < 2 else "a₂")}</text>',
+        ]
+        return sx, sy
+
+    sx0, sy0 = draw_axes(0, '二维高斯，L = 11', .3, 0)
+    rng = random.Random(46)
+    q = (-.1, .2)
+    body.append(f'<text x="{sx0(q[0]):.1f}" y="{sy0(q[1])+6:.1f}" text-anchor="middle" font-family="{FONT}" font-size="25">×</text>')
+    for sample in range(1, 5):
+        q, path, momenta, _ = hmc_trajectory(q, rng, .03, 11, scale=.135)
+        body.append(f'<polyline points="{" ".join(f"{sx0(x):.1f},{sy0(y):.1f}" for x,y in path)}" fill="none" stroke="{INK}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" opacity=".62" clip-path="url(#hmc-clip-0)"/>')
+        for x, y in path[1:-1]:
+            body.append(f'<circle cx="{sx0(x):.1f}" cy="{sy0(y):.1f}" r="2.7" fill="#fff" stroke="{INK}" clip-path="url(#hmc-clip-0)"/>')
+        body += [f'<circle cx="{sx0(q[0]):.1f}" cy="{sy0(q[1]):.1f}" r="5.3" fill="{INK}"/>', f'<text x="{sx0(q[0])+11:.1f}" y="{sy0(q[1])-8:.1f}" font-family="{FONT}" font-size="17">{sample}</text>']
+
+    sx1, sy1 = draw_axes(1, '二维高斯，L = 28', .3, 0)
+    rng = random.Random(1)
+    q = (-.1, .2)
+    body.append(f'<text x="{sx1(q[0]):.1f}" y="{sy1(q[1])+6:.1f}" text-anchor="middle" font-family="{FONT}" font-size="25">×</text>')
+    for _ in range(4):
+        q, path, _, _ = hmc_trajectory(q, rng, .03, 28, scale=.135)
+        body.append(f'<polyline points="{" ".join(f"{sx1(x):.1f},{sy1(y):.1f}" for x,y in path)}" fill="none" stroke="{INK}" stroke-width="6" stroke-linecap="round" opacity=".48" clip-path="url(#hmc-clip-1)"/>')
+        body.append(f'<circle cx="{sx1(q[0]):.1f}" cy="{sy1(q[1]):.1f}" r="5" fill="{INK}"/>')
+
+    sx2, sy2 = draw_axes(2, '后验相关 −0.9', 1.5, -.9)
+    rng = random.Random(113)
+    q = (-.9, .8)
+    body.append(f'<text x="{sx2(q[0]):.1f}" y="{sy2(q[1])+6:.1f}" text-anchor="middle" font-family="{FONT}" font-size="25">×</text>')
+    for sample in range(1, 5):
+        q, path, _, _ = hmc_trajectory(q, rng, .09, 12, rho=-.9, scale=.65)
+        body.append(f'<polyline points="{" ".join(f"{sx2(x):.1f},{sy2(y):.1f}" for x,y in path)}" fill="none" stroke="{INK}" stroke-width="6" stroke-linecap="round" opacity=".6" clip-path="url(#hmc-clip-2)"/>')
+        body += [f'<circle cx="{sx2(q[0]):.1f}" cy="{sy2(q[1]):.1f}" r="5.3" fill="{INK}"/>', f'<text x="{sx2(q[0])+11:.1f}" y="{sy2(q[1])-8:.1f}" font-family="{FONT}" font-size="17">{sample}</text>']
+
+    sx3, sy3 = draw_axes(3, '50 条轨迹', 1.5, -.9)
+    rng = random.Random(251)
+    q = (-.9, .8)
+    body.append(f'<text x="{sx3(q[0]):.1f}" y="{sy3(q[1])+6:.1f}" text-anchor="middle" font-family="{FONT}" font-size="25">×</text>')
+    samples = []
+    for _ in range(50):
+        q, _, _, accepted = hmc_trajectory(q, rng, .09, 12, rho=-.9, scale=.65)
+        samples.append((q[0], q[1], accepted))
+    for i, (x, y, accepted) in enumerate(samples):
+        fill = '#fff' if i == 31 or not accepted else INK
+        body.append(f'<circle cx="{sx3(x):.1f}" cy="{sy3(y):.1f}" r="5" fill="{fill}" stroke="{INK}" stroke-width="1.8" clip-path="url(#hmc-clip-3)"/>')
+    body += ['</svg>', '']
+    OUT6.write_text('\n'.join(body), encoding='utf-8')
+
+
 def main() -> None:
     figure_9_2()
     figure_9_3()
     figure_9_4()
     figure_9_5()
+    figure_9_6()
     print(OUT2)
     print(OUT3)
     print(OUT4)
     print(OUT5)
+    print(OUT6)
 
 
 if __name__ == "__main__":

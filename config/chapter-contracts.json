@@ -1507,7 +1507,7 @@
   },
   "chapter-09": {
     "required_status": "in_progress",
-    "source_pages": [285, 296],
+    "source_pages": [285, 299],
     "required_ids": [
       "fig-9-1",
       "rethinking-stan-was-a-man",
@@ -1532,7 +1532,16 @@
       "sec-9-3-2",
       "eq-9-hmc-gaussian-model",
       "eq-9-hmc-log-prob",
+      "fig-9-6",
       "overthinking-raw-hmc",
+      "eq-9-hmc-u-log-posterior",
+      "code-9-5",
+      "eq-9-gaussian-log-derivative",
+      "eq-9-hmc-u-gradient",
+      "code-9-6",
+      "code-9-7",
+      "code-9-8",
+      "code-9-9",
       "chapter-09-notes",
       "note-137",
       "note-138",
@@ -1542,7 +1551,8 @@
       "note-142",
       "note-143",
       "note-144",
-      "note-145"
+      "note-145",
+      "note-146"
     ],
     "required_headings": [
       "马尔可夫链蒙特卡洛",
@@ -1560,21 +1570,20 @@
     ],
     "counts": {
       "section": 8,
-      "figure": 9,
-      "figure img": 5,
-      ".book-figure": 5,
-      ".code-listing": 4,
+      "figure": 15,
+      "figure img": 6,
+      ".book-figure": 6,
+      ".code-listing": 9,
       ".rethinking-box": 2,
       ".overthinking-box": 1,
       ".book-quote": 1,
-      ".equation-block": 2,
+      ".equation-block": 5,
       ".model-system-equation": 1,
       ".algorithm-steps": 1,
       ".algorithm-steps > li": 4,
       ".metropolis-mapping": 1,
       ".metropolis-mapping > li": 3,
-      ".continuation-note": 1,
-      ".endnotes li": 9
+      ".endnotes li": 10
     }
   }
 }
