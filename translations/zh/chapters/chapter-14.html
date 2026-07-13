@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-14" data-source-pages="465-491">
-  <header class="chapter-header"><p class="eyebrow">第十四章</p><h1>协方差历险</h1><p class="source-range">当前译稿对应原书 PDF 第 465–491 页</p></header>
+<article class="book-article" data-chapter="chapter-14" data-source-pages="465-494">
+  <header class="chapter-header"><p class="eyebrow">第十四章</p><h1>协方差历险</h1><p class="source-range">当前译稿对应原书 PDF 第 465–494 页</p></header>
 
   <div class="chapter-introduction" id="intro-14">
     <p>回想上一章导言中的咖啡机器人（原书第 413 页）。这个机器人被设定为在咖啡馆之间移动、点咖啡，并记录等待时间。上一章的重点是：在咖啡馆之间汇聚信息，能让机器人学得更高效；变化截距正是实现这种汇聚的一种机制。</p>
@@ -556,11 +556,68 @@ instrumentalVariables( dagIV , exposure="E" , outcome="W" )</code></pre><pre cla
     <p>数据来自 <code>data(KosterLeckie)</code>，它会载入 <code>kl_dyads</code> 与 <code>kl_households</code> 两张表；更多细节见 <code>?KosterLeckie</code>。<sup id="note-204-ref"><a href="#note-204">204</a></sup></p>
     <figure class="code-listing" id="code-14-30"><figcaption>R 代码 14.30</figcaption><pre><code>library(rethinking)
 data(KosterLeckie)</code></pre></figure>
-    <p>目前先使用 <code>kl_dyads</code> 中的变量。表中每一行都是尼加拉瓜某个社区里一对住户组成的二元组，我们关心这些住户之间的礼物交换。每行的结果变量 <code>giftsAB</code> 与 <code>giftsBA</code> 是二元组内两个方向的赠礼计数；住户 ID 与二元组 ID 的说明从下一页继续。</p>
-    <p class="continuation-note">二元组标识、原始赠礼分布与社会关系模型，将从原书 PDF 第 492 页继续。</p>
+    <p>目前先使用 <code>kl_dyads</code> 中的变量。表中每一行都是尼加拉瓜某个社区里一对住户组成的二元组，我们关心这些住户之间的礼物交换。每行的结果变量 <code>giftsAB</code> 与 <code>giftsBA</code> 是二元组内两个方向的赠礼计数；<code>hidA</code> 与 <code>hidB</code> 给出每个二元组里的住户 ID，<code>did</code> 则是唯一的二元组 ID。其他变量暂且忽略。</p>
+    <figure class="book-figure dyadic-gifts-figure" id="fig-14-8"><div class="figure-scroll" tabindex="0" aria-label="三百个住户二元组双向赠礼计数散点图"><img src="/media/chapter-14-dyadic-gifts.svg" alt="大多数二元组双向赠礼数接近零，少数二元组有很高计数，整体相关约零点二四"></div><figcaption><strong>图 14.8：</strong><code>data(KosterLeckie)</code> 中二元组赠礼的分布。25 户组成 300 个二元组，整体相关为 0.24；要合理度量赠礼平衡，模型必须处理同一住户在多个二元组中反复出现。</figcaption></figure>
+    <p>图 14.8 展示跨二元组的原始赠礼分布，整体相关为 0.24；但把它当成交换平衡的度量会很糟。首先，交换 A/B 标签后相关会改变，而标签本来就是任意的，所以测得的相关也有些任意。其次，背景生成模型认为赠礼既可由每个二元组的特殊关系解释——有些住户彼此频繁交换——也可由某些住户不论二元组都普遍多给或多收来解释。例如贫困住户可能给得少却收得多。要在统计上把平衡交换与一般性的给予/接受差异分离，模型必须把二者分开处理。这类模型通常称为<strong>社会关系模型</strong>（SRM）。</p>
+    <p>具体而言，把住户 A 给住户 B 的礼物建模为住户专属和二元组专属变化效应的组合。结果是没有明显上界的计数，因此使用 Poisson 分布，并像前几章那样用 log 链接连接变化效应：</p>
+    <div class="equation-block wallis-equation" id="eq-14-gifts-a-to-b"><div><var>y</var><sub>A→B</sub> ∼ Poisson(<var>λ</var><sub>AB</sub>)</div><div>log <var>λ</var><sub>AB</sub> = <var>α</var> + <var>g</var><sub>A</sub> + <var>r</var><sub>B</sub> + <var>d</var><sub>AB</sub></div></div>
+    <p>线性模型中的截距 <var>α</var> 表示所有二元组的平均赠礼率（在 log 尺度上），其他效应都是相对这个平均值的偏移。<var>g</var><sub>A</sub> 是住户 A 不论二元组的一般给予倾向，<var>r</var><sub>B</sub> 是住户 B 不论二元组的一般接受倾向，<var>d</var><sub>AB</sub> 则是 A 给 B 的二元组专属率。同一二元组中另一个方向有对应模型：</p>
+    <div class="equation-block wallis-equation" id="eq-14-gifts-b-to-a"><div><var>y</var><sub>B→A</sub> ∼ Poisson(<var>λ</var><sub>BA</sub>)</div><div>log <var>λ</var><sub>BA</sub> = <var>α</var> + <var>g</var><sub>B</sub> + <var>r</var><sub>A</sub> + <var>d</var><sub>BA</sub></div></div>
+    <p>合起来，每户 <var>H</var> 都需要两个变化效应 <var>g</var><sub>H</sub> 与 <var>r</var><sub>H</sub>；每个二元组 AB 还需要 <var>d</var><sub>AB</sub> 与 <var>d</var><sub>BA</sub>。我们既希望 <var>g</var> 与 <var>r</var> 可以相关——给得多的人是否也收得多？——也希望两个二元组效应相关——二元组内部是否平衡？两个不同的多元正态先验便能同时做到。第一个表示住户效应总体：</p>
+    <div class="equation-block wallis-equation" id="eq-14-household-effects-prior"><span class="matrix-2x1"><span><var>g</var><sub><var>i</var></sub></span><span><var>r</var><sub><var>i</var></sub></span></span> ∼ MVNormal(<span class="matrix-2x1"><span>0</span><span>0</span></span>, <span class="matrix-2x2"><span><var>σ</var><sub><var>g</var></sub><sup>2</sup></span><span><var>σ</var><sub><var>g</var></sub><var>σ</var><sub><var>r</var></sub><var>ρ</var><sub><var>gr</var></sub></span><span><var>σ</var><sub><var>g</var></sub><var>σ</var><sub><var>r</var></sub><var>ρ</var><sub><var>gr</var></sub></span><span><var>σ</var><sub><var>r</var></sub><sup>2</sup></span></span>)</div>
+    <p>对任意住户 <var>i</var>，一对 <var>g</var>、<var>r</var> 参数都获得一个含两个标准差和一个相关参数的常规协方差矩阵先验。第二个多元正态先验表示二元组效应总体：</p>
+    <div class="equation-block wallis-equation" id="eq-14-dyad-effects-prior"><span class="matrix-2x1"><span><var>d</var><sub><var>ij</var></sub></span><span><var>d</var><sub><var>ji</var></sub></span></span> ∼ MVNormal(<span class="matrix-2x1"><span>0</span><span>0</span></span>, <span class="matrix-2x2"><span><var>σ</var><sub><var>d</var></sub><sup>2</sup></span><span><var>σ</var><sub><var>d</var></sub><sup>2</sup><var>ρ</var><sub><var>d</var></sub></span><span><var>σ</var><sub><var>d</var></sub><sup>2</sup><var>ρ</var><sub><var>d</var></sub></span><span><var>σ</var><sub><var>d</var></sub><sup>2</sup></span></span>)</div>
+    <p>住户 <var>i</var> 与 <var>j</var> 组成的二元组有一对效应，它们共享另一个协方差矩阵。这个矩阵只有一个标准差 <var>σ</var><sub><var>d</var></sub>，因为二元组中的标签任意，谁先谁后没有意义，所以两个参数必须有相同方差；但仍需估计相关 <var>ρ</var><sub><var>d</var></sub>。它为正时，一户在二元组内给得更多，另一户也给得更多；为负时，一户多给、另一户少给；接近零则表示二元组内没有模式。</p>
+    <aside class="source-erratum" id="erratum-14-social-relations-wording"><strong>原文说明：</strong>PDF 第 493 页的 “two difference multi-normal priors” 与 “when one households gives more” 是明显语病；译稿按“两个不同的多元正态先验”和“当一户给得更多”处理。</aside>
+    <p>现在构造模型。需要自定义二元组协方差矩阵，也要仔细索引变化效应：</p>
+    <figure class="code-listing" id="code-14-31"><figcaption>R 代码 14.31</figcaption><pre><code>kl_data &lt;- list(
+    N = nrow(kl_dyads),
+    N_households = max(kl_dyads$hidB),
+    did = kl_dyads$did,
+    hidA = kl_dyads$hidA,
+    hidB = kl_dyads$hidB,
+    giftsAB = kl_dyads$giftsAB,
+    giftsBA = kl_dyads$giftsBA
+)
+
+m14.7 &lt;- ulam(
+    alist(
+        giftsAB ~ poisson( lambdaAB ),
+        giftsBA ~ poisson( lambdaBA ),
+        log(lambdaAB) &lt;- a + gr[hidA,1] + gr[hidB,2] + d[did,1] ,
+        log(lambdaBA) &lt;- a + gr[hidB,1] + gr[hidA,2] + d[did,2] ,
+        a ~ normal(0,1),
+
+        ## gr 变化效应矩阵
+        vector[2]:gr[N_households] ~ multi_normal(0,Rho_gr,sigma_gr),
+        Rho_gr ~ lkj_corr(4),
+        sigma_gr ~ exponential(1),
+
+        ## 二元组效应
+        transpars&gt; matrix[N,2]:d &lt;-
+                compose_noncentered( rep_vector(sigma_d,2) , L_Rho_d , z ),
+        matrix[2,N]:z ~ normal( 0 , 1 ),
+        cholesky_factor_corr[2]:L_Rho_d ~ lkj_corr_cholesky( 8 ),
+        sigma_d ~ exponential(1),
+
+        ## 计算二元组相关矩阵
+        gq&gt; matrix[2,2]:Rho_d &lt;&lt;- Chol_to_Corr( L_Rho_d )
+    ), data=kl_data , chains=4 , cores=4 , iter=2000 )</code></pre></figure>
+    <p>代码按功能分段。顶部是二元组内两个赠礼方向；每个线性模型先含截距 <code>a</code>，再含该行赠礼住户的给予效应 <code>gr[hidA,1]</code> 或 <code>gr[hidB,1]</code>、收礼住户的接受效应 <code>gr[hidB,2]</code> 或 <code>gr[hidA,2]</code>，最后是住户 A/B 对应的二元组效应 <code>d[did,1]</code>/<code>d[did,2]</code>。A/B 顺序只是任意标签。</p>
+    <p>下一段定义给予与接受效应矩阵 <code>gr</code>：每户一行、两列，第一列为给予变化效应，第二列为接受变化效应。第三段以非中心化形式定义特殊二元组矩阵；<code>rep_vector(sigma_d,2)</code> 把同一个标准差复制成长度为 2 的向量，从而构造两个效应方差相同的正确协方差矩阵。</p>
+    <p>底部一行计算二元组相关矩阵。模型用 Cholesky 因子参数化，所以 <code>Chol_to_Corr</code> 通过矩阵乘以自身转置还原原相关矩阵。行首 <code>gq&gt;</code> 把代码放进 Stan 的生成量块，在每次 Hamiltonian 转移后执行；希望从每个样本计算并出现在后验中的量，都可这样标记。</p>
+    <p>这个模型参数很多，例如有 600 个二元组参数；但协方差矩阵分量仍能提供有用信息：</p>
+    <figure class="code-listing" id="code-14-32"><figcaption>R 代码 14.32</figcaption><pre><code>precis( m14.7 , depth=3 , pars=c("Rho_gr","sigma_gr") )</code></pre><pre class="code-output"><code>             mean   sd 5.5% 94.5% n_eff Rhat
+Rho_gr[1,1]  1.00 0.00  1.00  1.00   NaN  NaN
+Rho_gr[1,2] -0.40 0.20 -0.70 -0.07  1475    1
+Rho_gr[2,1] -0.40 0.20 -0.70 -0.07  1475    1
+Rho_gr[2,2]  1.00 0.00  1.00  1.00  3834    1
+sigma_gr[1]  0.83 0.14  0.64  1.07  2371    1
+sigma_gr[2]  0.42 0.09  0.29  0.57  1251    1</code></pre></figure>
+    <p class="continuation-note">给予—接受相关的解释与住户后验预测，将从原书 PDF 第 495 页继续。</p>
   </section>
 
   <section class="endnotes" id="chapter-14-notes" role="doc-endnotes"><h2>尾注</h2><ol start="194"><li id="note-194">Lewandowski 等（2009）。“LKJ”来自三位作者姓氏的首字母；作者本人把这种方法称为“洋葱法”。关于它在 Bayesian 模型中的用法，可参见最新版 Stan 参考手册的说明。 <a class="backref" href="#note-194-ref" aria-label="返回正文">↩</a></li><li id="note-195">参见 Gelfand 等（1995）以及 Roberts 和 Sahu（1997）。较新的综述可参见 Papaspiliopoulos 等（2007）；以 Hamiltonian Monte Carlo 为重点的讨论可参见 Betancourt 和 Girolami（2013）。 <a class="backref" href="#note-195-ref" aria-label="返回正文">↩</a></li><li id="note-196">参见 Pearl（2011）。 <a class="backref" href="#note-196-ref" aria-label="返回正文">↩</a></li><li id="note-197">参见 Angrist 和 Krueger（1991）。 <a class="backref" href="#note-197-ref" aria-label="返回正文">↩</a></li><li id="note-198">Feyrer 和 Sacerdote（2009）。 <a class="backref" href="#note-198-ref" aria-label="返回正文">↩</a></li><li id="note-199">参见 Caniglia 等（2019）。 <a class="backref" href="#note-199-ref" aria-label="返回正文">↩</a></li><li id="note-200">参见 Angrist 和 Krueger（1995）以及 Kleibergen 和 Zivot（2003）。据作者所知，对参数化工具变量估计量——Bayesian 或其他形式——仍没有系统且有理论依据的理解；这很奇怪，因为 DAG 已提供正式的非参数理论。真实情况可能是：即使 DAG 表明存在工具，估计在实践中也常不可行。 <a class="backref" href="#note-200-ref" aria-label="返回正文">↩</a></li><li id="note-201">参见 Cohen 和 Malloy（2014）。作者从 Alex Chinco 的博客学到这个例子，参见其 2011 年文章。 <a class="backref" href="#note-201-ref" aria-label="返回正文">↩</a></li><li id="note-202">Thistlethwaite 和 Campbell（1960）。 <a class="backref" href="#note-202-ref" aria-label="返回正文">↩</a></li><li id="note-203">参见 Gelman 和 Imbens（2019）给出的尖锐示例与建议。 <a class="backref" href="#note-203-ref" aria-label="返回正文">↩</a></li><li id="note-204">Koster 和 Leckie（2014）。 <a class="backref" href="#note-204-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 14 章 PDF 第 465–491 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 492 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 14 章 PDF 第 465–494 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 495 页继续。</aside>
 </article>

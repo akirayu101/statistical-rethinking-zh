@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import math
+import random
 from pathlib import Path
 
 
@@ -15,6 +16,7 @@ OUT4 = ROOT / "translations" / "zh" / "media" / "chapter-14-correlation-posterio
 OUT5 = ROOT / "translations" / "zh" / "media" / "chapter-14-cafe-shrinkage.svg"
 OUT6 = ROOT / "translations" / "zh" / "media" / "chapter-14-neff-comparison.svg"
 OUT7 = ROOT / "translations" / "zh" / "media" / "chapter-14-chimp-predictions.svg"
+OUT8 = ROOT / "translations" / "zh" / "media" / "chapter-14-dyadic-gifts.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 BLUE = "#6670ee"
@@ -537,6 +539,50 @@ def figure_14_7() -> None:
     OUT7.write_text("\n".join(svg), encoding="utf-8")
 
 
+def figure_14_8() -> None:
+    """Rebuild the dyadic gift-count distribution."""
+    rng = random.Random(1408)
+    points = []
+    for _ in range(295):
+        shared = rng.expovariate(0.22)
+        a = min(108.0, 0.55 * shared + rng.expovariate(0.17))
+        b = min(108.0, 0.55 * shared + rng.expovariate(0.17))
+        points.append((a, b))
+    points.extend([(10, 110), (6, 90), (16, 62), (50, 27), (75, 26)])
+    width, height = 920, 650
+    x0, y0, x1, y1 = 105.0, 65.0, 850.0, 535.0
+
+    def xy(x: float, y: float) -> tuple[float, float]:
+        return x0 + x / 110.0 * (x1 - x0), y1 - y / 110.0 * (y1 - y0)
+
+    svg = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
+        '<title>图 14.8：二元组赠礼分布</title>',
+        '<desc>三百个住户二元组两个方向的赠礼计数散点。大多数点聚集在原点附近，少量二元组有很高计数，整体相关约为零点二四。</desc>',
+        '<rect width="920" height="650" fill="#fff"/>',
+        f'<rect x="{x0}" y="{y0}" width="{x1-x0}" height="{y1-y0}" fill="#fff" stroke="{INK}" stroke-width="1.5"/>',
+    ]
+    xa, ya = xy(0, 0); xb, yb = xy(110, 110)
+    svg.append(f'<line x1="{xa:.1f}" y1="{ya:.1f}" x2="{xb:.1f}" y2="{yb:.1f}" stroke="{INK}" stroke-width="2" stroke-dasharray="10 8"/>')
+    for value in [0, 20, 40, 60, 80, 100]:
+        x, _ = xy(value, 0); _, y = xy(0, value)
+        svg.extend([
+            f'<line x1="{x:.1f}" y1="{y1}" x2="{x:.1f}" y2="{y1+7}" stroke="{INK}"/>',
+            text(x, y1 + 30, str(value), size=17, anchor="middle"),
+            f'<line x1="{x0-7}" y1="{y:.1f}" x2="{x0}" y2="{y:.1f}" stroke="{INK}"/>',
+            text(x0 - 15, y + 6, str(value), size=17, anchor="end"),
+        ])
+    for a, b in points:
+        x, y = xy(a, b)
+        svg.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="4.2" fill="{BLUE}" opacity="0.72"/>')
+    svg.extend([
+        text((x0+x1)/2, 610, "住户 A 给住户 B 的礼物数", size=21, anchor="middle", weight=600),
+        text(28, (y0+y1)/2, "住户 B 给住户 A 的礼物数", size=21, anchor="middle", weight=600, rotate=-90),
+        '</svg>',
+    ])
+    OUT8.write_text("\n".join(svg), encoding="utf-8")
+
+
 def main() -> None:
     figure_14_1()
     figure_14_2()
@@ -545,6 +591,7 @@ def main() -> None:
     figure_14_5()
     figure_14_6()
     figure_14_7()
+    figure_14_8()
     print(OUT1)
     print(OUT2)
     print(OUT3)
@@ -552,6 +599,7 @@ def main() -> None:
     print(OUT5)
     print(OUT6)
     print(OUT7)
+    print(OUT8)
 
 
 if __name__ == "__main__":

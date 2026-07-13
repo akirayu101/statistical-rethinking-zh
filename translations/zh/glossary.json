@@ -1188,6 +1188,11 @@
     "regression discontinuity": "回归不连续",
     "RDD": "RDD",
     "natural experiment": "自然实验",
+    "dyad": "二元组",
+    "social relations model": "社会关系模型",
+    "SRM": "SRM",
+    "generalized giving": "一般给予",
+    "generalized receiving": "一般接受",
     "cross-classified varying slopes model": "交叉分类变化斜率模型"
   },
   "protected": [
