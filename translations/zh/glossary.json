@@ -250,6 +250,13 @@
     "potential energy": "势能",
     "partial derivative": "偏导数",
     "leapfrog integration": "蛙跳积分",
+    "divergent transition": "发散转移",
+    "discrete parameter": "离散参数",
+    "sampler": "抽样器",
+    "data list": "数据列表",
+    "slim data list": "精简数据列表",
+    "structural equation model": "结构方程模型",
+    "preprocess": "预处理",
     "U-turn problem": "掉头问题",
     "warmup": "预热",
     "burn-in": "老化期",
@@ -760,6 +767,6 @@
     "weakly identifiable": "弱可识别"
   },
   "protected": [
-    "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "AIC", "DIC", "WAIC", "BIC", "PSIS-LOO", "MCMC", "HMC"
+    "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "blavaan", "AIC", "DIC", "WAIC", "BIC", "PSIS-LOO", "MCMC", "HMC"
   ]
 }

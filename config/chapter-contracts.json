@@ -1507,7 +1507,7 @@
   },
   "chapter-09": {
     "required_status": "in_progress",
-    "source_pages": [285, 299],
+    "source_pages": [285, 302],
     "required_ids": [
       "fig-9-1",
       "rethinking-stan-was-a-man",
@@ -1542,6 +1542,17 @@
       "code-9-7",
       "code-9-8",
       "code-9-9",
+      "code-9-10",
+      "sec-9-3-3",
+      "rethinking-mcmc-horizon",
+      "sec-9-4",
+      "code-9-11",
+      "code-9-12",
+      "sec-9-4-1",
+      "ulam-preparation-steps",
+      "code-9-13",
+      "sec-9-4-2",
+      "code-9-14",
       "chapter-09-notes",
       "note-137",
       "note-138",
@@ -1552,7 +1563,8 @@
       "note-143",
       "note-144",
       "note-145",
-      "note-146"
+      "note-146",
+      "note-147"
     ],
     "required_headings": [
       "马尔可夫链蒙特卡洛",
@@ -1566,15 +1578,21 @@
       "再思考：哈密顿量",
       "9.3.2 空间中的粒子",
       "过度思考：原始的哈密顿蒙特卡洛",
+      "9.3.3 局限",
+      "再思考：MCMC 的地平线",
+      "9.4 简易 HMC：ulam",
+      "9.4.1 准备工作",
+      "9.4.2 从后验抽样",
       "尾注"
     ],
     "counts": {
-      "section": 8,
-      "figure": 15,
+      "section": 12,
+      "figure": 20,
       "figure img": 6,
       ".book-figure": 6,
-      ".code-listing": 9,
-      ".rethinking-box": 2,
+      ".code-listing": 14,
+      ".code-output": 2,
+      ".rethinking-box": 3,
       ".overthinking-box": 1,
       ".book-quote": 1,
       ".equation-block": 5,
@@ -1583,7 +1601,10 @@
       ".algorithm-steps > li": 4,
       ".metropolis-mapping": 1,
       ".metropolis-mapping > li": 3,
-      ".endnotes li": 10
+      ".preparation-steps": 1,
+      ".preparation-steps > li": 2,
+      ".continuation-note": 1,
+      ".endnotes li": 11
     }
   }
 }

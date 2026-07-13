@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-09" data-source-pages="285-299">
-  <header class="chapter-header"><p class="eyebrow">第九章</p><h1>马尔可夫链蒙特卡洛</h1><p class="source-range">当前译稿对应原书 PDF 第 285–299 页</p></header>
+<article class="book-article" data-chapter="chapter-09" data-source-pages="285-302">
+  <header class="chapter-header"><p class="eyebrow">第九章</p><h1>马尔可夫链蒙特卡洛</h1><p class="source-range">当前译稿对应原书 PDF 第 285–302 页</p></header>
 
   <p>在西方历史的大部分时期，偶然性一直扮演反派。古罗马把偶然性人格化为残酷命运女神福尔图娜，她转动着（厄）运之轮。与她相对而坐的是智慧与理解女神密涅瓦。只有绝望之人才会向福尔图娜祈祷，所有人则都会恳求密涅瓦相助。科学当然属于密涅瓦的领域，那里没有福尔图娜可以发挥的有益作用。</p>
   <p>但到了 20 世纪初，福尔图娜与密涅瓦成了合作者。科学家开始出版随机数表，把偶然性的工具用于认识世界。偶然与智慧从此携手；“理解偶然性能够帮助我们获得智慧”这个观念，已很少让人困惑。从天气预报、金融到演化生物学，各领域都由随机过程研究所主导。<sup id="note-137-ref"><a href="#note-137">137</a></sup></p>
@@ -205,11 +205,98 @@ for ( i in 1:L ) {
   }
   qtraj[i+1,] &lt;- q
 }</code></pre></figure>
-      <p>注意，步长 <code>epsilon</code> 怎样同时进入位置向量和动量向量。正因为路径是一连串线性跳跃，而不是真正平滑的曲线，它只能是一种近似。若对数后验急剧弯曲，这一点可能产生重要后果；后续推导将在原书 PDF 第 300 页继续。</p>
+      <p>注意，步长 <code>epsilon</code> 怎样同时进入位置向量和动量向量。正因为路径是一连串线性跳跃，而不是真正平滑的曲线，它只能是一种近似。若对数后验急剧弯曲，而模拟一步跨过了弯曲处，这一点可能产生重要后果。剩下的只是收尾工作：确保提议对称，让马尔可夫链保持有效，再决定接受还是拒绝提议。</p>
+      <figure class="code-listing" id="code-9-10"><figcaption>R 代码 9.10</figcaption><pre><code># Make a half step for momentum at the end
+p = p - epsilon * grad_U(q) / 2
+ptraj[L+1,] &lt;- p
+# Negate momentum at end of trajectory to make the proposal symmetric
+p = -p
+# Evaluate potential and kinetic energies at start and end of trajectory
+current_U = U(current_q)
+current_K = sum(current_p^2) / 2
+proposed_U = U(q)
+proposed_K = sum(p^2) / 2
+# Accept or reject the state at end of trajectory, returning either
+# the position at the end of the trajectory or the initial position
+accept &lt;- 0
+if (runif(1) &lt; exp(current_U-proposed_U+current_K-proposed_K)) {
+  new_q &lt;- q # accept
+  accept &lt;- 1
+} else new_q &lt;- current_q # reject
+return(list( q=new_q, traj=qtraj, ptraj=ptraj, accept=accept ))
+}</code></pre></figure>
+      <p>最后的接受/拒绝决策利用了哈密顿动力学的一条事实：系统总能量必须保持不变。因此，若轨迹起点的能量与终点相差很大，就说明某处出了问题。这称为<strong>发散转移</strong>（divergent transition），后面的章节还会详细讨论。</p>
     </aside>
+
+    <section id="sec-9-3-3"><h3>9.3.3 局限</h3>
+      <p>一如往常，这种方法也有局限。HMC 要求参数是连续的，无法滑过离散参数。实践中，这意味着离散缺失数据插补等技术必须换一种方式实现。HMC 当然能从这类模型抽样，而且通常比 Gibbs 抽样器高效得多，但你必须改变模型的编码方式。第 15 章和第 16 章会给出例子。</p>
+      <p>同样必须牢记，HMC 并不是魔法。有些后验分布无论使用哪种算法都非常难以抽样，后续章节会看到实例。在这些情况下，HMC 会遇到所谓的发散转移。以后我们会大量讨论它们的成因以及修复方法。</p>
+    </section>
+
+    <aside class="rethinking-box" id="rethinking-mcmc-horizon"><h3>再思考：MCMC 的地平线</h3><p>马尔可夫链蒙特卡洛背后的思想并不新，但广泛应用要到 20 世纪最后十年才开始。<sup id="note-147-ref"><a href="#note-147">147</a></sup> MCMC 算法的新变体和改进一直在出现。我们可以预期，还会有有趣的进展；再过 20 年回看，今天这一批工具——例如 Gibbs 抽样和第一代 HMC——也许会显得相当平庸。至少可以抱有这种希望。</p></aside>
   </section>
 
-  <section class="endnotes" id="chapter-09-notes" role="doc-endnotes"><h2>尾注</h2><ol start="137"><li id="note-137">关于这段历史的更多内容，可参见 Gigerenzer 等（1990）的导论。另见 Rao（1997），其中展示了一本随机数表的示例页，并对这场文化转变作了类似评论。 <a class="backref" href="#note-137-ref" aria-label="返回正文">↩</a></li><li id="note-138">“旅行者”是两种常见隐喻之一；另一种是登山者通过随机跳跃绘制山脉地图。Kruschke（2011）用一位在不同地点筹款的政治人物讲了一个很相似的故事。Kruschke 的书非常出色，风格与覆盖范围和本书颇为不同，因此能通过不同视角和另一组例子，为读者带来许多额外价值。 <a class="backref" href="#note-138-ref" aria-label="返回正文">↩</a></li><li id="note-139">Metropolis 等（1953）。算法以论文第一作者命名，但尚不清楚每位合著者怎样参与了算法的发现与实现。其他作者包括以“氢弹之父”闻名的 Edward Teller、同样著名的物理学家 Marshall Rosenbluth，以及两人的妻子 Augusta 和 Arianna；两位女士完成了大量计算机编程。Nicholas Metropolis 领导这个研究组，而他们的工作又以此前和 Stanisław Ulam 合作的研究为基础：Metropolis 与 Ulam（1949）。 <a class="backref" href="#note-139-ref" aria-label="返回正文">↩</a></li><li id="note-140">Hastings（1970）。 <a class="backref" href="#note-140-ref" aria-label="返回正文">↩</a></li><li id="note-141">最初的论文是 Geman 与 Geman（1984），另见 Casella 与 George（1992）。注意，Gibbs 抽样以统计物理学奠基人之一、物理学家兼数学家 J. W. Gibbs 命名；但 Gibbs 早在 1903 年就已去世，远早于 Metropolis 算法的发明。这个策略以 Gibbs 命名，既是为了纪念他，也因为算法与统计物理学的联系。 <a class="backref" href="#note-141-ref" aria-label="返回正文">↩</a></li><li id="note-142">Jaynes（2003）第 16 章。 <a class="backref" href="#note-142-ref" aria-label="返回正文">↩</a></li><li id="note-143">参见 Neal（2012）与 Betancourt（2017）。 <a class="backref" href="#note-143-ref" aria-label="返回正文">↩</a></li><li id="note-144">严格说并非总动量，而是动量平方和：<span class="math-inline"><var>K</var> = ∑<sub><var>i</var></sub> <var>p</var><sub><var>i</var></sub><sup>2</sup>/2</span>，其中 <span class="math-inline"><var>p</var></span> 是动量值向量。这个表达式来自能量守恒，后面讨论发散转移时会再谈。 <a class="backref" href="#note-144-ref" aria-label="返回正文">↩</a></li><li id="note-145">参见 Hoffman 与 Gelman（2011），以及 Stan 用户手册中的更多细节。 <a class="backref" href="#note-145-ref" aria-label="返回正文">↩</a></li><li id="note-146">见 Neal（2012）中的代码。 <a class="backref" href="#note-146-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section id="sec-9-4"><h2>9.4 简易 HMC：ulam</h2>
+    <p><code>rethinking</code> 包提供了一个方便的接口 <code>ulam</code>，能把公式列表——就像目前用于构造 <code>quap</code> 估计的那些列表——编译成 Stan HMC 代码。使用 <code>ulam</code> 需要多做一点整理：先预处理所有变量变换，再构造一个干净的数据列表，其中只包含真正会用到的变量。除此之外，最难的部分就是在计算机上安装 Stan。等你熟悉怎样解释这种方式生成的样本，就可以探头看看内部，弄清已经理解的模型公式怎样对应到驱动马尔可夫链的代码。使用 <code>ulam</code> 时，也能继续使用与 <code>quap</code> 相同的辅助函数：<code>extract.samples</code>、<code>extract.prior</code>、<code>link</code>、<code>sim</code> 等。</p>
+    <p>还有其他 R 包能让 Stan 更容易使用，因为它们不要求写出 <code>quap</code> 和 <code>ulam</code> 所需的完整公式。在本书付印时，多层模型领域最好的选择是 <code>brms</code> 和 <code>rstanarm</code>，结构方程模型领域则是 <code>blavaan</code>。为了学习贝叶斯建模，我建议暂时坚持使用 <code>ulam</code> 完整而明确的公式。原因是，隐藏模型结构的接口会让模型结构本身更难学习。等积累经验后，再转向简化接口当然没有任何问题。</p>
+    <p>为了看看 <code>ulam</code> 怎样工作，回到第 7 章的地形崎岖度例子。下面的代码加载数据，并把它缩减到拥有目标结果变量的案例（国家）：</p>
+    <figure class="code-listing" id="code-9-11"><figcaption>R 代码 9.11</figcaption><pre><code>library(rethinking)
+data(rugged)
+d &lt;- rugged
+d$log_gdp &lt;- log(d$rgdppc_2000)
+dd &lt;- d[ complete.cases(d$rgdppc_2000) , ]
+dd$log_gdp_std &lt;- dd$log_gdp / mean(dd$log_gdp)
+dd$rugged_std &lt;- dd$rugged / max(dd$rugged)
+dd$cid &lt;- ifelse( dd$cont_africa==1 , 1 , 2 )</code></pre></figure>
+    <p>还记得旧方法的话，我们现在重复拟合交互作用模型的过程。模型用地形崎岖度、大洲，以及二者的交互作用预测对数 GDP。和前面一样，使用 <code>quap</code> 的写法如下：</p>
+    <figure class="code-listing" id="code-9-12"><figcaption>R 代码 9.12</figcaption><pre><code>m8.3 &lt;- quap(
+    alist(
+        log_gdp_std ~ dnorm( mu , sigma ) ,
+        mu &lt;- a[cid] + b[cid]*( rugged_std - 0.215 ) ,
+        a[cid] ~ dnorm( 1 , 0.1 ) ,
+        b[cid] ~ dnorm( 0 , 0.3 ) ,
+        sigma ~ dexp( 1 )
+    ) , data=dd )
+precis( m8.3 , depth=2 )</code></pre><pre class="code-output"><code>      mean   sd 5.5% 94.5%
+a[1]  0.89 0.02 0.86  0.91
+a[2]  1.05 0.01 1.03  1.07
+b[1]  0.13 0.07 0.01  0.25
+b[2] -0.14 0.05 -0.23 -0.06
+sigma 0.11 0.01 0.10  0.12</code></pre></figure>
+    <p>这正是上一章看到的结果。</p>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 285–299 页已完成翻译、逐页核对、结构契约及桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 300 页继续。</aside>
+    <section id="sec-9-4-1"><h3>9.4.1 准备工作</h3>
+      <p>现在也用哈密顿蒙特卡洛拟合这个模型。这意味着不再使用二次近似：如果后验分布不是高斯形状，我们就会得到它实际具有的非高斯形状。可以继续使用与之前完全相同的公式列表，但还应额外做两件事。</p>
+      <ol class="preparation-steps" id="ulam-preparation-steps"><li><strong>预处理所有变量变换。</strong>如果结果变量做过某种变换，例如取对数，就应在拟合模型之前先在数据框中构造新变量。预测变量的所有变换也一样，包括为多项式模型计算平方、立方等。若在马尔可夫链的每一步都重复计算这些变换，只会浪费算力。</li><li><strong>构造精简数据。</strong>所有变量准备好后，新建一个只包含实际拟合变量的精简数据框。严格说这不是必需的，但能避免常见问题。例如，若任何未使用变量中含有缺失值 <code>NA</code>，Stan 就会拒绝工作。</li></ol>
+      <p>所有变量都已预先变换。现在为真正要用的变量构造一个精简列表：</p>
+      <figure class="code-listing" id="code-9-13"><figcaption>R 代码 9.13</figcaption><pre><code>dat_slim &lt;- list(
+    log_gdp_std = dd$log_gdp_std,
+    rugged_std = dd$rugged_std,
+    cid = as.integer( dd$cid )
+)
+str(dat_slim)</code></pre><pre class="code-output"><code>List of 3
+ $ log_gdp_std: num [1:170] 0.88 0.965 1.166 1.104 0.915 ...
+ $ rugged_std : num [1:170] 0.138 0.553 0.124 0.125 0.433 ...
+ $ cid        : int [1:170] 1 2 2 2 2 2 2 2 2 1 ...</code></pre></figure>
+      <p>使用列表比使用 <code>data.frame</code> 更好，因为列表中的元素可以具有任意长度；而在 <code>data.frame</code> 中，所有元素必须等长。后面有些模型——例如多层模型——包含不同长度的变量并不少见。</p>
+    </section>
+
+    <section id="sec-9-4-2"><h3>9.4.2 从后验抽样</h3>
+      <p>只要已经安装 <code>rstan</code> 包（<span class="url-text">mc-stan.org</span>），就能用下面的代码从后验分布中取得样本：</p>
+      <figure class="code-listing" id="code-9-14"><figcaption>R 代码 9.14</figcaption><pre><code>m9.1 &lt;- ulam(
+    alist(
+        log_gdp_std ~ dnorm( mu , sigma ) ,
+        mu &lt;- a[cid] + b[cid]*( rugged_std - 0.215 ) ,
+        a[cid] ~ dnorm( 1 , 0.1 ) ,
+        b[cid] ~ dnorm( 0 , 0.3 ) ,
+        sigma ~ dexp( 1 )
+    ) , data=dat_slim , chains=1 )</code></pre></figure>
+      <p><code>ulam</code> 所做的，就是把上面的公式翻译成 Stan 模型；随后由 Stan 定义抽样器并完成困难的部分。Stan 模型看起来非常相似，却要求写出一些更明确的定义，这也让它们灵活得多。</p>
+      <p class="continuation-note">直接编写 Stan 模型的入口与代码说明将在原书 PDF 第 303 页继续。</p>
+    </section>
+  </section>
+
+  <section class="endnotes" id="chapter-09-notes" role="doc-endnotes"><h2>尾注</h2><ol start="137"><li id="note-137">关于这段历史的更多内容，可参见 Gigerenzer 等（1990）的导论。另见 Rao（1997），其中展示了一本随机数表的示例页，并对这场文化转变作了类似评论。 <a class="backref" href="#note-137-ref" aria-label="返回正文">↩</a></li><li id="note-138">“旅行者”是两种常见隐喻之一；另一种是登山者通过随机跳跃绘制山脉地图。Kruschke（2011）用一位在不同地点筹款的政治人物讲了一个很相似的故事。Kruschke 的书非常出色，风格与覆盖范围和本书颇为不同，因此能通过不同视角和另一组例子，为读者带来许多额外价值。 <a class="backref" href="#note-138-ref" aria-label="返回正文">↩</a></li><li id="note-139">Metropolis 等（1953）。算法以论文第一作者命名，但尚不清楚每位合著者怎样参与了算法的发现与实现。其他作者包括以“氢弹之父”闻名的 Edward Teller、同样著名的物理学家 Marshall Rosenbluth，以及两人的妻子 Augusta 和 Arianna；两位女士完成了大量计算机编程。Nicholas Metropolis 领导这个研究组，而他们的工作又以此前和 Stanisław Ulam 合作的研究为基础：Metropolis 与 Ulam（1949）。 <a class="backref" href="#note-139-ref" aria-label="返回正文">↩</a></li><li id="note-140">Hastings（1970）。 <a class="backref" href="#note-140-ref" aria-label="返回正文">↩</a></li><li id="note-141">最初的论文是 Geman 与 Geman（1984），另见 Casella 与 George（1992）。注意，Gibbs 抽样以统计物理学奠基人之一、物理学家兼数学家 J. W. Gibbs 命名；但 Gibbs 早在 1903 年就已去世，远早于 Metropolis 算法的发明。这个策略以 Gibbs 命名，既是为了纪念他，也因为算法与统计物理学的联系。 <a class="backref" href="#note-141-ref" aria-label="返回正文">↩</a></li><li id="note-142">Jaynes（2003）第 16 章。 <a class="backref" href="#note-142-ref" aria-label="返回正文">↩</a></li><li id="note-143">参见 Neal（2012）与 Betancourt（2017）。 <a class="backref" href="#note-143-ref" aria-label="返回正文">↩</a></li><li id="note-144">严格说并非总动量，而是动量平方和：<span class="math-inline"><var>K</var> = ∑<sub><var>i</var></sub> <var>p</var><sub><var>i</var></sub><sup>2</sup>/2</span>，其中 <span class="math-inline"><var>p</var></span> 是动量值向量。这个表达式来自能量守恒，后面讨论发散转移时会再谈。 <a class="backref" href="#note-144-ref" aria-label="返回正文">↩</a></li><li id="note-145">参见 Hoffman 与 Gelman（2011），以及 Stan 用户手册中的更多细节。 <a class="backref" href="#note-145-ref" aria-label="返回正文">↩</a></li><li id="note-146">见 Neal（2012）中的代码。 <a class="backref" href="#note-146-ref" aria-label="返回正文">↩</a></li><li id="note-147">关于一段兼顾计算实践与数学基础的简明 MCMC 历史，可参见 Robert 与 Casella（2011）。 <a class="backref" href="#note-147-ref" aria-label="返回正文">↩</a></li></ol></section>
+
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 285–302 页已完成翻译、逐页核对、结构契约及桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 303 页继续。</aside>
 </article>
