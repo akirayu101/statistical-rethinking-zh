@@ -1136,7 +1136,11 @@
     "no-pooling estimate": "无汇聚估计",
     "parameter recovery": "参数恢复",
     "integer type": "整数类型",
-    "real type": "实数类型"
+    "real type": "实数类型",
+    "true survival probability": "真实存活概率",
+    "partial-pooling estimate": "部分汇聚估计",
+    "absolute error": "绝对误差",
+    "simulation study": "模拟研究"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "blavaan", "AIC", "DIC", "WAIC", "BIC", "PSIS-LOO", "MCMC", "HMC"

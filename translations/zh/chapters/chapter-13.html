@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-13" data-source-pages="429-440">
-  <header class="chapter-header"><p class="eyebrow">第十三章</p><h1>有记忆的模型</h1><p class="source-range">当前译稿对应原书 PDF 第 429–440 页</p></header>
+<article class="book-article" data-chapter="chapter-13" data-source-pages="429-443">
+  <header class="chapter-header"><p class="eyebrow">第十三章</p><h1>有记忆的模型</h1><p class="source-range">当前译稿对应原书 PDF 第 429–443 页</p></header>
 
   <div class="chapter-introduction" id="intro-13">
     <p>1985 年，Clive Wearing 失去了心智，却没有失去音乐。<sup id="note-185-ref"><a href="#note-185">185</a></sup> Wearing 是音乐学家，也是一位出色的音乐家；但引起唇疱疹的单纯疱疹病毒钻进了他的大脑，侵蚀了海马体。结果是慢性<strong>顺行性遗忘</strong>：他无法形成新的长期记忆。他仍记得怎样弹钢琴，却不记得自己五分钟前刚弹过。Wearing 如今活在一个个瞬间里，对几分钟前以外的过去一无所知；每一杯咖啡都是他有生以来的第一杯。</p>
@@ -178,10 +178,63 @@ a_pond &lt;- rnorm( nponds , mean=a_bar , sd=sigma )</code></pre></figure>
     <aside class="overthinking-box" id="overthinking-data-types-stan"><h3>过度思考：数据类型与 Stan 模型</h3><p>R 中的数值数据有两种基本类型：整数和实数。像“3”这样的数既可能是整数，也可能是实数。在计算机内部，整数与实数（<code>numeric</code>）的表示不同。例如，可以用两种类型生成相同的数值向量：</p><figure class="code-listing" id="code-13-10"><figcaption>R 代码 13.10</figcaption><pre><code>class(1:3)
 class(c(1,2,3))</code></pre><pre class="code-output"><code>[1] "integer"
 [1] "numeric"</code></pre></figure><p>通常不必管理这些类型，因为 R 会代劳。但把值传给 Stan 或其他外部程序时，内部表示往往很重要；Stan 与 <code>ulam</code> 有时尤其要求显式整数。例如在 binomial 模型中，指定试验次数的“size”变量必须是整数类型。若 size 变量属于“real”类型，也就是 R 所称的 <code>numeric</code>，Stan 可能给出一条令人困惑的“找不到函数”警告。把数据传给 Stan 或 <code>ulam</code> 前使用 <code>as.integer</code>，即可解决问题。</p></aside>
-    <p class="continuation-note">13.2.3“模拟存活数”、无汇聚估计与部分汇聚模型拟合将从原书 PDF 第 441 页继续。</p>
+    <h3 id="sec-13-2-3">13.2.3 模拟存活数</h3>
+    <p>现在可以模拟 binomial 存活过程了。每个池塘 <span class="math-inline"><var>i</var></span> 有 <span class="math-inline"><var>n</var><sub>i</sub></span> 个潜在存活者；打个比方，自然界以存活概率 <span class="math-inline"><var>p</var><sub>i</sub></span> 为每只蝌蚪抛硬币。模型定义蕴含的概率是：</p>
+    <div class="equation-block wallis-equation" id="eq-13-logistic-survival"><span class="math-line"><var>p</var><sub>i</sub> = exp(<var>α</var><sub>i</sub>) / [1 + exp(<var>α</var><sub>i</sub>)]</span></div>
+    <p>模型使用 logit link，因此概率由 logistic 函数定义。把 logistic 放进随机 binomial 函数，就能为每个池塘生成模拟存活数：</p>
+    <figure class="code-listing" id="code-13-11"><figcaption>R 代码 13.11</figcaption><pre><code>dsim$Si &lt;- rbinom( nponds , prob=logistic(dsim$true_a) , size=dsim$Ni )</code></pre></figure>
+    <p>像往常一样，给 R 一组值，它就返回一组等长的新值。上面把每对 <span class="math-inline"><var>α</var><sub>i</sub></span>（<code>dsim$true_a</code>）与 <span class="math-inline"><var>N</var><sub>i</sub></span>（<code>dsim$Ni</code>）用于一次随机存活计数，采用相应的存活概率与最大计数。结果存入 <code>dsim</code> 的新列。</p>
+
+    <h3 id="sec-13-2-4">13.2.4 计算无汇聚估计</h3>
+    <p>现在开始分析模拟数据。最容易的是直接计算无汇聚估计，也就是从经验数据求每个池塘的存活比例。保留概率尺度，不转成对数赔率，因为稍后要在概率尺度比较估计质量。</p>
+    <figure class="code-listing" id="code-13-12"><figcaption>R 代码 13.12</figcaption><pre><code>dsim$p_nopool &lt;- dsim$Si / dsim$Ni</code></pre></figure>
+    <p><code>dsim</code> 现在又多了一列，包含每个池塘的经验存活比例。若为每个池塘拟合一个虚拟变量，并采用不产生正则化的平坦先验，就会得到同样的无汇聚估计。</p>
+
+    <h3 id="sec-13-2-5">13.2.5 计算部分汇聚估计</h3>
+    <p>下面用 <code>ulam</code> 把模型拟合到模拟数据。原书文字提到单条长链，但实际代码使用 4 条链；无论如何，都应使用多条链检查是否收敛到正确的后验分布。本例是安全的，但不要因此自满。</p>
+    <aside class="source-erratum" id="erratum-13-chain-description"><strong>原文说明：</strong>本段正文说使用 <code>map2stan</code> 与“一条长链”，但代码 13.13 实际调用 <code>ulam(..., chains=4)</code>。译稿以可执行代码为准。</aside>
+    <figure class="code-listing" id="code-13-13"><figcaption>R 代码 13.13</figcaption><pre><code>dat &lt;- list( Si=dsim$Si , Ni=dsim$Ni , pond=dsim$pond )
+m13.3 &lt;- ulam(
+    alist(
+        Si ~ dbinom( Ni , p ),
+        logit(p) &lt;- a_pond[pond],
+        a_pond[pond] ~ dnorm( a_bar , sigma ),
+        a_bar ~ dnorm( 0 , 1.5 ),
+        sigma ~ dexp( 1 )
+    ), data=dat , chains=4 )</code></pre></figure>
+    <p>上面拟合了基本的变化截距模型。可以像往常一样用 <code>precis</code> 查看 <span class="math-inline"><var>ᾱ</var></span> 与 <span class="math-inline"><var>σ</var></span> 的估计：</p>
+    <figure class="code-listing" id="code-13-14"><figcaption>R 代码 13.14</figcaption><pre><code>precis( m13.3 , depth=2 )</code></pre><pre class="code-output"><code>             mean   sd  5.5% 94.5% n_eff Rhat
+a_pond[1]    0.29 0.81 -0.97  1.59  3225 1.00
+a_pond[2]    2.76 1.15  1.13  4.78  2050 1.00
+...
+a_pond[59]   1.87 0.46  1.17  2.66  3579 1.00
+a_pond[60]   2.38 0.55  1.58  3.32  2829 1.00
+a_bar        1.82 0.22  1.48  2.19  1706 1.00
+sigma        1.41 0.21  1.11  1.78   708 1.01</code></pre></figure>
+    <p>输出已缩写，因为共有 60 个截距参数，每个池塘一个。现在计算预测存活比例，并把它们加入不断扩展的模拟数据框；为表明这一列保存部分汇聚估计，把它命名为 <code>p_partpool</code>：</p>
+    <figure class="code-listing" id="code-13-15"><figcaption>R 代码 13.15</figcaption><pre><code>post &lt;- extract.samples( m13.3 )
+dsim$p_partpool &lt;- apply( inv_logit(post$a_pond) , 2 , mean )</code></pre></figure>
+    <p>要与生成数据时使用的逐池塘真实存活概率比较，还需要利用 <code>true_a</code> 列算出真值：</p>
+    <figure class="code-listing" id="code-13-16"><figcaption>R 代码 13.16</figcaption><pre><code>dsim$p_true &lt;- inv_logit( dsim$true_a )</code></pre></figure>
+    <p>绘图并领会本课重点之前，最后要计算估计值与真实变化效应之间的绝对误差。利用现有列即可：</p>
+    <figure class="code-listing" id="code-13-17"><figcaption>R 代码 13.17</figcaption><pre><code>nopool_error &lt;- abs( dsim$p_nopool - dsim$p_true )
+partpool_error &lt;- abs( dsim$p_partpool - dsim$p_true )</code></pre></figure>
+    <p>现在可以绘图。下面的代码足以得到基本图形：</p>
+    <figure class="code-listing" id="code-13-18"><figcaption>R 代码 13.18</figcaption><pre><code>plot( 1:60 , nopool_error , xlab="pond" , ylab="absolute error" ,
+    col=rangi2 , pch=16 )
+points( 1:60 , partpool_error )</code></pre></figure>
+    <p>图 13.3 又添加了一些信息。蓝色实心点表示无汇聚估计，黑色空心圆表示变化效应估计。横轴是 1 到 60 的池塘编号，纵轴是平均估计存活概率与真实存活概率之间的距离。接近底部的点误差小，靠近顶部的点误差大，有些超过 20%。竖线分隔初始蝌蚪密度不同的池塘组；蓝色实线段与黑色虚线段分别表示同一初始大小组中，无汇聚与部分汇聚估计的平均误差。</p>
+    <figure class="book-figure pond-errors-figure" id="fig-13-3"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的六十个模拟池塘无汇聚与部分汇聚绝对误差比较图"><img src="/media/chapter-13-pond-errors.svg" alt="蓝色实心点表示无汇聚绝对误差，黑色空心点表示部分汇聚绝对误差，小池塘的误差更大且部分汇聚平均改善更明显"></div><p class="scroll-hint">图较宽，可横向滚动比较四种池塘大小下的绝对误差。</p><figcaption><strong>图 13.3：</strong>模拟蝌蚪池塘中，无汇聚估计与部分汇聚估计的误差。横轴是池塘编号，纵轴是预测存活比例相对于模拟真值的绝对误差；点越高，估计越差。蓝色表示无汇聚，黑色表示部分汇聚；蓝色实线与黑色虚线是每种初始蝌蚪密度下两类估计的平均误差。小池塘产生的误差更多，但部分汇聚平均而言更好，尤其是在较小池塘中。</figcaption></figure>
+    <p>可以用 <code>aggregate</code> 计算这些平均误差率：</p>
+    <figure class="code-listing" id="code-13-19"><figcaption>R 代码 13.19</figcaption><pre><code>nopool_avg &lt;- aggregate(nopool_error,list(dsim$Ni),mean)
+partpool_avg &lt;- aggregate(partpool_error,list(dsim$Ni),mean)</code></pre></figure>
+    <p>图 13.3 首先表明，两类估计在右侧较大的池塘中都准确得多。在没有混杂时，数据更多通常意味着估计更好；若存在混杂，更多数据也可能只会让事情更糟，但本模拟没有混杂。小池塘样本量很小，无汇聚和部分汇聚都不能施展魔法，所以图左侧预测更差。</p>
+    <p>第二，蓝色平均线总是位于黑色虚线上方或非常接近它；除了中池塘组外，无汇聚估计在各组中的平均误差更高。部分汇聚并非每一次都更好，只是长期平均而言更好。两类估计都会随样本量减少而变差，但变化效应估计平均占优。第三，池塘越小，蓝线与黑色虚线的距离越大；样本量下降时两者都会受损，部分汇聚受损较少。</p>
+    <p>图中的模式具有代表性，但毕竟只是一次随机模拟。怎样在不重新编译模型的情况下，用新模拟数据快速重跑模型，可参见本节末尾的“过度思考”框。</p>
+    <p class="continuation-note">收缩如何调和总均值与逐池塘均值、极端池塘的例外，以及重复池塘模拟的代码 13.20 将从原书 PDF 第 444 页继续。</p>
   </section>
 
   <section class="endnotes" id="chapter-13-notes" role="doc-endnotes"><h2>尾注</h2><ol start="185"><li id="note-185">Wearing 的妻子 Deborah 写过一本关于他患病后两人生活的书（Wearing，2005）。他的故事也出现在多部纪录片中；快速搜索互联网还能找到许多新闻报道。 <a class="backref" href="#note-185-ref" aria-label="返回正文">↩</a></li><li id="note-186">Gelman（2005）第 20 页第 6 节列出了一组彼此差异极大的“随机效应”定义，读来颇有趣。 <a class="backref" href="#note-186-ref" aria-label="返回正文">↩</a></li><li id="note-187">Vonesh 与 Bolker（2005）。 <a class="backref" href="#note-187-ref" aria-label="返回正文">↩</a></li><li id="note-188">这里采用 Gelman（2005）的术语。他认为，对大多数人而言，常用的“随机效应”一词几乎无助于理解，反而似乎会助长误解；部分原因是“固定”和“随机”对不同统计学家有不同含义。详见该文第 20–21 页。不过，我完全明白：试图推广 Gelman 的替代术语，基本等同于迎着强风吐口水。 <a class="backref" href="#note-188-ref" aria-label="返回正文">↩</a></li><li id="note-189">“多”也经常指多个线性模型，尤其常见于“层级线性模型”文献。不管怎样，我们谈论的仍是同一种机器人。 <a class="backref" href="#note-189-ref" aria-label="返回正文">↩</a></li><li id="note-190">注意，正则化本身仍有不确定性。所以，这个模型并不完全等同于直接假设一个标准差恒为 1.6 的正则化先验；相反，每个水槽的截距还会对 <span class="math-inline"><var>σ</var></span>（以及 <span class="math-inline"><var>ᾱ</var></span>）的不确定性取平均。 <a class="backref" href="#note-190-ref" aria-label="返回正文">↩</a></li><li id="note-191">这一事实早在人们能够实际使用多层模型之前就已为人所知；可参见 Stein（1955）那篇影响深远的非 Bayes 论文。 <a class="backref" href="#note-191-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 13 章 PDF 第 429–440 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 441 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 13 章 PDF 第 429–443 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 444 页继续。</aside>
 </article>

@@ -11,6 +11,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 OUT1 = ROOT / "translations" / "zh" / "media" / "chapter-13-tank-shrinkage.svg"
 OUT2 = ROOT / "translations" / "zh" / "media" / "chapter-13-tank-population.svg"
+OUT3 = ROOT / "translations" / "zh" / "media" / "chapter-13-pond-errors.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 BLUE = "#6670ee"
@@ -270,12 +271,141 @@ def figure_13_2(hyperparameters: list[tuple[float, float]]) -> None:
     OUT2.write_text("\n".join(svg), encoding="utf-8")
 
 
+def figure_13_3() -> None:
+    """Rebuild the no-pooling versus partial-pooling simulation."""
+    pond_sizes = [5] * 15 + [10] * 15 + [25] * 15 + [35] * 15
+    # Exact R draws produced by set.seed(5005), a_bar=1.5, and sigma=1.5.
+    true_intercepts = [
+        0.56673123, 1.99002317, -0.13775688, 1.85676651, 3.91208800, 1.95414869,
+        1.48963805, 2.52407196, 2.17828010, 2.04776578, 2.74564559, -0.63722320,
+        3.03948315, 1.90733694, 3.54119394, 0.65165674, -1.16943954, 0.59568973,
+        0.38530177, 1.02961242, 0.07034006, 1.34936971, 2.45730258, -0.05251326,
+        2.20677386, 1.82918746, 1.33997120, 1.57233138, 1.25467353, 0.82663309,
+        2.65834264, 2.08241191, 1.50758907, 0.86265946, 0.22721714, 4.61568929,
+        -1.75144380, -1.03306026, 0.23817747, 5.35841158, 3.84572461, 1.81628755,
+        -0.34267584, 0.76111582, -1.55979666, -0.08456073, 4.37882074, 2.32597649,
+        1.78144089, 1.86990933, 1.58196519, 0.15560642, 1.50345864, 4.49654575,
+        0.56518221, 2.55806132, 0.56742678, 2.74606408, 1.50422253, 2.49737954,
+    ]
+    survivor_counts = [
+        4, 5, 1, 5, 5, 5, 2, 5, 4, 4, 5, 2, 5, 5, 5,
+        8, 1, 7, 2, 8, 4, 9, 10, 6, 10, 9, 7, 9, 8, 7,
+        23, 22, 21, 19, 16, 25, 6, 5, 16, 25, 25, 23, 11, 16, 5,
+        17, 35, 31, 30, 33, 32, 20, 31, 35, 26, 33, 23, 35, 29, 32,
+    ]
+    true_probabilities = [logistic(value) for value in true_intercepts]
+    no_pooling = [count / size for count, size in zip(survivor_counts, pond_sizes)]
+
+    rng = random.Random(1313)
+    intercepts = [
+        math.log(((count + 0.5) / (size + 1.0)) / (1.0 - (count + 0.5) / (size + 1.0)))
+        for count, size in zip(survivor_counts, pond_sizes)
+    ]
+    alpha_bar = sum(intercepts) / len(intercepts)
+    sigma = 1.5
+    probability_sums = [0.0] * len(intercepts)
+    saved = 0
+
+    def tank_log_density(value: float, count: int, size: int) -> float:
+        return count * value - size * log1pexp(value) - (value - alpha_bar) ** 2 / (2.0 * sigma**2)
+
+    for iteration in range(70_000):
+        for index, (count, size) in enumerate(zip(survivor_counts, pond_sizes)):
+            old = intercepts[index]
+            proposal = old + rng.gauss(0.0, 0.32)
+            if math.log(rng.random()) < tank_log_density(proposal, count, size) - tank_log_density(old, count, size):
+                intercepts[index] = proposal
+        variance = 1.0 / (len(intercepts) / sigma**2 + 1.0 / 1.5**2)
+        alpha_bar = rng.gauss(variance * sum(intercepts) / sigma**2, math.sqrt(variance))
+        old_log_sigma = math.log(sigma)
+        proposal_log_sigma = old_log_sigma + rng.gauss(0.0, 0.07)
+
+        def sigma_log_density(log_sigma: float) -> float:
+            candidate = math.exp(log_sigma)
+            sum_squares = sum((value - alpha_bar) ** 2 for value in intercepts)
+            return -(len(intercepts) - 1) * math.log(candidate) - sum_squares / (2.0 * candidate**2) - candidate
+
+        if math.log(rng.random()) < sigma_log_density(proposal_log_sigma) - sigma_log_density(old_log_sigma):
+            sigma = math.exp(proposal_log_sigma)
+        if iteration >= 20_000 and iteration % 10 == 0:
+            saved += 1
+            for index, value in enumerate(intercepts):
+                probability_sums[index] += logistic(value)
+
+    partial_pooling = [value / saved for value in probability_sums]
+    no_pooling_error = [abs(estimate - truth) for estimate, truth in zip(no_pooling, true_probabilities)]
+    partial_pooling_error = [abs(estimate - truth) for estimate, truth in zip(partial_pooling, true_probabilities)]
+    no_pooling_average = [sum(no_pooling_error[start:start + 15]) / 15 for start in range(0, 60, 15)]
+    partial_pooling_average = [sum(partial_pooling_error[start:start + 15]) / 15 for start in range(0, 60, 15)]
+
+    width, height = 1200, 720
+    x0, y0, x1, y1 = 105.0, 85.0, 1120.0, 590.0
+
+    def xy(pond: float, error: float) -> tuple[float, float]:
+        return x0 + (pond - 1.0) / 59.0 * (x1 - x0), y1 - error / 0.45 * (y1 - y0)
+
+    svg = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
+        '<title>图 13.3：无汇聚与部分汇聚估计的绝对误差</title>',
+        '<desc>六十个模拟池塘按初始蝌蚪数量分为四组。蓝色实心点是无汇聚估计的绝对误差，黑色空心点是部分汇聚估计的误差；小池塘误差更大，部分汇聚平均改善最明显。</desc>',
+        '<rect width="1200" height="720" fill="#fff"/>',
+        f'<line x1="{x0}" y1="{y1}" x2="{x1}" y2="{y1}" stroke="{INK}" stroke-width="2"/>',
+        f'<line x1="{x0}" y1="{y0}" x2="{x0}" y2="{y1}" stroke="{INK}" stroke-width="2"/>',
+    ]
+    for value in [0.0, 0.1, 0.2, 0.3, 0.4]:
+        _, y = xy(1, value)
+        svg.extend([
+            f'<line x1="{x0 - 7}" y1="{y:.1f}" x2="{x0}" y2="{y:.1f}" stroke="{INK}"/>',
+            text_el(x0 - 15, y + 6, f"{value:.1f}", size=17, anchor="end"),
+        ])
+    for pond in [1, 10, 20, 30, 40, 50, 60]:
+        x, _ = xy(pond, 0)
+        svg.extend([
+            f'<line x1="{x:.1f}" y1="{y1}" x2="{x:.1f}" y2="{y1 + 7}" stroke="{INK}"/>',
+            text_el(x, y1 + 29, pond, size=17, anchor="middle"),
+        ])
+    for divider in [15.5, 30.5, 45.5]:
+        x, _ = xy(divider, 0)
+        svg.append(f'<line x1="{x:.1f}" y1="{y0}" x2="{x:.1f}" y2="{y1}" stroke="#777" stroke-width="1.4"/>')
+    labels = ["极小池塘（5）", "小池塘（10）", "中池塘（25）", "大池塘（35）"]
+    for group, label in enumerate(labels):
+        center, _ = xy(group * 15 + 8, 0.43)
+        svg.append(text_el(center, y0 + 5, label, size=18, anchor="middle"))
+        start_x, _ = xy(group * 15 + 1, 0)
+        end_x, _ = xy(group * 15 + 15, 0)
+        _, blue_y = xy(1, no_pooling_average[group])
+        _, black_y = xy(1, partial_pooling_average[group])
+        svg.extend([
+            f'<line x1="{start_x:.1f}" y1="{blue_y:.1f}" x2="{end_x:.1f}" y2="{blue_y:.1f}" stroke="{BLUE}" stroke-width="3"/>',
+            f'<line x1="{start_x:.1f}" y1="{black_y:.1f}" x2="{end_x:.1f}" y2="{black_y:.1f}" stroke="{INK}" stroke-width="3" stroke-dasharray="9 7"/>',
+        ])
+    for pond, (no_error, partial_error) in enumerate(zip(no_pooling_error, partial_pooling_error), start=1):
+        x, blue_y = xy(pond, no_error)
+        _, black_y = xy(pond, partial_error)
+        svg.extend([
+            f'<circle cx="{x:.1f}" cy="{blue_y:.1f}" r="6.5" fill="{BLUE}"/>',
+            f'<circle cx="{x:.1f}" cy="{black_y:.1f}" r="6.5" fill="#fff" stroke="{INK}" stroke-width="2"/>',
+        ])
+    svg.extend([
+        text_el((x0 + x1) / 2, 670, "池塘编号", size=22, anchor="middle"),
+        text_el(30, (y0 + y1) / 2, "绝对误差", size=22, anchor="middle", rotate=-90),
+        '<circle cx="800" cy="690" r="6.5" fill="#6670ee"/>',
+        text_el(818, 696, "无汇聚", size=17),
+        '<circle cx="930" cy="690" r="6.5" fill="#fff" stroke="#30332e" stroke-width="2"/>',
+        text_el(948, 696, "部分汇聚", size=17),
+        '</svg>',
+    ])
+    OUT3.write_text("\n".join(svg), encoding="utf-8")
+
+
 def main() -> None:
     posterior_means, hyperparameters = sample_posterior()
     figure_13_1(posterior_means, hyperparameters)
     figure_13_2(hyperparameters)
+    figure_13_3()
     print(OUT1)
     print(OUT2)
+    print(OUT3)
 
 
 if __name__ == "__main__":
