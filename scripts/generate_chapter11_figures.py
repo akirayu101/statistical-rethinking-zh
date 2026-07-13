@@ -17,6 +17,7 @@ OUT8 = ROOT / "translations/zh/media/chapter-11-ucb-dag-collider.svg"
 OUT9 = ROOT / "translations/zh/media/chapter-11-poisson-intercept-priors.svg"
 OUT10 = ROOT / "translations/zh/media/chapter-11-poisson-slope-priors.svg"
 OUT11 = ROOT / "translations/zh/media/chapter-11-oceania-posterior.svg"
+OUT12 = ROOT / "translations/zh/media/chapter-11-oceania-scientific.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 BLUE = "#6670ee"
@@ -644,6 +645,48 @@ def oceania_posterior_plot() -> None:
     OUT11.write_text("\n".join(parts) + "\n", encoding="utf-8")
 
 
+def oceania_scientific_plot() -> None:
+    width, height = 900, 520
+    left, right, top, bottom = 105, 860, 65, 435
+    sx = lambda value: left + value / 300000 * (right - left)
+    sy = lambda value: bottom - value / 80 * (bottom - top)
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">',
+        '<title>大洋洲工具计数科学模型的后验预测</title>',
+        '<desc>高接触与低接触社会的工具数量预测都经过原点，高接触曲线始终位于低接触曲线上方。</desc>',
+        '<rect width="100%" height="100%" fill="#fbfaf6"/>',
+        f'<rect x="{left}" y="{top}" width="{right-left}" height="{bottom-top}" fill="#fff" stroke="{GRID}"/>',
+    ]
+    for tick in (0, 50000, 150000, 250000):
+        xx = sx(tick)
+        label = "0" if tick == 0 else f"{tick // 10000}万"
+        parts.extend([f'<line x1="{xx:.1f}" y1="{bottom}" x2="{xx:.1f}" y2="{bottom+7}" stroke="{INK}"/>', text(xx, bottom + 28, label, size=15, anchor="middle")])
+    for tick in (0, 20, 40, 60, 80):
+        yy = sy(tick)
+        parts.extend([
+            f'<line x1="{left-7}" y1="{yy:.1f}" x2="{left}" y2="{yy:.1f}" stroke="{INK}"/>',
+            text(left - 12, yy + 5, tick, size=15, anchor="end"),
+            f'<line x1="{left}" y1="{yy:.1f}" x2="{right}" y2="{yy:.1f}" stroke="{GRID}" stroke-dasharray="4 6"/>',
+        ])
+    parts.extend([
+        f'<line x1="{left}" y1="{bottom}" x2="{right}" y2="{bottom}" stroke="{INK}" stroke-width="1.8"/>',
+        f'<line x1="{left}" y1="{bottom}" x2="{left}" y2="{top}" stroke="{INK}" stroke-width="1.8"/>',
+        text((left + right) / 2, height - 22, "人口", size=19, anchor="middle"),
+        text(28, (top + bottom) / 2, "工具总数", size=19, anchor="middle", rotate=-90),
+    ])
+    population = [300000 * index / 149 for index in range(150)]
+    low = [(value, 4.58 * value ** .20 if value > 0 else 0) for value in population]
+    high = [(value, 4.34 * value ** .22 if value > 0 else 0) for value in population]
+    polyline(parts, low, sx, sy, color=INK, width=3)
+    polyline(parts, high, sx, sy, color=BLUE, width=4)
+    parts.extend([
+        text(sx(135000), sy(64), "高接触率", size=19, weight=700, fill=BLUE),
+        text(sx(155000), sy(48), "低接触率", size=19, weight=700, fill=INK),
+        '</svg>',
+    ])
+    OUT12.write_text("\n".join(parts) + "\n", encoding="utf-8")
+
+
 if __name__ == "__main__":
     figure_11_3()
     parameter_plots()
@@ -654,5 +697,6 @@ if __name__ == "__main__":
     poisson_intercept_priors()
     poisson_slope_priors()
     oceania_posterior_plot()
-    for path in (OUT1, OUT2, OUT3, OUT4, OUT5, OUT6, OUT7, OUT8, OUT9, OUT10, OUT11):
+    oceania_scientific_plot()
+    for path in (OUT1, OUT2, OUT3, OUT4, OUT5, OUT6, OUT7, OUT8, OUT9, OUT10, OUT11, OUT12):
         print(path)

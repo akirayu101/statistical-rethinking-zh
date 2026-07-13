@@ -937,7 +937,17 @@
     "model complexity": "模型复杂度",
     "bounded distribution": "有界分布",
     "sample composition": "样本组成",
-    "overfitting risk": "过拟合风险"
+    "overfitting risk": "过拟合风险",
+    "dynamic model": "动力模型",
+    "innovation process": "创新过程",
+    "loss process": "遗失过程",
+    "elasticity": "弹性",
+    "scientific model": "科学模型",
+    "rate heterogeneity": "率异质性",
+    "negative binomial distribution": "负二项分布",
+    "gamma-Poisson distribution": "gamma-Poisson 分布",
+    "exposure (count model)": "暴露量",
+    "offset": "offset"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "blavaan", "AIC", "DIC", "WAIC", "BIC", "PSIS-LOO", "MCMC", "HMC"

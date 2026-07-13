@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-11" data-source-pages="347-377">
-  <header class="chapter-header"><p class="eyebrow">第十一章</p><h1>上帝给整数加了料</h1><p class="source-range">当前译稿对应原书 PDF 第 347–377 页</p></header>
+<article class="book-article" data-chapter="chapter-11" data-source-pages="347-380">
+  <header class="chapter-header"><p class="eyebrow">第十一章</p><h1>上帝给整数加了料</h1><p class="source-range">当前译稿对应原书 PDF 第 347–380 页</p></header>
 
   <div class="chapter-introduction" id="intro-11">
     <p>太空中的寒冷以 Kelvin 命名，约为 3 Kelvin，也就是绝对零度以上约 3 摄氏度。Kelvin 也是苏格兰格拉斯哥附近一条河流的名字；同一条河又把名字给了 William Thomson，也就是 Kelvin 勋爵（1824 年生，1907 年卒）——英国第一位获封贵族头衔的科学家。Thomson 在格拉斯哥的实验室研究热力学，如今太空的寒冷便以一条苏格兰河流为名。</p>
@@ -578,16 +578,55 @@ shade( lci , P_seq , xpd=TRUE )</code></pre></figure>
       <figure class="book-figure oceania-posterior-figure" id="fig-11-9"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的大洋洲工具模型后验预测双面板图"><img src="/media/chapter-11-oceania-posterior.svg" alt="大洋洲十个社会的工具总数与人口关系，分别以标准化人口对数和原始人口为横轴；开放点为低接触社会，实心点为高接触社会，曲线及阴影为后验预测"></div><p class="scroll-hint">图较宽，可横向滚动比较标准化人口对数与原始人口尺度。</p><figcaption><strong>图 11.9：</strong>大洋洲工具模型的后验预测。实心点是历史上接触率较高的社会，空心点是接触率较低的社会。点的大小按相对 LOOIS Pareto <var>k</var> 值缩放，点越大，影响力越强。实线是高接触社会的后验均值，虚线是低接触社会的后验均值；阴影区域给出 89% 相容区间。左：模型代码所用的标准化人口对数尺度。右：同一组预测在自然人口尺度上的样子。</figcaption></figure>
       <p>结果见图 11.9。空心点是低接触社会，实心点是高接触社会，点的大小按 Pareto <var>k</var> 值缩放。虚线是低接触率的后验均值，实线是高接触率的后验均值。</p>
       <p>右图把同一组预测换到自然尺度，横轴是原始人口规模。绘图代码非常相似，只需逆转标准化，把 <code>P_seq</code> 转回自然尺度，然后在 <code>lines</code> 与 <code>shade</code> 命令中用转换后的序列替换 <code>P_seq</code>：</p>
-      <figure class="code-listing" id="code-11-48"><figcaption>R 代码 11.48（续）</figcaption><pre><code>plot( d$population , d$total_tools , xlab="population" , ylab="total tools" ,
+      <figure class="code-listing" id="code-11-48"><figcaption>R 代码 11.48</figcaption><pre><code>plot( d$population , d$total_tools , xlab="population" , ylab="total tools" ,
     col=rangi2 , pch=ifelse( dat$cid==1 , 1 , 16 ) , lwd=2 ,
     ylim=c(0,75) , cex=1+normalize(k) )
 
-ns &lt;- 100</code></pre></figure>
-      <p class="continuation-note">代码 11.48 的反标准化与自然尺度预测、Hawaii 高影响力分析及机制模型，将从原书 PDF 第 378 页继续。</p>
+ns &lt;- 100
+P_seq &lt;- seq( from=-5 , to=3 , length.out=ns )
+# 1.53 是 log(population) 的标准差
+# 9 是 log(population) 的均值
+pop_seq &lt;- exp( P_seq*1.53 + 9 )
+
+lambda &lt;- link( m11.10 , data=data.frame( P=P_seq , cid=1 ) )
+lmu &lt;- apply( lambda , 2 , mean )
+lci &lt;- apply( lambda , 2 , PI )
+lines( pop_seq , lmu , lty=2 , lwd=1.5 )
+shade( lci , pop_seq , xpd=TRUE )
+
+lambda &lt;- link( m11.10 , data=data.frame( P=P_seq , cid=2 ) )
+lmu &lt;- apply( lambda , 2 , mean )
+lci &lt;- apply( lambda , 2 , PI )
+lines( pop_seq , lmu , lty=1 , lwd=1.5 )
+shade( lci , pop_seq , xpd=TRUE )</code></pre></figure>
+      <p>Hawaii（<span class="math-inline"><var>k</var> = 1.01</span>）、Tonga（<span class="math-inline"><var>k</var> = 0.69</span>）、Yap（<span class="math-inline"><var>k</var> = 0.60</span>）和 Trobriand 群岛（<span class="math-inline"><var>k</var> = 0.56</span>）都是高影响力点。大多数点的影响力不算太强，但 Hawaii 非常强。图中很容易看出原因：它的人口规模极端，同时工具数量最多；在自然尺度上尤其明显。这并不表示 Hawaii 是某种应从数据中删除的“离群值”，却意味着它强烈影响后验分布。本章末尾的练习会请你删掉 Hawaii，看看会发生什么。现在先做一件有趣得多的事。</p>
+      <p class="source-erratum" id="erratum-11-yap-name"><strong>原文勘误：</strong>原书正文把 <code>Yap</code> 误印成 <code>Tap</code>；数据表与图 11.9 都确认应为 Yap，译稿按正确名称呈现。</p>
+      <p>观察图 11.9 的后验预测。人口较少时，高接触社会的趋势（实线）高于低接触社会（虚线）；但模型随后允许它变得更低，两条均值曲线在人口较多时相交。当然，模型其实是在说：它完全不知道高接触社会在人口较多时会怎样，因为数据中没有人口很多且接触率高的社会，只有低接触率的 Hawaii。可这仍是一个我们明知不该出现的荒唐模式。一个人口与 Hawaii 相同、但接触率高的反事实 Hawaii，理论上至少应拥有和真实 Hawaii 一样多的工具，而不该更少。</p>
+      <p>模型之所以能产生这种荒唐模式，是因为它把截距当成自由参数。为什么这不好？因为这不能保证 <span class="math-inline"><var>λ</var></span> 的趋势经过原点——人口为零时，工具总数也应为零。没人就没有工具！人口增加，工具也增加。只要停下来想一想，截距其实是白送的。</p>
+      <p>那就停下来想想。我们可以不用上面的惯常 GLM，而改用一个真正描述人口规模与工具组合复杂度关系的模型。所谓“真正的模型”，是指根据科学知识与假想因果效应专门构造的模型。缺点是它不再那么像统计学——领域专长突然派上了用场；优点则是它更像科学。</p>
+      <p>我们想要的是工具文化演化的动力模型。工具并非一次性全部创造出来，而是随时间发展。创新过程把工具加入一个群体，遗失过程则把工具移除；这些力量达到平衡，形成规模各异的工具组合。</p>
+      <figure class="book-figure oceania-scientific-figure" id="fig-11-10"><div class="figure-scroll"><img src="/media/chapter-11-oceania-scientific.svg" alt="大洋洲工具计数科学模型的两条后验预测曲线，高接触率曲线始终高于低接触率曲线，并且都从人口和工具数为零的原点出发"></div><figcaption><strong>图 11.10：</strong>大洋洲工具计数科学模型的后验预测。可与图 11.9 右图比较。这个模型强制趋势经过必然的原点，因此行为更合理；参数也在线性模型之外具有实际含义。</figcaption></figure>
+      <p>最简单的模型假设，创新与人口规模成正比，但存在一定的收益递减（弹性）；同时假设工具遗失与工具数量成正比，不存在收益递减。如果还记得第 1 章关于中性演化的讨论，这正是同一类模型：理论模型比我们从中推导出的统计模型更复杂。</p>
+      <p>下面的“过度思考”框给出这个模型的数学版本，并展示如何在 <code>ulam</code> 中构建它，最终得到 <code>m11.11</code>。我们把它称为<strong>科学模型</strong>，把之前的 <code>m11.10</code> 称为<strong>地心模型</strong>。图 11.10 在自然人口尺度上展示科学模型的后验预测。与图 11.9 中相应面板相比，高接触社会的趋势现在始终位于低接触社会上方，两条趋势也都如其所应地经过原点。科学模型仍远非完美，却提供了更好的学习基础；参数现在含义更清楚，不再只是潮汐预测机底部的一堆机械零件。</p>
+      <p>你也许会问，科学模型与地心模型相比如何。无论使用 PSIS 还是 WAIC，它的预期样本外准确度都比地心模型好几个点；它仍会被 Hawaii 与 Tonga 拉扯。后面一章会再次分析这些数据，并通过考虑各社会之间的距离，以另一种方式处理接触率。</p>
+
+      <aside class="overthinking-box" id="overthinking-tool-innovation"><h3>过度思考：对工具创新建模</h3><p>把上面的文字模型写成数学形式，一步时间内工具期望数量的变化为：</p><div class="equation-block wallis-equation" id="eq-11-tool-dynamics"><span class="math-line">Δ<var>T</var> = <var>αP</var><sup><var>β</var></sup> − <var>γT</var></span></div><p>其中，<span class="math-inline"><var>P</var></span> 是人口规模，<span class="math-inline"><var>T</var></span> 是工具数量，<span class="math-inline"><var>α</var>、<var>β</var>、<var>γ</var></span> 是待估参数。要找到工具的平衡数量 <span class="math-inline"><var>T</var></span>，只需令 <span class="math-inline">Δ<var>T</var> = 0</span> 并解出 <span class="math-inline"><var>T</var></span>：</p><div class="equation-block wallis-equation" id="eq-11-tool-equilibrium"><span class="math-line"><var>T̂</var> = <var>αP</var><sup><var>β</var></sup>/<var>γ</var></span></div><p>现在把它放进 Poisson 模型。结果周围的噪声仍为 Poisson，因为在这里它依然是最大熵分布：<code>total_tools</code> 是没有明确上界的计数。不过，线性模型已经消失：</p><div class="equation-block wallis-equation" id="eq-11-scientific-poisson-model"><div><var>T</var><sub>i</sub> ∼ Poisson(<var>λ</var><sub>i</sub>)</div><div><var>λ</var><sub>i</sub> = <var>αP</var><sub>i</sub><sup><var>β</var></sup>/<var>γ</var></div></div><p>注意，这里没有 link 函数！只要保证参数为正，<span class="math-inline"><var>λ</var></span> 就会保持为正。下面的代码为 <span class="math-inline"><var>β</var></span> 与 <span class="math-inline"><var>γ</var></span> 使用指数先验，为 <span class="math-inline"><var>α</var></span> 使用对数正态先验，因此它们都必为正。</p><p>构建模型时，还希望让部分或全部参数随接触率变化。既然接触率被认为会中介人口规模的影响，就让 <span class="math-inline"><var>α</var></span> 与 <span class="math-inline"><var>β</var></span> 随接触率变化。接触率也可能影响 <span class="math-inline"><var>γ</var></span>，因为贸易网络或许能阻止工具随时间消失；不过把这一点留作练习。</p><figure class="code-listing" id="code-11-49"><figcaption>R 代码 11.49</figcaption><pre><code>dat2 &lt;- list( T=d$total_tools, P=d$population, cid=d$contact_id )
+m11.11 &lt;- ulam(
+    alist(
+        T ~ dpois( lambda ),
+        lambda &lt;- exp(a[cid])*P^b[cid]/g,
+        a[cid] ~ dnorm(1,1),
+        b[cid] ~ dexp(1),
+        g ~ dexp(1)
+    ), data=dat2 , chains=4 , log_lik=TRUE )</code></pre></figure><p>这些精确先验是我在幕后设定的，不必让它们分散注意力；建议你自行尝试。这里的教训在于怎样把预测变量嵌入模型。用先验模拟设计先验的方法不变，只是参数现在具有实际含义，过程反而更容易。最后，生成后验预测的代码与正文中为 <code>m11.10</code> 绘图的代码并无不同。</p></aside>
     </section>
+
+    <section id="sec-11-2-2"><h3>11.2.2 负二项（gamma-Poisson）模型</h3><p>Poisson 模型通常会留下大量无法解释的变异。这些额外变异大概来自随案例而变的未观测影响，使真实的 <span class="math-inline"><var>λ</var></span> 彼此不同。忽略这种变异，也就是<strong>率异质性</strong>，会像在二项模型中一样造成混杂。因此，Poisson GLM 一种非常常见的扩展，是把 Poisson 分布换成<strong>负二项分布</strong>。它其实是伪装起来的 Poisson 分布，也因此有时称为 <strong>gamma-Poisson 分布</strong>：它是不同 Poisson 分布的混合。下一章会处理混合模型。</p></section>
+
+    <section id="sec-11-2-3"><h3>11.2.3 示例：暴露量与 offset</h3><p>参数 <span class="math-inline"><var>λ</var></span> 是 Poisson 模型的期望值，但也常被理解为一个率。两种解释都正确；意识到这一点，就能为各案例 <span class="math-inline"><var>i</var></span> 暴露量不同的情况构建 Poisson 模型。例如，邻近修道院每周汇总完成的手稿，而你的修道院每天汇总。如果同时得到两套记录，面对不同时间跨度、不同暴露量下聚合的计数，该怎样在同一个模型中分析？</p><p>方法如下。隐含地，<span class="math-inline"><var>λ</var></span> 等于单位时间或距离 <span class="math-inline"><var>τ</var></span> 内的期望事件数 <span class="math-inline"><var>μ</var></span>。这意味着 <span class="math-inline"><var>λ</var> = <var>μ</var>/<var>τ</var></span>，从而可以重新定义 link：</p><div class="equation-block wallis-equation" id="eq-11-poisson-exposure-rate"><div><var>y</var><sub>i</sub> ∼ Poisson(<var>λ</var><sub>i</sub>)</div><div>log <var>λ</var><sub>i</sub> = log(<var>μ</var><sub>i</sub>/<var>τ</var><sub>i</sub>) = <var>α</var> + <var>βx</var><sub>i</sub></div></div><p class="continuation-note">暴露量的等价改写、offset 解释与日/周手稿模拟，将从原书 PDF 第 381 页继续。</p></section>
   </section>
 
   <section class="endnotes" id="chapter-11-notes" role="doc-endnotes"><h2>尾注</h2><ol start="166"><li id="note-166">重要数论家 Leopold Kronecker 据称说过：“上帝创造了整数，其余一切皆为人造。”（德文：<span lang="de">Die ganzen Zahlen hat der liebe Gott gemacht, alles andere ist Menschenwerk.</span>） <a class="backref" href="#note-166-ref" aria-label="返回正文">↩</a></li><li id="note-167">Silk 等（2005）。 <a class="backref" href="#note-167-ref" aria-label="返回正文">↩</a></li><li id="note-168">Bickel 等（1975）。 <a class="backref" href="#note-168-ref" aria-label="返回正文">↩</a></li><li id="note-169">Simpson（1951）。 <a class="backref" href="#note-169-ref" aria-label="返回正文">↩</a></li><li id="note-170">例如可参见 Pearl（2014）。关于 Simpson 悖论的论述浩如烟海，以至于你能找到看似彼此矛盾的解释。 <a class="backref" href="#note-170-ref" aria-label="返回正文">↩</a></li><li id="note-171">Kline 与 Boyd（2010）。 <a class="backref" href="#note-171-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 11 章 PDF 第 347–377 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 378 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 11 章 PDF 第 347–380 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 381 页继续。</aside>
 </article>
