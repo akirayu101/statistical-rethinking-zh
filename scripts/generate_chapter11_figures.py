@@ -18,6 +18,7 @@ OUT9 = ROOT / "translations/zh/media/chapter-11-poisson-intercept-priors.svg"
 OUT10 = ROOT / "translations/zh/media/chapter-11-poisson-slope-priors.svg"
 OUT11 = ROOT / "translations/zh/media/chapter-11-oceania-posterior.svg"
 OUT12 = ROOT / "translations/zh/media/chapter-11-oceania-scientific.svg"
+OUT13 = ROOT / "translations/zh/media/chapter-11-exponential-gamma-generative.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 BLUE = "#6670ee"
@@ -687,6 +688,56 @@ def oceania_scientific_plot() -> None:
     OUT12.write_text("\n".join(parts) + "\n", encoding="utf-8")
 
 
+def exponential_gamma_generative_plot() -> None:
+    """Rebuild the two order-statistic density panels on source PDF page 391."""
+    width, height = 1200, 600
+    panels = ((55, "单个部件故障：指数分布"), (625, "多个部件故障：Gamma 分布"))
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">',
+        '<title>指数分布与 Gamma 分布的生成过程</title>',
+        '<desc>左图显示两个或五个部件中第一个故障的等待时间密度；右图显示十个部件中第二个或第五个故障的等待时间密度。</desc>',
+        '<rect width="100%" height="100%" fill="#fbfaf6"/>',
+    ]
+    geometries = []
+    for x, title in panels:
+        left, right, top, bottom = x + 85, x + 535, 95, 500
+        geometries.append((left, right, top, bottom))
+        parts.extend([
+            f'<rect x="{x}" y="45" width="535" height="500" rx="8" fill="#fff" stroke="{GRID}"/>',
+            text(x + 267, 78, title, size=22, anchor="middle", weight=700),
+            f'<line x1="{left}" y1="{bottom}" x2="{right}" y2="{bottom}" stroke="{INK}" stroke-width="1.6"/>',
+            f'<line x1="{left}" y1="{bottom}" x2="{left}" y2="{top}" stroke="{INK}" stroke-width="1.6"/>',
+            text((left + right) / 2, 535, "天", size=18, anchor="middle"),
+            text(x + 25, (top + bottom) / 2, "密度", size=18, anchor="middle", rotate=-90),
+        ])
+        for tick in (0, 20, 40, 60, 80, 100):
+            xx = left + tick / 100 * (right - left)
+            parts.extend([f'<line x1="{xx:.1f}" y1="{bottom}" x2="{xx:.1f}" y2="{bottom+6}" stroke="{INK}"/>', text(xx, bottom + 25, tick, size=14, anchor="middle")])
+        for tick in (0, .02, .04):
+            yy = bottom - tick / .05 * (bottom - top)
+            parts.extend([f'<line x1="{left-6}" y1="{yy:.1f}" x2="{left}" y2="{yy:.1f}" stroke="{INK}"/>', text(left - 10, yy + 5, f"{tick:.2f}", size=14, anchor="end")])
+
+    def order_density(day: float, n: int, m: int) -> float:
+        if day < 1 or day > 100:
+            return 0.0
+        f = (day - 1) / 99
+        coefficient = math.factorial(n) / (math.factorial(m - 1) * math.factorial(n - m))
+        return coefficient * f ** (m - 1) * (1 - f) ** (n - m) / 99
+
+    for panel_index, curves in enumerate((((2, 1, "2 个部件", INK), (5, 1, "5 个部件", BLUE)), ((10, 2, "2/10 个部件", INK), (10, 5, "5/10 个部件", BLUE)))):
+        left, right, top, bottom = geometries[panel_index]
+        sx = lambda value, left=left, right=right: left + value / 100 * (right - left)
+        sy = lambda value, top=top, bottom=bottom: bottom - value / .05 * (bottom - top)
+        for n, m, label, color in curves:
+            values = [(day, order_density(day, n, m)) for day in [index / 2 for index in range(201)]]
+            polyline(parts, values, sx, sy, color=color, width=3.2)
+            label_day = 62 if panel_index == 0 and n == 2 else (18 if panel_index == 0 else (15 if m == 2 else 48))
+            label_y = order_density(label_day, n, m)
+            parts.append(text(sx(label_day) + 8, sy(label_y) - 10, label, size=17, weight=700, fill=color))
+    parts.append('</svg>')
+    OUT13.write_text("\n".join(parts) + "\n", encoding="utf-8")
+
+
 if __name__ == "__main__":
     figure_11_3()
     parameter_plots()
@@ -698,5 +749,6 @@ if __name__ == "__main__":
     poisson_slope_priors()
     oceania_posterior_plot()
     oceania_scientific_plot()
-    for path in (OUT1, OUT2, OUT3, OUT4, OUT5, OUT6, OUT7, OUT8, OUT9, OUT10, OUT11, OUT12):
+    exponential_gamma_generative_plot()
+    for path in (OUT1, OUT2, OUT3, OUT4, OUT5, OUT6, OUT7, OUT8, OUT9, OUT10, OUT11, OUT12, OUT13):
         print(path)

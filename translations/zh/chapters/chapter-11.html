@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-11" data-source-pages="347-389">
-  <header class="chapter-header"><p class="eyebrow">第十一章</p><h1>上帝给整数加了料</h1><p class="source-range">当前译稿对应原书 PDF 第 347–389 页</p></header>
+<article class="book-article" data-chapter="chapter-11" data-source-pages="347-392">
+  <header class="chapter-header"><p class="eyebrow">第十一章</p><h1>上帝给整数加了料</h1><p class="source-range">当前译稿对应原书 PDF 第 347–392 页</p></header>
 
   <div class="chapter-introduction" id="intro-11">
     <p>太空中的寒冷以 Kelvin 命名，约为 3 Kelvin，也就是绝对零度以上约 3 摄氏度。Kelvin 也是苏格兰格拉斯哥附近一条河流的名字；同一条河又把名字给了 William Thomson，也就是 Kelvin 勋爵（1824 年生，1907 年卒）——英国第一位获封贵族头衔的科学家。Thomson 在格拉斯哥的实验室研究热力学，如今太空的寒冷便以一条苏格兰河流为名。</p>
@@ -781,9 +781,47 @@ exp(a1)/(exp(a1)+exp(a2))</code></pre><pre class="code-output"><code>[1] 0.38723
     </section>
   </section>
 
-  <section id="sec-11-4"><h2>11.4 删失与生存</h2><p>有时，对离散、可计数事件建模的正确方法，并不是建模计数本身，而是建模事件之间的时间。例如，假设我们关心动物收容所中猫被领养的速率。一只猫只能被领养一次——至少要等它再次被送养，才可能又被领养。它等待领养的时长为领养速率提供了信息，模型还可以告诉我们速率怎样随品种或毛色而变化。也许你不关心猫的领养（你这个怪物），但你大概会关心疾病发作与康复的速率、死亡时间、首次繁殖年龄，以及许多结构相似的变量。</p><p>处理这类数据的模型称为<strong>生存模型</strong>。生存模型研究的是可计数事物，但我们希望预测的结果是<strong>持续时间</strong>。持续时间是相对于某个参照点的连续位移，因此都是正实数。</p><p class="continuation-note">位移的最大熵分布、删失机制与猫领养数据，将从原书 PDF 第 390 页继续。</p></section>
+  <section id="sec-11-4"><h2>11.4 删失与生存</h2><p>有时，对离散、可计数事件建模的正确方法，并不是建模计数本身，而是建模事件之间的时间。例如，假设我们关心动物收容所中猫被领养的速率。一只猫只能被领养一次——至少要等它再次被送养，才可能又被领养。它等待领养的时长为领养速率提供了信息，模型还可以告诉我们速率怎样随品种或毛色而变化。也许你不关心猫的领养（你这个怪物），但你大概会关心疾病发作与康复的速率、死亡时间、首次繁殖年龄，以及许多结构相似的变量。</p><p>处理这类数据的模型称为<strong>生存模型</strong>。生存模型研究的是可计数事物，但我们希望预测的结果是<strong>持续时间</strong>。持续时间是相对于某个参照点的连续位移，因此都是正实数。</p><p>距离同样是正实数。这两类测量都是<strong>位移</strong>，建模方式也非常相似。位移最简单的分布是<strong>指数分布</strong>：当我们只知道数值的平均位移时，它就是最大熵分布。因此，如果目标只是估计事件的平均发生率，它是最保守的选择。<strong>Gamma 分布</strong>也很常用；当均值与平均量级（对数）固定时，Gamma 是最大熵分布。下面的“过度思考”框给出这两种分布的一些生成模型。还有许多其他选择，都允许事件率随时间变化。为简单起见，我们从指数分布开始。</p><p>保持结果分布简单的一个理由是，生存模型真正棘手的地方并不是为持续时间指定什么概率分布，而是怎样处理<strong>删失</strong>。当关注的事件没有在观测窗口内发生时，就出现删失。最简单的情形是，观测在事件发生前结束。例如，收容所里仍有猫在等待领养，其中许多最终会被领养。另一种删失，是其他事件发生后让关注的事件不再可能发生；例如，一只猫可能在等待领养时寿终正寝。</p><p>不能直接丢弃被删失的个体。想象 100 只猫同时开始等待领养，一个月后其中一半已被领养。领养率是多少？不能只用已被领养的猫计算，还必须考虑尚未被领养的猫。那些目前还没被领养、但最终会被领养的猫，等待时间显然比已经被领养的猫更长。因此，只看已领养猫得到的平均速率会向上偏——它被“以是否领养为条件”所混杂。</p><p>纳入删失观测并不困难，但需要本书此前未见过的一类模型。关键在于，对结果使用同一个分布假设，既能告诉我们以事件结束的任一已观测持续时间的概率，也能告诉我们等待同样长时间却仍未看到事件的概率。这确实是一种奇怪的生物。不妨先从生成模型——一次模拟——出发，为统计模型建立直觉，然后再分析一份真实的猫领养样本。</p>
+
+    <aside class="overthinking-box" id="overthinking-exponential-gamma-generative"><h3>过度思考：指数分布与 Gamma 分布的生成模型</h3><p>和所有最大熵分布一样，指数分布与 Gamma 分布来自一类生成过程：这些过程只保留底层机制的部分信息。想象一台机器有 <span class="math-inline"><var>N</var></span> 个部件，每个部件每天都有同样的故障概率；只要任一部件故障，整台机器就停止工作。机器在 <span class="math-inline"><var>x</var></span> 天后停机的概率是多少？下面比较有 2 个部件与 5 个部件的机器：</p><figure class="code-listing" id="code-11-64"><figcaption>R 代码 11.64</figcaption><pre><code>x2 &lt;- replicate( 1e5 , min(runif( 2 , 1 , 100 )) )
+x5 &lt;- replicate( 1e5 , min(runif( 5 , 1 , 100 )) )</code></pre></figure><p>若绘出 <code>x2</code> 与 <code>x5</code> 的密度，就会得到图 11.11 左侧的黑色与蓝色曲线。部件数量增加时，密度会收敛到指数分布，并不需要很多部件；当 <span class="math-inline"><var>N</var> = 5</span> 时，蓝色密度已经几乎完全是指数分布。</p><figure class="book-figure exponential-gamma-figure" id="fig-11-11"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的指数分布与 Gamma 分布生成过程双面板图"><img src="/media/chapter-11-exponential-gamma-generative.svg" alt="左图比较两个和五个部件中首个故障的等待时间密度，右图比较十个部件中第二个和第五个故障的等待时间密度"></div><figcaption><strong>图 11.11：</strong>指数分布与 Gamma 分布的生成过程。左：任一部件故障即停机，随着部件数增加，等待时间趋近指数分布。右：要等到多个部件故障才停机时产生 Gamma 分布。</figcaption></figure><p>右图对应 Gamma 分布：机器只有在 <span class="math-inline"><var>M</var></span> 个部件故障后才停机。下面的代码可以模拟这一过程：</p><figure class="code-listing" id="code-11-65"><figcaption>R 代码 11.65</figcaption><pre><code>N &lt;- 10
+M &lt;- 2
+x &lt;- replicate( 1e5 , sort(runif(N,1,100))[M] )</code></pre></figure><p>这会生成右图的黑色密度；蓝色密度则要求 <span class="math-inline"><var>M</var> = 5</span> 个部件故障。指数分布自然只是 Gamma 分布在 <span class="math-inline"><var>M</var> = 1</span> 时的特例。注意，这还是另一种得到近似高斯分布的方式。Gamma 分布的均值增大时，形状会越来越像高斯；上图的蓝色密度已经相当接近高斯。若必须有多件事发生才能引起某个事件，等待时间最终就可能看起来很像高斯。</p></aside>
+
+    <section id="sec-11-4-1"><h3>11.4.1 模拟猫。x</h3></section>
+    <section id="sec-11-4-2"><h3>11.4.2 真实猫。x</h3><p class="source-erratum" id="erratum-11-cat-placeholders"><strong>原文占位符：</strong>原书这两个小节标题后只印有字母 <code>x</code>，且 11.4.1 没有正文；译稿如实保留并明确标注。</p><p>对于已经观察到的领养事件，观测等待时间的概率很简单：</p><div class="equation-block wallis-equation" id="eq-11-cat-observed-duration"><span class="math-line"><var>D</var><sub>i</sub> ∼ Exponential(<var>λ</var><sub>i</sub>)</span></div><p>写成更原始的形式：</p><div class="equation-block wallis-equation" id="eq-11-cat-exponential-density"><span class="math-line"><var>p</var>(<var>D</var><sub>i</sub> | <var>λ</var><sub>i</sub>) = <var>λ</var><sub>i</sub> exp(−<var>λ</var><sub>i</sub><var>D</var><sub>i</sub>)</span></div><p>棘手的是被删失的猫。如果在一只猫被领养前发生了别的事情，或者它只是尚未被领养，就需要计算：以截至目前的观测时长为条件，它没有被领养的概率。可以再次想象同一天进入收容所的 100 只猫。如果 30 天后已有一半被领养，那么等待 30 天仍未被领养的概率就是 0.5；若 60 天后只剩 25 只，那么等待 60 天仍未被领养的概率就是 0.25。任意给定的领养率，都隐含着在任意天数后这 100 只猫中仍会剩下多大比例。</p><p>所需概率来自<strong>累积概率分布</strong>。累积分布给出在某个天数之前或当日已被领养的猫所占比例，因此用 1 减去累积分布，就得到同一天数前尚未被领养的概率。这正是我们需要的概率。这个“1 减累积概率分布”称为<strong>互补累积概率分布</strong>。指数分布的累积概率为：</p><div class="equation-block wallis-equation" id="eq-11-cat-exponential-cdf"><span class="math-line">Pr(<var>D</var><sub>i</sub> | <var>λ</var><sub>i</sub>) = 1 − exp(−<var>λ</var><sub>i</sub><var>D</var><sub>i</sub>)</span></div><p>所以它的补集就是：</p><div class="equation-block wallis-equation" id="eq-11-cat-exponential-ccdf"><span class="math-line">Pr(<var>D</var><sub>i</sub> | <var>λ</var><sub>i</sub>) = exp(−<var>λ</var><sub>i</sub><var>D</var><sub>i</sub>)</span></div><p>这正是模型所需的量，因为它表示等待 <span class="math-inline"><var>D</var><sub>i</sub></span> 天仍未被领养的概率。模型为：</p><div class="equation-block wallis-equation" id="eq-11-cat-survival-model"><div><var>D</var><sub>i</sub> | <var>A</var><sub>i</sub> = 1 ∼ Exponential(<var>λ</var><sub>i</sub>)</div><div><var>D</var><sub>i</sub> | <var>A</var><sub>i</sub> = 0 ∼ Exponential-CCDF(<var>λ</var><sub>i</sub>)</div><div><var>λ</var><sub>i</sub> = 1/<var>μ</var><sub>i</sub></div><div>log <var>μ</var><sub>i</sub> = <var>α</var><sub>cid[i]</sub></div></div><figure class="code-listing" id="code-11-66"><figcaption>R 代码 11.66</figcaption><pre><code>library(rethinking)
+data(AustinCats)
+d &lt;- AustinCats
+
+d$adopt &lt;- ifelse( d$out_event=="Adoption" , 1L , 0L )
+dat &lt;- list(
+    days_to_event = as.numeric( d$days_to_event ),
+    color_id = ifelse( d$color=="Black" , 1L , 2L ) ,
+    adopted = d$adopt
+)
+
+m11.15 &lt;- ulam(
+    alist(
+        days_to_event|adopted==1 ~ exponential( lambda ),
+        days_to_event|adopted==0 ~ custom(exponential_lccdf( !Y | lambda )),
+        lambda &lt;- 1.0/mu,
+        log(mu) &lt;- a[color_id],
+        a[color_id] ~ normal(0,1)
+    ), data=dat , chains=4 , cores=4 )
+
+precis( m11.15 , 2 )</code></pre><pre class="code-output"><code>     mean   sd 5.5% 94.5% n_eff Rhat
+a[1] 4.05 0.03 4.01  4.09  1405    1
+a[2] 3.88 0.01 3.87  3.90  1403    1</code></pre></figure><p>计算平均领养等待时间：</p><figure class="code-listing" id="code-11-67"><figcaption>R 代码 11.67</figcaption><pre><code>post &lt;- extract.samples( m11.15 )
+post$D &lt;- exp(post$a)
+precis( post , 2 )</code></pre><pre class="code-output"><code>'data.frame': 2000 obs. of 4 variables:
+     mean   sd  5.5% 94.5%    histogram
+a[1]  4.05 0.03  4.01  4.09 ▁▁▁▂▅▇▅▂▁▁
+a[2]  3.88 0.01  3.87  3.90       ▁▁▂▇▇▃▁▁
+D[1] 57.44 1.47 55.11 59.77 ▁▁▁▃▇▇▅▂▁▁▁
+D[2] 48.44 0.49 47.71 49.22    ▁▁▃▇▇▂▁▁</code></pre></figure><p class="continuation-note">黑猫与其他毛色猫平均等待时间的解释、删失数据作为缺失数据，以及自定义 Stan 分布，将从原书 PDF 第 393 页继续。</p></section>
+  </section>
 
   <section class="endnotes" id="chapter-11-notes" role="doc-endnotes"><h2>尾注</h2><ol start="166"><li id="note-166">重要数论家 Leopold Kronecker 据称说过：“上帝创造了整数，其余一切皆为人造。”（德文：<span lang="de">Die ganzen Zahlen hat der liebe Gott gemacht, alles andere ist Menschenwerk.</span>） <a class="backref" href="#note-166-ref" aria-label="返回正文">↩</a></li><li id="note-167">Silk 等（2005）。 <a class="backref" href="#note-167-ref" aria-label="返回正文">↩</a></li><li id="note-168">Bickel 等（1975）。 <a class="backref" href="#note-168-ref" aria-label="返回正文">↩</a></li><li id="note-169">Simpson（1951）。 <a class="backref" href="#note-169-ref" aria-label="返回正文">↩</a></li><li id="note-170">例如可参见 Pearl（2014）。关于 Simpson 悖论的论述浩如烟海，以至于你能找到看似彼此矛盾的解释。 <a class="backref" href="#note-170-ref" aria-label="返回正文">↩</a></li><li id="note-171">Kline 与 Boyd（2010）。 <a class="backref" href="#note-171-ref" aria-label="返回正文">↩</a></li><li id="note-172">变化效应应用于行为选择的已发表 Stan 示例，可参见 Koster 与 McElreath（2017）。 <a class="backref" href="#note-172-ref" aria-label="返回正文">↩</a></li><li id="note-173">这一变换似乎没有最初的原始引文。常被引用的是 Baker（1994），但该文也列举了许多更早的临时用法；McCullagh 与 Nelder（1989）从第 209 页开始解释这一变换。 <a class="backref" href="#note-173-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 11 章 PDF 第 347–389 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 390 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 11 章 PDF 第 347–392 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 393 页继续。</aside>
 </article>
