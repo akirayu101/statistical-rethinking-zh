@@ -14,6 +14,7 @@ OUT2 = ROOT / "translations" / "zh" / "media" / "chapter-13-tank-population.svg"
 OUT3 = ROOT / "translations" / "zh" / "media" / "chapter-13-pond-errors.svg"
 OUT4 = ROOT / "translations" / "zh" / "media" / "chapter-13-cluster-variation.svg"
 OUT5 = ROOT / "translations" / "zh" / "media" / "chapter-13-devils-funnel.svg"
+OUT6 = ROOT / "translations" / "zh" / "media" / "chapter-13-neff-comparison.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 BLUE = "#6670ee"
@@ -603,6 +604,45 @@ def figure_13_5() -> None:
     OUT5.write_text("\n".join(svg), encoding="utf-8")
 
 
+def figure_13_6() -> None:
+    """Compare effective sample sizes under centered and non-centered forms."""
+    centered = [158, 310, 515, 186, 446, 915, 709, 235, 338, 560, 721, 426, 921, 1062, 939, 873, 533, 800, 1106, 229]
+    non_centered = [1330, 1310, 1450, 1240, 1390, 2110, 1370, 750, 1350, 1500, 1840, 1300, 2020, 1660, 1710, 1810, 1440, 1900, 790, 1360]
+    width, height = 920, 760
+    x0, y0, x1, y1 = 115.0, 75.0, 850.0, 640.0
+
+    def xy(x: float, y: float) -> tuple[float, float]:
+        return x0 + x / 2200.0 * (x1 - x0), y1 - y / 2200.0 * (y1 - y0)
+
+    svg = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
+        '<title>图 13.6：中心化与非中心化参数化的有效样本量</title>',
+        '<desc>横轴是中心化黑猩猩模型的有效样本量，纵轴是非中心化模型的有效样本量。二十个参数中除两个外都位于对角线之上，表明非中心化参数化的抽样效率更高。</desc>',
+        '<rect width="920" height="760" fill="#fff"/>',
+        f'<line x1="{x0}" y1="{y1}" x2="{x1}" y2="{y1}" stroke="{INK}" stroke-width="2"/>',
+        f'<line x1="{x0}" y1="{y0}" x2="{x0}" y2="{y1}" stroke="{INK}" stroke-width="2"/>',
+        f'<line x1="{xy(0, 0)[0]:.1f}" y1="{xy(0, 0)[1]:.1f}" x2="{xy(2200, 2200)[0]:.1f}" y2="{xy(2200, 2200)[1]:.1f}" stroke="{INK}" stroke-width="2" stroke-dasharray="10 8"/>',
+    ]
+    for value in [500, 1000, 1500, 2000]:
+        x, _ = xy(value, 0)
+        _, y = xy(0, value)
+        svg.extend([
+            f'<line x1="{x:.1f}" y1="{y1}" x2="{x:.1f}" y2="{y1 + 7}" stroke="{INK}"/>',
+            text_el(x, y1 + 30, value, size=17, anchor="middle"),
+            f'<line x1="{x0 - 7}" y1="{y:.1f}" x2="{x0}" y2="{y:.1f}" stroke="{INK}"/>',
+            text_el(x0 - 15, y + 6, value, size=17, anchor="end"),
+        ])
+    for x_value, y_value in zip(centered, non_centered):
+        x, y = xy(x_value, y_value)
+        svg.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="8" fill="#fff" stroke="{INK}" stroke-width="3"/>')
+    svg.extend([
+        text_el((x0 + x1) / 2, 715, "n_eff（中心化）", size=22, anchor="middle"),
+        text_el(35, (y0 + y1) / 2, "n_eff（非中心化）", size=22, anchor="middle", rotate=-90),
+        '</svg>',
+    ])
+    OUT6.write_text("\n".join(svg), encoding="utf-8")
+
+
 def main() -> None:
     posterior_means, hyperparameters = sample_posterior()
     figure_13_1(posterior_means, hyperparameters)
@@ -610,11 +650,13 @@ def main() -> None:
     figure_13_3()
     figure_13_4()
     figure_13_5()
+    figure_13_6()
     print(OUT1)
     print(OUT2)
     print(OUT3)
     print(OUT4)
     print(OUT5)
+    print(OUT6)
 
 
 if __name__ == "__main__":
