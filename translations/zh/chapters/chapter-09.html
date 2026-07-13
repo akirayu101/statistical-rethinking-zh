@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-09" data-source-pages="285-302">
-  <header class="chapter-header"><p class="eyebrow">第九章</p><h1>马尔可夫链蒙特卡洛</h1><p class="source-range">当前译稿对应原书 PDF 第 285–302 页</p></header>
+<article class="book-article" data-chapter="chapter-09" data-source-pages="285-305">
+  <header class="chapter-header"><p class="eyebrow">第九章</p><h1>马尔可夫链蒙特卡洛</h1><p class="source-range">当前译稿对应原书 PDF 第 285–305 页</p></header>
 
   <p>在西方历史的大部分时期，偶然性一直扮演反派。古罗马把偶然性人格化为残酷命运女神福尔图娜，她转动着（厄）运之轮。与她相对而坐的是智慧与理解女神密涅瓦。只有绝望之人才会向福尔图娜祈祷，所有人则都会恳求密涅瓦相助。科学当然属于密涅瓦的领域，那里没有福尔图娜可以发挥的有益作用。</p>
   <p>但到了 20 世纪初，福尔图娜与密涅瓦成了合作者。科学家开始出版随机数表，把偶然性的工具用于认识世界。偶然与智慧从此携手；“理解偶然性能够帮助我们获得智慧”这个观念，已很少让人困惑。从天气预报、金融到演化生物学，各领域都由随机过程研究所主导。<sup id="note-137-ref"><a href="#note-137">137</a></sup></p>
@@ -292,11 +292,71 @@ str(dat_slim)</code></pre><pre class="code-output"><code>List of 3
         sigma ~ dexp( 1 )
     ) , data=dat_slim , chains=1 )</code></pre></figure>
       <p><code>ulam</code> 所做的，就是把上面的公式翻译成 Stan 模型；随后由 Stan 定义抽样器并完成困难的部分。Stan 模型看起来非常相似，却要求写出一些更明确的定义，这也让它们灵活得多。</p>
-      <p class="continuation-note">直接编写 Stan 模型的入口与代码说明将在原书 PDF 第 303 页继续。</p>
+      <p>如果更愿意直接编写 Stan 代码，后面会用原始 Stan 形式再次展示同一个模型。任何时候都能用 <code>stancode(m9.1)</code> 提取 Stan 代码。</p>
+      <p>在显示编译和抽样消息之后，<code>ulam</code> 会返回一个对象，其中既有大量汇总信息，也有后验分布样本。可以像汇总 <code>quap</code> 模型一样汇总它：</p>
+      <figure class="code-listing" id="code-9-15"><figcaption>R 代码 9.15</figcaption><pre><code>precis( m9.1 , depth=2 )</code></pre><pre class="code-output"><code>      mean   sd 5.5% 94.5% n_eff Rhat
+a[1]  0.89 0.02 0.86  0.91   803 1.00
+a[2]  1.05 0.01 1.03  1.07   630 1.00
+b[1]  0.14 0.08 0.01  0.26   731 1.00
+b[2] -0.14 0.05 -0.23 -0.06  563 1.00
+sigma 0.11 0.01 0.10  0.12   462 1.01</code></pre></figure>
+      <p>这些估计与二次近似非常相似。但请注意两个新列：<code>n_eff</code> 和 <code>Rhat</code>。它们提供 MCMC 诊断指标，帮助判断抽样效果。稍后会详细讨论；现在只需知道，<code>n_eff</code> 粗略估计实际获得的独立样本数，<code>Rhat</code> 则是马尔可夫链收敛到目标分布程度的复杂估计。一切正常时，它应从上方趋近 1.00。</p>
+    </section>
+
+    <section id="sec-9-4-3"><h3>9.4.3 再次抽样，并行运行</h3>
+      <p>目前的例子对 MCMC 来说非常容易，所以默认的 1,000 个样本已经足以进行准确推断。事实上，只要大约 200 个有效样本，通常就足以很好地近似后验。但我们还希望运行多条链，原因会在接下来的几节深入讨论；第 9.5 节（原书第 293 页）会给出具体建议。</p>
+      <p>目前值得注意的是，多条链也很容易并行运行。它们可以同时执行，而不必依次进行。因此，只要计算机有四个核心（大概确实有），运行四条链并不比运行一条更久。若要为上面的模型运行四条独立马尔可夫链，并把它们分配到不同处理器核心，只需增加链数并添加 <code>cores</code> 参数：</p>
+      <figure class="code-listing" id="code-9-16"><figcaption>R 代码 9.16</figcaption><pre><code>m9.1 &lt;- ulam(
+    alist(
+        log_gdp_std ~ dnorm( mu , sigma ) ,
+        mu &lt;- a[cid] + b[cid]*( rugged_std - 0.215 ) ,
+        a[cid] ~ dnorm( 1 , 0.1 ) ,
+        b[cid] ~ dnorm( 0 , 0.3 ) ,
+        sigma ~ dexp( 1 )
+    ) , data=dat_slim , chains=4 , cores=4 )</code></pre></figure>
+      <p>还有许多可选参数可以调校和定制这个过程，等需要时再介绍。现在只需记住，<code>show</code> 会提示模型公式，以及每条链运行了多长时间：</p>
+      <figure class="code-listing" id="code-9-17"><figcaption>R 代码 9.17</figcaption><pre><code>show( m9.1 )</code></pre><pre class="code-output"><code>Hamiltonian Monte Carlo approximation
+2000 samples from 4 chains
+
+Sampling durations (seconds):
+        warmup sample total
+chain:1   0.06   0.03 0.09
+chain:2   0.05   0.03 0.09
+chain:3   0.05   0.03 0.08
+chain:4   0.05   0.04 0.10
+
+Formula:
+log_gdp_std ~ dnorm(mu, sigma)
+mu &lt;- a[cid] + b[cid] * (rugged_std - 0.215)
+a[cid] ~ dnorm(1, 0.1)
+b[cid] ~ dnorm(0, 0.3)
+sigma ~ dexp(1)</code></pre></figure>
+      <p>四条链合计得到 2,000 个样本，因为默认情况下，每条 1,000 样本的链会把前一半用于适应。查看汇总时会出现一件奇怪的事：</p>
+      <figure class="code-listing" id="code-9-18"><figcaption>R 代码 9.18</figcaption><pre><code>precis( m9.1 , 2 )</code></pre><pre class="code-output"><code>      mean   sd 5.5% 94.5% n_eff Rhat
+a[1]  0.89 0.02 0.86  0.91  2406    1
+a[2]  1.05 0.01 1.03  1.07  2783    1
+b[1]  0.13 0.07 0.01  0.24  2568    1
+b[2] -0.14 0.06 -0.23 -0.05  2589    1
+sigma 0.11 0.01 0.10  0.12  2507    1</code></pre></figure>
+      <p>总共只有 2,000 个样本，为什么每个参数却能有超过 2,000 个有效样本？这不是错误。Stan 的自适应抽样器非常出色，能生成比不相关样本还好的连续样本：它们是<strong>反相关</strong>的。这意味着抽样器探索后验的效率高到可以胜过随机性。这正是 Jaynes 原则在发挥作用。</p>
+    </section>
+
+    <section id="sec-9-4-4"><h3>9.4.4 可视化</h3>
+      <p>把样本画出来，就能直接体会实际后验密度究竟有多接近高斯形状（也就是二次形状）。直接对模型对象调用 <code>pairs</code>，R 就知道怎样显示参数名称和参数相关性：</p>
+      <figure class="code-listing" id="code-9-19"><figcaption>R 代码 9.19</figcaption><pre><code>pairs( m9.1 )</code></pre></figure>
+      <p>图 9.7 展示结果。这仍是一张变量对图，即二元散点图组成的矩阵；现在，对角线上显示每个参数的平滑直方图及其名称，下三角则显示每对参数之间的相关性，相关越强，数字相对越大。</p>
+      <figure class="book-figure pairs-posterior-figure" id="fig-9-7"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的五参数后验变量对图"><img src="/media/chapter-09-pairs-posterior.svg" alt="五乘五变量对矩阵，对角线为各参数密度，上三角为后验散点，下三角为参数相关系数"></div><p class="scroll-hint">图较宽，可横向滚动比较全部参数对。</p><figcaption><strong>图 9.7：</strong><code>ulam</code> 生成样本的变量对图。对角线显示每个参数的密度估计；对角线下方显示参数之间的相关系数。</figcaption></figure>
+      <p>对这个模型和这组数据而言，得到的后验分布非常接近多元高斯。<code>sigma</code> 的密度确实如预期那样有所偏斜；但除此之外，二次近似几乎与哈密顿蒙特卡洛表现得一样好。这当然是一种非常简单的模型结构，而且使用高斯先验，所以得到近似二次形状的后验并不意外。后面会看到一些更奇异的后验分布。</p>
+    </section>
+
+    <section id="sec-9-4-5"><h3>9.4.5 检查链</h3>
+      <p>只要马尔可夫链定义正确，从长期看，它就保证会收敛到我们想要的答案，也就是后验分布。但有些后验分布很难探索——后面会看到例子——要得到无偏近似，所需时间可能极其漫长。HMC 比其他算法更少遇到这类问题，但问题依然存在。事实上，HMC 的一项优点正是能告诉我们何时出了问题；Metropolis–Hastings 等其他算法面对严重故障时却可能保持沉默。下一大节会集中讨论失灵的原因和解决办法。</p>
+      <p>目前先看两种经常能发现问题——但并非总能——的链可视化。第一种叫<strong>轨迹图</strong>（trace plot），它只是按顺序绘制样本，并用线连接。用本章开头的隐喻来说，这就是马尔可夫国王穿行各岛的路径。观察每个参数的轨迹图，往往是诊断常见问题的最佳办法。</p>
+      <p class="continuation-note">怎样识别健康、正常运行的马尔可夫链，以及第二种链可视化，将在原书 PDF 第 306 页继续。</p>
     </section>
   </section>
 
   <section class="endnotes" id="chapter-09-notes" role="doc-endnotes"><h2>尾注</h2><ol start="137"><li id="note-137">关于这段历史的更多内容，可参见 Gigerenzer 等（1990）的导论。另见 Rao（1997），其中展示了一本随机数表的示例页，并对这场文化转变作了类似评论。 <a class="backref" href="#note-137-ref" aria-label="返回正文">↩</a></li><li id="note-138">“旅行者”是两种常见隐喻之一；另一种是登山者通过随机跳跃绘制山脉地图。Kruschke（2011）用一位在不同地点筹款的政治人物讲了一个很相似的故事。Kruschke 的书非常出色，风格与覆盖范围和本书颇为不同，因此能通过不同视角和另一组例子，为读者带来许多额外价值。 <a class="backref" href="#note-138-ref" aria-label="返回正文">↩</a></li><li id="note-139">Metropolis 等（1953）。算法以论文第一作者命名，但尚不清楚每位合著者怎样参与了算法的发现与实现。其他作者包括以“氢弹之父”闻名的 Edward Teller、同样著名的物理学家 Marshall Rosenbluth，以及两人的妻子 Augusta 和 Arianna；两位女士完成了大量计算机编程。Nicholas Metropolis 领导这个研究组，而他们的工作又以此前和 Stanisław Ulam 合作的研究为基础：Metropolis 与 Ulam（1949）。 <a class="backref" href="#note-139-ref" aria-label="返回正文">↩</a></li><li id="note-140">Hastings（1970）。 <a class="backref" href="#note-140-ref" aria-label="返回正文">↩</a></li><li id="note-141">最初的论文是 Geman 与 Geman（1984），另见 Casella 与 George（1992）。注意，Gibbs 抽样以统计物理学奠基人之一、物理学家兼数学家 J. W. Gibbs 命名；但 Gibbs 早在 1903 年就已去世，远早于 Metropolis 算法的发明。这个策略以 Gibbs 命名，既是为了纪念他，也因为算法与统计物理学的联系。 <a class="backref" href="#note-141-ref" aria-label="返回正文">↩</a></li><li id="note-142">Jaynes（2003）第 16 章。 <a class="backref" href="#note-142-ref" aria-label="返回正文">↩</a></li><li id="note-143">参见 Neal（2012）与 Betancourt（2017）。 <a class="backref" href="#note-143-ref" aria-label="返回正文">↩</a></li><li id="note-144">严格说并非总动量，而是动量平方和：<span class="math-inline"><var>K</var> = ∑<sub><var>i</var></sub> <var>p</var><sub><var>i</var></sub><sup>2</sup>/2</span>，其中 <span class="math-inline"><var>p</var></span> 是动量值向量。这个表达式来自能量守恒，后面讨论发散转移时会再谈。 <a class="backref" href="#note-144-ref" aria-label="返回正文">↩</a></li><li id="note-145">参见 Hoffman 与 Gelman（2011），以及 Stan 用户手册中的更多细节。 <a class="backref" href="#note-145-ref" aria-label="返回正文">↩</a></li><li id="note-146">见 Neal（2012）中的代码。 <a class="backref" href="#note-146-ref" aria-label="返回正文">↩</a></li><li id="note-147">关于一段兼顾计算实践与数学基础的简明 MCMC 历史，可参见 Robert 与 Casella（2011）。 <a class="backref" href="#note-147-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 285–302 页已完成翻译、逐页核对、结构契约及桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 303 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 285–305 页已完成翻译、逐页核对、结构契约及桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 306 页继续。</aside>
 </article>

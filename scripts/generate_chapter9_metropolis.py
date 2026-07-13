@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate deterministic Chinese SVGs for Chapter 9 Figures 9.2 through 9.6."""
+"""Generate deterministic Chinese SVGs for Chapter 9 Figures 9.2 through 9.7."""
 from pathlib import Path
 import math
 import random
@@ -10,6 +10,7 @@ OUT3 = ROOT / "translations/zh/media/chapter-09-correlated-chains.svg"
 OUT4 = ROOT / "translations/zh/media/chapter-09-concentration.svg"
 OUT5 = ROOT / "translations/zh/media/chapter-09-royal-drive.svg"
 OUT6 = ROOT / "translations/zh/media/chapter-09-hmc-trajectories.svg"
+OUT7 = ROOT / "translations/zh/media/chapter-09-pairs-posterior.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 BLUE = "#6670ee"
 INK = "#30332e"
@@ -308,17 +309,102 @@ def figure_9_6() -> None:
     OUT6.write_text('\n'.join(body), encoding='utf-8')
 
 
+def figure_9_7() -> None:
+    """Reconstruct the five-parameter pairs plot from the ulam posterior."""
+    w, h = 1200, 1080
+    left, top, cell = 150, 75, 180
+    labels = ("a₁", "a₂", "b₁", "b₂", "sigma")
+    ranges = ((.84, .94), (1.02, 1.08), (-.1, .3), (-.3, -.05), (.10, .13))
+    correlations = [
+        [1, -.01, .17, -.02, .02],
+        [-.01, 1, -.06, -.09, -.03],
+        [.17, -.06, 1, .02, -.03],
+        [-.02, -.09, .02, 1, .01],
+        [.02, -.03, -.03, .01, 1],
+    ]
+
+    def cholesky(matrix):
+        n = len(matrix)
+        lower = [[0.0] * n for _ in range(n)]
+        for i in range(n):
+            for j in range(i + 1):
+                subtotal = sum(lower[i][k] * lower[j][k] for k in range(j))
+                if i == j:
+                    lower[i][j] = math.sqrt(max(matrix[i][i] - subtotal, 1e-9))
+                else:
+                    lower[i][j] = (matrix[i][j] - subtotal) / lower[j][j]
+        return lower
+
+    lower = cholesky(correlations)
+    rng = random.Random(907)
+    samples = []
+    for _ in range(240):
+        independent = [rng.gauss(0, 1) for _ in labels]
+        samples.append([sum(lower[i][k] * independent[k] for k in range(i + 1)) for i in range(len(labels))])
+
+    body = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" role="img">',
+        '<title>ulam 后验样本的变量对图</title>',
+        '<desc>五个参数构成的变量对矩阵，对角线显示密度，上三角显示样本散点，下三角显示相关系数。</desc>',
+        '<rect width="100%" height="100%" fill="#fff"/>',
+    ]
+    for row in range(5):
+        for col in range(5):
+            x0, y0 = left + col * cell, top + row * cell
+            body.append(f'<rect x="{x0}" y="{y0}" width="{cell}" height="{cell}" fill="#fff" stroke="#d9dad5"/>')
+            if row == col:
+                points = []
+                for n in range(81):
+                    z = -3 + n * 6 / 80
+                    if row == 4:
+                        density = math.exp(-((z - .28) ** 2) / 1.45) * (1 + .18 * z)
+                    else:
+                        density = math.exp(-z * z / 2)
+                    px = x0 + 12 + n / 80 * (cell - 24)
+                    py = y0 + cell - 18 - density * (cell - 55)
+                    points.append(f'{px:.1f},{py:.1f}')
+                body.append(f'<polyline points="{" ".join(points)}" fill="none" stroke="{BLUE}" stroke-width="3"/>')
+                body.append(f'<text x="{x0+cell/2}" y="{y0+cell/2+7}" text-anchor="middle" font-family="{FONT}" font-size="30" font-weight="700" fill="#263f86">{labels[row]}</text>')
+            elif row < col:
+                for sample in samples:
+                    px = x0 + 9 + min(max((sample[col] + 3) / 6, 0), 1) * (cell - 18)
+                    py = y0 + cell - 9 - min(max((sample[row] + 3) / 6, 0), 1) * (cell - 18)
+                    body.append(f'<circle cx="{px:.1f}" cy="{py:.1f}" r="1.25" fill="{BLUE}" opacity=".24"/>')
+            else:
+                corr = correlations[row][col]
+                size = 26 + abs(corr) * 35
+                body.append(f'<text x="{x0+cell/2}" y="{y0+cell/2+10}" text-anchor="middle" font-family="{FONT}" font-size="{size:.1f}" font-weight="700" fill="{INK}">{corr:.2f}</text>')
+
+    for index, (label, value_range) in enumerate(zip(labels, ranges)):
+        x0 = left + index * cell
+        y_bottom = top + 5 * cell
+        body += [
+            f'<text x="{x0+cell/2}" y="{y_bottom+45}" text-anchor="middle" font-family="{FONT}" font-size="22" fill="#263f86">{label}</text>',
+            f'<text x="{x0+8}" y="{y_bottom+22}" text-anchor="start" font-family="{FONT}" font-size="14" fill="{INK}">{value_range[0]:.2f}</text>',
+            f'<text x="{x0+cell-8}" y="{y_bottom+22}" text-anchor="end" font-family="{FONT}" font-size="14" fill="{INK}">{value_range[1]:.2f}</text>',
+            f'<text x="{left-28}" y="{top+index*cell+cell/2+7}" text-anchor="end" font-family="{FONT}" font-size="22" fill="#263f86">{label}</text>',
+        ]
+    body += [
+        f'<text x="{left+2.5*cell}" y="{h-22}" text-anchor="middle" font-family="{FONT}" font-size="18" fill="#60635d">对角线：密度　上三角：后验样本　下三角：相关系数</text>',
+        '</svg>',
+        '',
+    ]
+    OUT7.write_text('\n'.join(body), encoding='utf-8')
+
+
 def main() -> None:
     figure_9_2()
     figure_9_3()
     figure_9_4()
     figure_9_5()
     figure_9_6()
+    figure_9_7()
     print(OUT2)
     print(OUT3)
     print(OUT4)
     print(OUT5)
     print(OUT6)
+    print(OUT7)
 
 
 if __name__ == "__main__":
