@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-11" data-source-pages="347-359">
-  <header class="chapter-header"><p class="eyebrow">第十一章</p><h1>上帝给整数加了料</h1><p class="source-range">当前译稿对应原书 PDF 第 347–359 页</p></header>
+<article class="book-article" data-chapter="chapter-11" data-source-pages="347-362">
+  <header class="chapter-header"><p class="eyebrow">第十一章</p><h1>上帝给整数加了料</h1><p class="source-range">当前译稿对应原书 PDF 第 347–362 页</p></header>
 
   <div class="chapter-introduction" id="intro-11">
     <p>太空中的寒冷以 Kelvin 命名，约为 3 Kelvin，也就是绝对零度以上约 3 摄氏度。Kelvin 也是苏格兰格拉斯哥附近一条河流的名字；同一条河又把名字给了 William Thomson，也就是 Kelvin 勋爵（1824 年生，1907 年卒）——英国第一位获封贵族头衔的科学家。Thomson 在格拉斯哥的实验室研究热力学，如今太空的寒冷便以一条苏格兰河流为名。</p>
@@ -238,12 +238,87 @@ str(post)</code></pre><pre class="code-output"><code>List of 4
         log_lik[i] = binomial_lpmf( pulled_left[i] | 1 , p[i] );
 }</code></pre></figure>
         <p>对数概率存储在一个与观测数量相同长度的向量里——这里是 504。线性模型必须重新计算，因为虽然参数在这个块中可用，但在 <code>model</code> 块内部声明的变量（例如 <code>p</code>）并不可用，所以所有计算要再做一遍。还可以用另一个名为 <code>transformed parameters</code> 的可选块只写一次 <code>p</code> 的代码，不过现在先不把事情弄得太复杂。最后，循环遍历观测，在给定参数的条件下计算每个观测的二项概率。辅助函数 <code>LOO</code> 与 <code>WAIC</code> 期望在后验样本中找到这个 <code>log_lik</code> 矩阵。即使直接编写 Stan 模型，只要包含这些计算，仍可像以前一样使用 LOO 与 WAIC。</p>
-        <p class="continuation-note">不经 <code>ulam</code> 运行同一 Stan 模型的代码、算法比较警告与 11.1.2 小节，将从原书 PDF 第 360 页继续。</p>
+        <p>若要不经 <code>ulam</code> 运行这个模型，只需把上面的 Stan 模型代码放入字符向量，再调用 <code>stan</code>：</p>
+        <figure class="code-listing" id="code-11-22"><figcaption>R 代码 11.22</figcaption><pre><code>m11.4_stan_code &lt;- stancode(m11.4)
+m11.4_stan &lt;- stan( model_code=m11.4_stan_code , data=dat_list , chains=4 )
+compare( m11.4_stan , m11.4 )</code></pre><pre class="code-output"><code>             WAIC pWAIC dWAIC weight    SE  dSE
+m11.4       531.8   8.3   0.0   0.56 18.96   NA
+m11.4_stan  532.3   8.5   0.5   0.44 18.87 0.16
+Warning message:
+In compare(m11.4_stan, m11.4) : Not all model fits of same class.
+This is usually a bad idea, because it implies they were fit by different algorithms.
+Check yourself, before you wreck yourself.</code></pre></figure>
+        <p>两者是同一个模型，WAIC 值在抽样误差范围内一致。还要留意警告信息：<code>compare</code> 会检查模型对象的类型，发现不止一种类型时仍会继续，但会给出这个警告。比较由不同算法近似后验的模型通常不是好主意；任何差异都可能只是算法不同的产物。借用美国哲学家 O’Shea Jackson 那句常被引用的话：先管好自己，免得毁了自己。</p>
       </aside>
+    </section>
+
+    <section id="sec-11-1-2"><h3>11.1.2 相对鲨鱼与绝对企鹅</h3>
+      <p>在上面的分析中，我主要关注结果尺度上的预测变化——处理会让拉动某根杠杆的概率改变多少？这种后验预测视角关注<strong>绝对效应</strong>：变量发生反事实变化时，在某个绝对测量尺度上造成的差异，例如事件概率的变化。</p>
+      <p>更常见的做法，是通过<strong>相对效应</strong>解释逻辑斯蒂回归。相对效应指结果赔率按比例发生的变化。如果改变一个变量后说结果赔率翻倍，我们讨论的就是相对效应。只要把感兴趣的参数指数化，就能计算这种比例赔率的相对效应量。例如，从处理 2 切换到处理 4（加入伙伴）时的比例赔率为：</p>
+      <figure class="code-listing" id="code-11-23"><figcaption>R 代码 11.23</figcaption><pre><code>post &lt;- extract.samples(m11.4)
+mean( exp(post$b[,4]-post$b[,2]) )</code></pre><pre class="code-output"><code>[1] 0.9206479</code></pre></figure>
+      <p>平均而言，这次切换会把拉左侧杠杆的赔率乘以 0.92，也就是赔率降低 8%。这就是比例赔率的含义：用旧赔率乘以比例赔率，便得到新赔率；本例中的乘数是 0.92。</p>
+      <p>只关注比例赔率这类相对效应的风险在于，它不足以告诉我们某个变量是否重要。如果模型中的其他参数让结果本来就极不可能发生，那么即便比例赔率大到 5.0，也不会让结果变得常见。比如某种罕见疾病每百万人只有 1 人患病；再假设阅读本书会让患病赔率增至 5 倍。这大约只意味着每百万人多 4 个病例，总风险变为百万分之五。本书仍可放心阅读。</p>
+      <p>但也不该忘记相对效应。相对效应是进行因果推断所必需的；当其他基准发生率变化时，它们在条件意义上可能非常重要。想想“相对鲨鱼与绝对企鹅”的寓言。企鹅深受鲨鱼困扰，也非常害怕鲨鱼；人类同样害怕鲨鱼。可我们常听说几乎所有东西都比鲨鱼危险。比如，人死于蜂蜇的概率确实高于死于鲨鱼袭击的概率。这里比较的是绝对风险：一生中死于蜜蜂的风险远高于死于鲨鱼咬伤的风险。</p>
+      <p>然而，蜜蜂和鲨鱼并不生活在同一个地方，因此这种比较在几乎所有情境中都无关紧要。当你身处水中——企鹅经常如此——真正想知道的是死于鲨鱼袭击的相对风险。以“人在海里”为条件，鲨鱼远比蜜蜂危险。这就是为什么从企鹅视角看，死于鲨鱼咬伤的相对风险是有价值的信息。对人类也一样，在少数进入海洋的时候，我们想知道的正是相对鲨鱼风险。企鹅身处鲨鱼出没水域的基准发生率要高得多，因此相对风险对于鲜美无比的企鹅高度相关。</p>
+    </section>
+
+    <section id="sec-11-1-3"><h3>11.1.3 聚合二项：再次压缩黑猩猩</h3>
+      <p>在黑猩猩数据中，前面的模型都计算观测到 0 次或 1 次拉左侧杠杆的似然。之所以如此，是因为每一行数据都描述单次拉动的结果；但原则上，同一批数据也可以用另一种方式组织。只要不关心单次拉动的顺序，那么对每一种预测变量组合，记录每个个体拉左侧杠杆的总次数，就保留了同样的信息。</p>
+      <p>例如，可以这样计算每只黑猩猩在每一种预测变量组合下拉左侧杠杆的次数：</p>
+      <figure class="code-listing" id="code-11-24"><figcaption>R 代码 11.24</figcaption><pre><code>data(chimpanzees)
+d &lt;- chimpanzees
+d$treatment &lt;- 1 + d$prosoc_left + 2*d$condition
+d$side &lt;- d$prosoc_left + 1 # 右侧 1，左侧 2
+d$cond &lt;- d$condition + 1  # 无伙伴 1，有伙伴 2
+d_aggregated &lt;- aggregate(
+    d$pulled_left ,
+    list( treatment=d$treatment , actor=d$actor ,
+          side=d$side , cond=d$cond ) ,
+    sum )
+colnames(d_aggregated)[5] &lt;- "left_pulls"</code></pre><pre class="code-output"><code>  treatment actor side cond left_pulls
+1         1     1    1    1          6
+2         1     2    1    1         18
+3         1     3    1    1          5
+4         1     4    1    1          6
+5         1     5    1    1          6
+6         1     6    1    1         14
+7         1     7    1    1         14
+8         2     1    2    1          9</code></pre></figure>
+      <p>右侧的 <code>left_pulls</code> 列，是每只个体在每种处理的试次中拉左侧杠杆的次数。回想一下，个体 2 总是拉左侧杠杆，所以它的各项计数全是 18——每只动物在每种处理下都有 18 次试验。现在只需定义下面的模型，就能得到与先前完全相同的推断：</p>
+      <figure class="code-listing" id="code-11-25"><figcaption>R 代码 11.25</figcaption><pre><code>dat &lt;- with( d_aggregated , list(
+    left_pulls = left_pulls,
+    treatment = treatment,
+    actor = actor,
+    side = side,
+    cond = cond ) )
+
+m11.6 &lt;- ulam(
+    alist(
+        left_pulls ~ dbinom( 18 , p ) ,
+        logit(p) &lt;- a[actor] + b[treatment] ,
+        a[actor] ~ dnorm( 0 , 1.5 ) ,
+        b[treatment] ~ dnorm( 0 , 0.5 )
+    ) , data=dat , chains=4 , log_lik=TRUE )</code></pre></figure>
+      <p>注意，原先写 1 的位置现在写成了 18。每一行包含 18 次试验，似然定义的是 18 次试验中每个 <code>left_pulls</code> 计数的概率。检查 <code>precis</code> 输出，你会看到后验分布与模型 <code>m11.4</code> 相同。</p>
+      <p>然而，0/1 模型与聚合模型的 PSIS（以及 WAIC）分数截然不同。比较如下：</p>
+      <figure class="code-listing" id="code-11-26"><figcaption>R 代码 11.26</figcaption><pre><code>compare( m11.6 , m11.4 , func=PSIS )</code></pre><pre class="code-output"><code>Some Pareto k values are high (&gt;0.5).
+       PSIS    SE dPSIS  dSE pPSIS weight
+m11.6 113.5  8.41   0.0   NA   8.1      1
+m11.4 532.1 18.97 418.6 9.44   8.5      0
+Warning message:
+Different numbers of observations found for at least two models.
+Model comparison is valid only for models fit to exactly the same observations.
+Number of observations for each model:
+m11.6 28
+m11.4 504</code></pre></figure>
+      <p>输出很多，不过可以从上到下慢慢看。首先，PSIS 汇总表给两个模型的分数差异巨大，尽管它们的后验分布相同。为什么？主要原因是数据组织方式让聚合模型 <code>m11.6</code> 的对数概率多出一个因子。比如计算 <code>dbinom(6,9,0.2)</code> 时，<code>dbinom</code> 函数包含一个项，用来计算 6 次成功在 9 次试验中可能出现的所有顺序。这个项前面已经见过：</p>
+      <div class="equation-block wallis-equation" id="eq-11-aggregated-binomial-example"><span class="math-line">Pr(6 | 9, <var>p</var>) = <span class="fraction"><span>6!</span><span>6!(9 − 6)!</span></span> <var>p</var><sup>6</sup>(1 − <var>p</var>)<sup>9−6</sup></span></div>
+      <p class="continuation-note">多重度如何改变聚合模型的 PSIS/WAIC 分数、Pareto <var>k</var> 警告及 11.1.4 小节，将从原书 PDF 第 363 页继续。</p>
     </section>
   </section>
 
   <section class="endnotes" id="chapter-11-notes" role="doc-endnotes"><h2>尾注</h2><ol start="166"><li id="note-166">重要数论家 Leopold Kronecker 据称说过：“上帝创造了整数，其余一切皆为人造。”（德文：<span lang="de">Die ganzen Zahlen hat der liebe Gott gemacht, alles andere ist Menschenwerk.</span>） <a class="backref" href="#note-166-ref" aria-label="返回正文">↩</a></li><li id="note-167">Silk 等（2005）。 <a class="backref" href="#note-167-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 11 章 PDF 第 347–359 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 360 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 11 章 PDF 第 347–362 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 363 页继续。</aside>
 </article>
