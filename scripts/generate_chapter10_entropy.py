@@ -13,6 +13,7 @@ OUT4 = ROOT / "translations/zh/media/chapter-10-binomial-entropy.svg"
 OUT5 = ROOT / "translations/zh/media/chapter-10-link-functions.svg"
 OUT6 = ROOT / "translations/zh/media/chapter-10-exponential-family.svg"
 OUT7 = ROOT / "translations/zh/media/chapter-10-logit-link.svg"
+OUT8 = ROOT / "translations/zh/media/chapter-10-log-link.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 BLUE = "#263f86"
@@ -486,6 +487,60 @@ def figure_10_7() -> None:
     OUT7.write_text("\n".join(parts) + "\n", encoding="utf-8")
 
 
+def figure_10_8() -> None:
+    """Draw the log link from a linear predictor to a positive measurement."""
+    width, height = 1200, 650
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">',
+        '<title>log link 把线性模型变换为严格为正的测量值</title>',
+        '<desc>左图为 log 尺度上的线性模型，右图为指数变换后的正数尺度；等距水平线在原始尺度上逐渐拉开。</desc>',
+        '<rect width="100%" height="100%" fill="#fbfaf6"/>',
+    ]
+    panels = [
+        (85, "log 测量值", -3.2, 3.2, "线性模型（log 尺度）"),
+        (655, "原始测量值", -0.15, 10.2, "指数变换"),
+    ]
+    for left, ylabel, ymin, ymax, heading in panels:
+        top, plot_w, plot_h = 65, 455, 455
+        right, bottom = left + plot_w, top + plot_h
+        sx = lambda value, l=left, r=right: l + (value + 1) / 2 * (r - l)
+        sy = lambda value, t=top, b=bottom, lo=ymin, hi=ymax: b - (value - lo) / (hi - lo) * (b - t)
+        parts.extend([
+            text((left + right) / 2, 38, heading, size=22, anchor="middle", weight=700, fill=BLUE),
+            f'<rect x="{left}" y="{top}" width="{plot_w}" height="{plot_h}" fill="#fff" stroke="{GRID}"/>',
+        ])
+        for tick in (-1.0, -0.5, 0.0, 0.5, 1.0):
+            xx = sx(tick)
+            parts.extend([
+                f'<line x1="{xx:.1f}" y1="{bottom}" x2="{xx:.1f}" y2="{bottom+7}" stroke="{INK}"/>',
+                text(xx, bottom + 29, f"{tick:.1f}", size=15, anchor="middle"),
+            ])
+        for guide in (-3, -2, -1, 0, 1, 2):
+            value = guide if ylabel == "log 测量值" else math.exp(guide)
+            yy = sy(value)
+            parts.append(f'<line x1="{left}" y1="{yy:.1f}" x2="{right}" y2="{yy:.1f}" stroke="#b9bbb5" stroke-width="1.5"/>')
+        y_ticks = (-3, -2, -1, 0, 1, 2, 3) if ylabel == "log 测量值" else (0, 2, 4, 6, 8, 10)
+        for tick in y_ticks:
+            yy = sy(tick)
+            parts.extend([
+                f'<line x1="{left-7}" y1="{yy:.1f}" x2="{left}" y2="{yy:.1f}" stroke="{INK}"/>',
+                text(left - 13, yy + 5, tick, size=15, anchor="end"),
+            ])
+        points = []
+        for index in range(301):
+            xvalue = -1 + 2 * index / 300
+            linear = 2.3 * xvalue
+            yvalue = linear if ylabel == "log 测量值" else math.exp(linear)
+            points.append(f"{sx(xvalue):.1f},{sy(yvalue):.1f}")
+        parts.extend([
+            f'<polyline points="{" ".join(points)}" fill="none" stroke="#737cff" stroke-width="5"/>',
+            text((left + right) / 2, height - 58, "预测变量 x", size=19, anchor="middle", fill=BLUE),
+            text(left - 60, (top + bottom) / 2, ylabel, size=19, anchor="middle", fill=BLUE, rotate=-90),
+        ])
+    parts.append('</svg>')
+    OUT8.write_text("\n".join(parts) + "\n", encoding="utf-8")
+
+
 def main() -> int:
     OUT1.parent.mkdir(parents=True, exist_ok=True)
     width, height = 1200, 930
@@ -514,6 +569,7 @@ def main() -> int:
     figure_10_5()
     figure_10_6()
     figure_10_7()
+    figure_10_8()
     print(f"generated {OUT1}")
     print(f"generated {OUT2}")
     print(f"generated {OUT3}")
@@ -521,6 +577,7 @@ def main() -> int:
     print(f"generated {OUT5}")
     print(f"generated {OUT6}")
     print(f"generated {OUT7}")
+    print(f"generated {OUT8}")
     return 0
 
 

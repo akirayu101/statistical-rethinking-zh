@@ -1700,7 +1700,7 @@
   },
   "chapter-10": {
     "required_status": "in_progress",
-    "source_pages": [323, 341],
+    "source_pages": [323, 344],
     "required_ids": [
       "intro-10",
       "note-153-ref",
@@ -1777,6 +1777,19 @@
       "eq-10-logit-linear",
       "fig-10-7",
       "eq-10-inverse-logit",
+      "eq-10-log-sigma-model",
+      "eq-10-inverse-log-sigma",
+      "fig-10-8",
+      "rethinking-play-with-assumptions",
+      "note-165-ref",
+      "overthinking-parameters-self-interaction",
+      "eq-10-self-interaction-gaussian",
+      "eq-10-self-interaction-logistic",
+      "eq-10-self-interaction-probability-rate",
+      "eq-10-self-interaction-odds-rate",
+      "sec-10-2-3",
+      "sec-10-2-4",
+      "sec-10-2-5",
       "chapter-10-notes",
       "note-153",
       "note-154",
@@ -1789,7 +1802,8 @@
       "note-161",
       "note-162",
       "note-163",
-      "note-164"
+      "note-164",
+      "note-165"
     ],
     "required_headings": [
       "大熵与广义线性模型",
@@ -1807,24 +1821,29 @@
       "10.2.1 认识这个家族",
       "再思考：似然就是先验",
       "10.2.2 把线性模型连接到分布",
+      "再思考：拿不准时，就摆弄假设",
+      "过度思考：参数与自身交互",
+      "10.2.3 再谈遗漏变量偏差",
+      "10.2.4 绝对差异与相对差异",
+      "10.2.5 GLM 与信息准则",
       "尾注"
     ],
     "counts": {
-      "section": 7,
-      "figure": 20,
-      "figure img": 7,
-      ".book-figure": 7,
+      "section": 10,
+      "figure": 21,
+      "figure img": 8,
+      ".book-figure": 8,
       ".code-listing": 13,
       ".code-output": 7,
-      ".rethinking-box": 5,
-      ".overthinking-box": 3,
+      ".rethinking-box": 6,
+      ".overthinking-box": 4,
       ".book-quote": 1,
-      ".equation-block": 24,
-      ".wallis-equation": 23,
+      ".equation-block": 30,
+      ".wallis-equation": 29,
       ".source-erratum": 2,
       ".chapter-introduction": 1,
       ".continuation-note": 1,
-      ".endnotes li": 12
+      ".endnotes li": 13
     }
   }
 }
