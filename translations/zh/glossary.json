@@ -1097,7 +1097,23 @@
     "national park": "国家公园",
     "fish caught": "捕获鱼数",
     "Poisson offset": "Poisson 偏置项",
-    "exposure time": "暴露时间"
+    "exposure time": "暴露时间",
+    "model with memory": "有记忆的模型",
+    "anterograde amnesia": "顺行性遗忘",
+    "cluster": "集群",
+    "cluster population": "集群总体",
+    "multilevel model": "多层模型",
+    "pooling": "汇聚",
+    "repeat sampling": "重复抽样",
+    "sampling imbalance": "抽样不平衡",
+    "single-level model": "单层模型",
+    "hierarchical model": "层级模型",
+    "mixed-effects model": "混合效应模型",
+    "random effects": "随机效应",
+    "Reed frog": "芦苇蛙",
+    "tadpole": "蝌蚪",
+    "cluster variable": "集群变量",
+    "tank (experiment)": "水槽"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "blavaan", "AIC", "DIC", "WAIC", "BIC", "PSIS-LOO", "MCMC", "HMC"
