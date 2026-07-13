@@ -1504,5 +1504,37 @@
       "ol.practice-list > li": 10,
       ".endnotes li": 9
     }
+  },
+  "chapter-09": {
+    "required_status": "in_progress",
+    "source_pages": [285, 287],
+    "required_ids": [
+      "fig-9-1",
+      "rethinking-stan-was-a-man",
+      "sec-9-1",
+      "metropolis-island-steps",
+      "code-9-1",
+      "chapter-09-notes",
+      "note-137",
+      "note-138"
+    ],
+    "required_headings": [
+      "马尔可夫链蒙特卡洛",
+      "再思考：Stan 真有其人",
+      "9.1 好国王马尔可夫与他的岛屿王国",
+      "尾注"
+    ],
+    "counts": {
+      "section": 2,
+      "figure": 2,
+      "figure img": 1,
+      ".book-figure": 1,
+      ".code-listing": 1,
+      ".rethinking-box": 1,
+      ".algorithm-steps": 1,
+      ".algorithm-steps > li": 4,
+      ".continuation-note": 1,
+      ".endnotes li": 2
+    }
   }
 }

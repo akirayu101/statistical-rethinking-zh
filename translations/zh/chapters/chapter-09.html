@@ -1,0 +1,51 @@
+<article class="book-article" data-chapter="chapter-09" data-source-pages="285-287">
+  <header class="chapter-header"><p class="eyebrow">第九章</p><h1>马尔可夫链蒙特卡洛</h1><p class="source-range">当前译稿对应原书 PDF 第 285–287 页</p></header>
+
+  <p>在西方历史的大部分时期，偶然性一直扮演反派。古罗马把偶然性人格化为残酷命运女神福尔图娜，她转动着（厄）运之轮。与她相对而坐的是智慧与理解女神密涅瓦。只有绝望之人才会向福尔图娜祈祷，所有人则都会恳求密涅瓦相助。科学当然属于密涅瓦的领域，那里没有福尔图娜可以发挥的有益作用。</p>
+  <p>但到了 20 世纪初，福尔图娜与密涅瓦成了合作者。科学家开始出版随机数表，把偶然性的工具用于认识世界。偶然与智慧从此携手；“理解偶然性能够帮助我们获得智慧”这个观念，已很少让人困惑。从天气预报、金融到演化生物学，各领域都由随机过程研究所主导。<sup id="note-137-ref"><a href="#note-137">137</a></sup></p>
+  <p>本章介绍福尔图娜与密涅瓦合作的一个绝妙例子：利用称为<strong>马尔可夫链蒙特卡洛</strong>（Markov chain Monte Carlo，MCMC）的随机过程，估计后验概率分布。与本书前面各章不同，这里无需最大化任何东西，就能从联合后验中生成样本。我们不必再依赖二次近似或其他后验形状近似，而是能够直接从后验抽样，不需要假定它服从高斯或任何其他形状。</p>
+  <p>这种能力的代价是，估计可能需要更长时间才能完成，指定模型通常也需要更多工作；好处则是摆脱假定多元正态性的尴尬。同样重要的是，我们能够直接估计后续章节的广义线性模型和多层模型。这类模型常常产生非高斯后验分布，有时甚至根本无法用前几章的技术估计。</p>
+  <p>好消息是，构建和检查 MCMC 估计的工具一直在进步。本章将介绍一种便捷方法，把目前使用的 <code>quap</code> 公式转换成马尔可夫链。让这一切成为可能的引擎是 Stan（可在 <span class="url-text">mc-stan.org</span> 免费在线获取）。Stan 的创建者把它描述为“一种实现统计推断的概率编程语言”。一开始你不会直接使用 Stan——<code>rethinking</code> 包暂时提供了把它藏起来的工具。但随着你继续学习更高级的技术，便能为已经理解的模型生成 Stan 版本，再动手改造它们，见识一个全副武装、全面运转的 Stan 有多强大。</p>
+
+  <figure class="book-figure island-kingdom-figure" id="fig-9-1"><div class="figure-scroll" tabindex="0" aria-label="好国王马尔可夫的十座环形岛屿"><img src="/media/chapter-09-island-kingdom.png" alt="编号一至十的岛屿围成环形，岛屿面积随编号和相对人口增加"></div><figcaption><strong>图 9.1：</strong>好国王马尔可夫的岛屿王国。十座岛屿的人口与各自编号成比例，从 1 到 10。国王的目标是：从长期看，访问每座岛的频率与其人口规模成比例。Metropolis 算法可以实现这一目标。</figcaption></figure>
+
+  <aside class="rethinking-box" id="rethinking-stan-was-a-man"><h3>再思考：Stan 真有其人</h3><p>Stan 编程语言的名字既不是缩写，也不是首字母缩略词，而是来自斯坦尼斯瓦夫·乌拉姆（Stanisław Ulam，1909–1984）。乌拉姆被认为是马尔可夫链蒙特卡洛的发明者之一。他和 Edward Teller 一起把它用于设计聚变炸弹；但他和其他人很快也把一般的蒙特卡洛方法用于各种不那么骇人的问题。乌拉姆还在纯数学、混沌理论、分子生物学与理论生物学领域作出了重要贡献。</p></aside>
+
+  <section id="sec-9-1"><h2>9.1 好国王马尔可夫与他的岛屿王国</h2>
+    <p>暂时忘掉后验密度与 MCMC，先听一听好国王马尔可夫的故事。<sup id="note-138-ref"><a href="#note-138">138</a></sup>马尔可夫国王是一座岛屿王国的仁慈独裁者。他的王国是一片环形群岛，共有 10 座岛；每座岛都与另外两座相邻，整片群岛围成一圈。岛屿大小不同，居民人数也不同。第 2 座岛的人口约为第 1 座的两倍，第 3 座约为第 1 座的三倍，依此类推；最大的第 10 座岛人口是最小岛的 10 倍。图 9.1 展示了好国王的岛屿王国，岛屿编号就是它们的相对人口规模。</p>
+    <p>好国王虽是独裁者，却也对臣民负有若干义务。其中一项是，马尔可夫国王同意不时访问王国中的每座岛。臣民都爱戴国王，每座岛都希望他能更常造访。于是大家一致同意，国王访问各岛的频率应与其人口规模成比例；例如，他访问最大岛的次数应是最小岛的 10 倍。</p>
+    <p>然而，好国王马尔可夫不喜欢日程表和记账，所以想找一种无需提前几个月规划行程、仍能履行义务的方法。又因为群岛围成一圈，国王坚持只在相邻岛屿之间移动，以尽量缩短水上时间——和王国里的许多臣民一样，他相信群岛中央有海怪。</p>
+    <p>国王的顾问 Metropolis 先生为这些要求设计了一个巧妙方案，我们称之为 <strong>Metropolis 算法</strong>。它这样运作：</p>
+    <ol class="algorithm-steps" id="metropolis-island-steps">
+      <li>无论国王身在何处，每周都要决定再留一周，还是移往两座相邻岛之一。为了决定下一步，他抛一次硬币。</li>
+      <li>若硬币正面朝上，国王考虑顺时针移往相邻岛；若反面朝上，则考虑逆时针移往相邻岛。把硬币选中的岛称为<strong>提议岛</strong>。</li>
+      <li>现在，为了决定是否移往提议岛，马尔可夫国王数出与提议岛相对人口规模相等的贝壳。例如，若提议岛编号为 9，他就数出 9 枚贝壳。随后，他还数出与当前岛相对人口相等的石子。例如，若当前岛编号为 10，他手里最终就有 10 颗石子和 9 枚贝壳。</li>
+      <li>若贝壳比石子多，马尔可夫国王总会移往提议岛。若贝壳比石子少，他就丢弃与贝壳数量相等的石子。例如，若有 4 枚贝壳和 6 颗石子，最后会剩下 4 枚贝壳与 6 − 4 = 2 颗石子。然后，他把贝壳和剩余石子放进袋子，随机摸出一个物件：若摸到贝壳，就移往提议岛；否则再留一周。于是，他移动的概率等于贝壳数除以原来的石子数。</li>
+    </ol>
+    <p>这套程序或许显得巴洛克式地繁复，老实说还有点疯狂，但它确实有效。国王看似在各岛间随机移动：有时会在一座岛停留数周，有时又毫无明显规律地来回跳动。但从长期看，这套程序保证在每座岛上找到国王的频率与该岛人口规模成比例。</p>
+    <p>你可以模拟马尔可夫国王的旅程，亲自验证。下面这段短代码把国王历次所在岛屿的记录存入向量 <code>positions</code>：</p>
+    <figure class="code-listing" id="code-9-1"><figcaption>R 代码 9.1</figcaption><pre><code>num_weeks &lt;- 1e5
+positions &lt;- rep(0,num_weeks)
+current &lt;- 10
+for ( i in 1:num_weeks ) {
+    # record current position
+    positions[i] &lt;- current
+
+    # flip coin to generate proposal
+    proposal &lt;- current + sample( c(-1,1) , size=1 )
+    # now make sure he loops around the archipelago
+    if ( proposal &lt; 1 ) proposal &lt;- 10
+    if ( proposal &gt; 10 ) proposal &lt;- 1
+
+    # move?
+    prob_move &lt;- proposal/current
+    current &lt;- ifelse( runif(1) &lt; prob_move , proposal , current )
+}</code></pre></figure>
+    <p>我在代码中加了注释，帮助你读懂它。前三行只定义模拟的周数、一个空的历史向量，以及起始岛屿位置（最大的 10 号岛）。随后，<code>for</code> 循环逐周推进：每周先记录国王当前的位置，再模拟一次抛硬币，选出提议岛。这里唯一的小技巧，是确保提议编号为 11 时能够绕回 1 号岛。</p>
+    <p class="continuation-note">代码 9.1 的其余逐行解释将在原书 PDF 第 288 页继续。</p>
+  </section>
+
+  <section class="endnotes" id="chapter-09-notes" role="doc-endnotes"><h2>尾注</h2><ol start="137"><li id="note-137">关于这段历史的更多内容，可参见 Gigerenzer 等（1990）的导论。另见 Rao（1997），其中展示了一本随机数表的示例页，并对这场文化转变作了类似评论。 <a class="backref" href="#note-137-ref" aria-label="返回正文">↩</a></li><li id="note-138">“旅行者”是两种常见隐喻之一；另一种是登山者通过随机跳跃绘制山脉地图。Kruschke（2011）用一位在不同地点筹款的政治人物讲了一个很相似的故事。Kruschke 的书非常出色，风格与覆盖范围和本书颇为不同，因此能通过不同视角和另一组例子，为读者带来许多额外价值。 <a class="backref" href="#note-138-ref" aria-label="返回正文">↩</a></li></ol></section>
+
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 285–287 页已完成翻译、逐页核对、结构契约及桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 288 页继续。</aside>
+</article>
