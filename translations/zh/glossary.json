@@ -1031,7 +1031,19 @@
     "chain rule": "链式法则",
     "ordered category": "有序类别",
     "ordered level": "有序层级",
-    "ordered categorical variable": "有序类别变量"
+    "ordered categorical variable": "有序类别变量",
+    "log-cumulative-odds": "对数累积赔率",
+    "cumulative logit": "累积 logit",
+    "moral intuition": "道德直觉",
+    "trolley problem": "电车难题",
+    "moral permissibility": "道德可允许性",
+    "action principle": "行动原则",
+    "intention principle": "意图原则",
+    "contact principle": "接触原则",
+    "omission": "不作为",
+    "ordered model": "有序模型",
+    "response rating": "回答评分",
+    "cumulative proportion": "累积比例"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "blavaan", "AIC", "DIC", "WAIC", "BIC", "PSIS-LOO", "MCMC", "HMC"

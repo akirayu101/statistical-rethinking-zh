@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT1 = ROOT / "translations" / "zh" / "media" / "chapter-12-beta-binomial.svg"
 OUT2 = ROOT / "translations" / "zh" / "media" / "chapter-12-poisson-gamma-poisson.svg"
 OUT3 = ROOT / "translations" / "zh" / "media" / "chapter-12-zero-inflated-structure.svg"
+OUT4 = ROOT / "translations" / "zh" / "media" / "chapter-12-ordered-distribution.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 BLUE = "#6670ee"
@@ -321,9 +322,86 @@ def figure_12_3() -> None:
     OUT3.write_text("\n".join(parts) + "\n", encoding="utf-8")
 
 
+def figure_12_4() -> None:
+    """Rebuild the response histogram, cumulative proportions, and cumulative logits."""
+    width, height = 1200, 610
+    responses = list(range(1, 8))
+    frequencies = [1270, 908, 1072, 2333, 1456, 1447, 1444]
+    total = sum(frequencies)
+    cumulative: list[float] = []
+    running = 0
+    for value in frequencies:
+        running += value
+        cumulative.append(running / total)
+    logits = [math.log(value / (1 - value)) for value in cumulative[:-1]]
+    panels = (
+        (20, "样本回答的频数", "频数", (0.0, 2500.0)),
+        (415, "各回答的累积比例", "累积比例", (0.0, 1.0)),
+        (810, "各回答的对数累积赔率", "对数累积赔率", (-2.0, 2.0)),
+    )
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">',
+        '<title>图 12.4：用对数累积赔率重新描述离散分布</title>',
+        '<desc>左图显示一至七档道德许可回答的频数，中图显示累积比例，右图显示前六档回答的对数累积赔率；第七档为正无穷而未画出。</desc>',
+        '<rect width="100%" height="100%" fill="#fbfaf6"/>',
+    ]
+    for panel_index, (panel_x, title, ylabel, yrange) in enumerate(panels):
+        left, right, top, bottom = panel_x + 78, panel_x + 370, 92, 520
+        ymin, ymax = yrange
+        sx = lambda value, left=left, right=right: left + (value - 1) / 6 * (right - left)
+        sy = lambda value, top=top, bottom=bottom, ymin=ymin, ymax=ymax: bottom - (value - ymin) / (ymax - ymin) * (bottom - top)
+        parts.extend([
+            text_el((left + right) / 2, 40, title, size=21, anchor="middle", weight=650),
+            f'<rect x="{panel_x}" y="62" width="370" height="500" rx="8" fill="#fff" stroke="{GRID}"/>',
+            f'<line x1="{left}" y1="{bottom}" x2="{right}" y2="{bottom}" stroke="{INK}" stroke-width="1.7"/>',
+            f'<line x1="{left}" y1="{bottom}" x2="{left}" y2="{top}" stroke="{INK}" stroke-width="1.7"/>',
+            text_el((left + right) / 2, 552, "回答", size=18, anchor="middle"),
+            text_el(panel_x + 22, (top + bottom) / 2, ylabel, size=18, anchor="middle", rotate=-90),
+        ])
+        for value in responses:
+            xx = sx(value)
+            parts.extend([
+                f'<line x1="{xx:.1f}" y1="{bottom}" x2="{xx:.1f}" y2="{bottom+6}" stroke="{INK}"/>',
+                text_el(xx, bottom + 27, value, size=15, anchor="middle"),
+            ])
+        if panel_index == 0:
+            yticks = (0, 500, 1000, 1500, 2000, 2500)
+            values = frequencies
+        elif panel_index == 1:
+            yticks = (0, .2, .4, .6, .8, 1.0)
+            values = cumulative
+        else:
+            yticks = (-2, -1, 0, 1, 2)
+            values = logits
+        for value in yticks:
+            yy = sy(value)
+            label = f"{value:.1f}" if panel_index == 1 else f"{value:g}"
+            parts.extend([
+                f'<line x1="{left-6}" y1="{yy:.1f}" x2="{left}" y2="{yy:.1f}" stroke="{INK}"/>',
+                text_el(left - 11, yy + 5, label, size=14, anchor="end"),
+                f'<line x1="{left}" y1="{yy:.1f}" x2="{right}" y2="{yy:.1f}" stroke="{GRID}" stroke-dasharray="4 7"/>',
+            ])
+        if panel_index == 0:
+            for response, value in zip(responses, values):
+                xx = sx(response)
+                parts.append(f'<line x1="{xx:.1f}" y1="{bottom}" x2="{xx:.1f}" y2="{sy(value):.1f}" stroke="{INK}" stroke-width="6"/>')
+        else:
+            sequence = responses if panel_index == 1 else responses[:-1]
+            points = [(sx(response), sy(value)) for response, value in zip(sequence, values)]
+            parts.append(polyline(points, fill="none", stroke=INK, stroke_width="2.5"))
+            for xx, yy in points:
+                parts.append(f'<circle cx="{xx:.1f}" cy="{yy:.1f}" r="6" fill="#fff" stroke="{INK}" stroke-width="2"/>')
+    parts.extend([
+        text_el(996, 588, "第 7 档的对数累积赔率为 +∞，未绘制", size=14, anchor="middle", fill="#666860"),
+        "</svg>",
+    ])
+    OUT4.write_text("\n".join(parts) + "\n", encoding="utf-8")
+
+
 if __name__ == "__main__":
     main()
     figure_12_2()
     figure_12_3()
-    for path in (OUT1, OUT2, OUT3):
+    figure_12_4()
+    for path in (OUT1, OUT2, OUT3, OUT4):
         print(path)

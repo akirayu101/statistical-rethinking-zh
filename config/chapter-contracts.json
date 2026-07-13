@@ -2091,7 +2091,7 @@
   },
   "chapter-12": {
     "required_status": "in_progress",
-    "source_pages": [397, 408],
+    "source_pages": [397, 411],
     "required_ids": [
       "intro-12",
       "sec-12-1",
@@ -2132,12 +2132,24 @@
       "code-12-11",
       "sec-12-3",
       "note-179-ref",
+      "note-180-ref",
+      "sec-12-3-1",
+      "note-181-ref",
+      "erratum-12-even-evan",
+      "code-12-12",
+      "sec-12-3-2",
+      "code-12-13",
+      "fig-12-4",
+      "code-12-14",
+      "eq-12-ordered-intercepts",
       "chapter-12-notes",
       "note-175",
       "note-176",
       "note-177",
       "note-178",
-      "note-179"
+      "note-179",
+      "note-180",
+      "note-181"
     ],
     "required_headings": [
       "怪物与混合",
@@ -2148,24 +2160,26 @@
       "12.2 零膨胀结果",
       "12.2.1 示例：零膨胀 Poisson",
       "12.3 有序类别结果",
+      "12.3.1 示例：道德直觉",
+      "12.3.2 用截距描述有序分布",
       "尾注"
     ],
     "counts": {
-      "section": 8,
-      "figure": 14,
-      "figure img": 3,
-      ".book-figure": 3,
-      ".code-listing": 11,
+      "section": 10,
+      "figure": 18,
+      "figure img": 4,
+      ".book-figure": 4,
+      ".code-listing": 14,
       ".code-output": 3,
       ".rethinking-box": 1,
       ".overthinking-box": 2,
-      ".book-quote": 1,
-      ".equation-block": 6,
-      ".wallis-equation": 6,
-      ".source-erratum": 3,
+      ".book-quote": 3,
+      ".equation-block": 7,
+      ".wallis-equation": 7,
+      ".source-erratum": 4,
       ".chapter-introduction": 1,
       ".continuation-note": 1,
-      ".endnotes li": 5
+      ".endnotes li": 7
     }
   }
 }

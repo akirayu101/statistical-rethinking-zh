@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-12" data-source-pages="397-408">
-  <header class="chapter-header"><p class="eyebrow">第十二章</p><h1>怪物与混合</h1><p class="source-range">当前译稿对应原书 PDF 第 397–408 页</p></header>
+<article class="book-article" data-chapter="chapter-12" data-source-pages="397-411">
+  <header class="chapter-header"><p class="eyebrow">第十二章</p><h1>怪物与混合</h1><p class="source-range">当前译稿对应原书 PDF 第 397–411 页</p></header>
 
   <div class="chapter-introduction" id="intro-12">
     <p>在夏威夷传说中，Nanaue 是一条爱上人类女子的鲨鱼之子。他长成一个凶残的男人，背部中央还长着一张鲨鱼嘴。在希腊传说中，Minotaur 是牛头人身的怪物，由一名人类女子与一头大白牛所生。Gryphon 是一种半鹰半狮的传说怪物。毛利传说中的 Taniwha 则兼具蛇、鸟乃至鲨鱼的特征，很像中国与欧洲神话里的龙。</p>
@@ -196,10 +196,54 @@ if ( y[i] == 0 ) target += log_mix(p, 0, poisson_lpmf(0 | lambda));</code></pre>
   <section id="sec-12-3"><h2>12.3 有序类别结果</h2>
     <p>在社会科学中非常常见、在自然科学中偶尔也会出现这样的结果变量：它像计数一样是离散的，但数值只表示某个维度上不同的有序层级。例如，假如我问你有多喜欢吃鱼，请在 1 到 7 的尺度上作答，你可能回答 5。若对 100 个人提出同样的问题，最终会得到 100 个介于 1 与 7 之间的值。对每个结果值建模时，必须记住这些值有顺序，因为 7 大于 6，6 又大于 5，依此类推。结果就是一组<strong>有序类别</strong>。与计数不同，数值之间的差异并不一定相等。让某人对鱼的偏好从 1 变为 2，可能远比从 5 变为 6 困难。把有序类别直接当作连续测量并不是好主意。<sup id="note-179-ref"><a href="#note-179">179</a></sup></p>
     <p>幸运的是，这个问题有一种标准而易用的解法。原则上，有序类别变量只是一个多项预测问题（原书第 366 页）；但类别必须有序这一约束，要求特殊处理。我们希望任何相关预测变量随着自身增大，都能让预测依次、渐进地穿过各个类别。例如，如果冰淇淋偏好与年龄呈正关联，那么模型应当随着年龄增加，让预测依次上移：从 3 到 4、从 4 到 5、从 5 到 6，等等。这就带来一项挑战：怎样保证线性模型按正确顺序映射到结果？</p>
-    <p class="continuation-note">累积 link 函数、对数累积赔率参数化与道德直觉数据，将从原书 PDF 第 409 页继续。</p>
+    <p>传统解法是使用<strong>累积 link 函数</strong>。<sup id="note-180-ref"><a href="#note-180">180</a></sup>某个值的累积概率，是该值本身或任意更小值的概率。在有序类别中，3 的累积概率就是 3、2、1 三个值的概率之和。按照惯例，有序类别从 1 开始，因此小于 1 的结果完全没有概率。把线性模型连接到累积概率，就能保证结果的顺序。</p>
+    <p>下面分两步解释原因。第一步说明怎样在<strong>对数累积赔率</strong>尺度上参数化结果分布。第二步把一个（或多个）预测变量引入这些对数累积赔率，从而在服从有序预测性质的同时，对预测变量与结果之间的关联建模。</p>
+    <p>为了让讨论更具体，两步都会放在一个数据例子中展开。下面先认识数据。</p>
+
+    <section id="sec-12-3-1"><h3>12.3.1 示例：道德直觉</h3>
+      <p>这个例子的数据来自哲学家开展的一系列实验。<sup id="note-181-ref"><a href="#note-181">181</a></sup>没错，哲学家有时确实会做实验。这些实验旨在收集与<strong>道德直觉</strong>争论有关的经验证据；道德直觉是人们据以判断行为在道德上善恶的推理形式。这类争论与所有社会科学都有关，因为它们触及更广泛的推理问题、情绪在决策中的作用，以及个人与群体的道德发展理论。</p>
+      <p>这些实验用所谓的“电车难题”情景测量道德判断。经典版本涉及一辆失控电车；这些情景的共同点，是都会令道德哲学家困惑，甚至感到悖谬。下面是一个传统例子，只是用“空货车”代替了“电车”：</p>
+      <blockquote class="book-quote"><p>Dennis 站在铁轨旁，看见一辆空的失控货车即将撞上五个人。Dennis 身边有一根拉杆；拉动它，就会让货车转入侧轨，避开那五个人。但拉动拉杆也会放下跨越侧轨的人行桥护栏，使一个人从桥上跌落到侧轨，随后被货车撞上。如果 Dennis 拉动拉杆，货车就会换轨，不再撞上那五个人，但会撞上跌落的那一个人。如果 Dennis 不拉，货车就会沿原轨继续行驶，撞上五个人，而另一个人则安全地留在侧轨上方。</p></blockquote>
+      <p>从道德上看，Dennis 拉动拉杆有多大程度是可以允许的？</p>
+      <p>这类情景之所以在哲学上令人困惑，是因为两个情景的分析内容可能完全相同，人们却会对不同情景中同一个行为的道德可允许性，稳定地作出不同判断。在你急着断定这些东西很荒唐之前，请注意：人们在这些实验中的道德直觉，与他们面对法律以及行为是否应被归类为犯罪时的反应很相似。法律中充满了道德悖论；我们需要理解它们。</p>
+      <p>既有研究至少提出了三条重要的无意识推理原则，或许能解释判断差异：</p>
+      <ul class="principle-list"><li><strong>行动原则：</strong>主动行为造成的伤害，在道德上比不作为造成的等量伤害更糟。</li><li><strong>意图原则：</strong>作为实现目标之手段而有意造成的伤害，在道德上比作为目标副作用而预见到的等量伤害更糟。</li><li><strong>接触原则：</strong>通过身体接触伤害受害者，在道德上比不使用身体接触造成的等量伤害更糟。</li></ul>
+      <p>我们探索这些原则的实验语境，由一组故事构成：故事改变原则，却让许多基本物体与行动者保持不变。例如，上面引用的空货车故事包含行动原则，却不包含另外两条。行动者 Dennis 必须做点什么才能改变结果，而不是保持被动，所以这是行动情景。然而，为了救下五个人，并不需要、也不打算让会跌落的那个人受到伤害，因此它不是意图原则的例子。故事也没有直接接触，所以同样不是接触原则的例子。</p>
+      <p>可以按同样的故事轮廓，再构造一个同时包含行动原则与意图原则的空货车故事。也就是说，在这个版本里，行动者既要采取行动改变结果，这个行动又必须伤害一个人，才能救下另外五个人：</p>
+      <blockquote class="book-quote"><p>Evan 站在铁轨旁，看见一辆空的失控货车即将撞上五个人。Evan 身边有一根拉杆；拉动它，会放下跨越主轨的人行桥护栏，使一个人从桥上跌落到主轨，随后被货车撞上。货车会因为撞上这个人而减速，从而避免撞上那五个人。如果 Evan 拉动拉杆，那一个人会跌落并被货车撞上，于是货车减速，不再撞到五个人。如果 Evan 不拉，货车就会沿铁轨继续行驶，撞上五个人，而另一个人则安全地留在主轨上方。</p></blockquote>
+      <p>多数人判断，如果 Evan 拉动拉杆，这在道德上会比 Dennis 拉动拉杆更糟（更不允许）。分析这些数据时，你会看到差异究竟有多大。先载入数据：</p>
+      <p class="source-erratum" id="erratum-12-even-evan"><strong>原文姓名不一致：</strong>第二个故事中的人物始终名为 Evan，但故事之后的比较句误印成 “if Even pulls the lever”；译稿统一为 Evan，并在此记录。</p>
+      <figure class="code-listing" id="code-12-12"><figcaption>R 代码 12.12</figcaption><pre><code>library(rethinking)
+data(Trolley)
+d &lt;- Trolley</code></pre></figure>
+      <p>数据有 12 列、9,930 行，来自 331 位不同个体。我们关心的结果变量是 <code>response</code>，它是 1 到 7 的整数，表示参与者认为故事中将要采取（或不采取）的行动在道德上有多大程度可以允许。这种评分既是类别变量又有顺序，正适合用有序模型处理。</p>
+    </section>
+
+    <section id="sec-12-3-2"><h3>12.3.2 用截距描述有序分布</h3>
+      <p>先看看怎样描述离散有序值的分布。查看结果变量的总体分布，也就是直方图：</p>
+      <figure class="code-listing" id="code-12-13"><figcaption>R 代码 12.13</figcaption><pre><code>simplehist( d$response , xlim=c(1,7) , xlab="response" )</code></pre></figure>
+      <p>结果显示在图 12.4 左侧。</p>
+      <figure class="book-figure ordered-distribution-figure" id="fig-12-4"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的回答频数、累积比例与对数累积赔率三面板图"><img src="/media/chapter-12-ordered-distribution.svg" alt="左图显示七档回答的频数，中图显示累积比例，右图显示前六档回答的对数累积赔率"></div><p class="scroll-hint">图较宽，可横向滚动比较频数、累积比例与对数累积赔率。</p><figcaption><strong>图 12.4：</strong>用对数累积赔率重新描述离散分布。左：样本中离散回答的直方图。中：各档回答的累积比例。右：各档回答累积赔率的对数。回答值 7 的对数累积赔率为无穷大，因此没有显示。</figcaption></figure>
+      <p>我们的目标，是在对数累积赔率尺度上重新描述这个直方图。做法就是先构造累积概率的赔率，再取对数。为什么要做这种晦涩的变换？因为它是前几章所用 logit link 的累积版本。Logit 是对数赔率，累积 logit 则是对数累积赔率。两者都用于把概率约束在 0/1 区间。以后决定加入预测变量时，就可以安全地在累积 logit 尺度上操作；link 函数会负责把参数估计转换到正确的概率尺度。</p>
+      <p>转换的第一步，是根据直方图计算累积概率：</p>
+      <figure class="code-listing" id="code-12-14"><figcaption>R 代码 12.14</figcaption><pre><code># 每个回答值的离散比例
+pr_k &lt;- table( d$response ) / nrow(d)
+
+# cumsum 转换为累积比例
+cum_pr_k &lt;- cumsum( pr_k )
+
+# 绘图
+plot( 1:7 , cum_pr_k , type="b" , xlab="response" ,
+ylab="cumulative proportion" , ylim=c(0,1) )</code></pre></figure>
+      <p>结果显示在图 12.4 中间。</p>
+      <p>接下来，要把直方图重新描述为对数累积赔率，需要一系列截距参数。每个截距都位于对数累积赔率尺度，代表每个结果的累积概率。这只是 link 函数的应用。回答值 <span class="math-inline"><var>y</var><sub>i</sub></span> 小于或等于某个可能结果值 <span class="math-inline"><var>k</var></span> 时，其对数累积赔率为：</p>
+      <div class="equation-block compact-equation wallis-equation" id="eq-12-ordered-intercepts"><span class="math-line">log [ Pr(<var>y</var><sub>i</sub> ≤ <var>k</var>) / (1 − Pr(<var>y</var><sub>i</sub> ≤ <var>k</var>)) ] = <var>α</var><sub><var>k</var></sub></span><span class="equation-label">(12.1)</span></div>
+      <p>其中，<span class="math-inline"><var>α</var><sub><var>k</var></sub></span> 是每个可能结果值 <span class="math-inline"><var>k</var></span> 独有的“截距”。可以直接计算这些截距参数：</p>
+      <p class="continuation-note">代码 12.15、图 12.5 与有序 likelihood 的差分构造，将从原书 PDF 第 412 页继续。</p>
+    </section>
   </section>
 
-  <section class="endnotes" id="chapter-12-notes" role="doc-endnotes"><h2>尾注</h2><ol start="175"><li id="note-175">Williams（1975，1982）。Bolker（2008）在生态数据语境中给出了清晰介绍。 <a class="backref" href="#note-175-ref" aria-label="返回正文">↩</a></li><li id="note-176">另一种很常见的参数化是 <span class="math-inline"><var>α</var> = <var>p̄θ</var></span> 与 <span class="math-inline"><var>β</var> = (1 − <var>p̄</var>)<var>θ</var></span>。<span class="math-inline"><var>p̄</var></span> 与 <span class="math-inline"><var>θ</var></span> 的版本更适合建模，因为我们通常希望把线性模型连接到 beta 分布的中心趋势，而 <span class="math-inline"><var>p̄</var></span> 正是中心趋势的一种度量。 <a class="backref" href="#note-176-ref" aria-label="返回正文">↩</a></li><li id="note-177">Hilbe（2011）整本书都在讨论 gamma-Poisson 回归。 <a class="backref" href="#note-177-ref" aria-label="返回正文">↩</a></li><li id="note-178">Lambert（1992）首次介绍了这种模型。基本的零膨胀方法虽然出现得更早，但 Lambert 给出了本书采用的版本：用 log 与 logit link 连接两个彼此独立的线性模型。 <a class="backref" href="#note-178-ref" aria-label="返回正文">↩</a></li><li id="note-179">参见 Bürkner 与 Vuorre（2018），以及 Liddell 与 Kruschke（2018）。 <a class="backref" href="#note-179-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section class="endnotes" id="chapter-12-notes" role="doc-endnotes"><h2>尾注</h2><ol start="175"><li id="note-175">Williams（1975，1982）。Bolker（2008）在生态数据语境中给出了清晰介绍。 <a class="backref" href="#note-175-ref" aria-label="返回正文">↩</a></li><li id="note-176">另一种很常见的参数化是 <span class="math-inline"><var>α</var> = <var>p̄θ</var></span> 与 <span class="math-inline"><var>β</var> = (1 − <var>p̄</var>)<var>θ</var></span>。<span class="math-inline"><var>p̄</var></span> 与 <span class="math-inline"><var>θ</var></span> 的版本更适合建模，因为我们通常希望把线性模型连接到 beta 分布的中心趋势，而 <span class="math-inline"><var>p̄</var></span> 正是中心趋势的一种度量。 <a class="backref" href="#note-176-ref" aria-label="返回正文">↩</a></li><li id="note-177">Hilbe（2011）整本书都在讨论 gamma-Poisson 回归。 <a class="backref" href="#note-177-ref" aria-label="返回正文">↩</a></li><li id="note-178">Lambert（1992）首次介绍了这种模型。基本的零膨胀方法虽然出现得更早，但 Lambert 给出了本书采用的版本：用 log 与 logit link 连接两个彼此独立的线性模型。 <a class="backref" href="#note-178-ref" aria-label="返回正文">↩</a></li><li id="note-179">参见 Bürkner 与 Vuorre（2018），以及 Liddell 与 Kruschke（2018）。 <a class="backref" href="#note-179-ref" aria-label="返回正文">↩</a></li><li id="note-180">McCullagh（1980）被认为引入并推广了这种方法。另见 Fullerton（2009），其中综述并比较了不同模型类型。 <a class="backref" href="#note-180-ref" aria-label="返回正文">↩</a></li><li id="note-181">Cushman 等（2006）。 <a class="backref" href="#note-181-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 12 章 PDF 第 397–408 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 409 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 12 章 PDF 第 397–411 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 412 页继续。</aside>
 </article>
