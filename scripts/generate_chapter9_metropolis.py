@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate deterministic Chinese SVGs for Chapter 9 Figures 9.2 through 9.11."""
+"""Generate deterministic Chinese SVGs for Chapter 9 Figures 9.2 through 9.12."""
 from pathlib import Path
 import math
 import random
@@ -15,6 +15,7 @@ OUT8 = ROOT / "translations/zh/media/chapter-09-traceplot.svg"
 OUT9 = ROOT / "translations/zh/media/chapter-09-trankplot.svg"
 OUT10 = ROOT / "translations/zh/media/chapter-09-chain-diagnostics.svg"
 OUT11 = ROOT / "translations/zh/media/chapter-09-weak-prior.svg"
+OUT12 = ROOT / "translations/zh/media/chapter-09-nonidentifiable-chains.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 BLUE = "#6670ee"
 INK = "#30332e"
@@ -685,6 +686,131 @@ def figure_9_11() -> None:
     OUT11.write_text('\n'.join(body), encoding='utf-8')
 
 
+def figure_9_12() -> None:
+    """Contrast non-identifiable chains before and after weak priors."""
+    w, h = 1200, 1480
+    panel_w, panel_h = 470, 165
+    lefts = (85, 645)
+    row_tops = (55, 280, 505, 800, 1025, 1250)
+    colors = (INK, BLUE, "#afb1ac")
+    body = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" role="img">',
+        '<title>不可识别参数的病态链与弱信息先验修复</title>',
+        '<desc>上半部显示不可识别参数 a1 和 a2 的游荡轨迹及非均匀秩图，下半部显示弱信息先验修复后的健康结果。</desc>',
+        '<rect width="100%" height="100%" fill="#fff"/>',
+    ]
+
+    def draw_trace(left, top, label, n_eff, series, low, high, clip_id):
+        sx = lambda index: left + index / 999 * panel_w
+        sy = lambda value: top + (high - value) / (high - low) * panel_h
+        body.extend([
+            f'<defs><clipPath id="{clip_id}"><rect x="{left}" y="{top}" width="{panel_w}" height="{panel_h}"/></clipPath></defs>',
+            f'<rect x="{left}" y="{top}" width="{panel_w/2}" height="{panel_h}" fill="#e2e3e0"/>',
+            f'<rect x="{left}" y="{top}" width="{panel_w}" height="{panel_h}" fill="none" stroke="{INK}"/>',
+            f'<text x="{left}" y="{top-12}" font-family="{FONT}" font-size="22" fill="{INK}">{label}</text>',
+            f'<text x="{left+panel_w}" y="{top-12}" text-anchor="end" font-family="{FONT}" font-size="18" fill="{INK}">n_eff = {n_eff}</text>',
+        ])
+        for chain, values in enumerate(series):
+            points = " ".join(f"{sx(i):.1f},{sy(value):.1f}" for i, value in enumerate(values))
+            body.append(f'<polyline points="{points}" fill="none" stroke="{colors[chain]}" stroke-width="1.25" opacity=".9" clip-path="url(#{clip_id})"/>')
+        for draw in (200, 400, 600, 800, 1000):
+            x = left + draw / 1000 * panel_w
+            body.extend([
+                f'<line x1="{x:.1f}" y1="{top+panel_h}" x2="{x:.1f}" y2="{top+panel_h+6}" stroke="{INK}"/>',
+                f'<text x="{x:.1f}" y="{top+panel_h+26}" text-anchor="middle" font-family="{FONT}" font-size="14">{draw}</text>',
+            ])
+        for value in (low, (low + high) / 2, high):
+            y = sy(value)
+            body.extend([
+                f'<line x1="{left-6}" y1="{y:.1f}" x2="{left}" y2="{y:.1f}" stroke="{INK}"/>',
+                f'<text x="{left-12}" y="{y+5:.1f}" text-anchor="end" font-family="{FONT}" font-size="14">{value:g}</text>',
+            ])
+
+    def draw_rank(left, top, label, n_eff, sick, seed):
+        rng = random.Random(seed)
+        body.extend([
+            f'<line x1="{left}" y1="{top+panel_h}" x2="{left+panel_w}" y2="{top+panel_h}" stroke="{INK}"/>',
+            f'<line x1="{left}" y1="{top}" x2="{left}" y2="{top+panel_h}" stroke="{INK}"/>',
+            f'<text x="{left}" y="{top-12}" font-family="{FONT}" font-size="22" fill="{INK}">{label}</text>',
+            f'<text x="{left+panel_w}" y="{top-12}" text-anchor="end" font-family="{FONT}" font-size="18" fill="{INK}">n_eff = {n_eff}</text>',
+        ])
+        bins = 20
+        for chain, color in enumerate(colors):
+            heights = []
+            for index in range(bins):
+                phase = index / (bins - 1)
+                if sick:
+                    if chain == 0:
+                        baseline = 16 + 52 * phase
+                    elif chain == 1:
+                        baseline = 65 - 49 * phase
+                    else:
+                        baseline = 25 + 35 * abs(math.sin(phase * 1.5 * math.pi))
+                    height = baseline + rng.gauss(0, 8)
+                else:
+                    height = 42 + rng.gauss(0, 9)
+                heights.append(max(8, height))
+            points = []
+            bin_width = panel_w / bins
+            for index, height in enumerate(heights):
+                x1 = left + index * bin_width
+                x2 = x1 + bin_width
+                y = top + panel_h - min(height, 76) / 76 * (panel_h - 12)
+                if index == 0:
+                    points.append((x1, top + panel_h))
+                points.extend(((x1, y), (x2, y)))
+            points.append((left + panel_w, top + panel_h))
+            body.append(f'<polyline points="{" ".join(f"{x:.1f},{y:.1f}" for x,y in points)}" fill="none" stroke="{color}" stroke-width="2" opacity=".92"/>')
+
+    sick_a1, sick_a2, sick_sigma = [], [], []
+    for chain in range(3):
+        rng = random.Random(9120 + chain * 31)
+        value = rng.uniform(-350, 250)
+        chain_a1, chain_a2, chain_sigma = [], [], []
+        sigma_prev = 0.0
+        for index in range(1000):
+            value = .998 * value + rng.gauss(0, 24)
+            if index in (310 + chain * 40, 650 - chain * 35):
+                value += rng.choice((-1, 1)) * rng.uniform(260, 520)
+            chain_a1.append(value)
+            chain_a2.append(-value + rng.gauss(0, 42))
+            sigma_prev = .62 * sigma_prev + rng.gauss(0, .035)
+            chain_sigma.append(1.05 + sigma_prev)
+        sick_a1.append(chain_a1)
+        sick_a2.append(chain_a2)
+        sick_sigma.append(chain_sigma)
+
+    def healthy_series(seed, mean, sd, positive=False):
+        rng = random.Random(seed)
+        previous = 0.0
+        values = []
+        for _ in range(1000):
+            previous = -.1 * previous + rng.gauss(0, sd)
+            value = mean + previous
+            values.append(max(.78, value) if positive else value)
+        return values
+
+    healthy_a1 = [healthy_series(9220 + i * 17, .01, 7.2) for i in range(3)]
+    healthy_a2 = [healthy_series(9260 + i * 19, .18, 7.2) for i in range(3)]
+    healthy_sigma = [healthy_series(9300 + i * 23, 1.03, .075, True) for i in range(3)]
+
+    draw_trace(lefts[0], row_tops[0], "a1", 2, sick_a1, -1200, 600, "nonid-sick-a1")
+    draw_rank(lefts[1], row_tops[0], "a1", 2, True, 9341)
+    draw_trace(lefts[0], row_tops[1], "a2", 2, sick_a2, -600, 1200, "nonid-sick-a2")
+    draw_rank(lefts[1], row_tops[1], "a2", 2, True, 9342)
+    draw_trace(lefts[0], row_tops[2], "sigma", 2, sick_sigma, .82, 1.28, "nonid-sick-sigma")
+    draw_rank(lefts[1], row_tops[2], "sigma", 2, True, 9343)
+    body.append(f'<line x1="45" y1="735" x2="1155" y2="735" stroke="#888b85" stroke-width="1.5"/>')
+    draw_trace(lefts[0], row_tops[3], "a1", 389, healthy_a1, -25, 25, "nonid-healthy-a1")
+    draw_rank(lefts[1], row_tops[3], "a1", 389, False, 9351)
+    draw_trace(lefts[0], row_tops[4], "a2", 389, healthy_a2, -25, 25, "nonid-healthy-a2")
+    draw_rank(lefts[1], row_tops[4], "a2", 389, False, 9352)
+    draw_trace(lefts[0], row_tops[5], "sigma", 448, healthy_sigma, .8, 1.3, "nonid-healthy-sigma")
+    draw_rank(lefts[1], row_tops[5], "sigma", 448, False, 9353)
+    body.extend(['</svg>', ''])
+    OUT12.write_text('\n'.join(body), encoding='utf-8')
+
+
 def main() -> None:
     figure_9_2()
     figure_9_3()
@@ -696,6 +822,7 @@ def main() -> None:
     figure_9_9()
     figure_9_10()
     figure_9_11()
+    figure_9_12()
     print(OUT2)
     print(OUT3)
     print(OUT4)
@@ -706,6 +833,7 @@ def main() -> None:
     print(OUT9)
     print(OUT10)
     print(OUT11)
+    print(OUT12)
 
 
 if __name__ == "__main__":

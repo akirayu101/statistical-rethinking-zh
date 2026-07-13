@@ -1507,7 +1507,7 @@
   },
   "chapter-09": {
     "required_status": "in_progress",
-    "source_pages": [285, 314],
+    "source_pages": [285, 317],
     "required_ids": [
       "fig-9-1",
       "rethinking-stan-was-a-man",
@@ -1582,6 +1582,15 @@
       "eq-9-weak-prior-model",
       "code-9-24",
       "fig-9-11",
+      "rethinking-statistical-computing-folk-theorem",
+      "overthinking-divergent-transitions-friend",
+      "sec-9-5-4",
+      "code-9-25",
+      "eq-9-nonidentifiable-model",
+      "code-9-26",
+      "warning-9-treedepth",
+      "erratum-9-12-chain-count",
+      "fig-9-12",
       "chapter-09-notes",
       "note-137",
       "note-138",
@@ -1596,7 +1605,8 @@
       "note-147",
       "note-148",
       "note-149",
-      "note-150"
+      "note-150",
+      "note-151"
     ],
     "required_headings": [
       "马尔可夫链蒙特卡洛",
@@ -1625,28 +1635,32 @@
       "9.5.2 需要多少条链？",
       "再思考：收敛诊断",
       "9.5.3 驯服一条狂野的链",
+      "再思考：统计计算的民间定理",
+      "过度思考：发散转移是你的朋友",
+      "9.5.4 不可识别参数",
       "尾注"
     ],
     "counts": {
-      "section": 19,
-      "figure": 38,
-      "figure img": 11,
-      ".book-figure": 11,
-      ".code-listing": 27,
-      ".code-output": 9,
-      ".rethinking-box": 5,
-      ".overthinking-box": 2,
+      "section": 20,
+      "figure": 42,
+      "figure img": 12,
+      ".book-figure": 12,
+      ".code-listing": 30,
+      ".code-output": 11,
+      ".rethinking-box": 6,
+      ".overthinking-box": 3,
       ".book-quote": 1,
-      ".equation-block": 6,
-      ".model-system-equation": 2,
+      ".equation-block": 7,
+      ".model-system-equation": 3,
       ".algorithm-steps": 1,
       ".algorithm-steps > li": 4,
       ".metropolis-mapping": 1,
       ".metropolis-mapping > li": 3,
       ".preparation-steps": 1,
       ".preparation-steps > li": 2,
+      ".source-erratum": 1,
       ".continuation-note": 1,
-      ".endnotes li": 14
+      ".endnotes li": 15
     }
   }
 }
