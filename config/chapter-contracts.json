@@ -1700,7 +1700,7 @@
   },
   "chapter-10": {
     "required_status": "in_progress",
-    "source_pages": [323, 329],
+    "source_pages": [323, 332],
     "required_ids": [
       "intro-10",
       "note-153-ref",
@@ -1729,6 +1729,21 @@
       "eq-10-generalized-normal",
       "note-159-ref",
       "fig-10-2",
+      "overthinking-gaussian-maxent-proof",
+      "note-160-ref",
+      "eq-10-gaussian-density",
+      "eq-10-gaussian-entropy",
+      "eq-10-kl-maxent",
+      "eq-10-gaussian-cross-entropy-definition",
+      "eq-10-gaussian-cross-entropy-expectation",
+      "eq-10-gaussian-cross-entropy-variance",
+      "sec-10-1-2",
+      "eq-10-binomial-pmf",
+      "eq-10-binary-sequence",
+      "table-10-binomial-candidates",
+      "fig-10-3",
+      "code-10-5",
+      "code-10-6",
       "chapter-10-notes",
       "note-153",
       "note-154",
@@ -1736,7 +1751,8 @@
       "note-156",
       "note-157",
       "note-158",
-      "note-159"
+      "note-159",
+      "note-160"
     ],
     "required_headings": [
       "大熵与广义线性模型",
@@ -1745,24 +1761,26 @@
       "再思考：直觉有什么用？",
       "过度思考：Wallis 推导",
       "10.1.1 高斯分布",
+      "过度思考：高斯分布最大熵的证明",
+      "10.1.2 二项分布",
       "尾注"
     ],
     "counts": {
-      "section": 3,
-      "figure": 6,
-      "figure img": 2,
-      ".book-figure": 2,
-      ".code-listing": 4,
-      ".code-output": 1,
+      "section": 4,
+      "figure": 9,
+      "figure img": 3,
+      ".book-figure": 3,
+      ".code-listing": 6,
+      ".code-output": 3,
       ".rethinking-box": 2,
-      ".overthinking-box": 1,
+      ".overthinking-box": 2,
       ".book-quote": 1,
-      ".equation-block": 6,
-      ".wallis-equation": 5,
+      ".equation-block": 14,
+      ".wallis-equation": 13,
       ".source-erratum": 1,
       ".chapter-introduction": 1,
       ".continuation-note": 1,
-      ".endnotes li": 7
+      ".endnotes li": 8
     }
   }
 }

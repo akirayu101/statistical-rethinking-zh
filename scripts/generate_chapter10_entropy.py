@@ -7,6 +7,7 @@ import math
 ROOT = Path(__file__).resolve().parents[1]
 OUT1 = ROOT / "translations/zh/media/chapter-10-pebble-entropy.svg"
 OUT2 = ROOT / "translations/zh/media/chapter-10-gaussian-maxent.svg"
+OUT3 = ROOT / "translations/zh/media/chapter-10-binomial-candidates.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 BLUE = "#263f86"
@@ -162,6 +163,46 @@ def figure_10_2() -> None:
     OUT2.write_text("\n".join(parts) + "\n", encoding="utf-8")
 
 
+def figure_10_3() -> None:
+    """Draw the four candidate distributions from Figure 10.3."""
+    width, height = 1200, 650
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">',
+        '<title>期望值相同的四种候选分布</title>',
+        '<desc>A 到 D 四种分布都表示两次抽取平均得到一颗蓝色弹珠，但四个结果序列上的概率配置不同。</desc>',
+        '<rect width="100%" height="100%" fill="#fbfaf6"/>',
+    ]
+    candidates = [
+        ("A", [1 / 4, 1 / 4, 1 / 4, 1 / 4]),
+        ("B", [2 / 6, 1 / 6, 1 / 6, 2 / 6]),
+        ("C", [1 / 6, 2 / 6, 2 / 6, 1 / 6]),
+        ("D", [1 / 8, 4 / 8, 2 / 8, 1 / 8]),
+    ]
+    outcomes = ["ww", "bw", "wb", "bb"]
+    positions = [(60, 35), (630, 35), (60, 335), (630, 335)]
+    for (label, probabilities), (x, y) in zip(candidates, positions):
+        panel_w, panel_h = 510, 255
+        left, right, top, bottom = x + 72, x + panel_w - 30, y + 50, y + panel_h - 54
+        sx = lambda index: left + index * (right - left) / 3
+        sy = lambda value: bottom - value / 0.55 * (bottom - top)
+        parts.extend([
+            f'<rect x="{x}" y="{y}" width="{panel_w}" height="{panel_h}" rx="8" fill="#fff" stroke="{GRID}"/>',
+            text(x + 18, y + 34, label, size=26, weight=700, fill=BLUE),
+            f'<line x1="{left}" y1="{bottom}" x2="{right}" y2="{bottom}" stroke="{INK}"/>',
+        ])
+        points = " ".join(f"{sx(index):.1f},{sy(value):.1f}" for index, value in enumerate(probabilities))
+        parts.append(f'<polyline points="{points}" fill="none" stroke="#737cff" stroke-width="4"/>')
+        for index, (outcome, value) in enumerate(zip(outcomes, probabilities)):
+            xx, yy = sx(index), sy(value)
+            parts.extend([
+                f'<circle cx="{xx:.1f}" cy="{yy:.1f}" r="7" fill="#737cff" stroke="#fff" stroke-width="2"/>',
+                text(xx, bottom + 31, outcome, size=18, anchor="middle"),
+                text(xx, yy - 14, f"{value:.3f}".rstrip("0").rstrip("."), size=15, anchor="middle", fill="#666862"),
+            ])
+    parts.append('</svg>')
+    OUT3.write_text("\n".join(parts) + "\n", encoding="utf-8")
+
+
 def main() -> int:
     OUT1.parent.mkdir(parents=True, exist_ok=True)
     width, height = 1200, 930
@@ -185,8 +226,10 @@ def main() -> int:
     parts.append('</svg>')
     OUT1.write_text("\n".join(parts) + "\n", encoding="utf-8")
     figure_10_2()
+    figure_10_3()
     print(f"generated {OUT1}")
     print(f"generated {OUT2}")
+    print(f"generated {OUT3}")
     return 0
 
 
