@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-11" data-source-pages="347-386">
-  <header class="chapter-header"><p class="eyebrow">第十一章</p><h1>上帝给整数加了料</h1><p class="source-range">当前译稿对应原书 PDF 第 347–386 页</p></header>
+<article class="book-article" data-chapter="chapter-11" data-source-pages="347-389">
+  <header class="chapter-header"><p class="eyebrow">第十一章</p><h1>上帝给整数加了料</h1><p class="source-range">当前译稿对应原书 PDF 第 347–389 页</p></header>
 
   <div class="chapter-introduction" id="intro-11">
     <p>太空中的寒冷以 Kelvin 命名，约为 3 Kelvin，也就是绝对零度以上约 3 摄氏度。Kelvin 也是苏格兰格拉斯哥附近一条河流的名字；同一条河又把名字给了 William Thomson，也就是 Kelvin 勋爵（1824 年生，1907 年卒）——英国第一位获封贵族头衔的科学家。Thomson 在格拉斯哥的实验室研究热力学，如今太空的寒冷便以一条苏格兰河流为名。</p>
@@ -724,10 +724,66 @@ data{
     int K; // 结果值数量
     int career[N]; // 结果
     real family_income[N];
-}</code></pre></figure><p class="continuation-note">代码 11.59 的参数块、模型块、拟合结果与解释，将从原书 PDF 第 387 页继续。</p></section>
+}
+parameters{
+    vector[K-1] a; // 截距
+    vector[K-1] b; // 家庭收入的系数
+}
+model{
+    vector[K] p;
+    vector[K] s;
+    a ~ normal(0,1.5);
+    b ~ normal(0,1);
+    for ( i in 1:N ) {
+        for ( j in 1:(K-1) ) s[j] = a[j] + b[j]*family_income[i];
+        s[K] = 0; // 枢轴
+        p = softmax( s );
+        career[i] ~ categorical( p );
+    }
+}
+"
+
+dat_list &lt;- list( N=N , K=3 , career=career , family_income=family_income )
+m11.14 &lt;- stan( model_code=code_m11.14 , data=dat_list , chains=4 )
+precis( m11.14 , 2 )</code></pre><pre class="code-output"><code>      mean   sd  5.5% 94.5% n_eff Rhat
+a[1] -1.41 0.28 -1.88 -0.97  2263    1
+a[2] -0.64 0.20 -0.96 -0.33  2163    1
+b[1] -2.72 0.60 -3.69 -1.79  2128    1
+b[2] -1.72 0.39 -2.32 -1.10  2183    1</code></pre></figure><p>同样，计算模型隐含的预测，是解释这类模型最稳妥的方法。它们非常擅长对离散、无序事件进行分类，但参数所处的尺度极难解释。本例中，<code>b[2]</code> 最后为负，是因为它相对于枢轴；家庭收入对枢轴职业的影响为正。只要在概率尺度上生成后验预测，就会看到这一点。</p></section>
+
+    <section id="sec-11-3-3"><h3>11.3.3 伪装成 Poisson 的多项模型</h3><p>拟合多项/分类模型还有另一种方法：把它重构为一系列 Poisson likelihood。<sup id="note-173-ref"><a href="#note-173">173</a></sup>这听起来有点疯狂，但以这种方式建模多项结果，其实既有原理依据又很常见。有原理依据，是因为数学证明它成立；很常见，则是因为 Poisson likelihood 通常比多项 likelihood 更容易计算。下面给出一个实现例子；变换的数学细节见本节末尾的“过度思考”框。</p><p>我明白，对同一份数据采用不同建模方式却得到相同推断，恰恰是最让科学家觉得统计学令人抓狂的事情之一。因此，先把本章前面的一个二项例子改写为 Poisson 回归。二项分布只是多项分布的特例，所以这种方法可以外推到任意数量的事件类型。再次考虑 UC Berkeley 录取数据，重新载入：</p><figure class="code-listing" id="code-11-60"><figcaption>R 代码 11.60</figcaption><pre><code>library(rethinking)
+data(UCBadmit)
+d &lt;- UCBadmit</code></pre></figure><p>现在用 Poisson 回归同时建模录取率与拒绝率，并把推断同二项模型的录取概率比较。下面同时给出二项模型与 Poisson 模型：</p><figure class="code-listing" id="code-11-61"><figcaption>R 代码 11.61</figcaption><pre><code># 总体录取概率的二项模型
+m_binom &lt;- quap(
+    alist(
+        admit ~ dbinom(applications,p),
+        logit(p) &lt;- a,
+        a ~ dnorm( 0 , 1.5 )
+    ), data=d )
+
+# 总体录取率与拒绝率的 Poisson 模型
+# 'reject' 是 Stan 保留字，不能用作变量名
+dat &lt;- list( admit=d$admit , rej=d$reject )
+m_pois &lt;- ulam(
+    alist(
+        admit ~ dpois(lambda1),
+        rej ~ dpois(lambda2),
+        log(lambda1) &lt;- a1,
+        log(lambda2) &lt;- a2,
+        c(a1,a2) ~ dnorm(0,1.5)
+    ), data=dat , chains=3 , cores=3 )</code></pre></figure><p>为了简单，只看后验均值，但请记住，真正重要的是完整后验。首先，在整个数据集中，二项模型推断出的录取概率为：</p><figure class="code-listing" id="code-11-62"><figcaption>R 代码 11.62</figcaption><pre><code>inv_logit(coef(m_binom))</code></pre><pre class="code-output"><code>        a
+0.3877596</code></pre></figure><p>Poisson 模型隐含的录取概率则为：</p><div class="equation-block wallis-equation" id="eq-11-poisson-admission-probability"><span class="math-line"><var>p</var><sub>admit</sub> = <var>λ</var><sub>1</sub> / (<var>λ</var><sub>1</sub> + <var>λ</var><sub>2</sub>) = exp(<var>a</var><sub>1</sub>) / [exp(<var>a</var><sub>1</sub>) + exp(<var>a</var><sub>2</sub>)]</span></div><p>写成代码：</p><figure class="code-listing" id="code-11-63"><figcaption>R 代码 11.63</figcaption><pre><code>k &lt;- coef(m_pois)
+a1 &lt;- k['a1']
+a2 &lt;- k['a2']
+exp(a1)/(exp(a1)+exp(a2))</code></pre><pre class="code-output"><code>[1] 0.3872366</code></pre></figure><p>这与二项模型的推断相同。如今，像上一小节那样直接使用 categorical 分布同样容易；但有时 Poisson 分解更方便，你也可能在别处遇见它。因此，知道这种做法并不荒唐很有价值。</p>
+
+      <aside class="overthinking-box" id="overthinking-multinomial-poisson"><h3>过度思考：多项–Poisson 变换</h3><p>本章前面介绍过 Poisson 分布。假设类型 1 事件的率为 <span class="math-inline"><var>λ</var><sub>1</sub></span>，观察到 <span class="math-inline"><var>y</var><sub>1</sub></span> 个这类事件的 Poisson 概率为：</p><div class="equation-block wallis-equation" id="eq-11-mp-poisson-probability"><span class="math-line">Pr(<var>y</var><sub>1</sub> | <var>λ</var><sub>1</sub>) = e<sup>−<var>λ</var><sub>1</sub></sup><var>λ</var><sub>1</sub><sup><var>y</var><sub>1</sub></sup> / <var>y</var><sub>1</sub>!</span></div><p>下面表演一个魔术，从多项概率表达式中抽出这个式子。多项概率只是把二项分布外推到两类以上事件。为了让推导简单一点，这里使用二项分布，但把它写成多项形式。在 <span class="math-inline"><var>n</var></span> 次试验中，类型 1 和类型 2 的概率分别为 <span class="math-inline"><var>p</var><sub>1</sub></span> 与 <span class="math-inline"><var>p</var><sub>2</sub></span>，观察到计数 <span class="math-inline"><var>y</var><sub>1</sub></span> 与 <span class="math-inline"><var>y</var><sub>2</sub></span> 的概率为：</p><div class="equation-block wallis-equation" id="eq-11-mp-binomial-form"><span class="math-line">Pr(<var>y</var><sub>1</sub>, <var>y</var><sub>2</sub> | <var>n</var>, <var>p</var><sub>1</sub>, <var>p</var><sub>2</sub>) = <var>n</var>! / (<var>y</var><sub>1</sub>!<var>y</var><sub>2</sub>!) · <var>p</var><sub>1</sub><sup><var>y</var><sub>1</sub></sup><var>p</var><sub>2</sub><sup><var>y</var><sub>2</sub></sup></span></div><p>现在需要一些定义。令 <span class="math-inline"><var>Λ</var> = <var>λ</var><sub>1</sub> + <var>λ</var><sub>2</sub></span>、<span class="math-inline"><var>p</var><sub>1</sub> = <var>λ</var><sub>1</sub>/<var>Λ</var></span>，并令 <span class="math-inline"><var>p</var><sub>2</sub> = <var>λ</var><sub>2</sub>/<var>Λ</var></span>。把这些定义代入二项概率：</p><div class="equation-block wallis-equation" id="eq-11-mp-substitution"><div>Pr(<var>y</var><sub>1</sub>, <var>y</var><sub>2</sub> | <var>n</var>, <var>λ</var><sub>1</sub>, <var>λ</var><sub>2</sub>)</div><div>= <var>n</var>! / (<var>y</var><sub>1</sub>!<var>y</var><sub>2</sub>!) · (<var>λ</var><sub>1</sub>/<var>Λ</var>)<sup><var>y</var><sub>1</sub></sup>(<var>λ</var><sub>2</sub>/<var>Λ</var>)<sup><var>y</var><sub>2</sub></sup></div><div>= <var>n</var>! / <var>Λ</var><sup><var>n</var></sup> · <var>λ</var><sub>1</sub><sup><var>y</var><sub>1</sub></sup>/<var>y</var><sub>1</sub>! · <var>λ</var><sub>2</sub><sup><var>y</var><sub>2</sub></sup>/<var>y</var><sub>2</sub>!</div></div><p>接下来同时乘以并除以 <span class="math-inline">e<sup>−<var>λ</var><sub>1</sub></sup></span> 与 <span class="math-inline">e<sup>−<var>λ</var><sub>2</sub></sup></span>，再做一番有策略的重排：</p><div class="equation-block wallis-equation" id="eq-11-mp-rearrangement"><div>Pr(<var>y</var><sub>1</sub>, <var>y</var><sub>2</sub> | <var>n</var>, <var>λ</var><sub>1</sub>, <var>λ</var><sub>2</sub>)</div><div>= <var>n</var>! / [e<sup>−<var>Λ</var></sup><var>Λ</var><sup><var>n</var></sup>] · [e<sup>−<var>λ</var><sub>1</sub></sup><var>λ</var><sub>1</sub><sup><var>y</var><sub>1</sub></sup>/<var>y</var><sub>1</sub>!] · [e<sup>−<var>λ</var><sub>2</sub></sup><var>λ</var><sub>2</sub><sup><var>y</var><sub>2</sub></sup>/<var>y</var><sub>2</sub>!]</div><div>= Pr(<var>n</var>)<sup>−1</sup> · Pr(<var>y</var><sub>1</sub>) · Pr(<var>y</var><sub>2</sub>)</div></div><p>最后的表达式是 Poisson 概率 <span class="math-inline">Pr(<var>y</var><sub>1</sub>)</span> 与 <span class="math-inline">Pr(<var>y</var><sub>2</sub>)</span> 的乘积，再除以 <span class="math-inline"><var>n</var></span> 的 Poisson 概率 <span class="math-inline">Pr(<var>n</var>)</span>。用 <span class="math-inline">Pr(<var>n</var>)</span> 去除这个乘积很合理，因为这里求的是 <span class="math-inline"><var>y</var><sub>1</sub></span> 与 <span class="math-inline"><var>y</var><sub>2</sub></span> 的条件概率。因此，若有 <span class="math-inline"><var>k</var></span> 类事件，就可以用 Poisson 率参数 <span class="math-inline"><var>λ</var><sub>1</sub>, …, <var>λ</var><sub>k</sub></span> 建模多项概率 <span class="math-inline"><var>p</var><sub>1</sub>, …, <var>p</var><sub>k</sub></span>，再通过下面的定义恢复多项概率：</p><div class="equation-block wallis-equation" id="eq-11-mp-recovery"><span class="math-line"><var>p</var><sub>i</sub> = <var>λ</var><sub>i</sub> / ∑<sub>j</sub><var>λ</var><sub>j</sub></span></div></aside>
+    </section>
   </section>
 
-  <section class="endnotes" id="chapter-11-notes" role="doc-endnotes"><h2>尾注</h2><ol start="166"><li id="note-166">重要数论家 Leopold Kronecker 据称说过：“上帝创造了整数，其余一切皆为人造。”（德文：<span lang="de">Die ganzen Zahlen hat der liebe Gott gemacht, alles andere ist Menschenwerk.</span>） <a class="backref" href="#note-166-ref" aria-label="返回正文">↩</a></li><li id="note-167">Silk 等（2005）。 <a class="backref" href="#note-167-ref" aria-label="返回正文">↩</a></li><li id="note-168">Bickel 等（1975）。 <a class="backref" href="#note-168-ref" aria-label="返回正文">↩</a></li><li id="note-169">Simpson（1951）。 <a class="backref" href="#note-169-ref" aria-label="返回正文">↩</a></li><li id="note-170">例如可参见 Pearl（2014）。关于 Simpson 悖论的论述浩如烟海，以至于你能找到看似彼此矛盾的解释。 <a class="backref" href="#note-170-ref" aria-label="返回正文">↩</a></li><li id="note-171">Kline 与 Boyd（2010）。 <a class="backref" href="#note-171-ref" aria-label="返回正文">↩</a></li><li id="note-172">变化效应应用于行为选择的已发表 Stan 示例，可参见 Koster 与 McElreath（2017）。 <a class="backref" href="#note-172-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section id="sec-11-4"><h2>11.4 删失与生存</h2><p>有时，对离散、可计数事件建模的正确方法，并不是建模计数本身，而是建模事件之间的时间。例如，假设我们关心动物收容所中猫被领养的速率。一只猫只能被领养一次——至少要等它再次被送养，才可能又被领养。它等待领养的时长为领养速率提供了信息，模型还可以告诉我们速率怎样随品种或毛色而变化。也许你不关心猫的领养（你这个怪物），但你大概会关心疾病发作与康复的速率、死亡时间、首次繁殖年龄，以及许多结构相似的变量。</p><p>处理这类数据的模型称为<strong>生存模型</strong>。生存模型研究的是可计数事物，但我们希望预测的结果是<strong>持续时间</strong>。持续时间是相对于某个参照点的连续位移，因此都是正实数。</p><p class="continuation-note">位移的最大熵分布、删失机制与猫领养数据，将从原书 PDF 第 390 页继续。</p></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 11 章 PDF 第 347–386 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 387 页继续。</aside>
+  <section class="endnotes" id="chapter-11-notes" role="doc-endnotes"><h2>尾注</h2><ol start="166"><li id="note-166">重要数论家 Leopold Kronecker 据称说过：“上帝创造了整数，其余一切皆为人造。”（德文：<span lang="de">Die ganzen Zahlen hat der liebe Gott gemacht, alles andere ist Menschenwerk.</span>） <a class="backref" href="#note-166-ref" aria-label="返回正文">↩</a></li><li id="note-167">Silk 等（2005）。 <a class="backref" href="#note-167-ref" aria-label="返回正文">↩</a></li><li id="note-168">Bickel 等（1975）。 <a class="backref" href="#note-168-ref" aria-label="返回正文">↩</a></li><li id="note-169">Simpson（1951）。 <a class="backref" href="#note-169-ref" aria-label="返回正文">↩</a></li><li id="note-170">例如可参见 Pearl（2014）。关于 Simpson 悖论的论述浩如烟海，以至于你能找到看似彼此矛盾的解释。 <a class="backref" href="#note-170-ref" aria-label="返回正文">↩</a></li><li id="note-171">Kline 与 Boyd（2010）。 <a class="backref" href="#note-171-ref" aria-label="返回正文">↩</a></li><li id="note-172">变化效应应用于行为选择的已发表 Stan 示例，可参见 Koster 与 McElreath（2017）。 <a class="backref" href="#note-172-ref" aria-label="返回正文">↩</a></li><li id="note-173">这一变换似乎没有最初的原始引文。常被引用的是 Baker（1994），但该文也列举了许多更早的临时用法；McCullagh 与 Nelder（1989）从第 209 页开始解释这一变换。 <a class="backref" href="#note-173-ref" aria-label="返回正文">↩</a></li></ol></section>
+
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 11 章 PDF 第 347–389 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 390 页继续。</aside>
 </article>

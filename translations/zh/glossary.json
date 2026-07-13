@@ -965,7 +965,13 @@
     "categorical likelihood": "分类 likelihood",
     "choice probability": "选择概率",
     "competing alternatives": "竞争选项",
-    "family income": "家庭收入"
+    "family income": "家庭收入",
+    "Poisson factorization": "Poisson 分解",
+    "implied probability": "隐含概率",
+    "multinomial-Poisson transformation": "多项–Poisson 变换",
+    "survival model": "生存模型",
+    "duration": "持续时间",
+    "positive real value": "正实数"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "blavaan", "AIC", "DIC", "WAIC", "BIC", "PSIS-LOO", "MCMC", "HMC"

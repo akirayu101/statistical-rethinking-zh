@@ -1852,7 +1852,7 @@
   },
   "chapter-11": {
     "required_status": "in_progress",
-    "source_pages": [347, 386],
+    "source_pages": [347, 389],
     "required_ids": [
       "intro-11",
       "note-166-ref",
@@ -1982,6 +1982,20 @@
       "code-11-58",
       "sec-11-3-2",
       "code-11-59",
+      "sec-11-3-3",
+      "note-173-ref",
+      "code-11-60",
+      "code-11-61",
+      "code-11-62",
+      "eq-11-poisson-admission-probability",
+      "code-11-63",
+      "overthinking-multinomial-poisson",
+      "eq-11-mp-poisson-probability",
+      "eq-11-mp-binomial-form",
+      "eq-11-mp-substitution",
+      "eq-11-mp-rearrangement",
+      "eq-11-mp-recovery",
+      "sec-11-4",
       "chapter-11-notes",
       "note-166",
       "note-167",
@@ -1989,7 +2003,8 @@
       "note-169",
       "note-170",
       "note-171",
-      "note-172"
+      "note-172",
+      "note-173"
     ],
     "required_headings": [
       "上帝给整数加了料",
@@ -2005,24 +2020,26 @@
       "11.3 多项与分类模型",
       "11.3.1 预测变量与结果匹配",
       "11.3.2 预测变量与观测匹配",
+      "11.3.3 伪装成 Poisson 的多项模型",
+      "11.4 删失与生存",
       "尾注"
     ],
     "counts": {
-      "section": 13,
-      "figure": 78,
+      "section": 15,
+      "figure": 82,
       "figure img": 15,
       ".book-figure": 15,
-      ".code-listing": 63,
-      ".code-output": 23,
+      ".code-listing": 67,
+      ".code-output": 26,
       ".rethinking-box": 1,
-      ".overthinking-box": 2,
+      ".overthinking-box": 3,
       ".book-quote": 0,
-      ".equation-block": 21,
-      ".wallis-equation": 21,
+      ".equation-block": 27,
+      ".wallis-equation": 27,
       ".source-erratum": 3,
       ".chapter-introduction": 1,
       ".continuation-note": 1,
-      ".endnotes li": 7
+      ".endnotes li": 8
     }
   }
 }
