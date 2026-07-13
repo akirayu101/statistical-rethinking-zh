@@ -1,8 +1,8 @@
-<article class="book-article" data-chapter="chapter-13" data-source-pages="429-431">
-  <header class="chapter-header"><p class="eyebrow">第十三章</p><h1>有记忆的模型</h1><p class="source-range">当前译稿对应原书 PDF 第 429–431 页</p></header>
+<article class="book-article" data-chapter="chapter-13" data-source-pages="429-434">
+  <header class="chapter-header"><p class="eyebrow">第十三章</p><h1>有记忆的模型</h1><p class="source-range">当前译稿对应原书 PDF 第 429–434 页</p></header>
 
   <div class="chapter-introduction" id="intro-13">
-    <p>1985 年，Clive Wearing 失去了心智，却没有失去音乐。<sup id="note-185-ref"><a href="#note-185">185</a></sup>Wearing 是音乐学家，也是一位出色的音乐家；但引起唇疱疹的单纯疱疹病毒钻进了他的大脑，侵蚀了海马体。结果是慢性<strong>顺行性遗忘</strong>：他无法形成新的长期记忆。他仍记得怎样弹钢琴，却不记得自己五分钟前刚弹过。Wearing 如今活在一个个瞬间里，对几分钟前以外的过去一无所知；每一杯咖啡都是他有生以来的第一杯。</p>
+    <p>1985 年，Clive Wearing 失去了心智，却没有失去音乐。<sup id="note-185-ref"><a href="#note-185">185</a></sup> Wearing 是音乐学家，也是一位出色的音乐家；但引起唇疱疹的单纯疱疹病毒钻进了他的大脑，侵蚀了海马体。结果是慢性<strong>顺行性遗忘</strong>：他无法形成新的长期记忆。他仍记得怎样弹钢琴，却不记得自己五分钟前刚弹过。Wearing 如今活在一个个瞬间里，对几分钟前以外的过去一无所知；每一杯咖啡都是他有生以来的第一杯。</p>
     <p>许多统计模型也患有顺行性遗忘。当模型从数据中的一个集群——个人、群体或地点——移到另一个集群，并为每个集群估计参数时，它们会忘掉此前所有集群。之所以如此，是模型假设强迫它们这样做。前面章节中凡是用虚拟变量处理类别的模型，都被编程成了失忆状态：它们隐含假设，从任何一个类别学到的东西都不会影响对其他类别的估计；参数彼此独立，从完全分开的数据部分学习。这就像每次走进一家新咖啡馆，都忘记自己曾去过任何咖啡馆。咖啡馆各有差异，却也彼此相似。</p>
     <p>顺行性遗忘不利于了解世界。我们希望模型能更聪明地利用全部信息。这并不是把所有集群都视为相同，而是在了解每个集群的同时，也了解集群总体。同时完成两项估计任务，就能在集群之间传递信息，而这种传递会提高准确度。这就是记忆的价值。</p>
     <p>再想想咖啡馆。假设我们给机器人编程，让它访问两家咖啡馆、点咖啡，并估计各自的等待时间。机器人一开始对等待时间采用模糊先验，例如均值 5 分钟、标准差 1 分钟。在第一家咖啡馆点了一杯咖啡后，它观测到 4 分钟的等待时间，再用 Bayes 定理根据这条信息更新先验，得到第一家咖啡馆等待时间的后验分布。</p>
@@ -37,10 +37,60 @@ str(d)</code></pre><pre class="code-output"><code>'data.frame': 48 obs. of  5 va
  $ propsurv: num  0.9 1 0.7 1 0.9 0.9 1 0.9 0.4 0.9 ...</code></pre></figure>
     <p>目前只关心初始数量 <code>density</code> 中存活下来的数量 <code>surv</code>。章末练习会考察其他变量，它们都是实验操纵。</p>
     <p>这组数据的变异很大。一部分来自实验处理，但相当一部分来自其他来源。可以把每一行看作一个“水槽”，即装有蝌蚪的实验环境。每个水槽都有许多未被测量的独特因素；即使所有预测变量取值相同，这些因素仍会造成水槽之间的存活率变异。水槽就是<strong>集群变量</strong>的一个例子：每个集群内部都有多个观测，本例中就是多只蝌蚪。</p>
-    <p class="continuation-note">重复测量、集群异质性、变化截距模型与代码 13.2 将从原书 PDF 第 432 页继续。</p>
+    <p>因此，这里既有重复测量，也有跨集群的异质性。如果忽略这些集群，给每个水槽分配相同截距，就可能漏掉基线存活率的重要变异。这种变异还可能遮蔽它与其他变量的关联。反过来，若用每个水槽的虚拟变量为每个集群估计一个独立截距，又会患上顺行性遗忘：毕竟水槽虽然各不相同，但每个水槽仍能帮助估计其他水槽的存活率。因而，从一个水槽移到另一个水槽时，把先前所学彻底忘掉并不合理。</p>
+    <p>我们想要的是一个多层模型：同时估计每个水槽的截距和水槽之间的变异。这就是<strong>变化截距</strong>模型。变化截距是最简单的一类<strong>变化效应</strong>。<sup id="note-188-ref"><a href="#note-188">188</a></sup>对数据中的每个集群，都使用一个独特的截距参数。这与前面章节的类别变量示例并无不同，区别在于现在还会自适应地学习所有截距共享的先验。这里不存在本章开头讨论的失忆：当从每个集群学到的信息会影响其他所有集群时，我们就在学习各截距的同时学习先验。</p>
+    <p>下面先用前几章的正则化先验，对每个水槽里的蝌蚪死亡率建模：</p>
+    <div class="equation-block wallis-equation" id="eq-13-tank-fixed-intercepts"><div><var>S</var><sub>i</sub> ∼ Binomial(<var>N</var><sub>i</sub>, <var>p</var><sub>i</sub>)</div><div>logit(<var>p</var><sub>i</sub>) = <var>α</var><sub>TANK[<var>i</var>]</sub>　<span class="equation-note">[每个水槽各有一个对数赔率]</span></div><div><var>α</var><sub><var>j</var></sub> ∼ Normal(0, 1.5)，<var>j</var> = 1…48</div></div>
+    <p>可以像前几章一样，用 <code>ulam</code> 近似这个后验：</p>
+    <figure class="code-listing" id="code-13-2"><figcaption>R 代码 13.2</figcaption><pre><code># 构造水槽集群变量
+d$tank &lt;- 1:nrow(d)
+dat &lt;- list(
+    S = d$surv,
+    N = d$density,
+    tank = d$tank )
+
+# 近似后验
+m13.1 &lt;- ulam(
+    alist(
+        S ~ dbinom( N , p ) ,
+        logit(p) &lt;- a[tank] ,
+        a[tank] ~ dnorm( 0 , 1.5 )
+    ), data=dat , chains=4 , log_lik=TRUE )</code></pre></figure>
+    <p>查看后验，例如运行 <code>precis(m13.1,depth=2)</code>，会看到 48 个不同的截距，每个水槽一个。要得到每个水槽的期望存活概率，只需取对应的 <code>a</code> 值，再作 logistic 变换。到这里还没有新东西。</p>
+    <p>现在进入多层模型，让模型在水槽之间自适应地汇聚信息。要启用<strong>自适应汇聚</strong>，只需把 <code>a</code> 参数的先验写成若干新参数的函数。下面是多层模型的数学形式；相较前一个模型，变化集中在最后三行：</p>
+    <div class="equation-block wallis-equation" id="eq-13-tank-multilevel"><div><var>S</var><sub>i</sub> ∼ Binomial(<var>N</var><sub>i</sub>, <var>p</var><sub>i</sub>)</div><div>logit(<var>p</var><sub>i</sub>) = <var>α</var><sub>TANK[<var>i</var>]</sub></div><div><var>α</var><sub><var>j</var></sub> ∼ Normal(<span class="accent-math"><var>ᾱ</var>, <var>σ</var></span>)　<span class="equation-note">[自适应先验]</span></div><div><span class="accent-math"><var>ᾱ</var> ∼ Normal(0, 1.5)</span>　<span class="equation-note">[平均水槽的先验]</span></div><div><span class="accent-math"><var>σ</var> ∼ Exponential(1)</span>　<span class="equation-note">[水槽间标准差的先验]</span></div></div>
+    <p>注意，水槽截距的先验现在是两个参数 <span class="math-inline"><var>ᾱ</var></span> 与 <span class="math-inline"><var>σ</var></span> 的函数。<span class="math-inline"><var>ᾱ</var></span> 可以读作“alpha bar”，横线表示平均。这两个位于先验内部的参数，正是“多层”之“多”的来源。<sup id="note-189-ref"><a href="#note-189">189</a></sup>均值为 <span class="math-inline"><var>ᾱ</var></span>、标准差为 <span class="math-inline"><var>σ</var></span> 的高斯分布，是每个水槽截距的先验；而这个先验本身又为 <span class="math-inline"><var>ᾱ</var></span> 和 <span class="math-inline"><var>σ</var></span> 配置了先验。因此，模型有两个层级，每层都像一个更简单的模型。顶层的结果变量是 <span class="math-inline"><var>S</var></span>，参数是向量 <span class="math-inline"><strong>α</strong></span>，先验是 <span class="math-inline"><var>α</var><sub><var>j</var></sub> ∼ Normal(<var>ᾱ</var>, <var>σ</var>)</span>。第二层的“结果”变量是截距参数向量 <span class="math-inline"><strong>α</strong></span>，参数是 <span class="math-inline"><var>ᾱ</var></span> 与 <span class="math-inline"><var>σ</var></span>，其先验分别为 <span class="math-inline"><var>ᾱ</var> ∼ Normal(0, 1.5)</span> 和 <span class="math-inline"><var>σ</var> ∼ Exponential(1)</span>。</p>
+    <p><span class="math-inline"><var>ᾱ</var></span> 与 <span class="math-inline"><var>σ</var></span> 这两个参数常称为<strong>超参数</strong>：它们是参数的参数；相应的先验则常称为<strong>超先验</strong>。原则上，模型能安装多少个“超”层级并没有上限。例如，不同蝌蚪总体可以嵌套在不同栖息地区域内。但实践中存在限制，既受计算能力约束，也受我们理解模型的能力约束。</p>
+
+    <aside class="rethinking-box" id="rethinking-gaussian-tanks"><h3>再思考：为什么水槽服从高斯分布？</h3><p>在多层蝌蚪模型中，我们假定水槽总体服从高斯分布。为什么？最不令人满意的回答是“惯例”。高斯假设极为常见。更令人满意的回答是“实用主义”：高斯分布容易处理，也很容易推广到一个以上的维度；下一章处理变化斜率时，这种推广会很重要。但我更偏爱的回答是“熵”。如果我们只愿意对某个分布说明均值和方差，那么高斯分布就是最保守的假设（第 10 章）。在这里使用高斯分布，并不会强迫最终的 <span class="math-inline"><var>α</var></span> 参数后验对称或呈高斯形状。高斯先验或 likelihood 中唯一的信息是有限方差。分布看起来对称，是因为若不说明它如何偏斜，对称形状便拥有最大熵。最重要的是，没有规则要求变化效应必须采用高斯分布；若有充分理由改用别的分布，尽管去做。章末练习会给出一个例子。</p></aside>
+
+    <p>计算后验时，两个层级会同时计算，正如本章开头的机器人会同时了解每家咖啡馆与咖啡馆之间的变异。但这个模型不能用 <code>quap</code> 拟合。原因在于：给定参数的数据概率现在必须对第二层参数 <span class="math-inline"><var>ᾱ</var></span> 与 <span class="math-inline"><var>σ</var></span> 取平均；而 <code>quap</code> 只是用所有参数的静态值爬山，看不到这些层级。更详细的解释见下方“过度思考”框。不过，<code>ulam</code> 可以拟合它：</p>
+    <figure class="code-listing" id="code-13-3"><figcaption>R 代码 13.3</figcaption><pre><code>m13.2 &lt;- ulam(
+    alist(
+        S ~ dbinom( N , p ) ,
+        logit(p) &lt;- a[tank] ,
+        a[tank] ~ dnorm( a_bar , sigma ) ,
+        a_bar ~ dnorm( 0 , 1.5 ) ,
+        sigma ~ dexp( 1 )
+    ), data=dat , chains=4 , log_lik=TRUE )</code></pre></figure>
+    <p>这个模型为 50 个参数提供后验分布：一个整个样本的截距 <span class="math-inline"><var>ᾱ</var></span>、一个水槽间标准差 <span class="math-inline"><var>σ</var></span>，以及 48 个逐水槽截距。现在检查 WAIC，看看有效参数数量。下面比较先前的 <code>m13.1</code> 与新的多层模型：</p>
+    <figure class="code-listing" id="code-13-4"><figcaption>R 代码 13.4</figcaption><pre><code>compare( m13.1 , m13.2 )</code></pre><pre class="code-output"><code>       WAIC   SE dWAIC  dSE pWAIC weight
+m13.2 200.0 7.19   0.0   NA  20.9      1
+m13.1 215.9 4.43  15.9 4.03  26.2      0</code></pre></figure>
+    <p>这里有两个事实值得注意。第一，多层模型只有 21 个有效参数，比实际参数少 28 个，因为分配给各截距的先验把它们全都向均值 <span class="math-inline"><var>ᾱ</var></span> 收缩。此处先验相当强。用 <code>precis</code> 查看 <code>sigma</code> 的均值，会发现它约为 1.6。这与前几章所用的一样，是正则化先验；不过现在正则化程度是从数据本身学到的。<sup id="note-190-ref"><a href="#note-190">190</a></sup>第二，多层模型 <code>m13.2</code> 的有效参数比普通固定模型 <code>m13.1</code> 更少，尽管普通模型的实际参数反而更少——48 个而非 50 个。多层模型多出的两个参数让它学到一个更强的正则化先验，从而自适应地正则化。结果是后验灵活性降低，有效参数也随之减少。</p>
+
+    <aside class="overthinking-box" id="overthinking-quap-mcmc"><h3>过度思考：QUAP 失败，MCMC 成功</h3><p>为什么简单的二次近似，例如 <code>quap</code>，不能用于多层模型？当先验本身是参数的函数时，就会有两个不确定性层级。这意味着，在给定参数时，数据概率必须对每一层取平均。普通二次近似无法处理 likelihood 中的这种平均，因为一般不能推导出解析解。也就是说，不存在一个统一的函数来计算对数后验，因此计算机无法直接找到它的最小值（也就是后验的最大值）。</p><p>这时需要其他计算方法。寻模优化策略可以扩展到这类模型，但一般而言，我们不希望被优化困住。原因之一是，这些模型的后验经常不是高斯分布；另一个原因是，优化方法往往比 MCMC 更脆弱。Stan 实际上也提供优化例程，可参见 <code>?optimizing</code>。</p></aside>
+
+    <p>为了体会这种自适应正则化的影响，下面绘图比较模型 <code>m13.1</code> 与 <code>m13.2</code> 的后验均值。后续代码很长，只是因为它给图形加上了信息丰富的标签；最基础的部分就是开头几行，用来提取样本并计算均值。</p>
+    <aside class="source-erratum" id="erratum-13-mean-median"><strong>原文说明：</strong>代码 13.5 前的正文明确说“计算均值”，但紧接着的代码注释写成“计算每个水槽截距的中位数”；下一页实际执行的是 <code>apply(post$a, 2, mean)</code>。译稿保留这处不一致，并以实际执行的均值计算为准。</aside>
+    <figure class="code-listing" id="code-13-5"><figcaption>R 代码 13.5（续）</figcaption><pre><code># 提取 Stan 样本
+post &lt;- extract.samples(m13.2)
+
+# 原书注释：计算每个水槽截距的中位数</code></pre></figure>
+    <p class="continuation-note">代码 13.5 的 logistic 变换、图 13.1 与收缩现象的解释将从原书 PDF 第 435 页继续。</p>
   </section>
 
-  <section class="endnotes" id="chapter-13-notes" role="doc-endnotes"><h2>尾注</h2><ol start="185"><li id="note-185">Wearing 的妻子 Deborah 写过一本关于他患病后两人生活的书（Wearing，2005）。他的故事也出现在多部纪录片中；快速搜索互联网还能找到许多新闻报道。 <a class="backref" href="#note-185-ref" aria-label="返回正文">↩</a></li><li id="note-186">Gelman（2005）第 20 页第 6 节列出了一组彼此差异极大的“随机效应”定义，读来颇有趣。 <a class="backref" href="#note-186-ref" aria-label="返回正文">↩</a></li><li id="note-187">Vonesh 与 Bolker（2005）。 <a class="backref" href="#note-187-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section class="endnotes" id="chapter-13-notes" role="doc-endnotes"><h2>尾注</h2><ol start="185"><li id="note-185">Wearing 的妻子 Deborah 写过一本关于他患病后两人生活的书（Wearing，2005）。他的故事也出现在多部纪录片中；快速搜索互联网还能找到许多新闻报道。 <a class="backref" href="#note-185-ref" aria-label="返回正文">↩</a></li><li id="note-186">Gelman（2005）第 20 页第 6 节列出了一组彼此差异极大的“随机效应”定义，读来颇有趣。 <a class="backref" href="#note-186-ref" aria-label="返回正文">↩</a></li><li id="note-187">Vonesh 与 Bolker（2005）。 <a class="backref" href="#note-187-ref" aria-label="返回正文">↩</a></li><li id="note-188">这里采用 Gelman（2005）的术语。他认为，对大多数人而言，常用的“随机效应”一词几乎无助于理解，反而似乎会助长误解；部分原因是“固定”和“随机”对不同统计学家有不同含义。详见该文第 20–21 页。不过，我完全明白：试图推广 Gelman 的替代术语，基本等同于迎着强风吐口水。 <a class="backref" href="#note-188-ref" aria-label="返回正文">↩</a></li><li id="note-189">“多”也经常指多个线性模型，尤其常见于“层级线性模型”文献。不管怎样，我们谈论的仍是同一种机器人。 <a class="backref" href="#note-189-ref" aria-label="返回正文">↩</a></li><li id="note-190">注意，正则化本身仍有不确定性。所以，这个模型并不完全等同于直接假设一个标准差恒为 1.6 的正则化先验；相反，每个水槽的截距还会对 <span class="math-inline"><var>σ</var></span>（以及 <span class="math-inline"><var>ᾱ</var></span>）的不确定性取平均。 <a class="backref" href="#note-190-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 13 章 PDF 第 429–431 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 432 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 13 章 PDF 第 429–434 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 435 页继续。</aside>
 </article>

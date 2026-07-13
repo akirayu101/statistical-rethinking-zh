@@ -85,9 +85,9 @@
   },
   "chapter-13": {
     "status": "in_progress",
-    "translated_pages": [429, 430, 431],
-    "reviewed_pages": [429, 430, 431],
-    "verified_pages": [429, 430, 431],
-    "notes": "第 13 章 PDF 第 429–431 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。重复测量与变化截距模型从 PDF 第 432 页继续。"
+    "translated_pages": [429, 430, 431, 432, 433, 434],
+    "reviewed_pages": [429, 430, 431, 432, 433, 434],
+    "verified_pages": [429, 430, 431, 432, 433, 434],
+    "notes": "第 13 章 PDF 第 429–434 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。代码 13.5、图 13.1 与收缩现象从 PDF 第 435 页继续。"
   }
 }

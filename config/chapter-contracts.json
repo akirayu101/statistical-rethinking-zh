@@ -2258,7 +2258,7 @@
   },
   "chapter-13": {
     "required_status": "in_progress",
-    "source_pages": [429, 431],
+    "source_pages": [429, 434],
     "required_ids": [
       "intro-13",
       "note-185-ref",
@@ -2267,10 +2267,25 @@
       "sec-13-1",
       "note-187-ref",
       "code-13-1",
+      "note-188-ref",
+      "eq-13-tank-fixed-intercepts",
+      "code-13-2",
+      "eq-13-tank-multilevel",
+      "note-189-ref",
+      "rethinking-gaussian-tanks",
+      "code-13-3",
+      "code-13-4",
+      "note-190-ref",
+      "overthinking-quap-mcmc",
+      "erratum-13-mean-median",
+      "code-13-5",
       "chapter-13-notes",
       "note-185",
       "note-186",
-      "note-187"
+      "note-187",
+      "note-188",
+      "note-189",
+      "note-190"
     ],
     "required_headings": [
       "有记忆的模型",
@@ -2279,20 +2294,20 @@
     ],
     "counts": {
       "section": 2,
-      "figure": 1,
+      "figure": 5,
       "figure img": 0,
       ".book-figure": 0,
-      ".code-listing": 1,
-      ".code-output": 1,
-      ".rethinking-box": 1,
-      ".overthinking-box": 0,
+      ".code-listing": 5,
+      ".code-output": 2,
+      ".rethinking-box": 2,
+      ".overthinking-box": 1,
       ".book-quote": 0,
-      ".equation-block": 0,
-      ".wallis-equation": 0,
-      ".source-erratum": 0,
+      ".equation-block": 2,
+      ".wallis-equation": 2,
+      ".source-erratum": 1,
       ".chapter-introduction": 1,
       ".continuation-note": 1,
-      ".endnotes li": 3
+      ".endnotes li": 6
     }
   }
 }

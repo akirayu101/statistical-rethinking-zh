@@ -1113,7 +1113,18 @@
     "Reed frog": "芦苇蛙",
     "tadpole": "蝌蚪",
     "cluster variable": "集群变量",
-    "tank (experiment)": "水槽"
+    "tank (experiment)": "水槽",
+    "repeated measures": "重复测量",
+    "cluster heterogeneity": "集群异质性",
+    "baseline survival": "基线存活率",
+    "varying intercept": "变化截距",
+    "varying effects": "变化效应",
+    "adaptive prior": "自适应先验",
+    "adaptive pooling": "自适应汇聚",
+    "hyperparameter": "超参数",
+    "hyperprior": "超先验",
+    "Gaussian varying effects": "高斯变化效应",
+    "level-2 parameter": "第二层参数"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "blavaan", "AIC", "DIC", "WAIC", "BIC", "PSIS-LOO", "MCMC", "HMC"
