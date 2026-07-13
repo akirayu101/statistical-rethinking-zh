@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-14" data-source-pages="465-488">
-  <header class="chapter-header"><p class="eyebrow">第十四章</p><h1>协方差历险</h1><p class="source-range">当前译稿对应原书 PDF 第 465–488 页</p></header>
+<article class="book-article" data-chapter="chapter-14" data-source-pages="465-491">
+  <header class="chapter-header"><p class="eyebrow">第十四章</p><h1>协方差历险</h1><p class="source-range">当前译稿对应原书 PDF 第 465–491 页</p></header>
 
   <div class="chapter-introduction" id="intro-14">
     <p>回想上一章导言中的咖啡机器人（原书第 413 页）。这个机器人被设定为在咖啡馆之间移动、点咖啡，并记录等待时间。上一章的重点是：在咖啡馆之间汇聚信息，能让机器人学得更高效；变化截距正是实现这种汇聚的一种机制。</p>
@@ -510,12 +510,57 @@ Rho[1,1]  1.00 0.00  1.00 1.00   NaN  NaN
 Rho[1,2]  0.54 0.05  0.46 0.62  1080    1
 Rho[2,1]  0.54 0.05  0.46 0.62  1080    1
 Rho[2,2]  1.00 0.00  1.00 1.00  1361    1
-Sigma[1]  1.02 0.05  0.95 1.10  1085    1</code></pre></figure>
-      <p class="continuation-note">代码 14.26 输出的最后一行与联合模型解释，将从原书 PDF 第 489 页继续。</p>
+Sigma[1]  1.02 0.05  0.95 1.10  1085    1
+Sigma[2]  0.81 0.02  0.77 0.85  1768    1</code></pre></figure>
+      <p>这里有许多活动部件，可以逐一拆开。先看 <code>bEW</code>，即教育对工资的估计影响：它很小，相容区间跨过零的两侧，这才是正确的因果推断。其次，工资与教育两个结果之间的相关 <code>Rho[1,2]</code> 可靠地为正，反映了 <var>U</var> 的共同影响。请记住：这个相关以 <var>E</var>（对 <var>W</var>）和 <var>Q</var>（对 <var>E</var>）为条件；它不是原始经验相关，而是残差相关。</p>
+      <p>最好修改模拟，尝试其他情景。只要保持 <code>N=500</code>，便可运行下面几行从后验抽样而不必重新编译模型：</p>
+      <figure class="code-listing" id="code-14-27"><figcaption>R 代码 14.27</figcaption><pre><code>m14.4x &lt;- ulam( m14.4 , data=dat_sim , chains=4 , cores=4 )
+m14.6x &lt;- ulam( m14.6 , data=dat_sim , chains=4 , cores=4 )</code></pre></figure>
+      <p>可以先尝试教育确有正向影响、却被混杂因素掩盖的情景：</p>
+      <figure class="code-listing" id="code-14-28"><figcaption>R 代码 14.28</figcaption><pre><code>set.seed(73)
+N &lt;- 500
+U_sim &lt;- rnorm( N )
+Q_sim &lt;- sample( 1:4 , size=N , replace=TRUE )
+E_sim &lt;- rnorm( N , U_sim + Q_sim )
+W_sim &lt;- rnorm( N , -U_sim + 0.2*E_sim )
+dat_sim &lt;- list(
+    W=standardize(W_sim) ,
+    E=standardize(E_sim) ,
+    Q=standardize(Q_sim) )</code></pre></figure>
+      <p>此时 <var>E</var> 与 <var>W</var> 的残差方差应呈负相关，因为混杂因素正向影响一个、负向影响另一个。</p>
+      <p>工具变量很难理解，但有一些优秀工具可以帮忙。例如 <code>dagitty</code> 包的 <code>instrumentalVariables</code> 函数能在 DAG 中存在工具时找出它。本例可这样定义 DAG 并查询：</p>
+      <figure class="code-listing" id="code-14-29"><figcaption>R 代码 14.29</figcaption><pre><code>library(dagitty)
+dagIV &lt;- dagitty( "dag{ Q -&gt; E &lt;- U -&gt; W &lt;- E }" )
+instrumentalVariables( dagIV , exposure="E" , outcome="W" )</code></pre><pre class="code-output"><code> Q</code></pre></figure>
+      <p>这不能替代理解，却能帮助培养理解并检查直觉。</p>
+      <p>工具变量最难之处，是相信某个具体工具真的成立。若相信自己的 DAG，工具看起来就容易相信；但又该不该相信这张 DAG？例如，一项岛屿研究用风向作为工具，推断殖民主义对经济发展的影响。<sup id="note-198-ref"><a href="#note-198">198</a></sup> 殖民史与经济表现受到许多因素混杂，例如岛屿的自然资源。若风向影响殖民日期——风帆时代的信风让某些岛屿更容易抵达——却不直接影响经济表现，它就能充当工具。这个想法很巧妙；但也很容易想象，风会影响岛屿的许多方面，包括殖民前的接触史和生态，而这些变量又会影响当前经济。</p>
+      <p>更常见的工具，是到某项服务的距离。例如，若想估计医疗照护对母亲福祉的影响，无法轻易把医疗照护在母亲之间随机化——首先这并不合乎伦理。但若母亲到照护中心的距离自然不同，而且这些距离相对于既有健康变量是随机的，那么距离可能成为一个工具：它影响医疗照护使用，却不直接影响健康。不过，要想到医院距离与健康影响因素相关、从而违反排除限制的方式并不难。<sup id="note-199-ref"><a href="#note-199">199</a></sup></p>
+      <p>一般而言，不可能从统计上证明一个变量是不是好工具。和往常一样，必须依靠数据之外的科学知识来理解数据。</p>
+      <aside class="rethinking-box" id="rethinking-14-two-stage-worst-squares"><h3>再思考：两阶段最糟二乘</h3><p>工具变量模型常与一种名为<strong>两阶段最小二乘</strong>（2SLS）的估计程序一同讨论。它包含两次线性回归：把第一次回归的预测值作为数据送入第二次，再作调整使标准误有意义。令人惊奇的是，条件顺利时，这个程序确实有效；但它依赖大样本近似，也有众所周知的问题。<sup id="note-200-ref"><a href="#note-200">200</a></sup> 像所有魔像一样，只需负责任地使用它。</p><p>有时人们会把 2SLS 程序误当成工具变量模型，二者并不相同。任何模型都能用多种程序估计，每种程序各有收益和代价。2SLS 的限制很大：若结果是计数、存在测量误差或缺失值，或者需要变化效应，2SLS 就很可疑。如今已有能力更强的程序，拟合工具变量模型容易了一些，但仍可能很困难。DAG 说某个效应原则上可估计，并不保证现实中就能估出来；无论怎样近似后验，也始终很难确信工具变量确实合格。</p></aside>
+      <aside class="source-erratum" id="erratum-14-instruments-wording"><strong>原文说明：</strong>PDF 第 489–490 页依次出现 “they can are easy”、“However.”、“statistical prove” 与 “We are interest” 四处明显语病；译稿均按上下文语意处理。</aside>
+    </section>
+
+    <section id="sec-14-3-2"><h3>14.3.2 其他设计</h3>
+      <p>工具变量是伪装成随机实验的自然实验。在上一节示例中，出生季度 <var>Q</var> 就像对教育 <var>E</var> 的外部操纵。这种施加在教育上的外部冲击类似实验操纵：它让我们能估计外部冲击的影响，并由此导出因果估计。</p>
+      <p>寻找自然实验可能有很多方式，并非全都严格属于工具变量；但只要能相信其假设，它们就能提供理论上正确的因果推断设计。下面再看两种。</p>
+      <p>除了第 6 章见过的后门准则，还有一种<strong>前门准则</strong>，适用于下面这样的 DAG：</p>
+      <figure class="dag-figure" id="dag-14-front-door"><svg viewBox="0 0 900 340" role="img" aria-labelledby="dag-14-front-door-title dag-14-front-door-desc"><title id="dag-14-front-door-title">前门准则 DAG</title><desc id="dag-14-front-door-desc">X 经中介 Z 影响 Y，未观测混杂 U 同时指向 X 与 Y。</desc><defs><marker id="dag14-front-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#3f4752"/></marker></defs><g stroke="#3f4752" stroke-width="4" marker-end="url(#dag14-front-arrow)"><line x1="450" y1="90" x2="260" y2="245"/><line x1="450" y1="90" x2="640" y2="245"/><line x1="300" y1="275" x2="410" y2="275"/><line x1="490" y1="275" x2="600" y2="275"/></g><g fill="#f0f1fa" stroke="#263f86" stroke-width="3"><circle cx="450" cy="60" r="38" fill="#fff" stroke-dasharray="7 5"/><circle cx="260" cy="275" r="38"/><circle cx="450" cy="275" r="38"/><circle cx="640" cy="275" r="38"/></g><g text-anchor="middle" font-size="30" font-weight="700" fill="#263f86"><text x="450" y="71">U</text><text x="260" y="286">X</text><text x="450" y="286">Z</text><text x="640" y="286">Y</text></g></svg><figcaption><var>X</var> 经完美中介 <var>Z</var> 影响 <var>Y</var>，而未观测 <var>U</var> 混杂 <var>X</var> 与 <var>Y</var>。</figcaption></figure>
+      <p>照例，我们关心 <var>X</var> 对 <var>Y</var> 的因果影响，也照例存在未观测混杂 <var>U</var>。事实证明，若能找到一个完美中介 <var>Z</var>，便可能估计 <var>X</var> 对 <var>Y</var> 的因果效应。认为原因会由其他原因中介并不疯狂——一切都有机制，图中的 <var>Z</var> 就是这种机制。若拥有可信的 <var>Z</var>，就可把生成模型表达成统计模型，像前面的工具变量例子一样估计因果效应。在线性 Gaussian 等特殊情形中有现成公式；但我们不需要公式，只需按生成过程思考并使用 Bayes。</p>
+      <p>前门准则用得不多，可能因为它相对较新，也可能只是可信的 <var>Z</var> 很少。一个例子是大学期间形成的社会关系对美国参议院投票行为的影响。<sup id="note-201-ref"><a href="#note-201">201</a></sup> 问题是：上过同一所大学的参议员是否因社会关系促进协调，而投票更相似。同校与同票之间的纯关联显然受到许多因素混杂；前门技巧是找到社会关系必须借助的某种机制。在参议院，这种机制可以是谁坐在谁旁边：更容易与邻座交谈并协调，而资历较浅的议员席位往往近乎随机分配，因此座位不太可能与大学经历共享同一批混杂因素。若几位 UCLA 校友中，坐得近的人彼此投票比坐在别处的 UCLA 校友更相似，这就可能构成社会关系经议场邻近性中介而影响投票的因果证据。</p>
+      <p>更常见的设计是<strong>回归不连续</strong>（RDD），本质上是特殊的工具变量设计。假设要估计获得学术奖项对未来成功的影响。<sup id="note-202-ref"><a href="#note-202">202</a></sup> 能力等未观测因素同时影响奖项与后续成功，从而造成混杂；但若比较刚好低于获奖门槛与刚好高于门槛的人，他们在未观测因素上应更相似。对门槛附近的人而言，奖项仿佛随机施加——这就是回归不连续的核心。实践中，门槛上方和下方各拟合一条回归；因果效应估计就是刚好高于与刚好低于门槛者之间的平均差。虽然关心的是门槛附近差异，整个函数却会影响这个差，因此选择暴露与结果整体关系的函数时必须谨慎。<sup id="note-203-ref"><a href="#note-203">203</a></sup></p>
     </section>
   </section>
 
-  <section class="endnotes" id="chapter-14-notes" role="doc-endnotes"><h2>尾注</h2><ol start="194"><li id="note-194">Lewandowski 等（2009）。“LKJ”来自三位作者姓氏的首字母；作者本人把这种方法称为“洋葱法”。关于它在 Bayesian 模型中的用法，可参见最新版 Stan 参考手册的说明。 <a class="backref" href="#note-194-ref" aria-label="返回正文">↩</a></li><li id="note-195">参见 Gelfand 等（1995）以及 Roberts 和 Sahu（1997）。较新的综述可参见 Papaspiliopoulos 等（2007）；以 Hamiltonian Monte Carlo 为重点的讨论可参见 Betancourt 和 Girolami（2013）。 <a class="backref" href="#note-195-ref" aria-label="返回正文">↩</a></li><li id="note-196">参见 Pearl（2011）。 <a class="backref" href="#note-196-ref" aria-label="返回正文">↩</a></li><li id="note-197">参见 Angrist 和 Krueger（1991）。 <a class="backref" href="#note-197-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section id="sec-14-4"><h2>14.4 把社会关系作为相关变化效应</h2>
+    <p>一旦掌握用协方差矩阵表示相关效应总体的基本策略，就能实现许多科学上相关的建模目标。本节给出一个带特殊科学含义、自定义协方差矩阵的例子。</p>
+    <p>数据来自 <code>data(KosterLeckie)</code>，它会载入 <code>kl_dyads</code> 与 <code>kl_households</code> 两张表；更多细节见 <code>?KosterLeckie</code>。<sup id="note-204-ref"><a href="#note-204">204</a></sup></p>
+    <figure class="code-listing" id="code-14-30"><figcaption>R 代码 14.30</figcaption><pre><code>library(rethinking)
+data(KosterLeckie)</code></pre></figure>
+    <p>目前先使用 <code>kl_dyads</code> 中的变量。表中每一行都是尼加拉瓜某个社区里一对住户组成的二元组，我们关心这些住户之间的礼物交换。每行的结果变量 <code>giftsAB</code> 与 <code>giftsBA</code> 是二元组内两个方向的赠礼计数；住户 ID 与二元组 ID 的说明从下一页继续。</p>
+    <p class="continuation-note">二元组标识、原始赠礼分布与社会关系模型，将从原书 PDF 第 492 页继续。</p>
+  </section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 14 章 PDF 第 465–488 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 489 页继续。</aside>
+  <section class="endnotes" id="chapter-14-notes" role="doc-endnotes"><h2>尾注</h2><ol start="194"><li id="note-194">Lewandowski 等（2009）。“LKJ”来自三位作者姓氏的首字母；作者本人把这种方法称为“洋葱法”。关于它在 Bayesian 模型中的用法，可参见最新版 Stan 参考手册的说明。 <a class="backref" href="#note-194-ref" aria-label="返回正文">↩</a></li><li id="note-195">参见 Gelfand 等（1995）以及 Roberts 和 Sahu（1997）。较新的综述可参见 Papaspiliopoulos 等（2007）；以 Hamiltonian Monte Carlo 为重点的讨论可参见 Betancourt 和 Girolami（2013）。 <a class="backref" href="#note-195-ref" aria-label="返回正文">↩</a></li><li id="note-196">参见 Pearl（2011）。 <a class="backref" href="#note-196-ref" aria-label="返回正文">↩</a></li><li id="note-197">参见 Angrist 和 Krueger（1991）。 <a class="backref" href="#note-197-ref" aria-label="返回正文">↩</a></li><li id="note-198">Feyrer 和 Sacerdote（2009）。 <a class="backref" href="#note-198-ref" aria-label="返回正文">↩</a></li><li id="note-199">参见 Caniglia 等（2019）。 <a class="backref" href="#note-199-ref" aria-label="返回正文">↩</a></li><li id="note-200">参见 Angrist 和 Krueger（1995）以及 Kleibergen 和 Zivot（2003）。据作者所知，对参数化工具变量估计量——Bayesian 或其他形式——仍没有系统且有理论依据的理解；这很奇怪，因为 DAG 已提供正式的非参数理论。真实情况可能是：即使 DAG 表明存在工具，估计在实践中也常不可行。 <a class="backref" href="#note-200-ref" aria-label="返回正文">↩</a></li><li id="note-201">参见 Cohen 和 Malloy（2014）。作者从 Alex Chinco 的博客学到这个例子，参见其 2011 年文章。 <a class="backref" href="#note-201-ref" aria-label="返回正文">↩</a></li><li id="note-202">Thistlethwaite 和 Campbell（1960）。 <a class="backref" href="#note-202-ref" aria-label="返回正文">↩</a></li><li id="note-203">参见 Gelman 和 Imbens（2019）给出的尖锐示例与建议。 <a class="backref" href="#note-203-ref" aria-label="返回正文">↩</a></li><li id="note-204">Koster 和 Leckie（2014）。 <a class="backref" href="#note-204-ref" aria-label="返回正文">↩</a></li></ol></section>
+
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 14 章 PDF 第 465–491 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 492 页继续。</aside>
 </article>

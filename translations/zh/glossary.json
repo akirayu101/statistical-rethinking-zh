@@ -1182,6 +1182,12 @@
     "multivariate linear model": "多元线性模型",
     "error covariance": "误差协方差",
     "residual correlation": "残差相关",
+    "two-stage least squares": "两阶段最小二乘",
+    "front-door criterion": "前门准则",
+    "perfect mediator": "完美中介",
+    "regression discontinuity": "回归不连续",
+    "RDD": "RDD",
+    "natural experiment": "自然实验",
     "cross-classified varying slopes model": "交叉分类变化斜率模型"
   },
   "protected": [
