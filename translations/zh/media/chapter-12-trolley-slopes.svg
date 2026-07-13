@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="460" viewBox="0 0 900 460" role="img">
+<title>代码 12.25：电车模型斜率的边际后验分布</title>
+<desc>五个斜率的后验均值和百分之八十九相容区间全部位于零以下，其中意图与接触的交互 bIC 最负。</desc>
+<rect width="100%" height="100%" fill="#fbfaf6"/>
+<rect x="45" y="35" width="825" height="375" rx="8" fill="#fff" stroke="#d9d5c8"/>
+<line x1="150.0" y1="70" x2="150.0" y2="375" stroke="#d9d5c8" stroke-dasharray="4 7"/>
+<line x1="150.0" y1="375" x2="150.0" y2="382" stroke="#30332e"/>
+<text x="150.0" y="404.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">-1.4</text>
+<line x1="248.6" y1="70" x2="248.6" y2="375" stroke="#d9d5c8" stroke-dasharray="4 7"/>
+<line x1="248.6" y1="375" x2="248.6" y2="382" stroke="#30332e"/>
+<text x="248.6" y="404.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">-1.2</text>
+<line x1="347.1" y1="70" x2="347.1" y2="375" stroke="#d9d5c8" stroke-dasharray="4 7"/>
+<line x1="347.1" y1="375" x2="347.1" y2="382" stroke="#30332e"/>
+<text x="347.1" y="404.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">-1.0</text>
+<line x1="445.7" y1="70" x2="445.7" y2="375" stroke="#d9d5c8" stroke-dasharray="4 7"/>
+<line x1="445.7" y1="375" x2="445.7" y2="382" stroke="#30332e"/>
+<text x="445.7" y="404.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">-0.8</text>
+<line x1="544.3" y1="70" x2="544.3" y2="375" stroke="#d9d5c8" stroke-dasharray="4 7"/>
+<line x1="544.3" y1="375" x2="544.3" y2="382" stroke="#30332e"/>
+<text x="544.3" y="404.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">-0.6</text>
+<line x1="642.9" y1="70" x2="642.9" y2="375" stroke="#d9d5c8" stroke-dasharray="4 7"/>
+<line x1="642.9" y1="375" x2="642.9" y2="382" stroke="#30332e"/>
+<text x="642.9" y="404.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">-0.4</text>
+<line x1="741.4" y1="70" x2="741.4" y2="375" stroke="#d9d5c8" stroke-dasharray="4 7"/>
+<line x1="741.4" y1="375" x2="741.4" y2="382" stroke="#30332e"/>
+<text x="741.4" y="404.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">-0.2</text>
+<line x1="840.0" y1="70" x2="840.0" y2="375" stroke="#d9d5c8" stroke-dasharray="4 7"/>
+<line x1="840.0" y1="375" x2="840.0" y2="382" stroke="#30332e"/>
+<text x="840.0" y="404.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">0.0</text>
+<text x="126.0" y="111.0" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="18" font-weight="650" fill="#30332e">bIC</text>
+<line x1="159.9" y1="105" x2="302.8" y2="105" stroke="#30332e" stroke-width="4"/>
+<circle cx="233.8" cy="105" r="7" fill="#6670ee" stroke="#fff" stroke-width="2"/>
+<text x="126.0" y="166.0" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="18" font-weight="650" fill="#30332e">bIA</text>
+<line x1="568.9" y1="160" x2="687.2" y2="160" stroke="#30332e" stroke-width="4"/>
+<circle cx="628.1" cy="160" r="7" fill="#6670ee" stroke="#fff" stroke-width="2"/>
+<text x="126.0" y="221.0" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="18" font-weight="650" fill="#30332e">bC</text>
+<line x1="618.2" y1="215" x2="721.7" y2="215" stroke="#30332e" stroke-width="4"/>
+<circle cx="667.5" cy="215" r="7" fill="#6670ee" stroke="#fff" stroke-width="2"/>
+<text x="126.0" y="276.0" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="18" font-weight="650" fill="#30332e">bI</text>
+<line x1="652.7" y1="270" x2="741.4" y2="270" stroke="#30332e" stroke-width="4"/>
+<circle cx="697.1" cy="270" r="7" fill="#6670ee" stroke="#fff" stroke-width="2"/>
+<text x="126.0" y="331.0" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="18" font-weight="650" fill="#30332e">bA</text>
+<line x1="564.0" y1="325" x2="647.8" y2="325" stroke="#30332e" stroke-width="4"/>
+<circle cx="608.4" cy="325" r="7" fill="#6670ee" stroke="#fff" stroke-width="2"/>
+<line x1="150" y1="375" x2="840" y2="375" stroke="#30332e" stroke-width="1.7"/>
+<text x="495.0" y="444.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="400" fill="#30332e">参数值（89% 相容区间）</text>
+</svg>

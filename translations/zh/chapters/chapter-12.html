@@ -1,4 +1,4 @@
-<article class="book-article" data-chapter="chapter-12" data-source-pages="397-414">
+<article class="book-article" data-chapter="chapter-12" data-source-pages="397-417">
   <header class="chapter-header"><p class="eyebrow">第十二章</p><h1>怪物与混合</h1><p class="source-range">当前译稿对应原书 PDF 第 397–414 页</p></header>
 
   <div class="chapter-introduction" id="intro-12">
@@ -288,11 +288,75 @@ cutpoints[6]  1.77 0.03  1.72  1.81 2345    1</code></pre></figure>
       <p>举例来说，取模型 <code>m12.4</code> 的后验均值。函数 <code>dordlogit</code> 能直接计算各档概率：</p>
       <figure class="code-listing" id="code-12-20"><figcaption>R 代码 12.20</figcaption><pre><code>round( pk &lt;- dordlogit( 1:7 , 0 , coef(m12.4) ) , 2 )</code></pre><pre class="code-output"><code>[1] 0.13 0.09 0.11 0.23 0.15 0.15 0.15</code></pre></figure>
       <p>这些概率所隐含的平均结果值为：</p>
-      <p class="continuation-note">平均结果、将所有切点减去 0.5 的概率移动，以及完整的电车预测变量模型，将从原书 PDF 第 415 页继续。</p>
+      <figure class="code-listing" id="code-12-21"><figcaption>R 代码 12.21</figcaption><pre><code>sum( pk*(1:7) )</code></pre><pre class="code-output"><code>[1] 4.198989</code></pre></figure>
+      <p>现在把每个切点都减去 0.5：</p>
+      <figure class="code-listing" id="code-12-22"><figcaption>R 代码 12.22</figcaption><pre><code>round( pk &lt;- dordlogit( 1:7 , 0 , coef(m12.4)-0.5 ) , 2 )</code></pre><pre class="code-output"><code>[1] 0.08 0.06 0.08 0.21 0.16 0.18 0.22</code></pre></figure>
+      <p>把它们与上面的概率比较，可以看到左侧各值变小，而右侧各值变大。此时期望值为：</p>
+      <figure class="code-listing" id="code-12-23"><figcaption>R 代码 12.23</figcaption><pre><code>sum( pk*(1:7) )</code></pre><pre class="code-output"><code>[1] 4.729394</code></pre></figure>
+      <p>这就是为什么要从每个截距中减去 <span class="math-inline"><var>ϕ</var></span>，也就是线性模型 <span class="math-inline"><var>βx</var><sub>i</sub></span>，而不是把它加上去。采用这种约定，<span class="math-inline"><var>β</var></span> 为正就表示预测变量 <span class="math-inline"><var>x</var></span> 增大时，平均回答也随之增大。</p>
+      <p>现在回到“电车”数据，加入预测变量来解释回答的变异。我们关心的预测变量是<strong>行动</strong>（action）、<strong>意图</strong>（intention）和<strong>接触</strong>（contact）；三者都是与前述原则相对应的指示变量。把这些指示变量编码成处理条件有好几种方式。请注意，接触总是意味着行动；但这里的编码把接触与行动视为互斥特征，所以接触出现时不再另记行动。两者却都可以和意图组合。这样便得到六种故事组合：</p>
+      <ol>
+        <li>没有行动、接触或意图；</li>
+        <li>行动；</li>
+        <li>接触；</li>
+        <li>意图；</li>
+        <li>行动与意图；</li>
+        <li>接触与意图。</li>
+      </ol>
+      <p>最后两种代表交互：意图的影响可能取决于行动或接触是否同时存在。这一次直接使用指示变量，而不再使用索引变量。这样可以展示一种定义交互的实用技巧，让模型更容易阅读和调试。</p>
+      <p>现在，每个回答 <span class="math-inline"><var>k</var></span> 的对数累积赔率为：</p>
+      <div class="equation-block wallis-equation" id="eq-12-trolley-interactions"><div>log [ Pr(<var>y</var><sub>i</sub> ≤ <var>k</var>) / (1 − Pr(<var>y</var><sub>i</sub> ≤ <var>k</var>)) ] = <var>α</var><sub><var>k</var></sub> − <var>ϕ</var><sub>i</sub></div><div><var>ϕ</var><sub>i</sub> = <var>β</var><sub><var>A</var></sub><var>A</var><sub>i</sub> + <var>β</var><sub><var>C</var></sub><var>C</var><sub>i</sub> + <var>B</var><sub><var>I</var>,i</sub><var>I</var><sub>i</sub></div><div><var>B</var><sub><var>I</var>,i</sub> = <var>β</var><sub><var>I</var></sub> + <var>β</var><sub><var>IA</var></sub><var>A</var><sub>i</sub> + <var>β</var><sub><var>IC</var></sub><var>C</var><sub>i</sub></div></div>
+      <p>其中，<span class="math-inline"><var>A</var><sub>i</sub></span> 表示第 <span class="math-inline"><var>i</var></span> 行的行动取值，<span class="math-inline"><var>I</var><sub>i</sub></span> 表示意图取值，<span class="math-inline"><var>C</var><sub>i</sub></span> 表示接触取值。这里把每种可能回答的对数赔率定义为与该回答对应的故事特征之加性模型。为表示意图分别与行动、接触的交互，我使用了辅助线性模型 <span class="math-inline"><var>B</var><sub><var>I</var></sub></span>。它把意图与回答之间的关系定义为其他变量的函数，从而使记号更清楚。把 <span class="math-inline"><var>B</var><sub><var>I</var></sub></span> 直接代回 <span class="math-inline"><var>ϕ</var><sub>i</sub></span>，模型不会有任何变化。</p>
+      <p>拟合方式与预期完全一样：把斜率和预测变量加进 <code>dordlogit</code> 内部的 <code>phi</code> 参数。下面是可以直接运行的模型：</p>
+      <figure class="code-listing" id="code-12-24"><figcaption>R 代码 12.24</figcaption><pre><code>dat &lt;- list(
+    R = d$response,
+    A = d$action,
+    I = d$intention,
+    C = d$contact )
+m12.5 &lt;- ulam(
+    alist(
+        R ~ dordlogit( phi , cutpoints ),
+        phi &lt;- bA*A + bC*C + BI*I ,
+        BI &lt;- bI + bIA*A + bIC*C ,
+        c(bA,bI,bC,bIA,bIC) ~ dnorm( 0 , 0.5 ),
+        cutpoints ~ dnorm( 0 , 1.5 )
+    ) , data=dat , chains=4 , cores=4 )
+precis( m12.5 )</code></pre><pre class="code-output"><code>6 vector or matrix parameters omitted in display. Use depth=2 to show them.
+    mean   sd  5.5% 94.5% n_eff Rhat
+bIC -1.23 0.09 -1.38 -1.09  1245    1
+bIA -0.43 0.08 -0.55 -0.31  1132    1
+bC  -0.35 0.07 -0.45 -0.24  1229    1
+bI  -0.29 0.06 -0.38 -0.20  1025    1
+bA  -0.47 0.05 -0.56 -0.39  1064    1</code></pre></figure>
+      <p>这里省略了切点，因为此刻并不特别关心它们。请看各斜率的后验分布：它们都可靠地为负。也就是说，每个故事特征都会降低评分，也就是降低故事的可接受性。把边际后验分布画出来，更容易比较相对效应大小：</p>
+      <figure class="code-listing" id="code-12-25"><figcaption>R 代码 12.25</figcaption><pre><code>plot( precis(m12.5) , xlim=c(-1.4,0) )</code></pre></figure>
+      <figure class="book-figure trolley-slopes-figure" id="plot-12-trolley-slopes"><div class="figure-scroll" tabindex="0" aria-label="电车模型五个斜率的后验均值与区间图"><img src="/media/chapter-12-trolley-slopes.svg" alt="五个斜率均为负，其中意图与接触的交互 bIC 负向效应最大"></div><figcaption><strong>代码 12.25 的图形输出：</strong>模型 <code>m12.5</code> 五个斜率的边际后验均值与 89% 相容区间。意图与接触的交互项 <code>bIC</code> 离零最远。</figcaption></figure>
+      <p>意图与接触的组合最糟糕。这一点颇为有趣，因为无论意图还是接触单独出现，似乎都不会对评分产生很大影响。</p>
+      <p>与往常一样，画出后验预测之后，这些关系会更加直观。但对这种对数累积赔率模型，并不存在一种十全十美的预测图。原因是每一次预测其实都是一个概率向量，每个可能的结果值对应一个概率。因此，当预测变量改变时，整个向量都会改变。这类变化可以用好几种方式呈现。</p>
+      <p>一种常见而实用的做法，是让横轴表示一个预测变量，纵轴表示累积概率，再为每个回答值画一条随预测变量变化的曲线。所有回答值的曲线画好之后，就得到了回答分布随预测变量取值而变化的映射。</p>
+      <p>先建立一张空图：</p>
+      <figure class="code-listing" id="code-12-26"><figcaption>R 代码 12.26</figcaption><pre><code>plot( NULL , type="n" , xlab="intention" , ylab="probability" ,
+    xlim=c(0,1) , ylim=c(0,1) , xaxp=c(0,1,1) , yaxp=c(0,1,2) )</code></pre></figure>
+      <p>然后建立一个数据表，装入预测变量的不同取值组合，再把它传给 <code>link</code>，取得每种组合的 <code>phi</code> 样本：</p>
+      <figure class="code-listing" id="code-12-27"><figcaption>R 代码 12.27</figcaption><pre><code>kA &lt;- 0     # 行动的取值
+kC &lt;- 0     # 接触的取值
+kI &lt;- 0:1   # 要计算的意图取值
+pdat &lt;- data.frame(A=kA,C=kC,I=kI)
+phi &lt;- link( m12.5 , data=pdat )$phi</code></pre></figure>
+      <p class="source-erratum" id="erratum-12-prediction-loop-count"><strong>原文过渡句不一致：</strong>代码 12.27 前的句子提前说要“循环 <code>post</code> 中前 100 个样本”，但这一段代码只构造预测数据并调用 <code>link</code>，尚未创建 <code>post</code>；紧接着的句子又漏掉 “in” 后的对象，而真正的代码 12.28 明确循环前 50 个样本。译稿按可执行代码的实际顺序表述，并在此记录。</p>
+      <p>最后，循环前 50 个后验样本，画出意图取值变化时的预测。这里的技巧是调用 <code>pordlogit</code>：利用 <code>phi</code> 样本和切点，计算结果值 1 到 7 各档的累积概率。</p>
+      <figure class="code-listing" id="code-12-28"><figcaption>R 代码 12.28</figcaption><pre><code>post &lt;- extract.samples( m12.5 )
+for ( s in 1:50 ) {
+    pk &lt;- pordlogit( 1:6 , phi[s,] , post$cutpoints[s,] )
+    for ( i in 1:6 ) lines( kI , pk[,i] , col=grau(0.1) )
+}</code></pre></figure>
+      <p>修改上面代码中 <code>kA</code> 与 <code>kC</code> 的取值，可以为模型 <code>m12.5</code> 制作一幅三联图（见第 257 页）。结果显示在图 12.6 的上排，并在边缘以点的形式添上原始数据。每个面板中的黑线表示回答值之间的边界，从下到上编号为 1 到 7；线条的粗细反映后验样本变化造成的预测变异。本例数据量很大，所以预测边界的路径相当确定。</p>
+      <p>横轴是意图，取值为 0 或 1。每个面板中各条边界从左到右的高度变化，表示把故事从“无意图”改成“有意图”的预测影响。与此同时，每个面板都把另外两个预测变量——行动与接触——分别固定为 0 或 1。左上面板把两者都设为 0，展示给一个“无行动、无接触、无意图”的故事加入意图之后的预测变化。右上面板把行动设为 1，展示给一个“有行动、无意图”的故事加入意图之后的影响；回想一下，本实验中行动与接触从不同时出现。这个面板呈现的就是行动与意图之间的交互。最后，左下面板把接触设为 1。</p>
+      <p class="continuation-note">左下图对“接触 × 意图”交互的解释、图 12.6 及另一种后验预测直方图，将从原书 PDF 第 418 页继续。</p>
     </section>
   </section>
 
   <section class="endnotes" id="chapter-12-notes" role="doc-endnotes"><h2>尾注</h2><ol start="175"><li id="note-175">Williams（1975，1982）。Bolker（2008）在生态数据语境中给出了清晰介绍。 <a class="backref" href="#note-175-ref" aria-label="返回正文">↩</a></li><li id="note-176">另一种很常见的参数化是 <span class="math-inline"><var>α</var> = <var>p̄θ</var></span> 与 <span class="math-inline"><var>β</var> = (1 − <var>p̄</var>)<var>θ</var></span>。<span class="math-inline"><var>p̄</var></span> 与 <span class="math-inline"><var>θ</var></span> 的版本更适合建模，因为我们通常希望把线性模型连接到 beta 分布的中心趋势，而 <span class="math-inline"><var>p̄</var></span> 正是中心趋势的一种度量。 <a class="backref" href="#note-176-ref" aria-label="返回正文">↩</a></li><li id="note-177">Hilbe（2011）整本书都在讨论 gamma-Poisson 回归。 <a class="backref" href="#note-177-ref" aria-label="返回正文">↩</a></li><li id="note-178">Lambert（1992）首次介绍了这种模型。基本的零膨胀方法虽然出现得更早，但 Lambert 给出了本书采用的版本：用 log 与 logit link 连接两个彼此独立的线性模型。 <a class="backref" href="#note-178-ref" aria-label="返回正文">↩</a></li><li id="note-179">参见 Bürkner 与 Vuorre（2018），以及 Liddell 与 Kruschke（2018）。 <a class="backref" href="#note-179-ref" aria-label="返回正文">↩</a></li><li id="note-180">McCullagh（1980）被认为引入并推广了这种方法。另见 Fullerton（2009），其中综述并比较了不同模型类型。 <a class="backref" href="#note-180-ref" aria-label="返回正文">↩</a></li><li id="note-181">Cushman 等（2006）。 <a class="backref" href="#note-181-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 12 章 PDF 第 397–414 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 415 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 12 章 PDF 第 397–417 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 418 页继续。</aside>
 </article>

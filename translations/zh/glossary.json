@@ -1051,7 +1051,17 @@
     "start value": "初始值",
     "placeholder": "占位符",
     "ordered constraint": "有序约束",
-    "probability mass": "概率质量"
+    "probability mass": "概率质量",
+    "action (trolley predictor)": "行动",
+    "intention (trolley predictor)": "意图",
+    "contact (trolley predictor)": "接触",
+    "mutually exclusive": "互斥",
+    "story combination": "故事组合",
+    "accessory linear model": "辅助线性模型",
+    "marginal posterior distribution": "边际后验分布",
+    "posterior boundary": "后验边界",
+    "cumulative probability curve": "累积概率曲线",
+    "debug": "调试"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "blavaan", "AIC", "DIC", "WAIC", "BIC", "PSIS-LOO", "MCMC", "HMC"

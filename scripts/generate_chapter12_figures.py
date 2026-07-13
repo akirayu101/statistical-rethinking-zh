@@ -14,6 +14,7 @@ OUT2 = ROOT / "translations" / "zh" / "media" / "chapter-12-poisson-gamma-poisso
 OUT3 = ROOT / "translations" / "zh" / "media" / "chapter-12-zero-inflated-structure.svg"
 OUT4 = ROOT / "translations" / "zh" / "media" / "chapter-12-ordered-distribution.svg"
 OUT5 = ROOT / "translations" / "zh" / "media" / "chapter-12-ordered-likelihood.svg"
+OUT6 = ROOT / "translations" / "zh" / "media" / "chapter-12-trolley-slopes.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 BLUE = "#6670ee"
@@ -457,11 +458,54 @@ def figure_12_5() -> None:
     OUT5.write_text("\n".join(parts) + "\n", encoding="utf-8")
 
 
+def trolley_slope_plot() -> None:
+    """Rebuild the marginal posterior plot produced by code 12.25."""
+    width, height = 900, 460
+    rows = [
+        ("bIC", -1.23, -1.38, -1.09),
+        ("bIA", -0.43, -0.55, -0.31),
+        ("bC", -0.35, -0.45, -0.24),
+        ("bI", -0.29, -0.38, -0.20),
+        ("bA", -0.47, -0.56, -0.39),
+    ]
+    left, right, top, bottom = 150, 840, 70, 375
+    sx = lambda value: left + (value + 1.4) / 1.4 * (right - left)
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">',
+        '<title>代码 12.25：电车模型斜率的边际后验分布</title>',
+        '<desc>五个斜率的后验均值和百分之八十九相容区间全部位于零以下，其中意图与接触的交互 bIC 最负。</desc>',
+        '<rect width="100%" height="100%" fill="#fbfaf6"/>',
+        f'<rect x="45" y="35" width="825" height="375" rx="8" fill="#fff" stroke="{GRID}"/>',
+    ]
+    for tick_index in range(8):
+        value = -1.4 + .2 * tick_index
+        xx = sx(value)
+        parts.extend([
+            f'<line x1="{xx:.1f}" y1="{top}" x2="{xx:.1f}" y2="{bottom}" stroke="{GRID}" stroke-dasharray="4 7"/>',
+            f'<line x1="{xx:.1f}" y1="{bottom}" x2="{xx:.1f}" y2="{bottom+7}" stroke="{INK}"/>',
+            text_el(xx, bottom + 29, f"{value:.1f}", size=15, anchor="middle"),
+        ])
+    for index, (label, mean, low, high) in enumerate(rows):
+        yy = top + 35 + index * 55
+        parts.extend([
+            text_el(left - 24, yy + 6, label, size=18, anchor="end", weight=650),
+            f'<line x1="{sx(low):.1f}" y1="{yy}" x2="{sx(high):.1f}" y2="{yy}" stroke="{INK}" stroke-width="4"/>',
+            f'<circle cx="{sx(mean):.1f}" cy="{yy}" r="7" fill="{BLUE}" stroke="#fff" stroke-width="2"/>',
+        ])
+    parts.extend([
+        f'<line x1="{left}" y1="{bottom}" x2="{right}" y2="{bottom}" stroke="{INK}" stroke-width="1.7"/>',
+        text_el((left + right) / 2, 444, "参数值（89% 相容区间）", size=19, anchor="middle"),
+        "</svg>",
+    ])
+    OUT6.write_text("\n".join(parts) + "\n", encoding="utf-8")
+
+
 if __name__ == "__main__":
     main()
     figure_12_2()
     figure_12_3()
     figure_12_4()
     figure_12_5()
-    for path in (OUT1, OUT2, OUT3, OUT4, OUT5):
+    trolley_slope_plot()
+    for path in (OUT1, OUT2, OUT3, OUT4, OUT5, OUT6):
         print(path)
