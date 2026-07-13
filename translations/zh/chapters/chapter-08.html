@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-08" data-source-pages="257-271">
-  <header class="chapter-header"><p class="eyebrow">第八章</p><h1>条件海牛</h1><p class="source-range">当前译稿对应原书 PDF 第 257–271 页</p></header>
+<article class="book-article" data-chapter="chapter-08" data-source-pages="257-274">
+  <header class="chapter-header"><p class="eyebrow">第八章</p><h1>条件海牛</h1><p class="source-range">当前译稿对应原书 PDF 第 257–274 页</p></header>
 
   <p>海牛（<i>Trichechus manatus</i>）是一种行动缓慢、生活在温暖浅水中的水生哺乳动物。海牛没有天敌，却与摩托艇共享水域，而摩托艇装有螺旋桨。海牛虽与大象有亲缘关系、皮肤也很厚，螺旋桨叶片仍然能够而且确实会杀死它们。大多数成年海牛身上都有与船只相撞留下的某种伤疤（图 8.1，上）。<sup id="note-128-ref"><a href="#note-128">128</a></sup></p>
   <p>阿姆斯特朗—惠特沃思 A.W.38“惠特利”是英国皇家空军的一线轰炸机。第二次世界大战期间，A.W.38 把炸弹和传单带入德国领土。与海牛不同，A.W.38 有凶猛的天敌：高射炮火和截击机火力。许多飞机执行任务后再也没有回来；幸存者身上的伤痕足以证明它们经历过什么（图 8.1，下）。</p>
@@ -244,10 +244,52 @@ mtext("Non-African nations")</code></pre></figure>
     <p>之前的解释是：斜率以大洲为条件。但说截距以崎岖度为条件也完全可以。把表达式换一种写法，更容易看出这一点：</p>
     <div class="equation-block symmetry-equation" id="eq-8-symmetry-expanded"><span><var>μ</var><sub>i</sub> = (2 − <var>cid</var><sub>i</sub>)[<var>α</var><sub>1</sub> + <var>β</var><sub>1</sub>(<var>r</var><sub>i</sub> − <span class="overbar">r</span>)] + (<var>cid</var><sub>i</sub> − 1)[<var>α</var><sub>2</sub> + <var>β</var><sub>2</sub>(<var>r</var><sub>i</sub> − <span class="overbar">r</span>)]</span><small>第一项：<code>cid[i]=1</code>　　第二项：<code>cid[i]=2</code></small></div>
     <p>它看起来很怪，却是同一个模型。当 <span class="math-inline"><var>cid</var><sub>i</sub> = 1</span> 时，只剩第一项，即非洲参数；第二项归零。当 <span class="math-inline"><var>cid</var><sub>i</sub> = 2</span> 时，第一项归零，只剩第二项。现在若想象把一个国家切换到非洲，要知道这对预测有何影响，就必须知道它的崎岖度（除非它恰好位于平均崎岖度 <span class="math-inline"><span class="overbar">r</span></span>）。</p>
-    <p>绘制反向解释会很有帮助：位于非洲与对数 GDP 的关联，取决于地形崎岖度。下一步将计算非洲与非非洲预测之间的差值，内容在原书 PDF 第 272 页继续。</p>
+    <p>绘制反向解释会很有帮助：位于非洲与对数 GDP 的关联，取决于地形崎岖度。做法是在崎岖度保持不变时，计算同一个国家位于非洲与位于非洲之外的预测差值。只需运行两次 <code>link</code>，再用第一次结果减去第二次：</p>
+    <figure class="code-listing" id="code-8-18"><figcaption>R 代码 8.18</figcaption><pre><code>rugged_seq &lt;- seq(from=-0.2,to=1.2,length.out=30)
+muA &lt;- link( m8.3 , data=data.frame(cid=1,rugged_std=rugged_seq) )
+muN &lt;- link( m8.3 , data=data.frame(cid=2,rugged_std=rugged_seq) )
+delta &lt;- muA - muN</code></pre></figure>
+    <p>然后汇总并绘制 <code>delta</code> 中的预期对数 GDP 差值，结果见图 8.6。</p>
+    <figure class="book-figure africa-delta-figure" id="fig-8-6"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的非洲与非非洲预期对数 GDP 差值图"><img src="/media/chapter-08-africa-delta.svg" alt="低崎岖度时非洲国家预期 GDP 更低，高崎岖度时差值接近或略高于零"></div><p class="scroll-hint">图较宽，可横向滚动查看完整区间。</p><figcaption><strong>图 8.6：</strong>崎岖度与大洲交互作用的另一面。纵轴是一个国家位于非洲和位于非洲之外时，预期比例对数 GDP 的差值。崎岖度低时，把国家“移到”非洲预计会损害其经济；崎岖度高时则相反。大洲与经济的关联依赖崎岖度，正如崎岖度与经济的关联依赖大洲。</figcaption></figure>
+    <p>这是一幅反事实图，没有原始数据。我们借模型的眼睛，想象比较位于非洲内外的两个完全相同国家，仿佛可以分别操纵大洲与地形崎岖度。水平虚线下方表示非洲国家的预期 GDP 更低，大多数崎岖度都如此；但在最高崎岖度处，位于非洲可能反而更好。更准确地说，高崎岖度时很难找到非洲内外的可靠差异；只有地势平缓的国家，位于非洲才明显不利于经济。</p>
+    <p>这种视角与之前的 GDP—崎岖度视角完全一致。在这些数据与模型下，以下两点同时成立：（1）崎岖度的影响取决于大洲；（2）大洲的影响取决于崎岖度。用这种对称视角观察还能得到新认识：只看原书第 255 页第一种交互图，并不明显看出非洲国家平均而言几乎总是更差；只有 <code>rugged</code> 极高时，非洲内外的预期对数 GDP 才相同。第二种画法让这一点更清楚。</p>
+    <p>简单交互作用是对称的，就像布里丹之驴面对的选择。模型内部没有理由偏爱某一种解释，因为它们本来就是同一种解释。但对模型作因果推理时，我们往往偏爱一种解释，因为操纵某个预测变量通常比操纵另一个更容易想象。本例中，很难想象改变一个国家所在的大洲，却容易想象通过削平山丘或在山中开凿隧道来改变地形崎岖度。<sup id="note-134-ref"><a href="#note-134">134</a></sup> 如果非洲异常正向的崎岖度关系确实源于历史原因而非当代地形，那么今天修建隧道可能改善经济。与此同时，大洲本身并非经济活动的原因；它只是与历史、政治因素相关，我们用大洲作为这些因素的代理。真正重要的是操纵那些其他因素。</p>
   </section>
 
-  <section class="endnotes" id="chapter-08-notes" role="doc-endnotes"><h2>尾注</h2><ol start="128"><li id="note-128">这里关于海牛的事实均取自 Lightsey 等（2006）和 Rommel 等（2007）。图中的伤痕图取自 <span class="url-text">http://www.learner.org/jnorth/tm/manatee/RollCall.html</span> 的免费教育材料。 <a class="backref" href="#note-128-ref" aria-label="返回正文">↩</a></li><li id="note-129">Wald（1943）。更易懂的介绍和历史背景可参见 Mangel 与 Samaniego（1984）。 <a class="backref" href="#note-129-ref" aria-label="返回正文">↩</a></li><li id="note-130">Wald（1950）。Wald 的奠基论文是 Wald（1939）；强烈推荐 Fienberg（2006）的历史回顾。更技术性的讨论可参见 Berger（1985）、Robert（2007）以及 Jaynes（2003）第 406 页。 <a class="backref" href="#note-130-ref" aria-label="返回正文">↩</a></li><li id="note-131">GDP 即国内生产总值（Gross Domestic Product）。它是最常用的经济表现度量，也是最荒唐的度量之一。用 GDP 衡量经济健康，就像用热量衡量化学反应的质量。 <a class="backref" href="#note-131-ref" aria-label="返回正文">↩</a></li><li id="note-132">Riley 等（1999）。 <a class="backref" href="#note-132-ref" aria-label="返回正文">↩</a></li><li id="note-133">数据来自 Nunn 与 Puga（2011）。 <a class="backref" href="#note-133-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section id="sec-8-3"><h2>8.3 连续变量交互作用</h2><p>我想让读者相信，交互效应很难解释。只看后验均值和标准差，几乎不可能解释它们。交互作用一旦存在，总有多个参数同时参与。地形崎岖度示例中简单的分类交互已经够难；开始建模多个连续变量之间的交互后，会难得多。让斜率以类别为条件时，模型归结为给每个类别估计不同斜率；但要理解斜率怎样随连续变量连续变化，就困难得多。尽管模型数学与分类情形本质相同，解释却难得多。</p>
+    <p>为了澄清两个或更多连续预测变量之间连续交互作用的构造和解释，本节发展一个简单回归示例，并展示怎样绘制两个连续变量的双向交互。这里采用<strong>三联图</strong>（triptych plot）：三个互补图组成回归结果的完整画面。三幅图没有魔法，其他情形可能需要更多或更少；真正有用的是用多幅图观察交互作用怎样随着选定变量改变而改变斜率。</p>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 257–271 页已完成翻译、逐页核对、结构契约及桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 272 页继续。</aside>
+    <section id="sec-8-3-1"><h3>8.3.1 冬季花朵</h3><p>本例数据是在温室中、不同土壤与光照条件下种植的郁金香花坛，其花朵大小。<sup id="note-135-ref"><a href="#note-135">135</a></sup> 加载数据：</p>
+      <figure class="code-listing" id="code-8-19"><figcaption>R 代码 8.19</figcaption><pre><code>library(rethinking)
+data(tulips)
+d &lt;- tulips
+str(d)</code></pre><pre class="code-output"><code>'data.frame': 27 obs. of 4 variables:
+ $ bed   : Factor w/ 3 levels "a","b","c": 1 1 1 1 1 1 1 1 1 2 ...
+ $ water : int 1 1 1 2 2 2 3 3 3 1 ...
+ $ shade : int 1 2 3 1 2 3 1 2 3 1 ...
+ $ blooms: num 0 0 111 183.5 59.2 ...</code></pre></figure>
+      <p><code>blooms</code> 列是结果，即希望预测的量；<code>water</code> 与 <code>shade</code> 是预测变量。<code>water</code> 表示土壤湿度的三个有序等级，从低（1）到高（3）；<code>shade</code> 表示光照暴露的三个有序等级，从高（1）到低（3）。最后一列 <code>bed</code> 表示来自温室同一区域的一簇植物。</p>
+      <p>光和水都会帮助植物生长开花，因此二者各自的独立效应理应让花更大。但我们也关心二者之间的交互。例如没有光时，水很难帮助植物——光合作用既依赖光，也依赖水；同样，没有水时，阳光也帮不了植物。可以用交互效应建模这种相互依赖。若缺乏良好的机制模型——用植物生理理论假设光与水的函数关系——简单的线性双向交互是不错的起点，但远非最佳方案。</p>
+    </section>
+
+    <section id="sec-8-3-2"><h3>8.3.2 模型</h3><p>这里只聚焦两个模型：（1）包含水和遮阴、但没有交互作用；（2）再加入水与遮阴的交互作用。也可以检查只包含其中一个变量的模型；建议在最后亲自尝试，确保理解整个模型集合。</p>
+      <p>因果情景很简单：水（<span class="math-inline"><var>W</var></span>）和遮阴（<span class="math-inline"><var>S</var></span>）都影响花朵（<span class="math-inline"><var>B</var></span>）：<span class="math-inline"><var>W</var> → <var>B</var> ← <var>S</var></span>。与之前一样，DAG 不告诉我们二者怎样共同影响 <span class="math-inline"><var>B</var> = <var>f</var>(<var>W</var>, <var>S</var>)</span>。原则上，<span class="math-inline"><var>W</var></span> 与 <span class="math-inline"><var>S</var></span> 的每一种独特组合都可以有不同均值；惯例则简单得多。先从简单模型开始。</p>
+      <p>第一个模型完全不含交互作用，只有“主效应”：</p>
+      <div class="equation-block model-system-equation" id="eq-8-tulips-main-effects"><div><var>B</var><sub>i</sub> ∼ Normal(<var>μ</var><sub>i</sub>, <var>σ</var>)</div><div><var>μ</var><sub>i</sub> = <var>α</var> + <var>β</var><sub>W</sub>(<var>W</var><sub>i</sub> − <span class="overbar">W</span>) + <var>β</var><sub>S</sub>(<var>S</var><sub>i</sub> − <span class="overbar">S</span>)</div></div>
+      <p>其中 <span class="math-inline"><var>B</var><sub>i</sub></span> 是第 <span class="math-inline"><var>i</var></span> 行的花朵值，<span class="math-inline"><var>W</var><sub>i</sub></span> 是水量，<span class="math-inline"><var>S</var><sub>i</sub></span> 是遮阴；<span class="math-inline"><span class="overbar">W</span></span> 和 <span class="math-inline"><span class="overbar">S</span></span> 分别是水量与遮阴的均值。总体上，这只是含两个预测变量的线性回归，每个变量都减去均值来中心化。</p>
+      <p>为方便估计，把 <span class="math-inline"><var>W</var></span> 与 <span class="math-inline"><var>S</var></span> 中心化，并用 <span class="math-inline"><var>B</var></span> 的最大值缩放它：</p>
+      <figure class="code-listing" id="code-8-20"><figcaption>R 代码 8.20</figcaption><pre><code>d$blooms_std &lt;- d$blooms / max(d$blooms)
+d$water_cent &lt;- d$water - mean(d$water)
+d$shade_cent &lt;- d$shade - mean(d$shade)</code></pre></figure>
+      <p>现在 <code>blooms_std</code> 从 0 到 1，<code>water_cent</code> 与 <code>shade_cent</code> 都从 −1 到 1。用观测最大值缩放花朵有三个理由：原始尺度的大数值会让优化困难；这样更容易指定合理先验；而且花朵的零是想保留的有意义边界，所以不应把它标准化。</p>
+      <p>像所有变量缩放一样，目标是创造一些在看到实际数据值之前就可能拥有先验信息的焦点。这样才能指定不明显疯狂的先验；思考这些先验时，也可能发现模型根本不合理。但只有认真思考测量与参数之间的关系，这才可能做到。即使数据多到先验选择并不关键，缩放和指定合理先验的思维练习仍然有用。</p>
+      <p>这个模型除 <span class="math-inline"><var>σ</var></span> 外有三个参数，所以需要三个先验。先作宽松猜测：</p>
+      <div class="equation-block model-system-equation" id="eq-8-tulips-vague-priors"><div><var>α</var> ∼ Normal(0.5, 1)</div><div><var>β</var><sub>W</sub> ∼ Normal(0, 1)</div><div><var>β</var><sub>S</sub> ∼ Normal(0, 1)</div></div>
+      <p class="continuation-note">先验预测检查与模型拟合将在原书 PDF 第 275 页继续。</p>
+    </section>
+  </section>
+
+  <section class="endnotes" id="chapter-08-notes" role="doc-endnotes"><h2>尾注</h2><ol start="128"><li id="note-128">这里关于海牛的事实均取自 Lightsey 等（2006）和 Rommel 等（2007）。图中的伤痕图取自 <span class="url-text">http://www.learner.org/jnorth/tm/manatee/RollCall.html</span> 的免费教育材料。 <a class="backref" href="#note-128-ref" aria-label="返回正文">↩</a></li><li id="note-129">Wald（1943）。更易懂的介绍和历史背景可参见 Mangel 与 Samaniego（1984）。 <a class="backref" href="#note-129-ref" aria-label="返回正文">↩</a></li><li id="note-130">Wald（1950）。Wald 的奠基论文是 Wald（1939）；强烈推荐 Fienberg（2006）的历史回顾。更技术性的讨论可参见 Berger（1985）、Robert（2007）以及 Jaynes（2003）第 406 页。 <a class="backref" href="#note-130-ref" aria-label="返回正文">↩</a></li><li id="note-131">GDP 即国内生产总值（Gross Domestic Product）。它是最常用的经济表现度量，也是最荒唐的度量之一。用 GDP 衡量经济健康，就像用热量衡量化学反应的质量。 <a class="backref" href="#note-131-ref" aria-label="返回正文">↩</a></li><li id="note-132">Riley 等（1999）。 <a class="backref" href="#note-132-ref" aria-label="返回正文">↩</a></li><li id="note-133">数据来自 Nunn 与 Puga（2011）。 <a class="backref" href="#note-133-ref" aria-label="返回正文">↩</a></li><li id="note-134">一个很好的例子是法罗群岛大规模的现代隧道系统。群岛的天然地质非常崎岖，历史上走水路一直比走陆路容易得多；但 20 世纪后期，丹麦政府大力投资隧道建设，显著降低了群岛的有效崎岖度。 <a class="backref" href="#note-134-ref" aria-label="返回正文">↩</a></li><li id="note-135">本例改编自 Grafen 与 Hails（2002）；这是一本出色的非贝叶斯应用统计学著作，读者也许会喜欢。它对一些标准线性模型采用了相当独特的几何呈现。 <a class="backref" href="#note-135-ref" aria-label="返回正文">↩</a></li></ol></section>
+
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 257–274 页已完成翻译、逐页核对、结构契约及桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 275 页继续。</aside>
 </article>

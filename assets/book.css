@@ -142,6 +142,7 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .ruggedness-prior-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
 .indicator-parallel-figure .figure-scroll img { display: block; width: 45rem; max-width: none; height: auto; margin: 0 auto; }
 .ruggedness-interaction-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
+.africa-delta-figure .figure-scroll img { display: block; width: 45rem; max-width: none; height: auto; margin: 0 auto; }
 .interaction-readings { margin: 1.4rem 0; padding-left: 2.4rem; }
 .interaction-readings li { margin: .7rem 0; padding-left: .35rem; }
 .symmetry-equation { display: flex; flex-direction: column; gap: .6rem; }
