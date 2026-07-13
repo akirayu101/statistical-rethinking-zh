@@ -2093,3 +2093,15 @@
 - 自动检查：`python3 scripts/build_site.py` 与 `python3 scripts/audit_site.py` 均通过；第 14 章中文字符占比为 0.651，`data-source-pages="465-482"`、进度账本与结构契约一致。
 
 本轮完成后，`chapter-14` 的 PDF 第 465–482 页达到页面级 `verified`；章节状态为 `in_progress`。全书累计完成 13/17 章、466/617 个 PDF 页面；下一批从 PDF 第 483 页继续。
+
+## 2026-07-13：第 14 章 PDF 第 483–485 页
+
+- 原书对照：PDF 第 483–485 页逐页抽取文字并以 `pdftoppm -r 132` 渲染核对，并抽取第 486 页确认跨页边界；完成阿司匹林异质性示例的跨页收束、“过度思考：多层模型的非中心化参数化”侧栏、四段原始 Stan 代码、Cholesky 分解 <span class="math-inline"><strong>R</strong> = <strong>L</strong><strong>L</strong><sup>⊺</sup></span>、`diag_pre_multiply`、转换参数、模型块、生成量块、`multiply_lower_tri_self_transpose` 与中心化/非中心化选择建议。随后进入 14.3“工具变量与因果设计”及 14.3.1“工具变量”，完成教育—工资混杂 DAG、工具变量三项条件、排除限制与加入工具后的 DAG；把工具变量当作普通预测变量的后果从 PDF 第 486 页继续。
+- 原文说明：PDF 第 483–484 页的侧栏依次把 `compose_noncentered` 误写为 `compose_concentered`，把 “from the transformed parameters block” 写成 “form”，又把 “principal goal” 写成 “principle goal”；译稿依据可执行代码与上下文统一订正，并合并为一条独立原文说明。
+- 图表重建：用可访问的内嵌 SVG 重建两张未编号 DAG。第一张保留 <var>U</var> → <var>E</var>、<var>U</var> → <var>W</var> 与 <var>E</var> → <var>W</var>；第二张再加入工具 <var>Q</var> → <var>E</var>。两图均含 `<title>`、`<desc>` 与图注；未观测 <var>U</var> 使用虚线节点，箭头与正文语义一致。
+- 内容结构：阶段契约扩展到 PDF 第 465–485 页，锁定 5 个章节区块、31 个 `figure`、7 张外部图片、22 个编号代码块、3 组编号代码输出、2 个“再思考”框、2 个“过度思考”框、12 个公式块、6 条原文说明、1 个章节导言、2 条尾注与 1 条续接提示。
+- 桌面端样章：1440 × 1000；页面 `scrollWidth == clientWidth == 1440`，整页高 29,676 px，正文高 29,473 px。非中心化侧栏为 736 × 2,448 px，四段未编号 Stan 代码高 193、170、383、336 px，均无需横向滚动。14.3 与 14.3.1 区块分别为 736 × 1,816、736 × 1,442 px；两张 DAG 容器为 656 × 286、656 × 249 px，尾注 195 为 712 × 49 px，均完整显示。
+- 移动端样章：390 × 844；首次检查发现侧栏内代码虽可滚动，父级仍被最长代码撑至 703 px，导致页面宽 713 px。为 `.overthinking-box > pre` 增加 `max-width: 100%`、`box-sizing: border-box` 与局部 `overflow-x: auto` 后重新构建验收：页面 `scrollWidth == clientWidth == 390`，整页高 35,755 px，正文为 370 × 35,576 px，侧栏为 370 × 3,433 px。四段代码局部最大横滚 222、237、315、315 px，均已实际滚到最右端；两张 DAG 容器为 290 × 205、290 × 184 px，14.3 区块宽 370 px，尾注 195 为 346 × 98 px，无页面级溢出。
+- 自动检查：`python3 scripts/build_site.py` 与 `python3 scripts/audit_site.py` 均通过；第 14 章中文字符占比为 0.638，`data-source-pages="465-485"`、进度账本与结构契约一致。
+
+本轮完成后，`chapter-14` 的 PDF 第 465–485 页达到页面级 `verified`；章节状态为 `in_progress`。全书累计完成 13/17 章、469/617 个 PDF 页面；下一批从 PDF 第 486 页继续。

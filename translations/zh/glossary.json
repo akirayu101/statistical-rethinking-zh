@@ -1174,6 +1174,10 @@
     "network regression": "网络回归",
     "LKJ correlation prior": "LKJ 相关先验",
     "Cholesky factor": "Cholesky 因子",
+    "Cholesky decomposition": "Cholesky 分解",
+    "transformed parameter": "转换参数",
+    "generated quantities": "生成量",
+    "exclusion restriction": "排除限制",
     "cross-classified varying slopes model": "交叉分类变化斜率模型"
   },
   "protected": [

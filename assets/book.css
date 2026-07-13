@@ -324,6 +324,7 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .overthinking-box h3 { margin: 0 0 .45rem; color: #3e4f91; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; font-size: 1rem; }
 .overthinking-box p { margin: 0; font-size: .94rem; line-height: 1.72; }
 .overthinking-box p + p { margin-top: .7rem; }
+.overthinking-box > pre { box-sizing: border-box; max-width: 100%; margin: .75rem 0; padding: .85rem 1rem; overflow-x: auto; background: #f3f5fb; font: .9rem/1.65 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
 .parameter-questions { margin: 1.5rem 0; padding: 1rem 1rem 1rem 2.8rem; border: 1px solid var(--line); border-radius: .35rem; background: #fff; }
 .parameter-questions li { margin: .55rem 0; padding-left: .25rem; }
 .prior-equation, .model-statement { display: flex; flex-wrap: wrap; justify-content: center; gap: .55rem; align-items: center; }

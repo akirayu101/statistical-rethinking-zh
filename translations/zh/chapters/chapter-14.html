@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-14" data-source-pages="465-482">
-  <header class="chapter-header"><p class="eyebrow">第十四章</p><h1>协方差历险</h1><p class="source-range">当前译稿对应原书 PDF 第 465–482 页</p></header>
+<article class="book-article" data-chapter="chapter-14" data-source-pages="465-485">
+  <header class="chapter-header"><p class="eyebrow">第十四章</p><h1>协方差历险</h1><p class="source-range">当前译稿对应原书 PDF 第 465–485 页</p></header>
 
   <div class="chapter-introduction" id="intro-14">
     <p>回想上一章导言中的咖啡机器人（原书第 413 页）。这个机器人被设定为在咖啡馆之间移动、点咖啡，并记录等待时间。上一章的重点是：在咖啡馆之间汇聚信息，能让机器人学得更高效；变化截距正是实现这种汇聚的一种机制。</p>
@@ -361,10 +361,85 @@ points( 1:28+xo , p_mu , pch=c(1,1,16,16) )</code></pre></figure>
     <p>不过，后验并非只是复述数据——好几处都发生了收缩，行动者 2 最明显。回想一下，行动者 2 在每种处理和区组中都总是拉左侧杠杆，所以蓝点紧贴图顶；后验预测却向内收缩。为什么处理 1 和 2 比其他处理收缩得更多？因为这些处理在行动者之间的变异较小。回看上一页代码 14.21 的 <code>precis</code> 输出：一种处理下行动者间变异越小，同一处理内行动者的收缩就越强。</p>
     <p>对这个实验的解释没有改变：这些黑猩猩在有无伙伴的处理中并没有表现出一致差异。不过这里的模型仍有优势。它允许一些个体对处理作出不同响应，因此能够揭示这样一种情形：某种处理的平均效应为零，但有些个体反应强烈。本例不是这样；然而我们常常对响应的分布比对平均响应更感兴趣，所以能估计处理效应分布的模型非常有用。</p>
     <p>例如阿司匹林是一种止痛药，但并非所有人都同样受益。只看平均止痛效果，往往不如了解谁会受益、受益程度如何这一整套响应分布来得有意义。变化斜率模型正是用来描述这种异质性。</p>
-    <p class="continuation-note">多层模型非中心化参数化的矩阵细节，将从原书 PDF 第 483 页的“过度思考”框继续。</p>
+    <aside class="overthinking-box" id="overthinking-14-noncentered-multilevel"><h3>过度思考：多层模型的非中心化参数化</h3>
+      <p>当链的效率低下时，把链运行得足够久，往往仍能从后验分布获得可靠样本。正文中的 <code>m14.2</code> 就是这样。但这既低效又不可靠：链仍可能以难以察觉的细微方式带有偏差。更好的做法是按前一节的解释重新参数化。<sup id="note-195-ref"><a href="#note-195">195</a></sup> 遇到协方差矩阵时，具体该怎样做？</p>
+      <p>模型 <code>m14.3</code> 用一个名为 Cholesky 分解的技巧，把协方差矩阵从先验中“偷运”出来。模型顶部与中心化版本 <code>m14.2</code> 相同，变化在于增加了构造自适应先验的几行：</p>
+      <pre><code># 自适应先验——非中心化
+transpars&gt; matrix[actor,4]:alpha &lt;-
+        compose_noncentered( sigma_actor , L_Rho_actor , z_actor ),
+transpars&gt; matrix[block_id,4]:beta &lt;-
+        compose_noncentered( sigma_block , L_Rho_block , z_block ),
+matrix[4,actor]:z_actor ~ normal( 0 , 1 ),
+matrix[4,block_id]:z_block ~ normal( 0 , 1 ),</code></pre>
+      <p>前两行以 <code>transpars&gt;</code> 开头，定义变化效应矩阵 <code>alpha</code> 与 <code>beta</code>。每个矩阵中，一行对应一个行动者或区组，一列对应一种效应。为了方便，<code>compose_noncentered</code> 把标准差向量、Cholesky 相关因子与 z 分数混合起来，生成在线性模型中具有正确尺度的参数矩阵。这样一来，上面第三、第四行的 z 分数矩阵只需服从 <code>normal(0,1)</code>。要把模型改为非中心化，另一处变化是把普通相关矩阵替换成所谓的 Cholesky 因子，确切类型为 <code>cholesky_factor_corr</code>。</p>
+      <p>那么 <code>compose_noncentered</code> 到底在做什么？神秘的 Cholesky 因子又是什么？Cholesky 分解 <strong>L</strong> 能把相关矩阵 <strong>R</strong> 这类方形对称矩阵表示成 <span class="math-inline"><strong>R</strong> = <strong>L</strong><strong>L</strong><sup>⊺</sup></span>。一个奇妙事实是：用 <strong>L</strong> 乘以一组不相关样本（z 分数）组成的矩阵，便会得到一组相关样本（变化效应）组成的矩阵。正是这个技巧让我们能把协方差矩阵拿出先验：先抽取不相关 z 分数矩阵，再乘以 Cholesky 因子和标准差，就能得到尺度与相关都正确的变化效应。它看似魔法，其实只是代数。</p>
+      <aside class="source-erratum" id="erratum-14-noncentered-typos"><strong>原文说明：</strong>这一侧栏原文依次出现 <code>compose_concentered</code>、把 “from the transformed parameters block” 写成 “form”，以及把 “principal goal” 写成 “principle goal” 三处明显笔误；译稿均按代码和上下文订正。</aside>
+      <p>下面查看原始 Stan 代码，既揭开这些步骤的神秘面纱，也帮助你逐步过渡到直接在 Stan 中构造模型——在那里会有更多控制权。<code>ulam</code> 代码中的 <code>transpars&gt;</code> 标签把 <code>alpha</code> 与 <code>beta</code> 定义为转换参数；这意味着即便它们只是其他参数的函数，Stan 仍会把它们纳入后验。因此查看 <code>stancode(m14.3)</code> 时，会在 <code>model</code> 块上方看到一个新块：</p>
+      <pre><code>transformed parameters{
+    matrix[7,4] alpha;
+    matrix[6,4] beta;
+    beta = (diag_pre_multiply(sigma_block, L_Rho_block) * z_block)';
+    alpha = (diag_pre_multiply(sigma_actor, L_Rho_actor) * z_actor)';
+}</code></pre>
+      <p>这些计算把标准差向量 <code>sigma_actor</code>、<code>sigma_block</code> 与 Cholesky 相关因子 <code>L_Rho_actor</code>、<code>L_Rho_block</code> 合并起来。<code>diag_pre_multiply</code> 所做的，就是把 <code>sigma</code> 向量变成对角矩阵后再相乘，从而得到正确协方差矩阵的 Cholesky 因子。最后，再把这个 Cholesky 协方差因子与 z 分数矩阵作矩阵乘法。为方便起见，结果还要转置——即每行末尾的 <code>'</code>——这样便可写成 <code>alpha[actor,effect]</code>，而非 <code>alpha[effect,actor]</code>；不过这一步并非真正必需。</p>
+      <p>随后在 <code>model</code> 块中，<code>alpha</code> 与 <code>beta</code> 矩阵已经可以直接作为参数使用，所以线性模型部分看起来与中心化版本相同：</p>
+      <pre><code>model{
+    vector[504] p;
+    L_Rho_block ~ lkj_corr_cholesky( 2 );
+    sigma_block ~ exponential( 1 );
+    L_Rho_actor ~ lkj_corr_cholesky( 2 );
+    sigma_actor ~ exponential( 1 );
+    g ~ normal( 0 , 1 );
+    to_vector( z_block ) ~ normal( 0 , 1 );
+    to_vector( z_actor ) ~ normal( 0 , 1 );
+    for ( i in 1:504 ) {
+        p[i] = g[tid[i]] + alpha[actor[i], tid[i]] + beta[block_id[i], tid[i]];
+        p[i] = inv_logit(p[i]);
+    }
+    L ~ binomial( 1 , p );
+}</code></pre>
+      <p>从上到下看：先声明向量 <code>p</code>，用来保存每个观测的线性模型计算；接着用 Cholesky 相关因子与标准差向量定义先验。z 分数矩阵通过 <code>to_vector</code> 获得先验，因为 <code>normal(0,1)</code> 作用于向量而非矩阵。z 分数仍以矩阵形式存储；<code>to_vector</code> 只是为了强制矩阵中的每个单元格都服从相同的 <code>normal(0,1)</code> 先验。最后，线性模型使用转换参数块中的 <code>alpha</code> 与 <code>beta</code> 矩阵完成计算，再照常定义数据的概率。</p>
+      <p>最后一部分是生成量块，可以在这里计算每个样本的函数。本例用它把 Cholesky 因子转换成普通相关矩阵，以便按相关矩阵解释；同时还计算 WAIC 或 PSIS 所需的对数概率：</p>
+      <pre><code>generated quantities{
+    vector[504] log_lik;
+    vector[504] p;
+    matrix[4,4] Rho_actor;
+    matrix[4,4] Rho_block;
+    Rho_block = multiply_lower_tri_self_transpose(L_Rho_block);
+    Rho_actor = multiply_lower_tri_self_transpose(L_Rho_actor);
+    for ( i in 1:504 ) {
+        p[i] = g[tid[i]] + alpha[actor[i], tid[i]] + beta[block_id[i], tid[i]];
+        p[i] = inv_logit(p[i]);
+    }
+    for ( i in 1:504 ) log_lik[i] = binomial_lpmf( L[i] | 1 , p[i] );
+}</code></pre>
+      <p><code>multiply_lower_tri_self_transpose</code> 只是把 Cholesky 因子 <strong>L</strong> 转换成对应矩阵 <span class="math-inline"><strong>R</strong> = <strong>L</strong><strong>L</strong><sup>⊺</sup></span> 时，执行所需矩阵代数的一种紧凑高效写法。</p>
+      <p>这些非中心化形式显然有代价：看起来混乱得多。难读的模型与模型代码，会限制我们同同事分享实现的能力；而分享正是科学计算的一项首要目标。</p>
+      <p>最后，并非每一种模型结构与数据组合都受益于非中心化参数化。有时中心化版本——把均值与标准差放进先验——反而更好。因此可以先尝试你个人觉得最自然的形式；若遇到麻烦，再换一种。积累一些经验后，同一模型的不同形式便会渐渐熟悉。本章末有一道练习题可能有所帮助。</p>
+    </aside>
   </section>
 
-  <section class="endnotes" id="chapter-14-notes" role="doc-endnotes"><h2>尾注</h2><ol start="194"><li id="note-194">Lewandowski 等（2009）。“LKJ”来自三位作者姓氏的首字母；作者本人把这种方法称为“洋葱法”。关于它在 Bayesian 模型中的用法，可参见最新版 Stan 参考手册的说明。 <a class="backref" href="#note-194-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section id="sec-14-3"><h2>14.3 工具变量与因果设计</h2>
+    <p>回到第 6 章，你曾接触一套判断回归中该使用哪些变量的框架。核心思想是：在 DAG 这样的图模型里，一项变量与结果之间可能有许多路径。有些路径是因果路径，我们希望让它们保持开放；另一些是非因果路径，例如后门路径，我们希望把它们关闭，同时避免因把错误变量纳入模型而意外打开它们。</p>
+    <p>当然，有时根本不可能关闭所有非因果路径。那该怎么办？仍然不是什么都做不了。若足够幸运，可以利用自然实验与巧妙建模的组合，即使无法关闭非因果路径，也能作出因果推断。</p>
+    <p>先从最著名、可能也最反直觉的例子讲起，然后再介绍其他方法。</p>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 14 章 PDF 第 465–482 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 483 页继续。</aside>
+    <section id="sec-14-3-1"><h3>14.3.1 工具变量</h3>
+      <p>考虑教育 <var>E</var> 对工资 <var>W</var> 的影响。接受更多学校教育，会提高未来工资吗？若只是把工资对实际受教育程度作回归，推断预计会受到同时影响工资和教育的因素所偏置。例如，勤奋的人既可能完成更多教育，也可能赚得更高工资，由此产生教育与工资的相关；但这未必意味着教育会导致更高工资。这类所有潜在混杂因素往往既难测量，甚至也难以全部想象。最后会得到这样一张 DAG：</p>
+      <figure class="dag-figure" id="dag-14-education-confounded"><svg viewBox="0 0 720 360" role="img" aria-labelledby="dag-14-confounded-title dag-14-confounded-desc"><title id="dag-14-confounded-title">教育、工资与未观测混杂的 DAG</title><desc id="dag-14-confounded-desc">未观测混杂 U 同时指向教育 E 与工资 W，教育 E 也指向工资 W。</desc><defs><marker id="dag14-confounded-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#3f4752"/></marker></defs><g stroke="#3f4752" stroke-width="4" marker-end="url(#dag14-confounded-arrow)"><line x1="360" y1="100" x2="235" y2="245"/><line x1="360" y1="100" x2="485" y2="245"/><line x1="265" y1="275" x2="455" y2="275"/></g><g fill="#f0f1fa" stroke="#263f86" stroke-width="3"><circle cx="360" cy="70" r="38" fill="#fff" stroke-dasharray="7 5"/><circle cx="225" cy="275" r="38"/><circle cx="495" cy="275" r="38"/></g><g text-anchor="middle" font-size="30" font-weight="700" fill="#263f86"><text x="360" y="81">U</text><text x="225" y="286">E</text><text x="495" y="286">W</text></g></svg><figcaption>未观测混杂 <var>U</var> 同时影响教育 <var>E</var> 与工资 <var>W</var>，从而打开后门路径。</figcaption></figure>
+      <p>后门路径 <span class="math-inline"><var>E</var> ← <var>U</var> → <var>W</var></span> 毁掉了我们的好心情。</p>
+      <p>虽然没有观测到 <var>U</var>，所以无法以它为条件，但或许还有办法——前提是能找到合适的<strong>工具变量</strong>。从因果角度说，工具变量是一种作用在暴露 <var>E</var> 上、类似自然实验的变量。用技术语言表达，工具变量 <var>Q</var> 必须满足：</p>
+      <ol class="dag-claims"><li>与 <var>U</var> 独立（<span class="math-inline"><var>Q</var> ⫫ <var>U</var></span>）；</li><li>与 <var>E</var> 不独立（<span class="math-inline"><var>Q</var> <span class="not-independent" aria-label="不独立于">⫫</span> <var>E</var></span>）；</li><li><var>Q</var> 只能通过 <var>E</var> 影响 <var>W</var>。</li></ol>
+      <p>最后一条有时称为<strong>排除限制</strong>。它无法检验，而且往往不可信；上面的第一条同样无法检验。但若你对研究系统理解得足够深，并相信这些条件成立，魔法就可能发生。</p>
+      <p>借助 DAG 会更容易理解工具变量。在教育与工资的例子中，最简单的教育工具如下：</p>
+      <figure class="dag-figure" id="dag-14-education-instrument"><svg viewBox="0 0 840 360" role="img" aria-labelledby="dag-14-instrument-title dag-14-instrument-desc"><title id="dag-14-instrument-title">教育工具变量 DAG</title><desc id="dag-14-instrument-desc">工具 Q 指向教育 E，未观测混杂 U 同时指向教育 E 与工资 W，教育 E 指向工资 W。</desc><defs><marker id="dag14-instrument-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#3f4752"/></marker></defs><g stroke="#3f4752" stroke-width="4" marker-end="url(#dag14-instrument-arrow)"><line x1="150" y1="95" x2="305" y2="245"/><line x1="500" y1="95" x2="345" y2="245"/><line x1="520" y1="100" x2="650" y2="245"/><line x1="365" y1="275" x2="625" y2="275"/></g><g fill="#f0f1fa" stroke="#263f86" stroke-width="3"><circle cx="125" cy="70" r="38"/><circle cx="525" cy="70" r="38" fill="#fff" stroke-dasharray="7 5"/><circle cx="325" cy="275" r="38"/><circle cx="665" cy="275" r="38"/></g><g text-anchor="middle" font-size="30" font-weight="700" fill="#263f86"><text x="125" y="81">Q</text><text x="525" y="81">U</text><text x="325" y="286">E</text><text x="665" y="286">W</text></g></svg><figcaption>工具 <var>Q</var> 像自然实验一样影响教育 <var>E</var>，且只能经 <var>E</var> 影响工资 <var>W</var>。</figcaption></figure>
+      <p>这里的工具变量是 <var>Q</var>。给定这张 DAG，<var>Q</var> 满足有效工具变量的全部条件。注意，有效工具可以嵌入复杂得多的图中；若能通过以其他变量为条件满足上述标准，那就拥有了一个工具。</p>
+      <p>怎样在模型中使用 <var>Q</var>？不能像普通预测变量一样，直接把它加进回归。为什么？假设把 <var>W</var> 对 <var>E</var> 作回归——这正是我们想了解的关系；下一页将说明为什么再加入 <var>Q</var> 会适得其反。</p>
+      <p class="continuation-note">工具变量被当作普通预测变量时怎样放大偏差，将从原书 PDF 第 486 页继续。</p>
+    </section>
+  </section>
+
+  <section class="endnotes" id="chapter-14-notes" role="doc-endnotes"><h2>尾注</h2><ol start="194"><li id="note-194">Lewandowski 等（2009）。“LKJ”来自三位作者姓氏的首字母；作者本人把这种方法称为“洋葱法”。关于它在 Bayesian 模型中的用法，可参见最新版 Stan 参考手册的说明。 <a class="backref" href="#note-194-ref" aria-label="返回正文">↩</a></li><li id="note-195">参见 Gelfand 等（1995）以及 Roberts 和 Sahu（1997）。较新的综述可参见 Papaspiliopoulos 等（2007）；以 Hamiltonian Monte Carlo 为重点的讨论可参见 Betancourt 和 Girolami（2013）。 <a class="backref" href="#note-195-ref" aria-label="返回正文">↩</a></li></ol></section>
+
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 14 章 PDF 第 465–485 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 486 页继续。</aside>
 </article>
