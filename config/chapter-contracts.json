@@ -1700,7 +1700,7 @@
   },
   "chapter-10": {
     "required_status": "in_progress",
-    "source_pages": [323, 338],
+    "source_pages": [323, 341],
     "required_ids": [
       "intro-10",
       "note-153-ref",
@@ -1766,6 +1766,17 @@
       "eq-10-glm-binomial",
       "rethinking-histomancy",
       "sec-10-2-1",
+      "fig-10-6",
+      "note-163-ref",
+      "rethinking-likelihood-prior",
+      "sec-10-2-2",
+      "note-164-ref",
+      "eq-10-zaphod-link",
+      "eq-10-binomial-logit-model",
+      "eq-10-logit-definition",
+      "eq-10-logit-linear",
+      "fig-10-7",
+      "eq-10-inverse-logit",
       "chapter-10-notes",
       "note-153",
       "note-154",
@@ -1776,7 +1787,9 @@
       "note-159",
       "note-160",
       "note-161",
-      "note-162"
+      "note-162",
+      "note-163",
+      "note-164"
     ],
     "required_headings": [
       "大熵与广义线性模型",
@@ -1792,24 +1805,26 @@
       "10.2 广义线性模型",
       "再思考：直方图占卜术之祸",
       "10.2.1 认识这个家族",
+      "再思考：似然就是先验",
+      "10.2.2 把线性模型连接到分布",
       "尾注"
     ],
     "counts": {
-      "section": 6,
-      "figure": 18,
-      "figure img": 5,
-      ".book-figure": 5,
+      "section": 7,
+      "figure": 20,
+      "figure img": 7,
+      ".book-figure": 7,
       ".code-listing": 13,
       ".code-output": 7,
-      ".rethinking-box": 4,
+      ".rethinking-box": 5,
       ".overthinking-box": 3,
       ".book-quote": 1,
-      ".equation-block": 19,
-      ".wallis-equation": 18,
+      ".equation-block": 24,
+      ".wallis-equation": 23,
       ".source-erratum": 2,
       ".chapter-introduction": 1,
       ".continuation-note": 1,
-      ".endnotes li": 10
+      ".endnotes li": 12
     }
   }
 }

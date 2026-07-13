@@ -11,6 +11,8 @@ OUT2 = ROOT / "translations/zh/media/chapter-10-gaussian-maxent.svg"
 OUT3 = ROOT / "translations/zh/media/chapter-10-binomial-candidates.svg"
 OUT4 = ROOT / "translations/zh/media/chapter-10-binomial-entropy.svg"
 OUT5 = ROOT / "translations/zh/media/chapter-10-link-functions.svg"
+OUT6 = ROOT / "translations/zh/media/chapter-10-exponential-family.svg"
+OUT7 = ROOT / "translations/zh/media/chapter-10-logit-link.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 BLUE = "#263f86"
@@ -360,6 +362,130 @@ def figure_10_5() -> None:
     OUT5.write_text("\n".join(parts) + "\n", encoding="utf-8")
 
 
+def distribution_panel(x: float, y: float, formula: str, function_name: str,
+                       values: list[float], *, discrete: bool = False) -> list[str]:
+    """Build a small labeled density or mass panel for Figure 10.6."""
+    width, height = 340, 205
+    left, right, top, bottom = x + 28, x + width - 20, y + 45, y + height - 35
+    peak = max(values)
+    parts = [
+        text(x + width / 2, y + 25, formula, size=20, anchor="middle", fill=INK),
+        f'<rect x="{left}" y="{top}" width="{right-left}" height="{bottom-top}" fill="#fff" stroke="{INK}"/>',
+    ]
+    if discrete:
+        step = (right - left) / len(values)
+        for index, value in enumerate(values):
+            xx = left + (index + 0.5) * step
+            yy = bottom - value / peak * (bottom - top - 8)
+            parts.append(f'<line x1="{xx:.1f}" y1="{bottom}" x2="{xx:.1f}" y2="{yy:.1f}" stroke="#737cff" stroke-width="4"/>')
+    else:
+        points = []
+        for index, value in enumerate(values):
+            xx = left + index / (len(values) - 1) * (right - left)
+            yy = bottom - value / peak * (bottom - top - 8)
+            points.append(f"{xx:.1f},{yy:.1f}")
+        parts.append(f'<polyline points="{" ".join(points)}" fill="none" stroke="#737cff" stroke-width="4"/>')
+    parts.append(text(x + width / 2, y + height - 7, function_name, size=17, anchor="middle", fill="#666862"))
+    return parts
+
+
+def figure_10_6() -> None:
+    """Draw selected exponential-family distributions and generative links."""
+    width, height = 1200, 930
+    gamma_values = []
+    normal_values = []
+    exponential_values = []
+    for index in range(180):
+        value = 8 * index / 179
+        gamma_values.append(value ** 2 * math.exp(-value))
+        normal_x = -4 + 8 * index / 179
+        normal_values.append(math.exp(-0.5 * normal_x ** 2))
+        exponential_values.append(math.exp(-0.65 * value))
+    poisson_values = [math.exp(-4) * 4 ** k / math.factorial(k) for k in range(11)]
+    binomial_values = [math.comb(10, k) * 0.72 ** k * 0.28 ** (10 - k) for k in range(11)]
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">',
+        '<title>指数族分布及其生成关系</title>',
+        '<desc>Gamma、正态、指数、Poisson 与二项分布的代表性形状，以及求和、大均值、计数和低概率极限等关系。</desc>',
+        '<defs><marker id="arrow10-6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#a8aaa4"/></marker></defs>',
+        '<rect width="100%" height="100%" fill="#fbfaf6"/>',
+    ]
+    arrow = lambda path: f'<path d="{path}" fill="none" stroke="#a8aaa4" stroke-width="4" marker-end="url(#arrow10-6)"/>'
+    parts.extend([
+        arrow("M 430 185 C 560 75, 650 75, 760 185"),
+        text(600, 76, "均值很大", size=18, anchor="middle", fill="#777872"),
+        arrow("M 500 425 C 445 390, 425 350, 408 300"),
+        text(432, 355, "求和", size=18, anchor="middle", fill="#777872"),
+        arrow("M 470 510 C 430 600, 410 650, 372 690"),
+        text(435, 610, "计数事件", size=18, anchor="middle", fill="#777872"),
+        text(435, 635, "低发生率", size=17, anchor="middle", fill="#777872"),
+        arrow("M 730 510 C 770 600, 790 650, 828 690"),
+        text(765, 610, "计数事件", size=18, anchor="middle", fill="#777872"),
+        arrow("M 790 835 C 660 905, 540 905, 410 835"),
+        text(600, 870, "低概率、试验很多", size=18, anchor="middle", fill="#777872"),
+    ])
+    parts.extend(distribution_panel(70, 115, "y ∼ Gamma(λ, k)", "dgamma", gamma_values))
+    parts.extend(distribution_panel(790, 115, "y ∼ Normal(μ, σ)", "dnorm", normal_values))
+    parts.extend(distribution_panel(430, 365, "y ∼ Exponential(λ)", "dexp", exponential_values))
+    parts.extend(distribution_panel(70, 665, "y ∼ Poisson(λ)", "dpois", poisson_values, discrete=True))
+    parts.extend(distribution_panel(790, 665, "y ∼ Binomial(n, p)", "dbinom", binomial_values, discrete=True))
+    parts.append('</svg>')
+    OUT6.write_text("\n".join(parts) + "\n", encoding="utf-8")
+
+
+def figure_10_7() -> None:
+    """Draw the logit link from a linear predictor to probability."""
+    width, height = 1200, 650
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">',
+        '<title>logit link 把线性模型变换为概率</title>',
+        '<desc>左图为无界的对数赔率线性空间，右图为压缩到零与一之间的概率空间。</desc>',
+        '<rect width="100%" height="100%" fill="#fbfaf6"/>',
+    ]
+    panels = [(85, "对数赔率", -4.3, 4.3), (655, "概率", -0.02, 1.02)]
+    for left, ylabel, ymin, ymax in panels:
+        top, plot_w, plot_h = 65, 455, 455
+        right, bottom = left + plot_w, top + plot_h
+        sx = lambda value, l=left, r=right: l + (value + 1) / 2 * (r - l)
+        sy = lambda value, t=top, b=bottom, lo=ymin, hi=ymax: b - (value - lo) / (hi - lo) * (b - t)
+        parts.append(f'<rect x="{left}" y="{top}" width="{plot_w}" height="{plot_h}" fill="#fff" stroke="{GRID}"/>')
+        for tick in (-1.0, -0.5, 0.0, 0.5, 1.0):
+            xx = sx(tick)
+            parts.extend([
+                f'<line x1="{xx:.1f}" y1="{bottom}" x2="{xx:.1f}" y2="{bottom+7}" stroke="{INK}"/>',
+                text(xx, bottom + 29, f"{tick:.1f}", size=15, anchor="middle"),
+            ])
+        guide_values = list(range(-4, 5))
+        for guide in guide_values:
+            value = guide if ylabel == "对数赔率" else 1 / (1 + math.exp(-guide))
+            yy = sy(value)
+            parts.append(f'<line x1="{left}" y1="{yy:.1f}" x2="{right}" y2="{yy:.1f}" stroke="#b9bbb5" stroke-width="1.5"/>')
+        y_ticks = (-4, -2, 0, 2, 4) if ylabel == "对数赔率" else (0.0, 0.5, 1.0)
+        for tick in y_ticks:
+            yy = sy(tick)
+            parts.extend([
+                f'<line x1="{left-7}" y1="{yy:.1f}" x2="{left}" y2="{yy:.1f}" stroke="{INK}"/>',
+                text(left - 13, yy + 5, f"{tick:.1f}" if ylabel == "概率" else tick, size=15, anchor="end"),
+            ])
+        points = []
+        for index in range(301):
+            xvalue = -1 + 2 * index / 300
+            linear = 2.3 * xvalue
+            yvalue = linear if ylabel == "对数赔率" else 1 / (1 + math.exp(-linear))
+            points.append(f"{sx(xvalue):.1f},{sy(yvalue):.1f}")
+        parts.extend([
+            f'<polyline points="{" ".join(points)}" fill="none" stroke="#737cff" stroke-width="5"/>',
+            text((left + right) / 2, height - 58, "预测变量 x", size=19, anchor="middle", fill=BLUE),
+            text(left - 60, (top + bottom) / 2, ylabel, size=19, anchor="middle", fill=BLUE, rotate=-90),
+        ])
+    parts.extend([
+        text(312, 38, "线性模型", size=22, anchor="middle", weight=700, fill=BLUE),
+        text(882, 38, "logistic 变换", size=22, anchor="middle", weight=700, fill=BLUE),
+        '</svg>',
+    ])
+    OUT7.write_text("\n".join(parts) + "\n", encoding="utf-8")
+
+
 def main() -> int:
     OUT1.parent.mkdir(parents=True, exist_ok=True)
     width, height = 1200, 930
@@ -386,11 +512,15 @@ def main() -> int:
     figure_10_3()
     figure_10_4()
     figure_10_5()
+    figure_10_6()
+    figure_10_7()
     print(f"generated {OUT1}")
     print(f"generated {OUT2}")
     print(f"generated {OUT3}")
     print(f"generated {OUT4}")
     print(f"generated {OUT5}")
+    print(f"generated {OUT6}")
+    print(f"generated {OUT7}")
     return 0
 
 
