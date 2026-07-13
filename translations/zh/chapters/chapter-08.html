@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-08" data-source-pages="257-268">
-  <header class="chapter-header"><p class="eyebrow">第八章</p><h1>条件海牛</h1><p class="source-range">当前译稿对应原书 PDF 第 257–268 页</p></header>
+<article class="book-article" data-chapter="chapter-08" data-source-pages="257-271">
+  <header class="chapter-header"><p class="eyebrow">第八章</p><h1>条件海牛</h1><p class="source-range">当前译稿对应原书 PDF 第 257–271 页</p></header>
 
   <p>海牛（<i>Trichechus manatus</i>）是一种行动缓慢、生活在温暖浅水中的水生哺乳动物。海牛没有天敌，却与摩托艇共享水域，而摩托艇装有螺旋桨。海牛虽与大象有亲缘关系、皮肤也很厚，螺旋桨叶片仍然能够而且确实会杀死它们。大多数成年海牛身上都有与船只相撞留下的某种伤疤（图 8.1，上）。<sup id="note-128-ref"><a href="#note-128">128</a></sup></p>
   <p>阿姆斯特朗—惠特沃思 A.W.38“惠特利”是英国皇家空军的一线轰炸机。第二次世界大战期间，A.W.38 把炸弹和传单带入德国领土。与海牛不同，A.W.38 有凶猛的天敌：高射炮火和截击机火力。许多飞机执行任务后再也没有回来；幸存者身上的伤痕足以证明它们经历过什么（图 8.1，下）。</p>
@@ -181,11 +181,73 @@ mu.Africa_ci &lt;- apply( mu.Africa , 2 , PI , prob=0.97 )</code></pre></figure>
         b[cid] ~ dnorm( 0 , 0.3 ) ,
         sigma ~ dexp( 1 )
     ) , data=dd )</code></pre></figure>
-      <p>边际后验分布将在原书 PDF 第 269 页继续检查。</p>
+      <p>检查边际后验分布：</p>
+      <figure class="code-listing" id="code-8-14"><figcaption>R 代码 8.14</figcaption><pre><code>precis( m8.3 , depth=2 )</code></pre><pre class="code-output"><code>      mean   sd 5.5% 94.5%
+a[1]  0.89 0.02 0.86 0.91
+a[2]  1.05 0.01 1.03 1.07
+b[1]  0.13 0.07 0.01 0.25
+b[2] -0.14 0.05 -0.23 -0.06
+sigma 0.11 0.01 0.10 0.12</code></pre></figure>
+      <p class="source-erratum"><strong>原文勘误：</strong>代码 8.14 原文写作 <code>precis(m8.5)</code>，但本节刚建立、随后也一直比较的是 <code>m8.3</code>；译稿按上下文更正。</p>
+      <p>非洲内部的斜率实质上反转了：0.13，而不是 −0.14。</p>
+      <p>允许斜率变化能把预期预测改善多少？用 PSIS 把这个新模型与前两个模型比较。这里也能使用 WAIC，结果几乎完全相同；不过它不会给我们可爱的 Pareto <span class="math-inline"><var>k</var></span> 警告。</p>
+      <figure class="code-listing" id="code-8-15"><figcaption>R 代码 8.15</figcaption><pre><code>compare( m8.1 , m8.2 , m8.3 , func=PSIS )</code></pre><pre class="code-output"><code>Some Pareto k values are high (&gt;0.5).
+       PSIS pPSIS dPSIS weight    SE   dSE
+m8.3 -258.7   5.4   0.0   0.97 15.40    NA
+m8.2 -251.5   4.6   7.2   0.03 15.47  6.84
+m8.1 -188.6   2.8  70.2   0.00 13.33 15.56</code></pre></figure>
+      <p><code>m8.3</code> 模型族获得超过 95% 的模型权重。若目标是预测，这强烈支持纳入交互效应。不过，<code>m8.2</code> 仍得到少量权重，说明 <code>m8.3</code> 的斜率后验均值有一点过拟合；前两个模型 PSIS 差值的标准误也几乎与差值本身一样大。若绘制 <code>m8.3</code> 的 PSIS Pareto <span class="math-inline"><var>k</var></span>，会看到一些影响力很高的国家：</p>
+      <figure class="code-listing" id="code-8-16"><figcaption>R 代码 8.16</figcaption><pre><code>plot( PSIS( m8.3 , pointwise=TRUE )$k )</code></pre></figure>
+      <p>章末练习会继续探索这一点。这里可能很适合第 7 章做过的 Student-t 稳健回归。</p>
+      <p>请记住，这些比较并不是因果推断的可靠指南，只告诉我们特征对预测有多重要。真实因果效应在任何给定样本中，可能对总体预测并不重要。预测和推断是不同问题。不过，过拟合总会发生，因此预见并度量它，对推断同样重要。</p>
     </section>
+
+    <section id="sec-8-1-4"><h3>8.1.4 绘制交互作用</h3><p>绘制这个模型并不需要新技巧。目标是画两幅图：第一幅显示非洲国家，并叠加后验均值回归线及其 97% 区间；第二幅显示非洲之外的国家。</p>
+      <figure class="code-listing" id="code-8-17"><figcaption>R 代码 8.17</figcaption><pre><code># plot Africa - cid=1
+d.A1 &lt;- dd[ dd$cid==1 , ]
+plot( d.A1$rugged_std , d.A1$log_gdp_std , pch=16 , col=rangi2 ,
+    xlab="ruggedness (standardized)" , ylab="log GDP (as proportion of mean)" ,
+    xlim=c(0,1) )
+mu &lt;- link( m8.3 , data=data.frame( cid=1 , rugged_std=rugged_seq ) )
+mu_mean &lt;- apply( mu , 2 , mean )
+mu_ci &lt;- apply( mu , 2 , PI , prob=0.97 )
+lines( rugged_seq , mu_mean , lwd=2 )
+shade( mu_ci , rugged_seq , col=col.alpha(rangi2,0.3) )
+mtext("African nations")
+
+# plot non-Africa - cid=2
+d.A0 &lt;- dd[ dd$cid==2 , ]
+plot( d.A0$rugged_std , d.A0$log_gdp_std , pch=1 , col="black" ,
+    xlab="ruggedness (standardized)" , ylab="log GDP (as proportion of mean)" ,
+    xlim=c(0,1) )
+mu &lt;- link( m8.3 , data=data.frame( cid=2 , rugged_std=rugged_seq ) )
+mu_mean &lt;- apply( mu , 2 , mean )
+mu_ci &lt;- apply( mu , 2 , PI , prob=0.97 )
+lines( rugged_seq , mu_mean , lwd=2 )
+shade( mu_ci , rugged_seq )
+mtext("Non-African nations")</code></pre></figure>
+      <p>结果见图 8.5。非洲内外的斜率终于方向相反；而且因为我们在单个模型中实现了这一点，可以用统计方法评估这种反转的价值。</p>
+      <figure class="book-figure ruggedness-interaction-figure" id="fig-8-5"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的非洲内外崎岖度交互模型后验预测"><img src="/media/chapter-08-ruggedness-interaction.svg" alt="非洲国家的崎岖度回归斜率为正，非非洲国家的斜率为负，灰色阴影为均值后验区间"></div><p class="scroll-hint">图较宽，可横向滚动比较非洲内外的斜率。</p><figcaption><strong>图 8.5：</strong>包含非洲与崎岖度交互作用的地形崎岖度模型后验预测。阴影区域表示均值的 97% 后验区间。</figcaption></figure>
+    </section>
+  </section>
+
+  <section id="sec-8-2"><h2>8.2 交互作用的对称性</h2><p><strong>布里丹之驴</strong>是一道思想实验：一头总是走向最近食物堆的驴，若恰好站在两堆完全相同、距离也相等的食物之间，就会饿死。基本问题在于对称性：驴怎样在两个相同选项之间作决定？像许多思想实验一样，不能把它看得太认真；驴当然不会饿死。但思考这种对称性怎样被打破，可能很有成效。</p>
+    <p>交互作用就像布里丹之驴。正如两堆相同食物，简单交互模型也包含两种对称解释。若模型外没有其他信息，就没有逻辑依据偏爱其中一种。以 GDP 与地形崎岖度为例，这里的交互作用有两种同样有效的表述：</p>
+    <ol class="interaction-readings" id="interaction-symmetric-readings"><li>崎岖度与对数 GDP 的关联，在多大程度上取决于国家是否位于非洲？</li><li>非洲与对数 GDP 的关联，在多大程度上取决于崎岖度？</li></ol>
+    <p>对多数人而言，这两种说法听起来不同；你的魔像却认为它们完全相同。</p>
+    <p>本节先从数学上考察这个事实，再反过来重新绘制崎岖度与 GDP 示例——把它表述为：非洲与 GDP 的关联取决于崎岖度。</p>
+
+    <aside class="rethinking-box" id="rethinking-all-greek"><h3>再思考：这些希腊字母对我都是天书</h3><p>我们使用 <span class="math-inline"><var>α</var></span> 和 <span class="math-inline"><var>β</var></span>，只是因为约定俗成，它们没有特殊含义。如果你更喜欢别的希腊字母，例如 <span class="math-inline"><var>ω</var></span>——为什么所有关注都要给 <span class="math-inline"><var>α</var></span>？——尽管使用。通常用希腊字母表示未观测变量（参数），用罗马字母表示观测变量（数据）。这个惯例确有价值，因为能帮助别人阅读模型；但打破它并非错误。有时，与其使用 <span class="math-inline"><var>ξ</var></span> 或 <span class="math-inline"><var>ζ</var></span> 这类陌生希腊字母，不如用熟悉的罗马字母。读者若连符号名称都说不出来，理解模型可能更加困难。</p><p>用希腊字母表示未观测变量、罗马字母表示观测变量还有一个根本问题：许多模型中，同一个变量既可能已观测，也可能未观测。例如，有些个案存在缺失数据时就是如此；在“占域”检测模型中，结果的某些特定值（通常是零）不可信时也一样。第 15 章会明确处理这些问题。</p></aside>
+
+    <p>再次考虑 <span class="math-inline"><var>μ</var><sub>i</sub></span> 的模型：</p>
+    <div class="equation-block" id="eq-8-symmetry-indexed"><span><var>μ</var><sub>i</sub> = <var>α</var><sub>cid[i]</sub> + <var>β</var><sub>cid[i]</sub>(<var>r</var><sub>i</sub> − <span class="overbar">r</span>)</span></div>
+    <p>之前的解释是：斜率以大洲为条件。但说截距以崎岖度为条件也完全可以。把表达式换一种写法，更容易看出这一点：</p>
+    <div class="equation-block symmetry-equation" id="eq-8-symmetry-expanded"><span><var>μ</var><sub>i</sub> = (2 − <var>cid</var><sub>i</sub>)[<var>α</var><sub>1</sub> + <var>β</var><sub>1</sub>(<var>r</var><sub>i</sub> − <span class="overbar">r</span>)] + (<var>cid</var><sub>i</sub> − 1)[<var>α</var><sub>2</sub> + <var>β</var><sub>2</sub>(<var>r</var><sub>i</sub> − <span class="overbar">r</span>)]</span><small>第一项：<code>cid[i]=1</code>　　第二项：<code>cid[i]=2</code></small></div>
+    <p>它看起来很怪，却是同一个模型。当 <span class="math-inline"><var>cid</var><sub>i</sub> = 1</span> 时，只剩第一项，即非洲参数；第二项归零。当 <span class="math-inline"><var>cid</var><sub>i</sub> = 2</span> 时，第一项归零，只剩第二项。现在若想象把一个国家切换到非洲，要知道这对预测有何影响，就必须知道它的崎岖度（除非它恰好位于平均崎岖度 <span class="math-inline"><span class="overbar">r</span></span>）。</p>
+    <p>绘制反向解释会很有帮助：位于非洲与对数 GDP 的关联，取决于地形崎岖度。下一步将计算非洲与非非洲预测之间的差值，内容在原书 PDF 第 272 页继续。</p>
   </section>
 
   <section class="endnotes" id="chapter-08-notes" role="doc-endnotes"><h2>尾注</h2><ol start="128"><li id="note-128">这里关于海牛的事实均取自 Lightsey 等（2006）和 Rommel 等（2007）。图中的伤痕图取自 <span class="url-text">http://www.learner.org/jnorth/tm/manatee/RollCall.html</span> 的免费教育材料。 <a class="backref" href="#note-128-ref" aria-label="返回正文">↩</a></li><li id="note-129">Wald（1943）。更易懂的介绍和历史背景可参见 Mangel 与 Samaniego（1984）。 <a class="backref" href="#note-129-ref" aria-label="返回正文">↩</a></li><li id="note-130">Wald（1950）。Wald 的奠基论文是 Wald（1939）；强烈推荐 Fienberg（2006）的历史回顾。更技术性的讨论可参见 Berger（1985）、Robert（2007）以及 Jaynes（2003）第 406 页。 <a class="backref" href="#note-130-ref" aria-label="返回正文">↩</a></li><li id="note-131">GDP 即国内生产总值（Gross Domestic Product）。它是最常用的经济表现度量，也是最荒唐的度量之一。用 GDP 衡量经济健康，就像用热量衡量化学反应的质量。 <a class="backref" href="#note-131-ref" aria-label="返回正文">↩</a></li><li id="note-132">Riley 等（1999）。 <a class="backref" href="#note-132-ref" aria-label="返回正文">↩</a></li><li id="note-133">数据来自 Nunn 与 Puga（2011）。 <a class="backref" href="#note-133-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 257–268 页已完成翻译、逐页核对、结构契约及桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 269 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 257–271 页已完成翻译、逐页核对、结构契约及桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 272 页继续。</aside>
 </article>

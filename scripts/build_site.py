@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import html
+import hashlib
 import json
 import shutil
 from pathlib import Path
@@ -13,6 +14,7 @@ PROGRESS = json.loads((ROOT / "translations" / "zh" / "progress.json").read_text
 CHAPTERS = ROOT / "translations" / "zh" / "chapters"
 MEDIA = ROOT / "translations" / "zh" / "media"
 SITE = ROOT / "site"
+CSS_VERSION = hashlib.sha256((ROOT / "assets" / "book.css").read_bytes()).hexdigest()[:12]
 
 
 def esc(value: object) -> str:
@@ -31,7 +33,7 @@ def shell(title: str, body: str, *, page_class: str = "") -> str:
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{esc(title)} | {esc(CONFIG['title_zh'])}</title>
   <meta name="color-scheme" content="light">
-  <link rel="stylesheet" href="/assets/book.css">
+  <link rel="stylesheet" href="/assets/book.css?v={CSS_VERSION}">
 </head>
 <body class="{esc(page_class)}">
   <nav class="topbar"><a href="/">目录</a><span>{esc(CONFIG['title_zh'])}</span></nav>
