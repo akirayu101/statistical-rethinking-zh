@@ -1700,7 +1700,7 @@
   },
   "chapter-10": {
     "required_status": "in_progress",
-    "source_pages": [323, 335],
+    "source_pages": [323, 338],
     "required_ids": [
       "intro-10",
       "note-153-ref",
@@ -1755,6 +1755,17 @@
       "code-10-13",
       "rethinking-conditional-independence",
       "overthinking-binomial-maxent",
+      "eq-10-binomial-kl-bound",
+      "eq-10-binomial-cross-entropy",
+      "eq-10-binomial-cross-entropy-simplified",
+      "erratum-10-binomial-maxent-equality",
+      "sec-10-2",
+      "eq-10-gaussian-linear-model",
+      "fig-10-5",
+      "note-162-ref",
+      "eq-10-glm-binomial",
+      "rethinking-histomancy",
+      "sec-10-2-1",
       "chapter-10-notes",
       "note-153",
       "note-154",
@@ -1764,7 +1775,8 @@
       "note-158",
       "note-159",
       "note-160",
-      "note-161"
+      "note-161",
+      "note-162"
     ],
     "required_headings": [
       "大熵与广义线性模型",
@@ -1777,24 +1789,27 @@
       "10.1.2 二项分布",
       "再思考：条件独立性",
       "过度思考：二项分布的最大熵",
+      "10.2 广义线性模型",
+      "再思考：直方图占卜术之祸",
+      "10.2.1 认识这个家族",
       "尾注"
     ],
     "counts": {
-      "section": 4,
-      "figure": 17,
-      "figure img": 4,
-      ".book-figure": 4,
+      "section": 6,
+      "figure": 18,
+      "figure img": 5,
+      ".book-figure": 5,
       ".code-listing": 13,
       ".code-output": 7,
-      ".rethinking-box": 3,
+      ".rethinking-box": 4,
       ".overthinking-box": 3,
       ".book-quote": 1,
-      ".equation-block": 14,
-      ".wallis-equation": 13,
-      ".source-erratum": 1,
+      ".equation-block": 19,
+      ".wallis-equation": 18,
+      ".source-erratum": 2,
       ".chapter-introduction": 1,
       ".continuation-note": 1,
-      ".endnotes li": 9
+      ".endnotes li": 10
     }
   }
 }

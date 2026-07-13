@@ -10,6 +10,7 @@ OUT1 = ROOT / "translations/zh/media/chapter-10-pebble-entropy.svg"
 OUT2 = ROOT / "translations/zh/media/chapter-10-gaussian-maxent.svg"
 OUT3 = ROOT / "translations/zh/media/chapter-10-binomial-candidates.svg"
 OUT4 = ROOT / "translations/zh/media/chapter-10-binomial-entropy.svg"
+OUT5 = ROOT / "translations/zh/media/chapter-10-link-functions.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 BLUE = "#263f86"
@@ -310,6 +311,55 @@ def figure_10_4() -> None:
     OUT4.write_text("\n".join(parts) + "\n", encoding="utf-8")
 
 
+def figure_10_5() -> None:
+    """Draw the bounded-probability motivation for link functions."""
+    width, height = 1200, 650
+    left, right, top, bottom = 130, 1090, 70, 530
+    sx = lambda value: left + value / 2.1 * (right - left)
+    sy = lambda value: bottom - value / 1.35 * (bottom - top)
+    intercept, slope = 0.34, 0.5
+    boundary_x = (1 - intercept) / slope
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">',
+        '<title>为什么需要 link 函数</title>',
+        '<desc>线性预测随 x 增大时会越过概率一的上界；真实概率达到一后只能保持在边界上。</desc>',
+        '<rect width="100%" height="100%" fill="#fbfaf6"/>',
+        f'<rect x="{left}" y="{top}" width="{right-left}" height="{bottom-top}" rx="8" fill="#fff" stroke="{GRID}"/>',
+    ]
+    for tick in (0.0, 0.5, 1.0, 1.5, 2.0):
+        xx = sx(tick)
+        parts.extend([
+            f'<line x1="{xx:.1f}" y1="{bottom}" x2="{xx:.1f}" y2="{bottom + 8}" stroke="{INK}"/>',
+            text(xx, bottom + 32, f"{tick:.1f}", size=17, anchor="middle"),
+        ])
+    for tick in (0.0, 0.5, 1.0):
+        yy = sy(tick)
+        parts.extend([
+            f'<line x1="{left - 8}" y1="{yy:.1f}" x2="{left}" y2="{yy:.1f}" stroke="{INK}"/>',
+            text(left - 16, yy + 6, f"{tick:.1f}", size=17, anchor="end"),
+        ])
+    parts.extend([
+        f'<line x1="{left}" y1="{bottom}" x2="{right}" y2="{bottom}" stroke="{INK}"/>',
+        f'<line x1="{left}" y1="{bottom}" x2="{left}" y2="{top}" stroke="{INK}"/>',
+        f'<line x1="{left}" y1="{sy(1):.1f}" x2="{right}" y2="{sy(1):.1f}" stroke="{INK}" stroke-width="2" stroke-dasharray="9 8"/>',
+        f'<line x1="{left}" y1="{sy(0):.1f}" x2="{right}" y2="{sy(0):.1f}" stroke="{INK}" stroke-width="2" stroke-dasharray="9 8"/>',
+        text((left + right) / 2, height - 40, "预测变量 x", size=21, anchor="middle", fill=BLUE),
+        text(42, (top + bottom) / 2, "概率", size=21, anchor="middle", fill=BLUE, rotate=-90),
+        text(right - 12, sy(1) - 13, "概率上界 1", size=18, anchor="end", fill="#666862"),
+    ])
+    parts.extend([
+        f'<line x1="{sx(0):.1f}" y1="{sy(intercept):.1f}" x2="{sx(boundary_x):.1f}" y2="{sy(1):.1f}" stroke="#737cff" stroke-width="5"/>',
+        f'<line x1="{sx(boundary_x):.1f}" y1="{sy(1):.1f}" x2="{sx(2.05):.1f}" y2="{sy(intercept+slope*2.05):.1f}" stroke="#737cff" stroke-width="5" stroke-dasharray="13 10"/>',
+        f'<line x1="{sx(boundary_x):.1f}" y1="{sy(1):.1f}" x2="{sx(2.05):.1f}" y2="{sy(1):.1f}" stroke="#263f86" stroke-width="6"/>',
+        f'<circle cx="{sx(boundary_x):.1f}" cy="{sy(1):.1f}" r="8" fill="#263f86" stroke="#fff" stroke-width="3"/>',
+        text(sx(0.35), sy(intercept + slope * 0.35) - 18, "线性模型", size=18, fill=BLUE, weight=700),
+        text(sx(1.65), sy(intercept + slope * 1.65) - 16, "越过边界的外推", size=17, anchor="middle", fill="#666862"),
+        text(sx(1.72), sy(1) + 34, "受约束的真实趋势", size=17, anchor="middle", fill=BLUE, weight=700),
+        '</svg>',
+    ])
+    OUT5.write_text("\n".join(parts) + "\n", encoding="utf-8")
+
+
 def main() -> int:
     OUT1.parent.mkdir(parents=True, exist_ok=True)
     width, height = 1200, 930
@@ -335,10 +385,12 @@ def main() -> int:
     figure_10_2()
     figure_10_3()
     figure_10_4()
+    figure_10_5()
     print(f"generated {OUT1}")
     print(f"generated {OUT2}")
     print(f"generated {OUT3}")
     print(f"generated {OUT4}")
+    print(f"generated {OUT5}")
     return 0
 
 
