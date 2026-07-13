@@ -170,7 +170,8 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .exponential-family-figure .figure-scroll img,
 .logit-link-figure .figure-scroll img,
 .log-link-figure .figure-scroll img,
-.logistic-prior-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
+.logistic-prior-figure .figure-scroll img,
+.chimpanzee-posterior-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
 .tide-predictor-figure .figure-scroll img { display: block; width: min(100%, 45rem); height: auto; margin: 0 auto; }
 .chimpanzee-prosociality-figure .figure-scroll img { display: block; width: min(100%, 36rem); height: auto; margin: 0 auto; }
 .parameter-plot-figure .figure-scroll img { display: block; width: min(100%, 45rem); height: auto; margin: 0 auto; }

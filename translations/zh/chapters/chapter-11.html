@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-11" data-source-pages="347-356">
-  <header class="chapter-header"><p class="eyebrow">第十一章</p><h1>上帝给整数加了料</h1><p class="source-range">当前译稿对应原书 PDF 第 347–356 页</p></header>
+<article class="book-article" data-chapter="chapter-11" data-source-pages="347-359">
+  <header class="chapter-header"><p class="eyebrow">第十一章</p><h1>上帝给整数加了料</h1><p class="source-range">当前译稿对应原书 PDF 第 347–359 页</p></header>
 
   <div class="chapter-introduction" id="intro-11">
     <p>太空中的寒冷以 Kelvin 命名，约为 3 Kelvin，也就是绝对零度以上约 3 摄氏度。Kelvin 也是苏格兰格拉斯哥附近一条河流的名字；同一条河又把名字给了 William Thomson，也就是 Kelvin 勋爵（1824 年生，1907 年卒）——英国第一位获封贵族头衔的科学家。Thomson 在格拉斯哥的实验室研究热力学，如今太空的寒冷便以一条苏格兰河流为名。</p>
@@ -165,12 +165,85 @@ mtext( "observed proportions\n" )</code></pre></figure>
       <p>图 11.4 的下图展示后验预测。与前几章的 <code>quap</code> 模型一样，可以用 <code>link</code> 计算：</p>
       <figure class="code-listing" id="code-11-17"><figcaption>R 代码 11.17</figcaption><pre><code>dat &lt;- list( actor=rep(1:7,each=4) , treatment=rep(1:4,times=7) )
 p_post &lt;- link( m11.4 , data=dat )
-p_mu &lt;- apply( p_post , 2 , mean )</code></pre></figure>
-      <p class="continuation-note">后验相容区间、图 11.4 与模型检查的结论，将从原书 PDF 第 357 页继续。</p>
+p_mu &lt;- apply( p_post , 2 , mean )
+p_ci &lt;- apply( p_post , 2 , PI )</code></pre></figure>
+
+      <figure class="book-figure chimpanzee-posterior-figure" id="fig-11-4"><div class="figure-scroll"><img src="/media/chapter-11-chimpanzee-posterior.svg" alt="七只黑猩猩在四种处理下拉左侧杠杆的观测比例与后验预测，上图为空心或实心观测点，下图为带百分之八十九相容区间的预测点"></div><figcaption><strong>图 11.4：</strong>黑猩猩数据的观测值（上）与后验预测（下）。数据按个体分组；空心点是无伙伴处理，实心点是有伙伴处理。上图标出亲社会选项在右侧 R 或左侧 L；每只个体内，两种左侧处理和两种右侧处理分别用线段相连。下图给出每个个体、每种比例的 89% 相容区间。</figcaption></figure>
+      <p>模型预期伙伴加入后几乎不会产生变化。预测中的大部分变异都来自个体截距；用手偏好似乎才是这项实验的主角。</p>
+      <p>数据本身还表现出额外变异——有些个体对处理的反应可能强于其他个体。可以考虑让每个个体拥有独特处理参数的模型；不过要把这种模型做好还需要一些额外技巧，所以留到多层模型再处理。</p>
+      <p>我们还没有考虑把亲社会选项的位置与伙伴是否在场拆成两个独立索引变量的模型。为什么？因为实验的驱动假设是：伙伴在场时，亲社会选项会更常被选择。这是一个交互效应——亲社会选项的效应取决于伙伴是否在场。不过，我们可以建立无交互模型，再用 PSIS 或 WAIC 与 <code>m11.4</code> 比较。根据 <code>m11.4</code> 的后验分布，你已经可以猜到结果：更简单的模型会表现得同样好，因为似乎没有证据表明亲社会选项的位置与伙伴在场之间存在交互。</p>
+      <p>为了确认这个猜测，先建立所需的新索引变量：</p>
+      <figure class="code-listing" id="code-11-18"><figcaption>R 代码 11.18</figcaption><pre><code>d$side &lt;- d$prosoc_left + 1 # 右侧 1，左侧 2
+d$cond &lt;- d$condition + 1  # 无伙伴 1，有伙伴 2</code></pre></figure>
+      <p>然后建立模型。同样在调用中加入 <code>log_lik=TRUE</code>，以便用 PSIS 或 WAIC 比较两个模型。</p>
+      <figure class="code-listing" id="code-11-19"><figcaption>R 代码 11.19</figcaption><pre><code>dat_list2 &lt;- list(
+    pulled_left = d$pulled_left,
+    actor = d$actor,
+    side = d$side,
+    cond = d$cond )
+m11.5 &lt;- ulam(
+    alist(
+        pulled_left ~ dbinom( 1 , p ) ,
+        logit(p) &lt;- a[actor] + bs[side] + bc[cond] ,
+        a[actor] ~ dnorm( 0 , 1.5 ),
+        bs[side] ~ dnorm( 0 , 0.5 ),
+        bc[cond] ~ dnorm( 0 , 0.5 )
+    ) , data=dat_list2 , chains=4 , log_lik=TRUE )</code></pre></figure>
+      <p>用 PSIS 比较两个模型：</p>
+      <figure class="code-listing" id="code-11-20"><figcaption>R 代码 11.20</figcaption><pre><code>compare( m11.5 , m11.4 , func=PSIS )</code></pre><pre class="code-output"><code>       PSIS    SE dPSIS  dSE pPSIS weight
+m11.5 530.6 19.13   0.0   NA   7.6   0.68
+m11.4 532.1 18.97   1.5 1.29   8.5   0.32</code></pre></figure>
+      <p>WAIC 会产生几乎相同的结果。正如猜测的那样，就期望预测准确度而言，无交互模型并不比有交互模型差。你应该检查 <code>m11.5</code> 的后验分布，确保自己能够把它的参数与 <code>m11.4</code> 对应起来；两者讲的是同一个故事。</p>
+      <p>不过要注意，这里的模型比较只是为了理解它如何工作。在这个例子中，推断并不需要模型比较。实验与假设已经告诉我们该用哪个模型（<code>m11.4</code>），之后后验分布就足以完成推断。</p>
+
+      <aside class="overthinking-box" id="overthinking-stan-log-probability"><h3>过度思考：向 Stan 模型加入对数概率计算</h3>
+        <p>给 <code>ulam</code> 模型加入 <code>log_lik=TRUE</code> 时，我们是在 Stan 模型里添加一个代码块，为每个观测结果计算对数概率。这些计算会作为后验样本返回——每个观测、每个样本都有一个对数概率。最终得到一个对数概率矩阵：每列对应一个观测，每行对应一个样本。默认情况下，你不会在 <code>precis</code> 或 <code>extract.samples</code> 中看到这个矩阵；把 <code>clean=FALSE</code> 传给 <code>extract.samples</code> 即可提取：</p>
+        <figure class="code-listing" id="code-11-21"><figcaption>R 代码 11.21</figcaption><pre><code>post &lt;- extract.samples( m11.4 , clean=FALSE )
+str(post)</code></pre><pre class="code-output"><code>List of 4
+ $ log_lik: num [1:2000, 1:504] -0.53 -0.381 -0.441 -0.475 -0.548 ...
+ $ a      : num [1:2000, 1:7] -0.3675 0.0123 -0.8544 -0.2473 -0.762 ...
+ $ b      : num [1:2000, 1:4] 0.00915 -0.78079 0.26441 -0.25036 0.44651 ...
+ $ lp__   : num [1:2000(1d)] -270 -273 -270 -268 -268 ...</code></pre></figure>
+        <p>顶部的 <code>log_lik</code> 矩阵包含计算 WAIC 与 PSIS 所需的全部对数概率。调用 <code>stancode(m11.4)</code> 可以查看生成这些值的代码。下面逐块回顾模型，以便把它和 <code>ulam</code> 公式对应起来。首先是 <code>data</code> 块，它命名每个观测变量并定义其大小：</p>
+        <figure class="code-listing" id="stan-11-data-block"><figcaption>Stan：data 块</figcaption><pre><code>data{
+    int pulled_left[504];
+    int treatment[504];
+    int actor[504];
+}</code></pre></figure>
+        <p>接下来是 <code>parameters</code> 块，对未观测变量做同样的声明：</p>
+        <figure class="code-listing" id="stan-11-parameters-block"><figcaption>Stan：parameters 块</figcaption><pre><code>parameters{
+    vector[7] a;
+    vector[4] b;
+}</code></pre></figure>
+        <p>然后是计算对数后验的 <code>model</code> 块。对数后验随后用于计算 Hamiltonian 模拟在其上滑行的曲面形状。注意，这个块从上到下按顺序执行；必须先计算 <code>p</code>，之后才能在 <code>binomial( 1 , p )</code> 中使用它。这与 BUGS 或 JAGS 不同，后二者的代码行可以任意排序。</p>
+        <figure class="code-listing" id="stan-11-model-block"><figcaption>Stan：model 块</figcaption><pre><code>model{
+    vector[504] p;
+    b ~ normal( 0 , 0.5 );
+    a ~ normal( 0 , 1.5 );
+    for ( i in 1:504 ) {
+        p[i] = a[actor[i]] + b[treatment[i]];
+        p[i] = inv_logit(p[i]);
+    }
+    pulled_left ~ binomial( 1 , p );
+}</code></pre></figure>
+        <p>最后是我们真正关心的 <code>generated quantities</code> 块。这个可选块允许计算任何希望随同后验返回的量。它只在样本被接受之后执行，因此不会显著拖慢抽样；这与 <code>model</code> 块不同，后者在生成一个样本所需的每条路径中都要执行许多次。</p>
+        <figure class="code-listing" id="stan-11-generated-quantities-block"><figcaption>Stan：generated quantities 块</figcaption><pre><code>generated quantities{
+    vector[504] log_lik;
+    vector[504] p;
+    for ( i in 1:504 ) {
+        p[i] = a[actor[i]] + b[treatment[i]];
+        p[i] = inv_logit(p[i]);
+    }
+    for ( i in 1:504 )
+        log_lik[i] = binomial_lpmf( pulled_left[i] | 1 , p[i] );
+}</code></pre></figure>
+        <p>对数概率存储在一个与观测数量相同长度的向量里——这里是 504。线性模型必须重新计算，因为虽然参数在这个块中可用，但在 <code>model</code> 块内部声明的变量（例如 <code>p</code>）并不可用，所以所有计算要再做一遍。还可以用另一个名为 <code>transformed parameters</code> 的可选块只写一次 <code>p</code> 的代码，不过现在先不把事情弄得太复杂。最后，循环遍历观测，在给定参数的条件下计算每个观测的二项概率。辅助函数 <code>LOO</code> 与 <code>WAIC</code> 期望在后验样本中找到这个 <code>log_lik</code> 矩阵。即使直接编写 Stan 模型，只要包含这些计算，仍可像以前一样使用 LOO 与 WAIC。</p>
+        <p class="continuation-note">不经 <code>ulam</code> 运行同一 Stan 模型的代码、算法比较警告与 11.1.2 小节，将从原书 PDF 第 360 页继续。</p>
+      </aside>
     </section>
   </section>
 
   <section class="endnotes" id="chapter-11-notes" role="doc-endnotes"><h2>尾注</h2><ol start="166"><li id="note-166">重要数论家 Leopold Kronecker 据称说过：“上帝创造了整数，其余一切皆为人造。”（德文：<span lang="de">Die ganzen Zahlen hat der liebe Gott gemacht, alles andere ist Menschenwerk.</span>） <a class="backref" href="#note-166-ref" aria-label="返回正文">↩</a></li><li id="note-167">Silk 等（2005）。 <a class="backref" href="#note-167-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 11 章 PDF 第 347–356 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 357 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 11 章 PDF 第 347–359 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 360 页继续。</aside>
 </article>

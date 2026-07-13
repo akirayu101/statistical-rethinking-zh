@@ -10,6 +10,7 @@ OUT1 = ROOT / "translations/zh/media/chapter-11-logistic-priors.svg"
 OUT2 = ROOT / "translations/zh/media/chapter-11-actor-probabilities.svg"
 OUT3 = ROOT / "translations/zh/media/chapter-11-treatment-effects.svg"
 OUT4 = ROOT / "translations/zh/media/chapter-11-treatment-contrasts.svg"
+OUT5 = ROOT / "translations/zh/media/chapter-11-chimpanzee-posterior.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 BLUE = "#6670ee"
@@ -225,8 +226,95 @@ def parameter_plots() -> None:
     )
 
 
+def chimpanzee_posterior_plot() -> None:
+    """Rebuild Figure 11.4 from the published data and posterior summary."""
+    width, height = 1200, 780
+    observed = [
+        [.3333333, .5, .2777778, .5555556],
+        [1, 1, 1, 1],
+        [.2777778, .6111111, .1666667, .3333333],
+        [.3333333, .5, .1111111, .4444444],
+        [.3333333, .5555556, .2777778, .5],
+        [.7777778, .6111111, .5555556, .6111111],
+        [.7777778, .8333333, .9444444, 1],
+    ]
+    actor_mean = [-.45, 3.86, -.75, -.74, -.44, .48, 1.95]
+    actor_sd = [.32, .73, .33, .33, .32, .32, .40]
+    treatment_mean = [-.04, .48, -.38, .37]
+    treatment_sd = [.28, .28, .28, .27]
+    predicted = []
+    predicted_lower = []
+    predicted_upper = []
+    for am, ad in zip(actor_mean, actor_sd):
+        row, low_row, high_row = [], [], []
+        for bm, bd in zip(treatment_mean, treatment_sd):
+            linear_mean = am + bm
+            linear_sd = math.sqrt(ad * ad + bd * bd)
+            row.append(inv_logit(linear_mean))
+            low_row.append(inv_logit(linear_mean - 1.6 * linear_sd))
+            high_row.append(inv_logit(linear_mean + 1.6 * linear_sd))
+        predicted.append(row)
+        predicted_lower.append(low_row)
+        predicted_upper.append(high_row)
+
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">',
+        '<title>黑猩猩观测比例与后验预测</title>',
+        '<desc>上图按个体展示四种处理下拉左侧杠杆的观测比例；下图展示相应的后验均值与百分之八十九相容区间。</desc>',
+        '<rect width="100%" height="100%" fill="#fbfaf6"/>',
+    ]
+    left, right = 105, 1165
+    group_width = (right - left) / 7
+    treatments_x = lambda actor, treatment: left + actor * group_width + (treatment + .5) * group_width / 4
+
+    def panel(y: float, panel_height: float, title_value: str, values: list[list[float]],
+              lower_values: list[list[float]] | None = None,
+              upper_values: list[list[float]] | None = None) -> None:
+        top, bottom = y + 48, y + panel_height - 45
+        sy = lambda value: bottom - value * (bottom - top)
+        parts.extend([
+            text((left + right) / 2, y + 5, title_value, size=22, anchor="middle", weight=700, fill="#263f86"),
+            f'<rect x="{left}" y="{top}" width="{right - left}" height="{bottom - top}" fill="#fff" stroke="{GRID}"/>',
+            f'<line x1="{left}" y1="{sy(.5):.1f}" x2="{right}" y2="{sy(.5):.1f}" stroke="{GRID}" stroke-width="2" stroke-dasharray="8 7"/>',
+            text(left - 18, sy(1) + 6, "1", size=17, anchor="end"),
+            text(left - 18, sy(.5) + 6, "0.5", size=17, anchor="end"),
+            text(left - 18, sy(0) + 6, "0", size=17, anchor="end"),
+            text(30, (top + bottom) / 2, "拉左侧杠杆的比例", size=19, anchor="middle", rotate=-90),
+        ])
+        for actor in range(7):
+            if actor:
+                xx = left + actor * group_width
+                parts.append(f'<line x1="{xx:.1f}" y1="{top}" x2="{xx:.1f}" y2="{bottom}" stroke="{GRID}"/>')
+            parts.append(text(left + (actor + .5) * group_width, top - 12, f"个体 {actor + 1}", size=16, anchor="middle"))
+            for pair in ((0, 2), (1, 3)):
+                points = " ".join(
+                    f"{treatments_x(actor, treatment):.1f},{sy(values[actor][treatment]):.1f}"
+                    for treatment in pair
+                )
+                parts.append(f'<polyline points="{points}" fill="none" stroke="#6670ee" stroke-width="3"/>')
+            for treatment in range(4):
+                xx = treatments_x(actor, treatment)
+                yy = sy(values[actor][treatment])
+                if lower_values is not None and upper_values is not None:
+                    parts.append(f'<line x1="{xx:.1f}" y1="{sy(lower_values[actor][treatment]):.1f}" x2="{xx:.1f}" y2="{sy(upper_values[actor][treatment]):.1f}" stroke="#30332e" stroke-width="2"/>')
+                fill = "#6670ee" if treatment >= 2 else "#fff"
+                parts.append(f'<circle cx="{xx:.1f}" cy="{yy:.1f}" r="7" fill="{fill}" stroke="#6670ee" stroke-width="3"/>')
+
+    panel(25, 340, "观测比例", observed)
+    panel(400, 340, "后验预测", predicted, predicted_lower, predicted_upper)
+    parts.extend([
+        text(treatments_x(0, 0), 350, "R/N", size=14, anchor="middle"),
+        text(treatments_x(0, 1), 350, "L/N", size=14, anchor="middle"),
+        text(treatments_x(0, 2), 350, "R/P", size=14, anchor="middle"),
+        text(treatments_x(0, 3), 350, "L/P", size=14, anchor="middle"),
+        '</svg>',
+    ])
+    OUT5.write_text("\n".join(parts) + "\n", encoding="utf-8")
+
+
 if __name__ == "__main__":
     figure_11_3()
     parameter_plots()
-    for path in (OUT1, OUT2, OUT3, OUT4):
+    chimpanzee_posterior_plot()
+    for path in (OUT1, OUT2, OUT3, OUT4, OUT5):
         print(path)
