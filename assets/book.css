@@ -156,7 +156,9 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .concentration-figure .figure-scroll img,
 .royal-drive-figure .figure-scroll img,
 .hmc-trajectories-figure .figure-scroll img,
-.pairs-posterior-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
+.pairs-posterior-figure .figure-scroll img,
+.traceplot-figure .figure-scroll img,
+.trankplot-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
 .algorithm-steps, .preparation-steps { margin: 1.5rem 0; padding: 1rem 1rem 1rem 3.2rem; border-left: .25rem solid var(--blue); background: #f3f5fb; }
 .algorithm-steps li, .preparation-steps li { margin: .7rem 0; padding-left: .25rem; }
 .metropolis-mapping { margin: 1.5rem 0; padding: 1rem 1rem 1rem 3.2rem; border-left: .25rem solid var(--blue); background: #f3f5fb; }

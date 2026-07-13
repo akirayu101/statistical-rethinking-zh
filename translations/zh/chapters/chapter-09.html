@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-09" data-source-pages="285-305">
-  <header class="chapter-header"><p class="eyebrow">第九章</p><h1>马尔可夫链蒙特卡洛</h1><p class="source-range">当前译稿对应原书 PDF 第 285–305 页</p></header>
+<article class="book-article" data-chapter="chapter-09" data-source-pages="285-308">
+  <header class="chapter-header"><p class="eyebrow">第九章</p><h1>马尔可夫链蒙特卡洛</h1><p class="source-range">当前译稿对应原书 PDF 第 285–308 页</p></header>
 
   <p>在西方历史的大部分时期，偶然性一直扮演反派。古罗马把偶然性人格化为残酷命运女神福尔图娜，她转动着（厄）运之轮。与她相对而坐的是智慧与理解女神密涅瓦。只有绝望之人才会向福尔图娜祈祷，所有人则都会恳求密涅瓦相助。科学当然属于密涅瓦的领域，那里没有福尔图娜可以发挥的有益作用。</p>
   <p>但到了 20 世纪初，福尔图娜与密涅瓦成了合作者。科学家开始出版随机数表，把偶然性的工具用于认识世界。偶然与智慧从此携手；“理解偶然性能够帮助我们获得智慧”这个观念，已很少让人困惑。从天气预报、金融到演化生物学，各领域都由随机过程研究所主导。<sup id="note-137-ref"><a href="#note-137">137</a></sup></p>
@@ -352,11 +352,50 @@ sigma 0.11 0.01 0.10  0.12  2507    1</code></pre></figure>
     <section id="sec-9-4-5"><h3>9.4.5 检查链</h3>
       <p>只要马尔可夫链定义正确，从长期看，它就保证会收敛到我们想要的答案，也就是后验分布。但有些后验分布很难探索——后面会看到例子——要得到无偏近似，所需时间可能极其漫长。HMC 比其他算法更少遇到这类问题，但问题依然存在。事实上，HMC 的一项优点正是能告诉我们何时出了问题；Metropolis–Hastings 等其他算法面对严重故障时却可能保持沉默。下一大节会集中讨论失灵的原因和解决办法。</p>
       <p>目前先看两种经常能发现问题——但并非总能——的链可视化。第一种叫<strong>轨迹图</strong>（trace plot），它只是按顺序绘制样本，并用线连接。用本章开头的隐喻来说，这就是马尔可夫国王穿行各岛的路径。观察每个参数的轨迹图，往往是诊断常见问题的最佳办法。</p>
-      <p class="continuation-note">怎样识别健康、正常运行的马尔可夫链，以及第二种链可视化，将在原书 PDF 第 306 页继续。</p>
+      <p>一旦学会识别健康、正常运行的马尔可夫链，快速检查轨迹图就能带来很大安心。轨迹图并不是分析者检查 MCMC 输出的最后一步，却常常是第一步。</p>
+      <p>在地形崎岖度例子中，轨迹图显示的是一条非常健康的链：</p>
+      <figure class="code-listing" id="code-9-20"><figcaption>R 代码 9.20</figcaption><pre><code>traceplot( m9.1 )</code></pre></figure>
+      <figure class="book-figure traceplot-figure" id="fig-9-8"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的五参数健康链轨迹图"><img src="/media/chapter-09-traceplot.svg" alt="五个参数的一千次链轨迹，前五百次预热区域为灰色，后五百次推断区域为白色"></div><p class="scroll-hint">图较宽，可横向滚动比较所有参数的预热与推断阶段。</p><figcaption><strong>图 9.8：</strong>地形崎岖度模型 <code>m9.1</code> 的马尔可夫链轨迹图。这是一条干净、健康的链，既平稳又混合良好。灰色区域是预热阶段，马尔可夫链在此期间通过适应来提高抽样效率；白色区域包含用于推断的样本。</figcaption></figure>
+      <p>图中实际只展示第一条链的轨迹；在函数调用中添加 <code>chains=1</code> 即可得到它。可以把每个参数曲折往复的轨迹理解为链穿过参数空间每个维度的路径。各图中的灰色区域，也就是前 500 个样本，标示适应样本。在适应阶段，马尔可夫链学习怎样更高效地从后验分布抽样，因此这些样本不适合用于推断。<code>extract.samples</code> 会自动丢弃它们，只返回图 9.8 白色区域中的样本。</p>
+      <p>为什么这是一条健康链？通常会在轨迹图中寻找三项特征：（1）<strong>平稳性</strong>；（2）<strong>良好混合</strong>；（3）<strong>收敛</strong>。平稳性是指每条链的路径始终停留在后验分布同一个高概率区域内。这里每条轨迹都围绕非常稳定的中心趋势波动，也可以说，链的均值从开头到结尾都很稳定。良好混合意味着链能快速探索整个区域，而不是缓慢游荡；它会像健康的哈密顿链应有的样子那样迅速来回曲折。收敛则意味着多条彼此独立的链都停留在同一个高概率区域。</p>
+      <p>轨迹图是观察链的自然方式，却常常难以阅读：一旦把许多链叠在一起，图形可能变得非常混乱，甚至掩盖某些链的病态。第二种可视化方式是绘制样本秩的分布，即<strong>轨迹秩图</strong>（trace rank plot，简称 trank plot）。<sup id="note-148-ref"><a href="#note-148">148</a></sup>具体做法是：对每个参数的全部样本排序，最小样本的秩为 1，最大样本的秩为所有链样本总数；然后为每条链分别绘制这些秩的直方图。为什么这样做？如果各条链都在高效探索同一个空间，它们的直方图就应彼此相似，并且相对均匀。<code>rethinking</code> 包提供了生成这种图的函数：</p>
+      <figure class="code-listing" id="code-9-21"><figcaption>R 代码 9.21</figcaption><pre><code>trankplot( m9.1 , n_cols=2 )</code></pre></figure>
+      <figure class="book-figure trankplot-figure" id="fig-9-9"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的五参数链秩直方图"><img src="/media/chapter-09-trankplot.svg" alt="五个参数各有四条链的重叠秩直方图，分布近似均匀且彼此处于相同范围"></div><p class="scroll-hint">图较宽，可横向滚动比较五个参数的四条链。</p><figcaption><strong>图 9.9：</strong><code>m9.1</code> 的秩样本堆叠直方图，即 trank plot。健康链的这些直方图应当大致均匀，不会有某条链持续高于或低于其他链。</figcaption></figure>
+      <p>为了减少杂乱，图中没有标轴。横轴是秩，从 1 到所有链的样本总数（本例为 2,000）；纵轴是直方图每个分箱中的秩频数。这正是我们希望看到的 trank plot：各直方图彼此重叠，并保持在相同范围内。</p>
+      <p>要真正理解这些图的价值，还得看看不健康链的轨迹图和 trank plot。那正是下一节的任务。</p>
     </section>
+
+    <aside class="overthinking-box" id="overthinking-raw-stan"><h3>过度思考：原始 Stan 模型代码</h3>
+      <p><code>ulam</code> 所做的只是把公式列表翻译成 Stan 的建模语言，随后其余工作由 Stan 完成。对本书多数模型而言，没有必要学习怎样编写 Stan 代码；但有些模型确实需要直接与 Stan 交互，因为 Stan 能表达的远多于 <code>ulam</code>。即使模型很简单，探头看看机器内部也能增进理解并获得更多控制。任何时候都能用 <code>stancode</code> 访问 <code>ulam</code> 生成的原始 Stan 代码。例如，<code>stancode(m9.1)</code> 会打印地形崎岖度模型的 Stan 代码。熟悉 Stan 语言之前，它看起来又长又古怪；不过逐块来看，其实只是已经学过的内容换了一种表达方式。</p>
+      <figure class="code-listing stan-listing" id="stan-code-9-ruggedness"><figcaption>Stan 代码：地形崎岖度模型</figcaption><pre><code>data{
+    vector[170] log_gdp_std;
+    vector[170] rugged_std;
+    int cid[170];
+}
+parameters{
+    vector[2] a;
+    vector[2] b;
+    real&lt;lower=0&gt; sigma;
+}
+model{
+    vector[170] mu;
+    sigma ~ exponential( 1 );
+    b ~ normal( 0 , 0.3 );
+    a ~ normal( 1 , 0.1 );
+    for ( i in 1:170 ) {
+        mu[i] = a[cid[i]] + b[cid[i]] * (rugged_std[i] - 0.215);
+    }
+    log_gdp_std ~ normal( mu , sigma );
+}</code></pre></figure>
+      <p>这是 Stan 代码，而不是 R 代码。它本质上就是提供给 <code>ulam</code> 的公式列表，只是把隐含的变量定义明确写出。代码共有三个“区块”。</p>
+      <p>第一个是顶部的 <code>data</code> 区块，用来命名观测变量，并声明其类型和大小。<code>int cid[170]</code> 表示一个名为 <code>cid</code>、包含 170 个值的整数变量，也就是大洲索引。另两个变量是实数向量，分别表示连续的崎岖度和对数 GDP。Stan 的每一行都以分号结束。别问为什么，照做就是了。反正你的人生大概还没用够分号。</p>
+      <p>下一个是 <code>parameters</code> 区块。你大概已经猜到，这些是未观测变量，描述方式与观测变量相同。这里的新元素是 <code>sigma</code> 的 <code>&lt;lower=0&gt;</code>，以及那些 <code>vector[2]</code>。<code>&lt;lower=0&gt;</code> 告诉 Stan，<code>sigma</code> 必须为正，也就是受约束的。这项约束对应于为它指定的指数先验，因为指数分布只定义在正实数上。<code>vector[2]</code> 类型是长度为 2 的实数列表，分别对应两个截距 <code>a</code> 和两个斜率 <code>b</code>。</p>
+      <p>如果以前没有使用过显式静态类型语言，前两个区块可能显得很奇怪：为什么 Stan 强迫用户明确写出 R 和 <code>ulam</code> 能自动推断的东西？一个原因是，变量类型已经存在且不会改变时，代码不必反复检查那么多条件，因此可以运行得更快。从我们的角度看，更大的优点是，显式类型能帮助避免一大类编程错误。R 和 Python 这类语言中常见的运行时花样，在 C++ 中根本不可能发生。依我的经验，学过编译型语言的人会把静态类型视为受欢迎的特性；只用过 R 这类解释型语言的人则觉得它麻烦。两边都没错。</p>
+      <p class="continuation-note">Stan 的 <code>model</code> 区块及其向量化写法将在原书 PDF 第 309 页继续。</p>
+    </aside>
   </section>
 
-  <section class="endnotes" id="chapter-09-notes" role="doc-endnotes"><h2>尾注</h2><ol start="137"><li id="note-137">关于这段历史的更多内容，可参见 Gigerenzer 等（1990）的导论。另见 Rao（1997），其中展示了一本随机数表的示例页，并对这场文化转变作了类似评论。 <a class="backref" href="#note-137-ref" aria-label="返回正文">↩</a></li><li id="note-138">“旅行者”是两种常见隐喻之一；另一种是登山者通过随机跳跃绘制山脉地图。Kruschke（2011）用一位在不同地点筹款的政治人物讲了一个很相似的故事。Kruschke 的书非常出色，风格与覆盖范围和本书颇为不同，因此能通过不同视角和另一组例子，为读者带来许多额外价值。 <a class="backref" href="#note-138-ref" aria-label="返回正文">↩</a></li><li id="note-139">Metropolis 等（1953）。算法以论文第一作者命名，但尚不清楚每位合著者怎样参与了算法的发现与实现。其他作者包括以“氢弹之父”闻名的 Edward Teller、同样著名的物理学家 Marshall Rosenbluth，以及两人的妻子 Augusta 和 Arianna；两位女士完成了大量计算机编程。Nicholas Metropolis 领导这个研究组，而他们的工作又以此前和 Stanisław Ulam 合作的研究为基础：Metropolis 与 Ulam（1949）。 <a class="backref" href="#note-139-ref" aria-label="返回正文">↩</a></li><li id="note-140">Hastings（1970）。 <a class="backref" href="#note-140-ref" aria-label="返回正文">↩</a></li><li id="note-141">最初的论文是 Geman 与 Geman（1984），另见 Casella 与 George（1992）。注意，Gibbs 抽样以统计物理学奠基人之一、物理学家兼数学家 J. W. Gibbs 命名；但 Gibbs 早在 1903 年就已去世，远早于 Metropolis 算法的发明。这个策略以 Gibbs 命名，既是为了纪念他，也因为算法与统计物理学的联系。 <a class="backref" href="#note-141-ref" aria-label="返回正文">↩</a></li><li id="note-142">Jaynes（2003）第 16 章。 <a class="backref" href="#note-142-ref" aria-label="返回正文">↩</a></li><li id="note-143">参见 Neal（2012）与 Betancourt（2017）。 <a class="backref" href="#note-143-ref" aria-label="返回正文">↩</a></li><li id="note-144">严格说并非总动量，而是动量平方和：<span class="math-inline"><var>K</var> = ∑<sub><var>i</var></sub> <var>p</var><sub><var>i</var></sub><sup>2</sup>/2</span>，其中 <span class="math-inline"><var>p</var></span> 是动量值向量。这个表达式来自能量守恒，后面讨论发散转移时会再谈。 <a class="backref" href="#note-144-ref" aria-label="返回正文">↩</a></li><li id="note-145">参见 Hoffman 与 Gelman（2011），以及 Stan 用户手册中的更多细节。 <a class="backref" href="#note-145-ref" aria-label="返回正文">↩</a></li><li id="note-146">见 Neal（2012）中的代码。 <a class="backref" href="#note-146-ref" aria-label="返回正文">↩</a></li><li id="note-147">关于一段兼顾计算实践与数学基础的简明 MCMC 历史，可参见 Robert 与 Casella（2011）。 <a class="backref" href="#note-147-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section class="endnotes" id="chapter-09-notes" role="doc-endnotes"><h2>尾注</h2><ol start="137"><li id="note-137">关于这段历史的更多内容，可参见 Gigerenzer 等（1990）的导论。另见 Rao（1997），其中展示了一本随机数表的示例页，并对这场文化转变作了类似评论。 <a class="backref" href="#note-137-ref" aria-label="返回正文">↩</a></li><li id="note-138">“旅行者”是两种常见隐喻之一；另一种是登山者通过随机跳跃绘制山脉地图。Kruschke（2011）用一位在不同地点筹款的政治人物讲了一个很相似的故事。Kruschke 的书非常出色，风格与覆盖范围和本书颇为不同，因此能通过不同视角和另一组例子，为读者带来许多额外价值。 <a class="backref" href="#note-138-ref" aria-label="返回正文">↩</a></li><li id="note-139">Metropolis 等（1953）。算法以论文第一作者命名，但尚不清楚每位合著者怎样参与了算法的发现与实现。其他作者包括以“氢弹之父”闻名的 Edward Teller、同样著名的物理学家 Marshall Rosenbluth，以及两人的妻子 Augusta 和 Arianna；两位女士完成了大量计算机编程。Nicholas Metropolis 领导这个研究组，而他们的工作又以此前和 Stanisław Ulam 合作的研究为基础：Metropolis 与 Ulam（1949）。 <a class="backref" href="#note-139-ref" aria-label="返回正文">↩</a></li><li id="note-140">Hastings（1970）。 <a class="backref" href="#note-140-ref" aria-label="返回正文">↩</a></li><li id="note-141">最初的论文是 Geman 与 Geman（1984），另见 Casella 与 George（1992）。注意，Gibbs 抽样以统计物理学奠基人之一、物理学家兼数学家 J. W. Gibbs 命名；但 Gibbs 早在 1903 年就已去世，远早于 Metropolis 算法的发明。这个策略以 Gibbs 命名，既是为了纪念他，也因为算法与统计物理学的联系。 <a class="backref" href="#note-141-ref" aria-label="返回正文">↩</a></li><li id="note-142">Jaynes（2003）第 16 章。 <a class="backref" href="#note-142-ref" aria-label="返回正文">↩</a></li><li id="note-143">参见 Neal（2012）与 Betancourt（2017）。 <a class="backref" href="#note-143-ref" aria-label="返回正文">↩</a></li><li id="note-144">严格说并非总动量，而是动量平方和：<span class="math-inline"><var>K</var> = ∑<sub><var>i</var></sub> <var>p</var><sub><var>i</var></sub><sup>2</sup>/2</span>，其中 <span class="math-inline"><var>p</var></span> 是动量值向量。这个表达式来自能量守恒，后面讨论发散转移时会再谈。 <a class="backref" href="#note-144-ref" aria-label="返回正文">↩</a></li><li id="note-145">参见 Hoffman 与 Gelman（2011），以及 Stan 用户手册中的更多细节。 <a class="backref" href="#note-145-ref" aria-label="返回正文">↩</a></li><li id="note-146">见 Neal（2012）中的代码。 <a class="backref" href="#note-146-ref" aria-label="返回正文">↩</a></li><li id="note-147">关于一段兼顾计算实践与数学基础的简明 MCMC 历史，可参见 Robert 与 Casella（2011）。 <a class="backref" href="#note-147-ref" aria-label="返回正文">↩</a></li><li id="note-148">参见 Vehtari 等（2019a），<span class="url-text">https://arxiv.org/abs/1903.08008</span>。 <a class="backref" href="#note-148-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 285–305 页已完成翻译、逐页核对、结构契约及桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 306 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 285–308 页已完成翻译、逐页核对、结构契约及桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 309 页继续。</aside>
 </article>

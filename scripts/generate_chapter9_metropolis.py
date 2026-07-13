@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate deterministic Chinese SVGs for Chapter 9 Figures 9.2 through 9.7."""
+"""Generate deterministic Chinese SVGs for Chapter 9 Figures 9.2 through 9.9."""
 from pathlib import Path
 import math
 import random
@@ -11,6 +11,8 @@ OUT4 = ROOT / "translations/zh/media/chapter-09-concentration.svg"
 OUT5 = ROOT / "translations/zh/media/chapter-09-royal-drive.svg"
 OUT6 = ROOT / "translations/zh/media/chapter-09-hmc-trajectories.svg"
 OUT7 = ROOT / "translations/zh/media/chapter-09-pairs-posterior.svg"
+OUT8 = ROOT / "translations/zh/media/chapter-09-traceplot.svg"
+OUT9 = ROOT / "translations/zh/media/chapter-09-trankplot.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 BLUE = "#6670ee"
 INK = "#30332e"
@@ -392,6 +394,102 @@ def figure_9_7() -> None:
     OUT7.write_text('\n'.join(body), encoding='utf-8')
 
 
+def figure_9_8() -> None:
+    """Draw a healthy five-parameter trace plot with a shaded warmup region."""
+    w, h = 1200, 920
+    panel_w, panel_h = 470, 190
+    panels = ((85, 75), (645, 75), (85, 355), (645, 355), (85, 635))
+    specs = (
+        ("a[1]", 2671, .89, .014),
+        ("a[2]", 3109, 1.05, .010),
+        ("b[1]", 2153, .13, .070),
+        ("b[2]", 2027, -.14, .050),
+        ("sigma", 2885, .11, .006),
+    )
+    body = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" role="img">',
+        '<title>地形崎岖度模型的健康链轨迹图</title>',
+        '<desc>五个参数的第一条链轨迹，前五百次预热区域为灰色，后五百次推断样本区域为白色。</desc>',
+        '<rect width="100%" height="100%" fill="#fff"/>',
+    ]
+    rng = random.Random(920)
+    for index, ((label, n_eff, mean, sd), (left, top)) in enumerate(zip(specs, panels)):
+        values = []
+        previous = 0.0
+        for draw in range(1000):
+            innovation = rng.gauss(0, 1)
+            previous = -.12 * previous + .88 * innovation
+            warmup_shift = (1 - draw / 500) * .22 if draw < 500 else 0
+            values.append(mean + sd * (previous + warmup_shift))
+        low, high = min(values), max(values)
+        span = max(high - low, sd * 4)
+        low, high = mean - span * .58, mean + span * .58
+        sx = lambda draw: left + draw / 999 * panel_w
+        sy = lambda value: top + (high - value) / (high - low) * panel_h
+        body += [
+            f'<rect x="{left}" y="{top}" width="{panel_w/2}" height="{panel_h}" fill="#e2e3e0"/>',
+            f'<rect x="{left}" y="{top}" width="{panel_w}" height="{panel_h}" fill="none" stroke="{INK}"/>',
+            f'<text x="{left}" y="{top-14}" font-family="{FONT}" font-size="22" fill="{INK}">{label}</text>',
+            f'<text x="{left+panel_w}" y="{top-14}" text-anchor="end" font-family="{FONT}" font-size="18" fill="{INK}">n_eff = {n_eff}</text>',
+            f'<polyline points="{" ".join(f"{sx(i):.1f},{sy(v):.1f}" for i,v in enumerate(values))}" fill="none" stroke="{BLUE}" stroke-width="1.2" opacity=".82"/>',
+        ]
+        for draw in (200, 400, 600, 800, 1000):
+            x = left + draw / 1000 * panel_w
+            body += [f'<line x1="{x:.1f}" y1="{top+panel_h}" x2="{x:.1f}" y2="{top+panel_h+6}" stroke="{INK}"/>', f'<text x="{x:.1f}" y="{top+panel_h+27}" text-anchor="middle" font-family="{FONT}" font-size="14">{draw}</text>']
+    body += [
+        f'<rect x="{w-310}" y="{h-82}" width="24" height="18" fill="#e2e3e0" stroke="#b7b9b4"/>',
+        f'<text x="{w-275}" y="{h-68}" font-family="{FONT}" font-size="17" fill="{INK}">预热（1–500）</text>',
+        f'<rect x="{w-155}" y="{h-82}" width="24" height="18" fill="#fff" stroke="#b7b9b4"/>',
+        f'<text x="{w-120}" y="{h-68}" font-family="{FONT}" font-size="17" fill="{INK}">推断</text>',
+        '</svg>',
+        '',
+    ]
+    OUT8.write_text('\n'.join(body), encoding='utf-8')
+
+
+def figure_9_9() -> None:
+    """Draw uniform overlapping rank histograms for four healthy chains."""
+    w, h = 1200, 900
+    panel_w, panel_h = 470, 190
+    panels = ((85, 70), (645, 70), (85, 345), (645, 345), (85, 620))
+    specs = (("a[1]", 2671), ("a[2]", 3109), ("b[1]", 2153), ("b[2]", 2027), ("sigma", 2885))
+    colors = (INK, BLUE, "#8c8e89", "#c6c8c3")
+    body = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" role="img">',
+        '<title>健康链的秩直方图</title>',
+        '<desc>五个参数各有四条链的重叠秩直方图，形状近似均匀，没有某条链持续高于或低于其他链。</desc>',
+        '<rect width="100%" height="100%" fill="#fff"/>',
+    ]
+    rng = random.Random(921)
+    for (label, n_eff), (left, top) in zip(specs, panels):
+        body += [
+            f'<line x1="{left}" y1="{top+panel_h}" x2="{left+panel_w}" y2="{top+panel_h}" stroke="{INK}"/>',
+            f'<line x1="{left}" y1="{top}" x2="{left}" y2="{top+panel_h}" stroke="{INK}"/>',
+            f'<text x="{left}" y="{top-14}" font-family="{FONT}" font-size="22" fill="{INK}">{label}</text>',
+            f'<text x="{left+panel_w}" y="{top-14}" text-anchor="end" font-family="{FONT}" font-size="18" fill="{INK}">n_eff = {n_eff}</text>',
+        ]
+        for chain, color in enumerate(colors):
+            heights = [max(8, 38 + rng.gauss(0, 7) + (chain - 1.5) * rng.uniform(-2, 2)) for _ in range(24)]
+            max_height = 62
+            points = []
+            bin_width = panel_w / len(heights)
+            for bin_index, height in enumerate(heights):
+                x1 = left + bin_index * bin_width
+                x2 = x1 + bin_width
+                y = top + panel_h - height / max_height * (panel_h - 18)
+                if bin_index == 0:
+                    points.append((x1, top + panel_h))
+                points.extend(((x1, y), (x2, y)))
+            points.append((left + panel_w, top + panel_h))
+            body.append(f'<polyline points="{" ".join(f"{x:.1f},{y:.1f}" for x,y in points)}" fill="none" stroke="{color}" stroke-width="2" opacity="{.95 if chain < 2 else .8}"/>')
+    body += [
+        f'<text x="{w-280}" y="{h-45}" font-family="{FONT}" font-size="17" fill="{INK}">四条链的秩直方图重叠</text>',
+        '</svg>',
+        '',
+    ]
+    OUT9.write_text('\n'.join(body), encoding='utf-8')
+
+
 def main() -> None:
     figure_9_2()
     figure_9_3()
@@ -399,12 +497,16 @@ def main() -> None:
     figure_9_5()
     figure_9_6()
     figure_9_7()
+    figure_9_8()
+    figure_9_9()
     print(OUT2)
     print(OUT3)
     print(OUT4)
     print(OUT5)
     print(OUT6)
     print(OUT7)
+    print(OUT8)
+    print(OUT9)
 
 
 if __name__ == "__main__":
