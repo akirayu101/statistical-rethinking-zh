@@ -2091,7 +2091,7 @@
   },
   "chapter-12": {
     "required_status": "in_progress",
-    "source_pages": [397, 399],
+    "source_pages": [397, 402],
     "required_ids": [
       "intro-12",
       "sec-12-1",
@@ -2102,32 +2102,45 @@
       "eq-12-beta-binomial-model",
       "erratum-12-and-then",
       "code-12-2",
+      "code-12-3",
+      "code-12-4",
+      "fig-12-1",
+      "erratum-12-fig-12-1-curves",
+      "code-12-5",
+      "sec-12-1-2",
+      "note-177-ref",
+      "eq-12-gamma-poisson",
+      "code-12-6",
+      "sec-12-1-3",
       "chapter-12-notes",
       "note-175",
-      "note-176"
+      "note-176",
+      "note-177"
     ],
     "required_headings": [
       "怪物与混合",
       "12.1 过度离散计数",
       "12.1.1 Beta-binomial",
+      "12.1.2 负二项或 gamma-Poisson",
+      "12.1.3 过度离散、熵与信息准则",
       "尾注"
     ],
     "counts": {
-      "section": 3,
-      "figure": 2,
-      "figure img": 0,
-      ".book-figure": 0,
-      ".code-listing": 2,
-      ".code-output": 0,
+      "section": 5,
+      "figure": 7,
+      "figure img": 1,
+      ".book-figure": 1,
+      ".code-listing": 6,
+      ".code-output": 1,
       ".rethinking-box": 0,
       ".overthinking-box": 0,
       ".book-quote": 0,
-      ".equation-block": 1,
-      ".wallis-equation": 1,
-      ".source-erratum": 1,
+      ".equation-block": 2,
+      ".wallis-equation": 2,
+      ".source-erratum": 2,
       ".chapter-introduction": 1,
       ".continuation-note": 1,
-      ".endnotes li": 2
+      ".endnotes li": 3
     }
   }
 }

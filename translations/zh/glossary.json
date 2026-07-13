@@ -1005,7 +1005,14 @@
     "beta distribution": "beta 分布",
     "probability distribution for probabilities": "概率的概率分布",
     "average probability": "平均概率",
-    "closed-form likelihood": "封闭形式 likelihood"
+    "closed-form likelihood": "封闭形式 likelihood",
+    "posterior beta distribution": "beta 分布后验",
+    "empirical admission proportion": "经验录取比例",
+    "predicted count interval": "预测计数区间",
+    "gamma-Poisson regression": "gamma-Poisson 回归",
+    "rate distribution": "率分布",
+    "pure Poisson process": "纯 Poisson 过程",
+    "rate variation": "率变异"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "blavaan", "AIC", "DIC", "WAIC", "BIC", "PSIS-LOO", "MCMC", "HMC"

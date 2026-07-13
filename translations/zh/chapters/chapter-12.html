@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-12" data-source-pages="397-399">
-  <header class="chapter-header"><p class="eyebrow">第十二章</p><h1>怪物与混合</h1><p class="source-range">当前译稿对应原书 PDF 第 397–399 页</p></header>
+<article class="book-article" data-chapter="chapter-12" data-source-pages="397-402">
+  <header class="chapter-header"><p class="eyebrow">第十二章</p><h1>怪物与混合</h1><p class="source-range">当前译稿对应原书 PDF 第 397–402 页</p></header>
 
   <div class="chapter-introduction" id="intro-12">
     <p>在夏威夷传说中，Nanaue 是一条爱上人类女子的鲨鱼之子。他长成一个凶残的男人，背部中央还长着一张鲨鱼嘴。在希腊传说中，Minotaur 是牛头人身的怪物，由一名人类女子与一头大白牛所生。Gryphon 是一种半鹰半狮的传说怪物。毛利传说中的 Taniwha 则兼具蛇、鸟乃至鲨鱼的特征，很像中国与欧洲神话里的龙。</p>
@@ -30,7 +30,7 @@ curve( dbeta2(x,pbar,theta) , from=0 , to=1 ,
       <p>结果 <span class="math-inline"><var>A</var></span> 是 <code>admit</code>，规模 <span class="math-inline"><var>N</var></span> 是 <code>applications</code>，<code>gid[i]</code> 是性别编号：男性为 1，女性为 2。这里为 <span class="math-inline"><var>θ</var></span> 的先验引入了一个小技巧。我们希望假设离散度至少为 2，也就是最低为平坦分布；小于 2 会把概率堆到 0 和 1，大于 2 则越来越集中于单一数值。什么分布的最小值是 2？我们可以自己造一个。指数分布的最小值是 0，但给任何服从指数分布的变量加 2，新变量的最小值就是 2。因此，上面的模型先令 <span class="math-inline"><var>ϕ</var></span> 服从指数分布，再定义 <span class="math-inline"><var>θ</var> = <var>ϕ</var> + 2</span>。</p>
       <p class="source-erratum" id="erratum-12-and-then"><strong>原文未完句：</strong>上述说明之后，原书另印有一句孤立的 “And then”，没有后续内容；译稿不补写不存在的句子。</p>
       <p>下面的代码载入数据，再用 <code>ulam</code> 拟合 beta-binomial 模型：</p>
-      <figure class="code-listing" id="code-12-2"><figcaption>R 代码 12.2（跨页，当前为 PDF 第 399 页可见部分）</figcaption><pre><code>library(rethinking)
+      <figure class="code-listing" id="code-12-2"><figcaption>R 代码 12.2</figcaption><pre><code>library(rethinking)
 data(UCBadmit)
 d &lt;- UCBadmit
 d$gid &lt;- ifelse( d$applicant.gender=="male" , 1L , 2L )
@@ -41,12 +41,76 @@ m12.1 &lt;- ulam(
         logit(pbar) &lt;- a[gid],
         a[gid] ~ dnorm( 0 , 1.5 ),
         transpars&gt; theta &lt;&lt;- phi + 2.0,
-        phi ~ dexp(1)</code></pre></figure>
-      <p class="continuation-note">代码 12.2 的闭合、beta-binomial 后验结果与图 12.1 将从原书 PDF 第 400 页继续。</p>
+        phi ~ dexp(1)
+    ), data=dat , chains=4 )</code></pre></figure>
+      <p>我用 <code>transpars&gt;</code>（transformed parameters）标记 <code>theta</code>，这样 Stan 就会把它返回到样本中。先快速查看后验均值，同时计算两个性别之间的对比：</p>
+      <figure class="code-listing" id="code-12-3"><figcaption>R 代码 12.3</figcaption><pre><code>post &lt;- extract.samples( m12.1 )
+post$da &lt;- post$a[,1] - post$a[,2]
+precis( post , depth=2 )</code></pre><pre class="code-output"><code>ulam posterior: 2000 samples from m12.1
+       mean   sd 5.5% 94.5%   histogram
+a[1]  -0.45 0.41 -1.1  0.21       ▁▁▇▇▂▁
+a[2]  -0.34 0.40 -1.0  0.27       ▁▁▃▇▂▁
+phi    1.05 0.78  0.1  2.44 ▇▇▅▃▂▁▁▁▁▁▁
+theta  3.05 0.78  2.1  4.44 ▇▇▅▃▂▁▁▁▁▁▁
+da    -0.11 0.57 -1.0  0.76 ▁▁▁▃▇▇▂▁▁▁</code></pre></figure>
+      <p>参数 <code>a[1]</code> 是男性申请者录取概率的对数赔率，低于女性申请者的 <code>a[2]</code>。但二者之差 <code>da</code> 非常不确定；几乎没有证据表明男女录取率存在差异。回想上一章：忽略院系的二项模型会产生误导，因为从性别经院系到录取之间存在一条间接路径；这个混杂虚假地暗示女性申请者录取赔率较低。但上面的模型虽然也没有院系变量，却没有受到这种混杂。为什么？</p>
+      <p>Beta-binomial 模型允许数据中的每一行——院系与性别的每一种组合——拥有自己未观测的截距。这些未观测截距来自均值为 <span class="math-inline"><var>p̄</var><sub>i</sub></span>、离散度为 <span class="math-inline"><var>θ</var></span> 的 beta 分布。要看看这个 beta 分布长什么样，只需把它画出来：</p>
+      <figure class="code-listing" id="code-12-4"><figcaption>R 代码 12.4</figcaption><pre><code>gid &lt;- 2
+# 绘制后验均值 beta 分布
+curve( dbeta2(x,mean(logistic(post$a[,gid])),mean(post$theta)) , from=0 , to=1 ,
+    ylab="Density" , xlab="probability admit", ylim=c(0,3) , lwd=2 )
+
+# 绘制从后验中抽出的 50 条 beta 分布
+for ( i in 1:50 ) {
+    p &lt;- logistic( post$a[i,gid] )
+    theta &lt;- post$theta[i]
+    curve( dbeta2(x,p,theta) , add=TRUE , col=col.alpha("black",0.2) )
+}
+mtext( "distribution of female admission rates" )</code></pre></figure>
+      <figure class="book-figure beta-binomial-figure" id="fig-12-1"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的 beta-binomial 后验分布与后验验证双面板图"><img src="/media/chapter-12-beta-binomial.svg" alt="左图为女性申请者录取概率的后验 beta 分布，右图为十二个案例的经验录取比例、平均概率区间与预测计数区间"></div><p class="scroll-hint">图较宽，可横向滚动比较 beta 分布与后验验证。</p><figcaption><strong>图 12.1：</strong>左：模型 <code>m12.1</code> 的 beta 分布后验。粗线是后验均值 beta 分布，浅色曲线表示从后验中抽出的 50 组 <span class="math-inline"><var>p̄</var></span> 与 <span class="math-inline"><var>θ</var></span>。右：模型 <code>m12.1</code> 的后验验证检查。由于左图 beta 分布非常分散，原始数据（蓝点）落在预测区间内。</figcaption></figure>
+      <p class="source-erratum" id="erratum-12-fig-12-1-curves"><strong>原文数量不一致：</strong>代码 12.4 与正文都说明抽取 50 条 beta 分布，原书图 12.1 图注却写成 100 组；译图按代码与正文绘制 50 条。</p>
+      <p>图 12.1 左侧展示结果。请记住，后验分布会同时评定每一种参数组合的可信程度。图中给出从后验抽取的 50 组 <span class="math-inline"><var>p̄</var></span> 与 <span class="math-inline"><var>θ</var></span>；粗线对应参数后验均值的 beta 分布。中心趋势偏向较低的录取概率，不到 0.5；但最可信的分布仍允许某些院系录取大多数申请者。模型所做的，就是容纳院系之间的巨大变异，因此不再被院系变异诱骗，对性别作出错误推断。</p>
+      <p>为了理解录取概率的 beta 分布怎样影响预测录取人数，再看后验验证检查：</p>
+      <figure class="code-listing" id="code-12-5"><figcaption>R 代码 12.5</figcaption><pre><code>postcheck( m12.1 )</code></pre></figure>
+      <p>结果在图 12.1 右侧。纵轴是横轴各案例的预测录取比例。蓝点表示数据各行的经验录取比例；空心圆是 <span class="math-inline"><var>p̄</var></span> 的后验均值及 89% 百分位区间；加号标记预测录取计数的 89% 区间。这里预期存在大量离散。模型看不见院系，因为我们没有告诉它院系信息；但它能看到各行之间的异质性，并用 beta 分布估计和预期这种异质性。</p>
+    </section>
+
+    <section id="sec-12-1-2"><h3>12.1.2 负二项或 gamma-Poisson</h3>
+      <p>负二项模型，更有用的名称是 gamma-Poisson 模型，它假设每个 Poisson 计数观测都有自己的率。<sup id="note-177-ref"><a href="#note-177">177</a></sup>模型估计一个 Gamma 分布的形状，用它描述各案例的 Poisson 率；预测变量调整的是这个分布的形状，而不是每个观测的期望值。Gamma-Poisson 模型与 beta-binomial 模型非常相似，只是用率（或期望值）的 Gamma 分布替代成功概率的 beta 分布。为什么是 Gamma？仍然因为数学上方便：把 Poisson 概率与服从 Gamma 分布的率混合起来时，存在简单的解析表达式。Gamma-Poisson 模型非常有用，因为 Poisson 分布非常窄——还记得，它的方差必须等于均值。</p>
+      <p>Gamma-Poisson 分布有两个参数：一个控制均值（率），另一个控制各案例率的离散度（尺度）：</p>
+      <div class="equation-block wallis-equation" id="eq-12-gamma-poisson"><span class="math-line"><var>y</var><sub>i</sub> ∼ Gamma-Poisson(<var>λ</var><sub>i</sub>, <var>ϕ</var>)</span></div>
+      <p>参数 <span class="math-inline"><var>λ</var></span> 可以像普通 Poisson 的率一样处理；参数 <span class="math-inline"><var>ϕ</var></span> 必须为正，并控制方差。Gamma-Poisson 的方差是 <span class="math-inline"><var>λ</var> + <var>λ</var><sup>2</sup>/<var>ϕ</var></span>，所以 <span class="math-inline"><var>ϕ</var></span> 越大，分布就越像纯 Poisson 过程。</p>
+      <p>用上一章的大洋洲工具例子看看它怎样工作。那里有一个高影响力点 Hawaii；在对应的 gamma-Poisson 模型中，它的影响力会小得多。为什么？因为 gamma-Poisson 预期均值率周围有更多变异，所以 Hawaii 对回归趋势的拉动会减弱。</p>
+      <figure class="code-listing" id="code-12-6"><figcaption>R 代码 12.6</figcaption><pre><code>library(rethinking)
+data(Kline)
+d &lt;- Kline
+d$P &lt;- standardize( log(d$population) )
+d$contact_id &lt;- ifelse( d$contact=="high" , 2L , 1L )
+
+dat2 &lt;- list(
+    T = d$total_tools,
+    P = d$population,
+    cid = d$contact_id )
+
+m12.2 &lt;- ulam(
+    alist(
+        T ~ dgampois( lambda , phi ),
+        lambda &lt;- exp(a[cid])*P^b[cid] / g,
+        a[cid] ~ dnorm(1,1),
+        b[cid] ~ dexp(1),
+        g ~ dexp(1),
+        phi ~ dexp(1)
+    ), data=dat2 , chains=4 , log_lik=TRUE )</code></pre></figure>
+      <p>新的 gamma-Poisson 模型对原始数据的后验预测显示在图 12.2；旁边放着上一章的纯 Poisson 模型 <code>m11.11</code> 作为比较。Hawaii 在纯 Poisson 模型中影响力很高，几乎独自把低接触率趋势向下拉。在新模型中，Hawaii 仍有影响力，但对趋势的作用小得多；高、低接触率趋势现在相似得多，很难可靠地区分。原因是 gamma-Poisson 模型预期率会变化，而估计出的变异相当大。人口仍与工具总数强烈相关，但接触率的影响已经大幅减弱。</p>
+    </section>
+
+    <section id="sec-12-1-3"><h3>12.1.3 过度离散、熵与信息准则</h3>
+      <p>Beta-binomial 与 gamma-Poisson 模型，分别在与普通二项分布和 Poisson 分布相同的约束下达到最大熵。它们只是试图解释概率中未观测的异质性——</p>
+      <p class="continuation-note">率的未观测异质性、图 12.2、信息准则注意事项与“连续混合”框将从原书 PDF 第 403 页继续。</p>
     </section>
   </section>
 
-  <section class="endnotes" id="chapter-12-notes" role="doc-endnotes"><h2>尾注</h2><ol start="175"><li id="note-175">Williams（1975，1982）。Bolker（2008）在生态数据语境中给出了清晰介绍。 <a class="backref" href="#note-175-ref" aria-label="返回正文">↩</a></li><li id="note-176">另一种很常见的参数化是 <span class="math-inline"><var>α</var> = <var>p̄θ</var></span> 与 <span class="math-inline"><var>β</var> = (1 − <var>p̄</var>)<var>θ</var></span>。<span class="math-inline"><var>p̄</var></span> 与 <span class="math-inline"><var>θ</var></span> 的版本更适合建模，因为我们通常希望把线性模型连接到 beta 分布的中心趋势，而 <span class="math-inline"><var>p̄</var></span> 正是中心趋势的一种度量。 <a class="backref" href="#note-176-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section class="endnotes" id="chapter-12-notes" role="doc-endnotes"><h2>尾注</h2><ol start="175"><li id="note-175">Williams（1975，1982）。Bolker（2008）在生态数据语境中给出了清晰介绍。 <a class="backref" href="#note-175-ref" aria-label="返回正文">↩</a></li><li id="note-176">另一种很常见的参数化是 <span class="math-inline"><var>α</var> = <var>p̄θ</var></span> 与 <span class="math-inline"><var>β</var> = (1 − <var>p̄</var>)<var>θ</var></span>。<span class="math-inline"><var>p̄</var></span> 与 <span class="math-inline"><var>θ</var></span> 的版本更适合建模，因为我们通常希望把线性模型连接到 beta 分布的中心趋势，而 <span class="math-inline"><var>p̄</var></span> 正是中心趋势的一种度量。 <a class="backref" href="#note-176-ref" aria-label="返回正文">↩</a></li><li id="note-177">Hilbe（2011）整本书都在讨论 gamma-Poisson 回归。 <a class="backref" href="#note-177-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 12 章 PDF 第 397–399 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。代码 12.2 跨页，下一批从 PDF 第 400 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 12 章 PDF 第 397–402 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 403 页继续。</aside>
 </article>
