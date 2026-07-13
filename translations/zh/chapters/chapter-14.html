@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-14" data-source-pages="465-494">
-  <header class="chapter-header"><p class="eyebrow">第十四章</p><h1>协方差历险</h1><p class="source-range">当前译稿对应原书 PDF 第 465–494 页</p></header>
+<article class="book-article" data-chapter="chapter-14" data-source-pages="465-497">
+  <header class="chapter-header"><p class="eyebrow">第十四章</p><h1>协方差历险</h1><p class="source-range">当前译稿对应原书 PDF 第 465–497 页</p></header>
 
   <div class="chapter-introduction" id="intro-14">
     <p>回想上一章导言中的咖啡机器人（原书第 413 页）。这个机器人被设定为在咖啡馆之间移动、点咖啡，并记录等待时间。上一章的重点是：在咖啡馆之间汇聚信息，能让机器人学得更高效；变化截距正是实现这种汇聚的一种机制。</p>
@@ -614,10 +614,58 @@ Rho_gr[2,1] -0.40 0.20 -0.70 -0.07  1475    1
 Rho_gr[2,2]  1.00 0.00  1.00  1.00  3834    1
 sigma_gr[1]  0.83 0.14  0.64  1.07  2371    1
 sigma_gr[2]  0.42 0.09  0.29  0.57  1251    1</code></pre></figure>
-    <p class="continuation-note">给予—接受相关的解释与住户后验预测，将从原书 PDF 第 495 页继续。</p>
+    <p>与其他含协方差矩阵的模型一样，对角单元格恒为 1，可以忽略输出中的这些行。<code>Rho_gr[1,2]</code> 与 <code>Rho_gr[2,1]</code> 实际上是同一个参数，因为矩阵对称。一般给予与接受之间的相关为负，89% 相容区间约从 −0.7 到 −0.1；这意味着在所有二元组中给得更多的人，往往收得更少。标准差 <code>sigma_gr[1]</code> 与 <code>sigma_gr[2]</code> 清楚表明，给予率的变异大于接受率。</p>
+    <aside class="source-erratum" id="erratum-14-social-relations-correlation"><strong>原文说明：</strong>PDF 第 495 页把 “The correlation … is negative” 写成 “The correlated …”，并把复数主语 <code>Eg_mu and Er_mu</code> 接成 “holds”；译稿均按上下文订正。</aside>
+    <p>下面绘制这些给予与接受效应，直观看见参数中的协方差结构。我们希望对每户计算跨所有二元组的后验预测给予率与接受率；直接在线性模型中把截距 <code>a</code> 加到每个给予或接受参数即可：</p>
+    <figure class="code-listing" id="code-14-33"><figcaption>R 代码 14.33</figcaption><pre><code>post &lt;- extract.samples( m14.7 )
+g &lt;- sapply( 1:25 , function(i) post$a + post$gr[,i,1] )
+r &lt;- sapply( 1:25 , function(i) post$a + post$gr[,i,2] )
+Eg_mu &lt;- apply( exp(g) , 2 , mean )
+Er_mu &lt;- apply( exp(r) , 2 , mean )</code></pre></figure>
+    <p>查看 <code>str(g)</code>，会看到一个 4000 行（样本）× 25 列（住户）的矩阵，即每户给予率的后验分布；<code>r</code> 对接受率也一样。<code>Eg_mu</code> 与 <code>Er_mu</code> 保存结果尺度上的均值，所以先作了指数变换。</p>
+    <p>每个点的两个方向都有不确定性。直接绘制 <code>g</code> 与 <code>r</code> 的列也可以，例如 <code>plot(exp(g[,1]),exp(r[,1]))</code> 会显示第 1 户给予/接受率的后验分布；但图会很乱。在线性模型的潜在尺度上，每户 <var>g</var> 与 <var>r</var> 的二元分布近似 Gaussian，可以用椭圆描述，再把椭圆投影到结果尺度，得到干净的不确定性等高线：</p>
+    <figure class="code-listing" id="code-14-34"><figcaption>R 代码 14.34</figcaption><pre><code>plot( NULL , xlim=c(0,8.6) , ylim=c(0,8.6) , xlab="generalized giving" ,
+    ylab="generalized receiving" , lwd=1.5 )
+abline(a=0,b=1,lty=2)
+
+# 椭圆
+library(ellipse)
+for ( i in 1:25 ) {
+    Sigma &lt;- cov( cbind( g[,i] , r[,i] ) )
+    Mu &lt;- c( mean(g[,i]) , mean(r[,i]) )
+    for ( l in c(0.5) ) {
+        el &lt;- ellipse( Sigma , centre=Mu , level=l )
+        lines( exp(el) , col=col.alpha("black",0.5) )
+    }
+}
+# 住户均值
+points( Eg_mu , Er_mu , pch=21 , bg="white" , lwd=1.5 )</code></pre></figure>
+    <figure class="book-figure social-relations-figure" id="fig-14-9"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的住户给予接受率与二元组效应双面板图"><img src="/media/chapter-14-social-relations.svg" alt="左图二十五户一般给予与接受呈负相关并带百分之五十相容椭圆，右图二元组双向效应强正相关"></div><p class="scroll-hint">图较宽，可横向滚动比较住户总体效应与二元组专属效应。</p><figcaption><strong>图 14.9：</strong>左：排除二元组专属效应后的一般给予与接受预期；每点为一户，椭圆表示 50% 相容区。住户间平均给予与接受呈负关系。右：排除一般给予与接受后的二元组专属效应；控制总体率后，二元组内残余赠礼强烈相关。</figcaption></figure>
+    <p>图 14.9 左侧就是结果。横轴给予、纵轴接受呈负关系，虚线表示两种率相等。给予率最低的住户中，有些接受率最高，很可能反映按需要赠礼；给予率最高的住户也往往接受率最低。这正是 <code>precis</code> 输出中的负相关。给予率的变异也更大，对应两个标准差参数。</p>
+    <p>二元组效应又如何？查看其协方差矩阵：</p>
+    <figure class="code-listing" id="code-14-35"><figcaption>R 代码 14.35</figcaption><pre><code>precis( m14.7 , depth=3 , pars=c("Rho_d","sigma_d") )</code></pre><pre class="code-output"><code>           mean   sd 5.5% 94.5% n_eff Rhat
+Rho_d[1,1] 1.00 0.00 1.00 1.00   NaN  NaN
+Rho_d[1,2] 0.88 0.03 0.83 0.93  1287    1
+Rho_d[2,1] 0.88 0.03 0.83 0.93  1287    1
+Rho_d[2,2] 1.00 0.00 1.00 1.00   NaN  NaN
+sigma_d    1.11 0.06 1.02 1.20  1583    1</code></pre></figure>
+    <p>这里的相关很强且为正，二元组间变异也大于住户给予率的变异。这说明住户对之间相当平衡：控制一般给予与接受后，若一户给得低于平均，另一户很可能也如此。绘制原始二元组效应即可看出模式有多强：</p>
+    <figure class="code-listing" id="code-14-36"><figcaption>R 代码 14.36</figcaption><pre><code>dy1 &lt;- apply( post$d[,,1] , 2 , mean )
+dy2 &lt;- apply( post$d[,,2] , 2 , mean )
+plot( dy1 , dy2 )</code></pre></figure>
+    <p>结果是图 14.9 右侧。这些只是后验均值，每个二元组仍有很大不确定性；但平衡程度惊人。它可能反映控制总体财富后的互惠，也可能反映尚未纳入模型的住户关系类型，例如亲属义务。</p>
+    <p>完整数据包含许多可解释这些效应的协变量：经济活动、关系和住户间距离。像这里这样仅含变化效应的模型可以分解变异，指出重要信号位于何处；但真正目标是向模型加入更多信息，获得某种因果理解。</p>
+    <aside class="rethinking-box" id="rethinking-14-everybody-knows-name"><h3>再思考：人人都知道你的名字</h3><p>赠礼例子是一种社会网络模型。由此看来，当前模型缺少的一个重要特征是社会关系的传递性：若住户 A 与 B 是朋友，而 C 与 B 也是朋友，那么 A 与 C 更可能成为朋友。这不是魔法，只是未观测因素制造相关关系。例如常去同一家酒吧的人往往彼此认识；对推断社会关系成因而言，酒吧就是未测量混杂。能估计并预期传递性的模型会更好，这可用<strong>随机区块模型</strong>实现。不过拟合此类模型需要下一章的一些技术。</p></aside>
   </section>
 
-  <section class="endnotes" id="chapter-14-notes" role="doc-endnotes"><h2>尾注</h2><ol start="194"><li id="note-194">Lewandowski 等（2009）。“LKJ”来自三位作者姓氏的首字母；作者本人把这种方法称为“洋葱法”。关于它在 Bayesian 模型中的用法，可参见最新版 Stan 参考手册的说明。 <a class="backref" href="#note-194-ref" aria-label="返回正文">↩</a></li><li id="note-195">参见 Gelfand 等（1995）以及 Roberts 和 Sahu（1997）。较新的综述可参见 Papaspiliopoulos 等（2007）；以 Hamiltonian Monte Carlo 为重点的讨论可参见 Betancourt 和 Girolami（2013）。 <a class="backref" href="#note-195-ref" aria-label="返回正文">↩</a></li><li id="note-196">参见 Pearl（2011）。 <a class="backref" href="#note-196-ref" aria-label="返回正文">↩</a></li><li id="note-197">参见 Angrist 和 Krueger（1991）。 <a class="backref" href="#note-197-ref" aria-label="返回正文">↩</a></li><li id="note-198">Feyrer 和 Sacerdote（2009）。 <a class="backref" href="#note-198-ref" aria-label="返回正文">↩</a></li><li id="note-199">参见 Caniglia 等（2019）。 <a class="backref" href="#note-199-ref" aria-label="返回正文">↩</a></li><li id="note-200">参见 Angrist 和 Krueger（1995）以及 Kleibergen 和 Zivot（2003）。据作者所知，对参数化工具变量估计量——Bayesian 或其他形式——仍没有系统且有理论依据的理解；这很奇怪，因为 DAG 已提供正式的非参数理论。真实情况可能是：即使 DAG 表明存在工具，估计在实践中也常不可行。 <a class="backref" href="#note-200-ref" aria-label="返回正文">↩</a></li><li id="note-201">参见 Cohen 和 Malloy（2014）。作者从 Alex Chinco 的博客学到这个例子，参见其 2011 年文章。 <a class="backref" href="#note-201-ref" aria-label="返回正文">↩</a></li><li id="note-202">Thistlethwaite 和 Campbell（1960）。 <a class="backref" href="#note-202-ref" aria-label="返回正文">↩</a></li><li id="note-203">参见 Gelman 和 Imbens（2019）给出的尖锐示例与建议。 <a class="backref" href="#note-203-ref" aria-label="返回正文">↩</a></li><li id="note-204">Koster 和 Leckie（2014）。 <a class="backref" href="#note-204-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section id="sec-14-5"><h2>14.5 连续类别与 Gaussian 过程</h2>
+    <p>到目前为止，所有变化效应——无论截距还是斜率——都定义在离散、无序的类别上。例如咖啡馆是独特地点，不存在咖啡馆 1 排在咖啡馆 2 前面的含义；“1”和“2”只是独特事物的标签。蝌蚪池塘、大学院系与单只黑猩猩也一样。为每个集群估计独特参数，可以量化导致集群间变异与集群内观测协变的一些独特特征；跨集群汇聚既提高准确度，也同时描绘变异。</p>
+    <p>但年龄、收入或身高这类连续变异维度呢？同龄人共享某些暴露：听过相同音乐、听说过相同政治人物、经历过相同天气事件。年龄相近的人也共享其中一部分，但程度不如完全同龄者。两个人在年龄、收入、身高或其他背景相似性维度上越不相似，协变就越弱。为所有同龄者估计一个独特变化截距、却忽略年龄相近者应有更相似截距，并不合理；而且样本中很可能每个人的年龄都不同，能利用的只有连续相似度差异。</p>
+    <p>幸运的是，变化效应方法可以推广到这种连续类别。这样既能为任意年龄估计独特截距（或斜率），又把年龄视为连续维度，使相近年龄拥有更相似的截距（或斜率）。一般方法称为 <strong>Gaussian 过程回归</strong>。<sup id="note-205-ref"><a href="#note-205">205</a></sup> 遗憾的是，这个名字完全没有说明它用来做什么、怎样工作。</p>
+    <p class="continuation-note">Gaussian 过程的协方差函数与大洋洲工具空间自相关示例，将从原书 PDF 第 498 页继续。</p>
+  </section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 14 章 PDF 第 465–494 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 495 页继续。</aside>
+  <section class="endnotes" id="chapter-14-notes" role="doc-endnotes"><h2>尾注</h2><ol start="194"><li id="note-194">Lewandowski 等（2009）。“LKJ”来自三位作者姓氏的首字母；作者本人把这种方法称为“洋葱法”。关于它在 Bayesian 模型中的用法，可参见最新版 Stan 参考手册的说明。 <a class="backref" href="#note-194-ref" aria-label="返回正文">↩</a></li><li id="note-195">参见 Gelfand 等（1995）以及 Roberts 和 Sahu（1997）。较新的综述可参见 Papaspiliopoulos 等（2007）；以 Hamiltonian Monte Carlo 为重点的讨论可参见 Betancourt 和 Girolami（2013）。 <a class="backref" href="#note-195-ref" aria-label="返回正文">↩</a></li><li id="note-196">参见 Pearl（2011）。 <a class="backref" href="#note-196-ref" aria-label="返回正文">↩</a></li><li id="note-197">参见 Angrist 和 Krueger（1991）。 <a class="backref" href="#note-197-ref" aria-label="返回正文">↩</a></li><li id="note-198">Feyrer 和 Sacerdote（2009）。 <a class="backref" href="#note-198-ref" aria-label="返回正文">↩</a></li><li id="note-199">参见 Caniglia 等（2019）。 <a class="backref" href="#note-199-ref" aria-label="返回正文">↩</a></li><li id="note-200">参见 Angrist 和 Krueger（1995）以及 Kleibergen 和 Zivot（2003）。据作者所知，对参数化工具变量估计量——Bayesian 或其他形式——仍没有系统且有理论依据的理解；这很奇怪，因为 DAG 已提供正式的非参数理论。真实情况可能是：即使 DAG 表明存在工具，估计在实践中也常不可行。 <a class="backref" href="#note-200-ref" aria-label="返回正文">↩</a></li><li id="note-201">参见 Cohen 和 Malloy（2014）。作者从 Alex Chinco 的博客学到这个例子，参见其 2011 年文章。 <a class="backref" href="#note-201-ref" aria-label="返回正文">↩</a></li><li id="note-202">Thistlethwaite 和 Campbell（1960）。 <a class="backref" href="#note-202-ref" aria-label="返回正文">↩</a></li><li id="note-203">参见 Gelman 和 Imbens（2019）给出的尖锐示例与建议。 <a class="backref" href="#note-203-ref" aria-label="返回正文">↩</a></li><li id="note-204">Koster 和 Leckie（2014）。 <a class="backref" href="#note-204-ref" aria-label="返回正文">↩</a></li><li id="note-205">参见 Neal（1998）这篇高被引综述，其中也有实现说明。 <a class="backref" href="#note-205-ref" aria-label="返回正文">↩</a></li></ol></section>
+
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 14 章 PDF 第 465–497 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 498 页继续。</aside>
 </article>

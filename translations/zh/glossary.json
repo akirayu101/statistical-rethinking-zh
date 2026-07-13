@@ -1193,6 +1193,10 @@
     "SRM": "SRM",
     "generalized giving": "一般给予",
     "generalized receiving": "一般接受",
+    "transitivity": "传递性",
+    "stochastic block model": "随机区块模型",
+    "continuous category": "连续类别",
+    "Gaussian process regression": "Gaussian 过程回归",
     "cross-classified varying slopes model": "交叉分类变化斜率模型"
   },
   "protected": [

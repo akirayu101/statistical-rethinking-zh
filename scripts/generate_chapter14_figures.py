@@ -17,6 +17,7 @@ OUT5 = ROOT / "translations" / "zh" / "media" / "chapter-14-cafe-shrinkage.svg"
 OUT6 = ROOT / "translations" / "zh" / "media" / "chapter-14-neff-comparison.svg"
 OUT7 = ROOT / "translations" / "zh" / "media" / "chapter-14-chimp-predictions.svg"
 OUT8 = ROOT / "translations" / "zh" / "media" / "chapter-14-dyadic-gifts.svg"
+OUT9 = ROOT / "translations" / "zh" / "media" / "chapter-14-social-relations.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 BLUE = "#6670ee"
@@ -583,6 +584,35 @@ def figure_14_8() -> None:
     OUT8.write_text("\n".join(svg), encoding="utf-8")
 
 
+def figure_14_9() -> None:
+    """Rebuild generalized household and dyad-effect panels."""
+    width, height = 1200, 600
+    panels = [(80.0, 70.0, 560.0, 500.0), (700.0, 70.0, 1180.0, 500.0)]
+    giving = [0.35,0.55,0.7,0.9,1.05,1.2,1.35,1.5,1.7,1.9,2.1,2.3,2.5,2.8,3.1,3.4,3.7,4.0,4.4,4.8,5.2,5.8,6.5,7.3,8.0]
+    receiving = [5.6,4.7,4.1,3.8,3.3,3.0,3.4,2.8,2.6,2.3,2.5,2.1,2.0,1.9,1.7,1.8,1.5,1.4,1.35,1.25,1.2,1.05,.95,.9,.8]
+    def left_xy(x: float, y: float) -> tuple[float,float]:
+        x0,y0,x1,y1=panels[0]; return x0+x/8.6*(x1-x0), y1-y/8.6*(y1-y0)
+    def right_xy(x: float, y: float) -> tuple[float,float]:
+        x0,y0,x1,y1=panels[1]; return x0+(x+2.2)/5.4*(x1-x0), y1-(y+2.2)/5.4*(y1-y0)
+    svg=[f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">','<title>图 14.9：住户给予接受率与二元组效应</title>','<desc>左图显示二十五户一般给予与接受的负关系以及百分之五十相容椭圆；右图显示三百个二元组两个方向效应的强正相关。</desc>','<rect width="1200" height="600" fill="#fff"/>']
+    for x0,y0,x1,y1 in panels: svg.append(f'<rect x="{x0}" y="{y0}" width="{x1-x0}" height="{y1-y0}" fill="#fff" stroke="{INK}" stroke-width="1.5"/>')
+    a,b=left_xy(0,0),left_xy(8.6,8.6); svg.append(f'<line x1="{a[0]:.1f}" y1="{a[1]:.1f}" x2="{b[0]:.1f}" y2="{b[1]:.1f}" stroke="{INK}" stroke-width="2" stroke-dasharray="10 8"/>')
+    for i,(xv,yv) in enumerate(zip(giving,receiving)):
+        x,y=left_xy(xv,yv); rx=12+3*(i%3); ry=22-2*(i%4)
+        svg.extend([f'<ellipse cx="{x:.1f}" cy="{y:.1f}" rx="{rx}" ry="{ry}" fill="none" stroke="#777b75" stroke-width="1.5" opacity="0.65"/>',f'<circle cx="{x:.1f}" cy="{y:.1f}" r="5" fill="#fff" stroke="{INK}" stroke-width="2"/>'])
+    rng=random.Random(1490)
+    for _ in range(300):
+        x=rng.gauss(0.15,0.95); y=0.88*x+rng.gauss(0,0.35); px,py=right_xy(x,y)
+        svg.append(f'<circle cx="{px:.1f}" cy="{py:.1f}" r="3.3" fill="{BLUE}" opacity="0.58"/>')
+    for panel_index,mapper,ticks in [(0,left_xy,[0,2,4,6,8]),(1,right_xy,[-2,-1,0,1,2,3])]:
+        x0,y0,x1,y1=panels[panel_index]
+        for v in ticks:
+            x,_=mapper(v,0); _,y=mapper(0,v)
+            svg.extend([f'<line x1="{x:.1f}" y1="{y1}" x2="{x:.1f}" y2="{y1+6}" stroke="{INK}"/>',text(x,y1+28,str(v),size=16,anchor="middle"),f'<line x1="{x0-6}" y1="{y:.1f}" x2="{x0}" y2="{y:.1f}" stroke="{INK}"/>',text(x0-12,y+5,str(v),size=16,anchor="end")])
+    svg.extend([text(320,565,"一般给予",size=20,anchor="middle",weight=600),text(26,285,"一般接受",size=20,anchor="middle",weight=600,rotate=-90),text(940,565,"二元组中的住户 A",size=20,anchor="middle",weight=600),text(645,285,"二元组中的住户 B",size=20,anchor="middle",weight=600,rotate=-90),'</svg>'])
+    OUT9.write_text("\n".join(svg),encoding="utf-8")
+
+
 def main() -> None:
     figure_14_1()
     figure_14_2()
@@ -592,6 +622,7 @@ def main() -> None:
     figure_14_6()
     figure_14_7()
     figure_14_8()
+    figure_14_9()
     print(OUT1)
     print(OUT2)
     print(OUT3)
@@ -600,6 +631,7 @@ def main() -> None:
     print(OUT6)
     print(OUT7)
     print(OUT8)
+    print(OUT9)
 
 
 if __name__ == "__main__":
