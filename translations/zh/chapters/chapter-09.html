@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-09" data-source-pages="285-320">
-  <header class="chapter-header"><p class="eyebrow">第九章</p><h1>马尔可夫链蒙特卡洛</h1><p class="source-range">当前译稿对应原书 PDF 第 285–320 页</p></header>
+<article class="book-article" data-chapter="chapter-09" data-source-pages="285-322">
+  <header class="chapter-header"><p class="eyebrow">第九章</p><h1>马尔可夫链蒙特卡洛</h1><p class="source-range">完整译稿对应原书 PDF 第 285–322 页</p></header>
 
   <p>在西方历史的大部分时期，偶然性一直扮演反派。古罗马把偶然性人格化为残酷命运女神福尔图娜，她转动着（厄）运之轮。与她相对而坐的是智慧与理解女神密涅瓦。只有绝望之人才会向福尔图娜祈祷，所有人则都会恳求密涅瓦相助。科学当然属于密涅瓦的领域，那里没有福尔图娜可以发挥的有益作用。</p>
   <p>但到了 20 世纪初，福尔图娜与密涅瓦成了合作者。科学家开始出版随机数表，把偶然性的工具用于认识世界。偶然与智慧从此携手；“理解偶然性能够帮助我们获得智慧”这个观念，已很少让人困惑。从天气预报、金融到演化生物学，各领域都由随机过程研究所主导。<sup id="note-137-ref"><a href="#note-137">137</a></sup></p>
@@ -581,13 +581,29 @@ d &lt;- data.frame(height,leg_left,leg_right)</code></pre></figure>
     ) ,
     data=d, chains=4,
     start=list(a=10,bl=0,br=0.1,sigma=1) )</code></pre></figure>
-        <p>把上述代码产生的后验分布，与把 <code>br</code> 的先验改成严格为正后得到的后验分布作比较。</p>
-        <p class="continuation-note">严格为正的 <code>br</code> 先验代码、9H3 的后续问题与余下困难题将在原书 PDF 第 321 页继续。</p>
+        <p>把上述代码产生的后验分布，与把 <code>br</code> 的先验改成严格为正后得到的后验分布作比较：</p>
+        <figure class="code-listing" id="code-9-31"><figcaption>R 代码 9.31</figcaption><pre><code>m5.8s2 &lt;- ulam(
+    alist(
+        height ~ dnorm( mu , sigma ) ,
+        mu &lt;- a + bl*leg_left + br*leg_right ,
+        a ~ dnorm( 10 , 100 ) ,
+        bl ~ dnorm( 2 , 10 ) ,
+        br ~ dnorm( 2 , 10 ) ,
+        sigma ~ dexp( 1 )
+    ) ,
+    data=d, chains=4,
+    constraints=list(br="lower=0"),
+    start=list(a=10,bl=0,br=0.1,sigma=1) )</code></pre></figure>
+        <p>注意其中的 <code>constraints</code> 列表。它把 <code>br</code> 的先验分布约束为只在零以上具有正概率。换句话说，这项先验确保 <code>br</code> 的后验分布在零以下没有任何概率质量。</p>
+        <p>比较 <code>m5.8s</code> 与 <code>m5.8s2</code> 的两个后验分布。两个 beta 参数的后验分布分别发生了什么变化？你能解释改变先验为何会引起这种变化吗？</p>
       </li>
+      <li id="exercise-9h4"><strong>9H4.</strong> 对上一题拟合的两个模型，使用 WAIC 或 PSIS 比较各自的有效参数个数。你需要设置 <code>log_lik=TRUE</code>，让 <code>ulam()</code> 计算 WAIC 和 PSIS 都需要的项。哪个模型的有效参数更多？为什么？</li>
+      <li id="exercise-9h5"><strong>9H5.</strong> 修改本章的 Metropolis 算法代码，使其能够处理岛屿人口分布不同于岛屿编号的情况；也就是说，岛屿编号不再等于其人口。</li>
+      <li id="exercise-9h6"><strong>9H6.</strong> 修改本章的 Metropolis 算法代码，为第 2 章的抛地球数据与模型编写你自己的简单 MCMC 估计器。</li>
     </ol>
   </section>
 
   <section class="endnotes" id="chapter-09-notes" role="doc-endnotes"><h2>尾注</h2><ol start="137"><li id="note-137">关于这段历史的更多内容，可参见 Gigerenzer 等（1990）的导论。另见 Rao（1997），其中展示了一本随机数表的示例页，并对这场文化转变作了类似评论。 <a class="backref" href="#note-137-ref" aria-label="返回正文">↩</a></li><li id="note-138">“旅行者”是两种常见隐喻之一；另一种是登山者通过随机跳跃绘制山脉地图。Kruschke（2011）用一位在不同地点筹款的政治人物讲了一个很相似的故事。Kruschke 的书非常出色，风格与覆盖范围和本书颇为不同，因此能通过不同视角和另一组例子，为读者带来许多额外价值。 <a class="backref" href="#note-138-ref" aria-label="返回正文">↩</a></li><li id="note-139">Metropolis 等（1953）。算法以论文第一作者命名，但尚不清楚每位合著者怎样参与了算法的发现与实现。其他作者包括以“氢弹之父”闻名的 Edward Teller、同样著名的物理学家 Marshall Rosenbluth，以及两人的妻子 Augusta 和 Arianna；两位女士完成了大量计算机编程。Nicholas Metropolis 领导这个研究组，而他们的工作又以此前和 Stanisław Ulam 合作的研究为基础：Metropolis 与 Ulam（1949）。 <a class="backref" href="#note-139-ref" aria-label="返回正文">↩</a></li><li id="note-140">Hastings（1970）。 <a class="backref" href="#note-140-ref" aria-label="返回正文">↩</a></li><li id="note-141">最初的论文是 Geman 与 Geman（1984），另见 Casella 与 George（1992）。注意，Gibbs 抽样以统计物理学奠基人之一、物理学家兼数学家 J. W. Gibbs 命名；但 Gibbs 早在 1903 年就已去世，远早于 Metropolis 算法的发明。这个策略以 Gibbs 命名，既是为了纪念他，也因为算法与统计物理学的联系。 <a class="backref" href="#note-141-ref" aria-label="返回正文">↩</a></li><li id="note-142">Jaynes（2003）第 16 章。 <a class="backref" href="#note-142-ref" aria-label="返回正文">↩</a></li><li id="note-143">参见 Neal（2012）与 Betancourt（2017）。 <a class="backref" href="#note-143-ref" aria-label="返回正文">↩</a></li><li id="note-144">严格说并非总动量，而是动量平方和：<span class="math-inline"><var>K</var> = ∑<sub><var>i</var></sub> <var>p</var><sub><var>i</var></sub><sup>2</sup>/2</span>，其中 <span class="math-inline"><var>p</var></span> 是动量值向量。这个表达式来自能量守恒，后面讨论发散转移时会再谈。 <a class="backref" href="#note-144-ref" aria-label="返回正文">↩</a></li><li id="note-145">参见 Hoffman 与 Gelman（2011），以及 Stan 用户手册中的更多细节。 <a class="backref" href="#note-145-ref" aria-label="返回正文">↩</a></li><li id="note-146">见 Neal（2012）中的代码。 <a class="backref" href="#note-146-ref" aria-label="返回正文">↩</a></li><li id="note-147">关于一段兼顾计算实践与数学基础的简明 MCMC 历史，可参见 Robert 与 Casella（2011）。 <a class="backref" href="#note-147-ref" aria-label="返回正文">↩</a></li><li id="note-148">参见 Vehtari 等（2019a），<span class="url-text">https://arxiv.org/abs/1903.08008</span>。 <a class="backref" href="#note-148-ref" aria-label="返回正文">↩</a></li><li id="note-149">更多细节和背景文献可参见 Brooks 等（2011）第 6 章。 <a class="backref" href="#note-149-ref" aria-label="返回正文">↩</a></li><li id="note-150">Gelman 与 Rubin（1992）。 <a class="backref" href="#note-150-ref" aria-label="返回正文">↩</a></li><li id="note-151">Gelman（2008）：<span class="url-text">https://andrewgelman.com/2008/05/13/the_folk_theore/</span>。 <a class="backref" href="#note-151-ref" aria-label="返回正文">↩</a></li><li id="note-152">例如，2018 年一篇发表于高影响力期刊的论文，把结论建立在 500 万个样本的链上，但有效样本数（<code>n_eff</code>）只有 66。参见 Muñoz-Rodríguez 等（2018），以及 <span class="url-text">https://github.com/mmatschiner/kumara</span> 上的批判性分析。 <a class="backref" href="#note-152-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 285–320 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 321 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 9 章 PDF 第 285–322 页已完成整章翻译、逐页核对、结构契约检查与桌面/移动端全章验收，达到整章 verified；第 322 页为空白保留页。</aside>
 </article>
