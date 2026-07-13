@@ -1158,7 +1158,11 @@
     "standardized intercept": "标准化截距",
     "posterior prediction for same clusters": "对相同集群作后验预测",
     "posterior prediction for new clusters": "对新集群作后验预测",
-    "average actor": "平均行动者"
+    "average actor": "平均行动者",
+    "marginal of actor": "对行动者取边际",
+    "post-stratification": "后分层",
+    "multilevel regression with post-stratification": "带后分层的多层回归",
+    "MRP": "MRP"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "blavaan", "AIC", "DIC", "WAIC", "BIC", "PSIS-LOO", "MCMC", "HMC"

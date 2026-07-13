@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-13" data-source-pages="429-458">
-  <header class="chapter-header"><p class="eyebrow">第十三章</p><h1>有记忆的模型</h1><p class="source-range">当前译稿对应原书 PDF 第 429–458 页</p></header>
+<article class="book-article" data-chapter="chapter-13" data-source-pages="429-461">
+  <header class="chapter-header"><p class="eyebrow">第十三章</p><h1>有记忆的模型</h1><p class="source-range">当前译稿对应原书 PDF 第 429–461 页</p></header>
 
   <div class="chapter-introduction" id="intro-13">
     <p>1985 年，Clive Wearing 失去了心智，却没有失去音乐。<sup id="note-185-ref"><a href="#note-185">185</a></sup> Wearing 是音乐学家，也是一位出色的音乐家；但引起唇疱疹的单纯疱疹病毒钻进了他的大脑，侵蚀了海马体。结果是慢性<strong>顺行性遗忘</strong>：他无法形成新的长期记忆。他仍记得怎样弹钢琴，却不记得自己五分钟前刚弹过。Wearing 如今活在一个个瞬间里，对几分钟前以外的过去一无所知；每一杯咖啡都是他有生以来的第一杯。</p>
@@ -512,17 +512,62 @@ p_ci &lt;- apply( p_raw , 2 , PI )</code></pre></figure>
     return( inv_logit(logodds) )
 }</code></pre></figure>
     <p>注意，这个函数忽略了 <code>block</code>。因为我们正在外推到新区组，所以假设平均区组效应约为零（样本中确实如此）。和之前一样，调用并汇总这个函数：</p>
-    <figure class="code-listing" id="code-13-37"><figcaption>R 代码 13.37（未完）</figcaption><pre><code>post &lt;- extract.samples(m13.4)
+    <figure class="code-listing" id="code-13-37"><figcaption>R 代码 13.37</figcaption><pre><code>post &lt;- extract.samples(m13.4)
 p_raw &lt;- sapply( 1:4 , function(i) p_link_abar( i ) )
 p_mu &lt;- apply( p_raw , 2 , mean )
 p_ci &lt;- apply( p_raw , 2 , PI )
 
 plot( NULL , xlab="treatment" , ylab="proportion pulled left" ,
-    ylim=c(0,1) , xaxt="n" , xlim=c(1,4) )</code></pre></figure>
-    <p class="continuation-note">代码 13.37 的绘图尾部、新行动者模拟与图 13.7 将从原书 PDF 第 459 页继续。</p>
+    ylim=c(0,1) , xaxt="n" , xlim=c(1,4) )
+axis( 1 , at=1:4 , labels=c("R/N","L/N","R/P","L/P") )
+lines( 1:4 , p_mu )
+shade( p_ci , 1:4 )</code></pre></figure>
+    <p>结果显示在图 13.7 左侧。灰色区域是截距取平均值的行动者之 89% 相容区间。这种计算很容易看清 <code>prosoc_left</code> 的影响，也呈现了平均值位置的不确定性，却没有显示行动者之间的变异。</p>
+    <p>若要显示行动者之间的变异，计算中就必须使用 <code>sigma_a</code>。先用 <code>rnorm</code>，以均值 <code>a_bar</code>、标准差 <code>sigma_a</code> 抽取一些随机黑猩猩；再写一个 link 函数，引用这些模拟黑猩猩，而不是后验里的个体。重要的是在 link 函数外部抽取黑猩猩，因为无论考察哪种处理，都要引用同一个模拟个体：</p>
+    <figure class="code-listing" id="code-13-38"><figcaption>R 代码 13.38</figcaption><pre><code>a_sim &lt;- with( post , rnorm( length(post$a_bar) , a_bar , sigma_a ) )
+p_link_asim &lt;- function( treatment ) {
+    logodds &lt;- with( post , a_sim + b[,treatment] )
+    return( inv_logit(logodds) )
+}
+p_raw_asim &lt;- sapply( 1:4 , function(i) p_link_asim( i ) )</code></pre></figure>
+    <p>汇总和绘图方法与之前完全相同，结果见图 13.7 中间。这些后验预测<strong>对行动者取边际</strong>，也就是对行动者之间的不确定性取平均。相比之下，左图只是把行动者设为平均值，忽略行动者之间的变异。</p>
+    <p>学生通常会在这里问：“那我应该用哪一个？”答案是：“视情况而定。”两者都很有用，取决于问题。平均行动者的预测有助于可视化处理的影响；对行动者取边际的预测，则展示模型认为不同黑猩猩之间有多大变异。理解模型时，或许应当把两者都算出来；报告哪一种，则取决于语境。</p>
+    <p>本例还可以做得更好：用一张图同时展示处理效应和行动者变异。先忘掉区间，改为在四种处理中模拟一系列新行动者；为每个行动者画一条横跨全部处理的线，就能同时看见 <code>prosoc_left</code> 的锯齿状影响与个体差异。</p>
+    <p>其实无需新代码，只要使用上面 <code>p_raw_asim</code> 的各行。每一行就是一条趋势，也就是一只模拟黑猩猩。因此，不再用均值和 <code>PI</code> 汇总，而是遍历各行作图：</p>
+    <figure class="code-listing" id="code-13-39"><figcaption>R 代码 13.39</figcaption><pre><code>plot( NULL , xlab="treatment" , ylab="proportion pulled left" ,
+    ylim=c(0,1) , xaxt="n" , xlim=c(1,4) )
+axis( 1 , at=1:4 , labels=c("R/N","L/N","R/P","L/P") )
+for ( i in 1:100 ) lines( 1:4 , p_raw_asim[i,] , col=grau(0.25) , lwd=2 )</code></pre></figure>
+    <figure class="book-figure chimp-predictions-figure" id="fig-13-7"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的黑猩猩多层模型三种后验预测图"><img src="/media/chapter-13-chimp-predictions.svg" alt="左图是平均行动者预测，中图对行动者变异取边际，右图显示一百个模拟行动者的处理趋势"></div><p class="scroll-hint">图较宽，可横向滚动比较平均行动者、边际行动者和模拟行动者。</p><figcaption><strong>图 13.7：</strong>黑猩猩变化截距模型 <code>m13.4</code> 的后验预测分布。实线是后验均值，阴影区域是 80% 百分位区间。左：把变化截距 <code>a</code> 设为均值 <code>a_bar</code>，得到平均行动者的预测；它忽略行动者变异带来的不确定性。中：用行动者间后验标准差 <code>sigma_a</code> 模拟变化截距，得到计入行动者变异的预测。右：从后验抽取独特截距，模拟 100 个行动者；每次模拟在四种处理中保持相同参数值。</figcaption></figure>
+    <aside class="source-erratum" id="erratum-13-figure-13-7-interval"><strong>原文说明：</strong>图前正文称左图灰带为 89% 相容区间，图注则写成 80% 百分位区间；译稿分别保留两处原文数值，并明确记录这处不一致。</aside>
+    <p>结果显示在图 13.7 右侧。每条趋势都是一只模拟行动者，横跨横轴上的四种处理。此图更容易同时看清处理的锯齿状影响，以及 <code>sigma_a</code> 后验分布诱导的行动者变异。</p>
+    <p>还要注意处理与行动者变异之间的交互。因为这是 binomial 模型，受天花板效应与地板效应影响，原则上全部参数都会交互。截距非常大、位于图顶端附近的行动者几乎不受处理影响；它们有很强的用手偏好。截距靠近均值的行动者则会受到处理影响。</p>
+
+    <h3 id="sec-13-5-3">13.5.3 后分层</h3>
+    <p>一个常见问题，是用总体的非代表性样本，为同一总体生成具有代表性的预测。例如，可以调查潜在选民，询问投票意向。这类样本几乎总有偏差——不同群体响应调查的比例不同。因此，若直接使用调查平均值，就会错误预测选举。怎样改进？</p>
+    <p>一种技术是<strong>后分层</strong>。<sup id="note-193-ref"><a href="#note-193">193</a></sup>其思路是拟合一个模型，让总体的每个人口切片——例如年龄、经济和教育变量的一种特定组合——都有自己的投票意向预测；再用完整投票总体的一般人口普查信息，为这些预测重新加权。由于人口类别通常很多，有些类别的样本又很小，后分层经常与多层建模结合；这时也称为 MRP，读作“Mister P”，即“带后分层的多层回归”。</p>
+    <p>它怎样工作？假设每个人口类别 <var>i</var> 都有估计 <var>p</var><sub><var>i</var></sub>，那么对整个总体（不是样本）的后分层预测，只需用各类别人数 <var>N</var><sub><var>i</var></sub> 重新加权：</p>
+    <div class="equation-block wallis-equation" id="eq-13-poststratification"><div><span class="fraction"><span>∑<sub><var>i</var></sub> <var>N</var><sub><var>i</var></sub><var>p</var><sub><var>i</var></sub></span><span>∑<sub><var>i</var></sub> <var>N</var><sub><var>i</var></sub></span></span></div></div>
+    <p>对后验分布中的每个样本都这样计算，就能像往常一样得到预测的后验分布。</p>
+    <p>后分层并非总是有效。当选择偏差本身由关注的结果造成时，它没有正当性。假设响应调查 <var>R</var> 受年龄 <var>A</var> 影响，而年龄影响投票意向 <var>V</var>：<span class="math-inline"><var>R</var> ← <var>A</var> → <var>V</var></span>；这时可以估计 <var>A</var> 对 <var>V</var> 的影响。但若 <span class="math-inline"><var>V</var> → <var>R</var></span>，希望就很渺茫。例如只有支持者回应，那么所有回应者都是 <var>V</var> = 1。按结果变量进行选择，是统计学中最糟糕的事情之一。</p>
   </section>
 
-  <section class="endnotes" id="chapter-13-notes" role="doc-endnotes"><h2>尾注</h2><ol start="185"><li id="note-185">Wearing 的妻子 Deborah 写过一本关于他患病后两人生活的书（Wearing，2005）。他的故事也出现在多部纪录片中；快速搜索互联网还能找到许多新闻报道。 <a class="backref" href="#note-185-ref" aria-label="返回正文">↩</a></li><li id="note-186">Gelman（2005）第 20 页第 6 节列出了一组彼此差异极大的“随机效应”定义，读来颇有趣。 <a class="backref" href="#note-186-ref" aria-label="返回正文">↩</a></li><li id="note-187">Vonesh 与 Bolker（2005）。 <a class="backref" href="#note-187-ref" aria-label="返回正文">↩</a></li><li id="note-188">这里采用 Gelman（2005）的术语。他认为，对大多数人而言，常用的“随机效应”一词几乎无助于理解，反而似乎会助长误解；部分原因是“固定”和“随机”对不同统计学家有不同含义。详见该文第 20–21 页。不过，我完全明白：试图推广 Gelman 的替代术语，基本等同于迎着强风吐口水。 <a class="backref" href="#note-188-ref" aria-label="返回正文">↩</a></li><li id="note-189">“多”也经常指多个线性模型，尤其常见于“层级线性模型”文献。不管怎样，我们谈论的仍是同一种机器人。 <a class="backref" href="#note-189-ref" aria-label="返回正文">↩</a></li><li id="note-190">注意，正则化本身仍有不确定性。所以，这个模型并不完全等同于直接假设一个标准差恒为 1.6 的正则化先验；相反，每个水槽的截距还会对 <span class="math-inline"><var>σ</var></span>（以及 <span class="math-inline"><var>ᾱ</var></span>）的不确定性取平均。 <a class="backref" href="#note-190-ref" aria-label="返回正文">↩</a></li><li id="note-191">这一事实早在人们能够实际使用多层模型之前就已为人所知；可参见 Stein（1955）那篇影响深远的非 Bayes 论文。 <a class="backref" href="#note-191-ref" aria-label="返回正文">↩</a></li><li id="note-192">这个例子来自 Neal（2003）第 732 页。在那篇论文中，他只称之为“漏斗”，魔鬼从未出现。 <a class="backref" href="#note-192-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section id="sec-13-6"><h2>13.6 总结</h2>
+    <p>本章介绍了基础多层模型的动机、实现与解释，重点是变化截距：它们能更好地估计数据各集群之间的基线差异。之所以估计更好，是因为模型同时刻画集群总体，并利用对总体的推断在参数之间汇聚信息。换个角度看，变化截距是自适应正则化的参数，依赖一个本身从数据中学习的先验。所有这些都是下一章的基础；下一章会把这些概念扩展到更多参数类型和模型。</p>
+  </section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 13 章 PDF 第 429–458 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 459 页继续。</aside>
+  <section id="sec-13-7"><h2>13.7 练习</h2>
+    <div class="practice-group" id="practice-13-easy"><h3>简单题</h3>
+      <article class="exercise" id="exercise-13E1"><h4>13E1</h4><p>下列哪个先验会让估计产生更强收缩？（a）<span class="math-inline"><var>α</var><sub>TANK</sub> ∼ Normal(0, 1)</span>；（b）<span class="math-inline"><var>α</var><sub>TANK</sub> ∼ Normal(0, 2)</span>。</p></article>
+      <article class="exercise" id="exercise-13E2"><h4>13E2</h4><p>把下面的模型改写成多层模型。</p><div class="equation-block wallis-equation" id="eq-13E2"><div><var>y</var><sub><var>i</var></sub> ∼ Binomial(1, <var>p</var><sub><var>i</var></sub>)</div><div>logit(<var>p</var><sub><var>i</var></sub>) = <var>α</var><sub>GROUP[<var>i</var>]</sub> + <var>βx</var><sub><var>i</var></sub></div><div><var>α</var><sub>GROUP</sub> ∼ Normal(0, 10)</div><div><var>β</var> ∼ Normal(0, 1)</div></div></article>
+      <article class="exercise" id="exercise-13E3"><h4>13E3</h4><p>把下面的模型改写成多层模型。</p><div class="equation-block wallis-equation" id="eq-13E3"><div><var>y</var><sub><var>i</var></sub> ∼ Normal(<var>μ</var><sub><var>i</var></sub>, <var>σ</var>)</div><div><var>μ</var><sub><var>i</var></sub> = <var>α</var><sub>GROUP[<var>i</var>]</sub> + <var>βx</var><sub><var>i</var></sub></div><div><var>α</var><sub>GROUP</sub> ∼ Normal(0, 10)</div><div><var>β</var> ∼ Normal(0, 1)</div><div><var>σ</var> ∼ HalfCauchy(0, 2)</div></div></article>
+      <article class="exercise" id="exercise-13E4"><h4>13E4</h4><p>写出一个带变化截距的 Poisson 回归数学模型示例。</p></article>
+    </div>
+    <p class="continuation-note">简单题 13E5、中等题与困难题将从原书 PDF 第 462 页继续。</p>
+  </section>
+  </section>
+
+  <section class="endnotes" id="chapter-13-notes" role="doc-endnotes"><h2>尾注</h2><ol start="185"><li id="note-185">Wearing 的妻子 Deborah 写过一本关于他患病后两人生活的书（Wearing，2005）。他的故事也出现在多部纪录片中；快速搜索互联网还能找到许多新闻报道。 <a class="backref" href="#note-185-ref" aria-label="返回正文">↩</a></li><li id="note-186">Gelman（2005）第 20 页第 6 节列出了一组彼此差异极大的“随机效应”定义，读来颇有趣。 <a class="backref" href="#note-186-ref" aria-label="返回正文">↩</a></li><li id="note-187">Vonesh 与 Bolker（2005）。 <a class="backref" href="#note-187-ref" aria-label="返回正文">↩</a></li><li id="note-188">这里采用 Gelman（2005）的术语。他认为，对大多数人而言，常用的“随机效应”一词几乎无助于理解，反而似乎会助长误解；部分原因是“固定”和“随机”对不同统计学家有不同含义。详见该文第 20–21 页。不过，我完全明白：试图推广 Gelman 的替代术语，基本等同于迎着强风吐口水。 <a class="backref" href="#note-188-ref" aria-label="返回正文">↩</a></li><li id="note-189">“多”也经常指多个线性模型，尤其常见于“层级线性模型”文献。不管怎样，我们谈论的仍是同一种机器人。 <a class="backref" href="#note-189-ref" aria-label="返回正文">↩</a></li><li id="note-190">注意，正则化本身仍有不确定性。所以，这个模型并不完全等同于直接假设一个标准差恒为 1.6 的正则化先验；相反，每个水槽的截距还会对 <span class="math-inline"><var>σ</var></span>（以及 <span class="math-inline"><var>ᾱ</var></span>）的不确定性取平均。 <a class="backref" href="#note-190-ref" aria-label="返回正文">↩</a></li><li id="note-191">这一事实早在人们能够实际使用多层模型之前就已为人所知；可参见 Stein（1955）那篇影响深远的非 Bayes 论文。 <a class="backref" href="#note-191-ref" aria-label="返回正文">↩</a></li><li id="note-192">这个例子来自 Neal（2003）第 732 页。在那篇论文中，他只称之为“漏斗”，魔鬼从未出现。 <a class="backref" href="#note-192-ref" aria-label="返回正文">↩</a></li><li id="note-193">早期论文可参见 Gelman 与 Little（1997）；近年的应用与扩展很多，例如 Gao 等（2019）。 <a class="backref" href="#note-193-ref" aria-label="返回正文">↩</a></li></ol></section>
+
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 13 章 PDF 第 429–461 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 462 页继续。</aside>
 </article>

@@ -2258,7 +2258,7 @@
   },
   "chapter-13": {
     "required_status": "in_progress",
-    "source_pages": [429, 458],
+    "source_pages": [429, 461],
     "required_ids": [
       "intro-13",
       "note-185-ref",
@@ -2352,6 +2352,22 @@
       "sec-13-5-2",
       "code-13-36",
       "code-13-37",
+      "code-13-38",
+      "code-13-39",
+      "fig-13-7",
+      "erratum-13-figure-13-7-interval",
+      "sec-13-5-3",
+      "note-193-ref",
+      "eq-13-poststratification",
+      "sec-13-6",
+      "sec-13-7",
+      "practice-13-easy",
+      "exercise-13E1",
+      "exercise-13E2",
+      "eq-13E2",
+      "exercise-13E3",
+      "eq-13E3",
+      "exercise-13E4",
       "chapter-13-notes",
       "note-185",
       "note-186",
@@ -2360,7 +2376,8 @@
       "note-189",
       "note-190",
       "note-191",
-      "note-192"
+      "note-192",
+      "note-193"
     ],
     "required_headings": [
       "有记忆的模型",
@@ -2380,24 +2397,28 @@
       "13.5 多层后验预测",
       "13.5.1 对相同集群作后验预测",
       "13.5.2 对新集群作后验预测",
+      "13.5.3 后分层",
+      "13.6 总结",
+      "13.7 练习",
+      "简单题",
       "尾注"
     ],
     "counts": {
-      "section": 6,
-      "figure": 43,
-      "figure img": 6,
-      ".book-figure": 6,
-      ".code-listing": 37,
+      "section": 8,
+      "figure": 46,
+      "figure img": 7,
+      ".book-figure": 7,
+      ".code-listing": 39,
       ".code-output": 12,
       ".rethinking-box": 5,
       ".overthinking-box": 4,
       ".book-quote": 0,
-      ".equation-block": 11,
-      ".wallis-equation": 11,
-      ".source-erratum": 4,
+      ".equation-block": 14,
+      ".wallis-equation": 14,
+      ".source-erratum": 5,
       ".chapter-introduction": 1,
       ".continuation-note": 1,
-      ".endnotes li": 8
+      ".endnotes li": 9
     }
   }
 }

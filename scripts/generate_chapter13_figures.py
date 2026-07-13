@@ -15,6 +15,7 @@ OUT3 = ROOT / "translations" / "zh" / "media" / "chapter-13-pond-errors.svg"
 OUT4 = ROOT / "translations" / "zh" / "media" / "chapter-13-cluster-variation.svg"
 OUT5 = ROOT / "translations" / "zh" / "media" / "chapter-13-devils-funnel.svg"
 OUT6 = ROOT / "translations" / "zh" / "media" / "chapter-13-neff-comparison.svg"
+OUT7 = ROOT / "translations" / "zh" / "media" / "chapter-13-chimp-predictions.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 BLUE = "#6670ee"
@@ -643,6 +644,86 @@ def figure_13_6() -> None:
     OUT6.write_text("\n".join(svg), encoding="utf-8")
 
 
+def figure_13_7() -> None:
+    """Compare average, marginal, and simulated-actor predictions."""
+    width, height = 1200, 600
+    panels = [(70.0, 90.0, 350.0, 485.0), (460.0, 90.0, 740.0, 485.0), (850.0, 90.0, 1130.0, 485.0)]
+    labels = ["R/N", "L/N", "R/P", "L/P"]
+
+    def mapper(panel: tuple[float, float, float, float]):
+        x0, y0, x1, y1 = panel
+
+        def xy(treatment: float, probability: float) -> tuple[float, float]:
+            return x0 + (treatment - 1.0) / 3.0 * (x1 - x0), y1 - probability * (y1 - y0)
+
+        return xy
+
+    svg = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
+        '<title>图 13.7：黑猩猩多层模型的三种后验预测</title>',
+        '<desc>左图把行动者截距固定在总体均值，显示平均行动者预测；中图对行动者间变异取平均；右图显示一百个从后验总体模拟的新行动者，既呈现处理的锯齿影响，也呈现个体差异。</desc>',
+        '<rect width="1200" height="600" fill="#fff"/>',
+    ]
+    for panel, title in zip(panels, ["平均行动者", "对行动者取边际", "模拟行动者"]):
+        x0, y0, x1, y1 = panel
+        xy = mapper(panel)
+        svg.extend([
+            text_el((x0 + x1) / 2, 45, title, size=22, anchor="middle", weight=600),
+            f'<line x1="{x0}" y1="{y1}" x2="{x1}" y2="{y1}" stroke="{INK}" stroke-width="2"/>',
+            f'<line x1="{x0}" y1="{y0}" x2="{x0}" y2="{y1}" stroke="{INK}" stroke-width="2"/>',
+        ])
+        for value in [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]:
+            _, y = xy(1, value)
+            svg.extend([
+                f'<line x1="{x0 - 6}" y1="{y:.1f}" x2="{x0}" y2="{y:.1f}" stroke="{INK}"/>',
+                text_el(x0 - 12, y + 6, f"{value:.1f}", size=15, anchor="end"),
+            ])
+        for treatment, label in enumerate(labels, start=1):
+            x, _ = xy(treatment, 0)
+            svg.extend([
+                f'<line x1="{x:.1f}" y1="{y1}" x2="{x:.1f}" y2="{y1 + 6}" stroke="{INK}"/>',
+                text_el(x, y1 + 28, label, size=16, anchor="middle"),
+            ])
+        svg.extend([
+            text_el((x0 + x1) / 2, 555, "处理", size=20, anchor="middle"),
+            text_el(x0 - 52, (y0 + y1) / 2, "拉左侧杠杆的比例", size=18, anchor="middle", rotate=-90),
+        ])
+
+    left_xy = mapper(panels[0])
+    left_mean = [0.59, 0.70, 0.52, 0.68]
+    left_low = [0.33, 0.44, 0.27, 0.42]
+    left_high = [0.84, 0.90, 0.76, 0.87]
+    upper = [left_xy(i, value) for i, value in enumerate(left_high, start=1)]
+    lower = [left_xy(i, value) for i, value in reversed(list(enumerate(left_low, start=1)))]
+    area = " ".join(f"{x:.1f},{y:.1f}" for x, y in upper + lower)
+    svg.extend([
+        f'<polygon points="{area}" fill="#cfd1ce" opacity="0.85"/>',
+        polyline([left_xy(i, value) for i, value in enumerate(left_mean, start=1)], fill="none", stroke=INK, stroke_width="3"),
+    ])
+
+    middle_xy = mapper(panels[1])
+    middle_mean = [0.56, 0.63, 0.51, 0.63]
+    middle_low = [0.05, 0.04, 0.02, 0.06]
+    middle_high = [0.96, 0.97, 0.95, 0.98]
+    upper = [middle_xy(i, value) for i, value in enumerate(middle_high, start=1)]
+    lower = [middle_xy(i, value) for i, value in reversed(list(enumerate(middle_low, start=1)))]
+    area = " ".join(f"{x:.1f},{y:.1f}" for x, y in upper + lower)
+    svg.extend([
+        f'<polygon points="{area}" fill="#cfd1ce" opacity="0.85"/>',
+        polyline([middle_xy(i, value) for i, value in enumerate(middle_mean, start=1)], fill="none", stroke=INK, stroke_width="3"),
+    ])
+
+    rng = random.Random(1370)
+    right_xy = mapper(panels[2])
+    treatment_effects = [-0.12, 0.40, -0.48, 0.30]
+    for _ in range(100):
+        intercept = rng.gauss(0.58, 2.0)
+        probabilities = [logistic(intercept + effect) for effect in treatment_effects]
+        svg.append(polyline([right_xy(i, value) for i, value in enumerate(probabilities, start=1)], fill="none", stroke=INK, stroke_width="2", opacity="0.23"))
+    svg.append('</svg>')
+    OUT7.write_text("\n".join(svg), encoding="utf-8")
+
+
 def main() -> None:
     posterior_means, hyperparameters = sample_posterior()
     figure_13_1(posterior_means, hyperparameters)
@@ -651,12 +732,14 @@ def main() -> None:
     figure_13_4()
     figure_13_5()
     figure_13_6()
+    figure_13_7()
     print(OUT1)
     print(OUT2)
     print(OUT3)
     print(OUT4)
     print(OUT5)
     print(OUT6)
+    print(OUT7)
 
 
 if __name__ == "__main__":
