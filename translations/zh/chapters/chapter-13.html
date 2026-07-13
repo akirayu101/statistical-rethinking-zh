@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-13" data-source-pages="429-443">
-  <header class="chapter-header"><p class="eyebrow">第十三章</p><h1>有记忆的模型</h1><p class="source-range">当前译稿对应原书 PDF 第 429–443 页</p></header>
+<article class="book-article" data-chapter="chapter-13" data-source-pages="429-446">
+  <header class="chapter-header"><p class="eyebrow">第十三章</p><h1>有记忆的模型</h1><p class="source-range">当前译稿对应原书 PDF 第 429–446 页</p></header>
 
   <div class="chapter-introduction" id="intro-13">
     <p>1985 年，Clive Wearing 失去了心智，却没有失去音乐。<sup id="note-185-ref"><a href="#note-185">185</a></sup> Wearing 是音乐学家，也是一位出色的音乐家；但引起唇疱疹的单纯疱疹病毒钻进了他的大脑，侵蚀了海马体。结果是慢性<strong>顺行性遗忘</strong>：他无法形成新的长期记忆。他仍记得怎样弹钢琴，却不记得自己五分钟前刚弹过。Wearing 如今活在一个个瞬间里，对几分钟前以外的过去一无所知；每一杯咖啡都是他有生以来的第一杯。</p>
@@ -231,10 +231,76 @@ partpool_avg &lt;- aggregate(partpool_error,list(dsim$Ni),mean)</code></pre></fi
     <p>图 13.3 首先表明，两类估计在右侧较大的池塘中都准确得多。在没有混杂时，数据更多通常意味着估计更好；若存在混杂，更多数据也可能只会让事情更糟，但本模拟没有混杂。小池塘样本量很小，无汇聚和部分汇聚都不能施展魔法，所以图左侧预测更差。</p>
     <p>第二，蓝色平均线总是位于黑色虚线上方或非常接近它；除了中池塘组外，无汇聚估计在各组中的平均误差更高。部分汇聚并非每一次都更好，只是长期平均而言更好。两类估计都会随样本量减少而变差，但变化效应估计平均占优。第三，池塘越小，蓝线与黑色虚线的距离越大；样本量下降时两者都会受损，部分汇聚受损较少。</p>
     <p>图中的模式具有代表性，但毕竟只是一次随机模拟。怎样在不重新编译模型的情况下，用新模拟数据快速重跑模型，可参见本节末尾的“过度思考”框。</p>
-    <p class="continuation-note">收缩如何调和总均值与逐池塘均值、极端池塘的例外，以及重复池塘模拟的代码 13.20 将从原书 PDF 第 444 页继续。</p>
+    <p>那么，该怎样理解这一切？回想图 13.1，小水槽向均值收缩得更多；这里样本量最小的池塘，相较朴素无汇聚估计改善最大。这并非巧合。向均值收缩，正是在总均值的欠拟合风险与各池塘个体均值的过拟合风险之间协商。小水槽或小池塘信息更少，所以其变化估计受到其他池塘汇聚信息的影响更大。换句话说，小池塘容易过拟合，因此会接受更大剂量的欠拟合总均值。大池塘信息更多，不易过拟合，因而收缩少、所需修正也少。池塘非常大时，汇聚几乎不能再改进估计，但也不会造成伤害；从大池塘汇聚的信息仍能显著帮助预测小池塘。</p>
+    <p>部分汇聚估计平均而言更好。它们调整各个集群（池塘）的估计，以调和欠拟合与过拟合。这和第 7 章一样是一种正则化，只是正则化程度现在由数据本身学习。</p>
+    <p>不过，有些情况下无汇聚估计会更好。这类例外往往来自存活概率极端的池塘。由于只有少数池塘表现得如此极端，部分汇聚会把它们向均值收缩；但有时离群值确实就是离群值。</p>
+
+    <aside class="overthinking-box" id="overthinking-repeat-pond-simulation"><h3>过度思考：重复池塘模拟</h3><p>这个模型抽样很快，执行时间主要花在编译上。幸运的是，只需编译一次，之后就能把新数据传给已编译模型并获得新估计。首次编译 <code>m13.3</code> 后，可以用下面的代码重新模拟池塘并从新后验抽样，而不必再次等待编译：</p><figure class="code-listing" id="code-13-20"><figcaption>R 代码 13.20</figcaption><pre><code>a &lt;- 1.5
+sigma &lt;- 1.5
+nponds &lt;- 60
+Ni &lt;- as.integer( rep( c(5,10,25,35) , each=15 ) )
+a_pond &lt;- rnorm( nponds , mean=a , sd=sigma )
+dsim &lt;- data.frame( pond=1:nponds , Ni=Ni , true_a=a_pond )
+dsim$Si &lt;- rbinom( nponds,prob=inv_logit( dsim$true_a ),size=dsim$Ni )
+dsim$p_nopool &lt;- dsim$Si / dsim$Ni
+newdat &lt;- list(Si=dsim$Si,Ni=dsim$Ni,pond=1:nponds)
+m13.3new &lt;- stan( fit=m13.3@stanfit , data=newdat , chains=4 )
+
+post &lt;- extract.samples( m13.3new )
+dsim$p_partpool &lt;- apply( inv_logit(post$a_pond) , 2 , mean )
+dsim$p_true &lt;- inv_logit( dsim$true_a )
+nopool_error &lt;- abs( dsim$p_nopool - dsim$p_true )
+partpool_error &lt;- abs( dsim$p_partpool - dsim$p_true )
+plot( 1:60 , nopool_error , xlab="pond" , ylab="absolute error" , col=rangi2 , pch=16 )
+points( 1:60 , partpool_error )</code></pre></figure><p><code>stan</code> 函数复用 <code>m13.3</code> 中存放于 <code>stanfit</code> 槽的已编译模型，传入新数据，并把新样本返回到 <code>m13.3new</code>。若要对某种模型结构进行模拟研究，这是一个实用技巧。</p></aside>
+  </section>
+
+  <section id="sec-13-3"><h2>13.3 不止一种集群类型</h2>
+    <p>同一个模型可以，而且往往应该，使用不止一种集群类型。例如第 11 章见过的 <code>data(chimpanzees)</code>，其观测是拉动杠杆。每次拉动属于某只黑猩猩的一组拉动，因此嵌在个体集群内；同时，每次拉动也属于一个实验区组，表示同一天发生的一组观测。因此，每次观测既属于一个行动者（1 到 7），也属于一个区组（1 到 6）。每个行动者可以有独特截距，每个区组也可以有。</p>
+    <p>本节将同时使用两类集群重新考察黑猩猩数据，从而对 <code>actor</code> 和 <code>block</code> 两个类别变量同时作部分汇聚，并分别估计行动者之间和区组之间的变异。</p>
+
+    <aside class="rethinking-box" id="rethinking-cross-classification-hierarchy"><h3>再思考：交叉分类与层级</h3><p><code>data(chimpanzees)</code> 这类数据结构通常称为<strong>交叉分类多层模型</strong>。之所以是交叉分类，是因为行动者没有嵌套在各自独有的区组中。若每只黑猩猩都在同一天、同一个区组内完成自己的全部拉动，数据结构才是层级式的。不过，模型设定通常相同，因此下面的结构与代码同时适用于交叉分类设计和层级设计。其他软件有时迫使你区别对待两者，因为它们使用的条件化引擎远不如 MCMC 强大。还有别的“层级”多层模型，会为自适应先验再配置自适应先验。回想第 1 章：乌龟下面还是乌龟。下一章会看到一个例子。但大多数时候，人们（或其软件）在两种情形下几乎总使用同一类模型。</p></aside>
+
+    <h3 id="sec-13-3-1">13.3.1 多层黑猩猩</h3>
+    <p>从第 11 章的黑猩猩模型 <code>m11.4</code> 出发，加入变化截距。只需把固定正则化先验换成自适应先验。还要加入第二类集群 <code>block</code>；做法只是复制行动者集群的结构。于是线性模型多出一个变化截距 <span class="math-inline"><var>γ</var><sub>BLOCK[<var>i</var>]</sub></span>，模型也多出一个自适应先验和一个标准差参数。数学形式如下：</p>
+    <div class="equation-block wallis-equation" id="eq-13-multilevel-chimpanzees"><div><var>L</var><sub>i</sub> ∼ Binomial(1, <var>p</var><sub>i</sub>)</div><div>logit(<var>p</var><sub>i</sub>) = <var>α</var><sub>ACTOR[<var>i</var>]</sub> + <var>γ</var><sub>BLOCK[<var>i</var>]</sub> + <var>β</var><sub>TREATMENT[<var>i</var>]</sub></div><div><var>β</var><sub><var>j</var></sub> ∼ Normal(0, 0.5)，<var>j</var> = 1…4</div><div><var>α</var><sub><var>j</var></sub> ∼ Normal(<var>ᾱ</var>, <var>σ</var><sub><var>α</var></sub>)，<var>j</var> = 1…7</div><div><var>γ</var><sub><var>j</var></sub> ∼ Normal(0, <var>σ</var><sub><var>γ</var></sub>)，<var>j</var> = 1…6</div><div><var>ᾱ</var> ∼ Normal(0, 1.5)</div><div><var>σ</var><sub><var>α</var></sub> ∼ Exponential(1)</div><div><var>σ</var><sub><var>γ</var></sub> ∼ Exponential(1)</div></div>
+    <p>每类集群都有自己的参数向量。行动者向量 <span class="math-inline"><strong>α</strong></span> 长度为 7，因为样本有 7 只黑猩猩；区组向量 <span class="math-inline"><strong>γ</strong></span> 长度为 6，因为有 6 个区组。每个集群变量都需要自己的标准差参数，分别是 <span class="math-inline"><var>σ</var><sub><var>α</var></sub></span> 与 <span class="math-inline"><var>σ</var><sub><var>γ</var></sub></span>，用来调整行动者或区组各单元之间的汇聚程度。最后注意，只有一个总体均值参数 <span class="math-inline"><var>ᾱ</var></span>。两类截距都加进同一个线性预测，因而无法分别识别两个均值；硬要加入也不至于世界末日，只会像第 6 章的左右腿示例一样。</p>
+    <p>现在运行同时使用 <code>actor</code> 和 <code>block</code> 的模型：</p>
+    <figure class="code-listing" id="code-13-21"><figcaption>R 代码 13.21</figcaption><pre><code>library(rethinking)
+data(chimpanzees)
+d &lt;- chimpanzees
+d$treatment &lt;- 1 + d$prosoc_left + 2*d$condition
+
+dat_list &lt;- list(
+    pulled_left = d$pulled_left,
+    actor = d$actor,
+    block_id = d$block,
+    treatment = as.integer(d$treatment) )
+
+set.seed(13)
+m13.4 &lt;- ulam(
+    alist(
+        pulled_left ~ dbinom( 1 , p ) ,
+        logit(p) &lt;- a[actor] + g[block_id] + b[treatment] ,
+        b[treatment] ~ dnorm( 0 , 0.5 ),
+      ## 自适应先验
+        a[actor] ~ dnorm( a_bar , sigma_a ),
+        g[block_id] ~ dnorm( 0 , sigma_g ),
+      ## 超先验
+        a_bar ~ dnorm( 0 , 1.5 ),
+        sigma_a ~ dexp(1),
+        sigma_g ~ dexp(1)
+    ) , data=dat_list , chains=4 , cores=4 , log_lik=TRUE )</code></pre><pre class="code-output"><code>Warning messages:
+1: There were 22 divergent transitions after warmup.</code></pre></figure>
+    <p>4 条独立链总共得到 2,000 个样本。仍要检查轨迹图与诊断：一旦开始盲目信任机器，机器就会背叛你的信任。本例出现 22 次预热后发散转移。模型实际仍能抽样，但警告表示探索后验的效率遇到困难；下一节会修复它。现在先继续解释后验。</p>
+    <p>这是目前全书最复杂的模型。先查看后验，留意几个重要特征：</p>
+    <figure class="code-listing" id="code-13-22"><figcaption>R 代码 13.22（续）</figcaption><pre><code>precis( m13.4 , depth=2 )
+plot( precis(m13.4,depth=2) ) # 同时绘图</code></pre><pre class="code-output"><code>           mean   sd  5.5% 94.5% n_eff Rhat
+b[1]      -0.12 0.30 -0.59  0.39   158 1.03</code></pre></figure>
+    <p class="continuation-note">代码 13.22 的其余后验输出、行动者与区组变异的比较，以及图 13.4 将从原书 PDF 第 447 页继续。</p>
   </section>
 
   <section class="endnotes" id="chapter-13-notes" role="doc-endnotes"><h2>尾注</h2><ol start="185"><li id="note-185">Wearing 的妻子 Deborah 写过一本关于他患病后两人生活的书（Wearing，2005）。他的故事也出现在多部纪录片中；快速搜索互联网还能找到许多新闻报道。 <a class="backref" href="#note-185-ref" aria-label="返回正文">↩</a></li><li id="note-186">Gelman（2005）第 20 页第 6 节列出了一组彼此差异极大的“随机效应”定义，读来颇有趣。 <a class="backref" href="#note-186-ref" aria-label="返回正文">↩</a></li><li id="note-187">Vonesh 与 Bolker（2005）。 <a class="backref" href="#note-187-ref" aria-label="返回正文">↩</a></li><li id="note-188">这里采用 Gelman（2005）的术语。他认为，对大多数人而言，常用的“随机效应”一词几乎无助于理解，反而似乎会助长误解；部分原因是“固定”和“随机”对不同统计学家有不同含义。详见该文第 20–21 页。不过，我完全明白：试图推广 Gelman 的替代术语，基本等同于迎着强风吐口水。 <a class="backref" href="#note-188-ref" aria-label="返回正文">↩</a></li><li id="note-189">“多”也经常指多个线性模型，尤其常见于“层级线性模型”文献。不管怎样，我们谈论的仍是同一种机器人。 <a class="backref" href="#note-189-ref" aria-label="返回正文">↩</a></li><li id="note-190">注意，正则化本身仍有不确定性。所以，这个模型并不完全等同于直接假设一个标准差恒为 1.6 的正则化先验；相反，每个水槽的截距还会对 <span class="math-inline"><var>σ</var></span>（以及 <span class="math-inline"><var>ᾱ</var></span>）的不确定性取平均。 <a class="backref" href="#note-190-ref" aria-label="返回正文">↩</a></li><li id="note-191">这一事实早在人们能够实际使用多层模型之前就已为人所知；可参见 Stein（1955）那篇影响深远的非 Bayes 论文。 <a class="backref" href="#note-191-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 13 章 PDF 第 429–443 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 444 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 13 章 PDF 第 429–446 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 447 页继续。</aside>
 </article>
