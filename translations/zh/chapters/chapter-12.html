@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-12" data-source-pages="397-405">
-  <header class="chapter-header"><p class="eyebrow">第十二章</p><h1>怪物与混合</h1><p class="source-range">当前译稿对应原书 PDF 第 397–405 页</p></header>
+<article class="book-article" data-chapter="chapter-12" data-source-pages="397-408">
+  <header class="chapter-header"><p class="eyebrow">第十二章</p><h1>怪物与混合</h1><p class="source-range">当前译稿对应原书 PDF 第 397–408 页</p></header>
 
   <div class="chapter-introduction" id="intro-12">
     <p>在夏威夷传说中，Nanaue 是一条爱上人类女子的鲨鱼之子。他长成一个凶残的男人，背部中央还长着一张鲨鱼嘴。在希腊传说中，Minotaur 是牛头人身的怪物，由一名人类女子与一头大白牛所生。Gryphon 是一种半鹰半狮的传说怪物。毛利传说中的 Taniwha 则兼具蛇、鸟乃至鲨鱼的特征，很像中国与欧洲神话里的龙。</p>
@@ -128,11 +128,78 @@ m12.2 &lt;- ulam(
       <p>现在设想，僧侣有些日子会休息。这些日子里没有手稿完成；酒窖反而会打开，大家从事一些更世俗的享乐。身为修道院主人，你想知道僧侣多常饮酒。推断的障碍在于：即使在诚实工作、没有饮酒的日子里，也可能纯属偶然地出现零。那么，怎样估计饮酒天数呢？</p>
       <p>我们来构造一个混合模型解决这个问题。<sup id="note-178-ref"><a href="#note-178">178</a></sup>要考虑数据里的任意一个零都可能来自两个过程：（1）僧侣整天饮酒；（2）僧侣当天工作，却没能完成任何手稿。令 <span class="math-inline"><var>p</var></span> 表示僧侣整天饮酒的概率，令 <span class="math-inline"><var>λ</var></span> 表示他们工作时完成手稿的平均数量。</p>
       <p>要启动这个模型，需要定义一个把两个过程混在一起的 likelihood 函数。为了理解怎样构造这种怪物，可以把僧侣是否饮酒想成一次抛硬币的结果（图 12.3）。“硬币”一面画着酒桶，另一面画着羽毛笔。酒桶朝上的概率是 <span class="math-inline"><var>p</var></span>，可以取 0 到 1 之间的任意值。根据抛硬币的结果，僧侣要么开始饮酒，要么开始抄写。饮酒的僧侣完成的手稿数总是零；工作的僧侣完成的手稿数则服从均值率为 <span class="math-inline"><var>λ</var></span> 的 Poisson 分布。因此，即使僧侣工作，也仍可能观察到零。</p>
-      <p class="continuation-note">零膨胀 Poisson 的零值与非零值 likelihood、双线性模型，以及代码 12.7 将从原书 PDF 第 406 页继续。</p>
+      <p>在这些假设下，观察到零的 likelihood 是：</p>
+      <div class="equation-block wallis-equation" id="eq-12-zero-likelihood"><div>Pr(0 | <var>p</var>, <var>λ</var>) = Pr(饮酒 | <var>p</var>) + Pr(工作 | <var>p</var>) × Pr(0 | <var>λ</var>)</div><div>= <var>p</var> + (1 − <var>p</var>) exp(−<var>λ</var>)</div></div>
+      <p>由于 <span class="math-inline"><var>y</var></span> 的 Poisson likelihood 是 <span class="math-inline">Pr(<var>y</var> | <var>λ</var>) = <var>λ</var><sup><var>y</var></sup> exp(−<var>λ</var>)/<var>y</var>!</span>，当 <span class="math-inline"><var>y</var> = 0</span> 时，likelihood 就只是 <span class="math-inline">exp(−<var>λ</var>)</span>。上式只是在用数学表达：</p>
+      <blockquote class="book-quote"><p>观察到零的概率，等于僧侣饮酒的概率，<strong>或</strong>（+）僧侣工作<strong>且</strong>（×）什么也没完成的概率。</p></blockquote>
+      <p class="source-erratum" id="erratum-12-zero-verbal"><strong>原文表述不一致：</strong>上面的公式与模型设定都令 <span class="math-inline"><var>p</var></span> 为饮酒概率，原书紧随公式的解释句却印作 “the monks didn’t drink”。译文按公式与全文含义改为“饮酒”，并在此记录原文差异。</p>
+      <p>非零值 <span class="math-inline"><var>y</var></span> 的 likelihood 则是：</p>
+      <div class="equation-block wallis-equation" id="eq-12-nonzero-likelihood"><span class="math-line">Pr(<var>y</var> | <var>y</var> &gt; 0, <var>p</var>, <var>λ</var>) = Pr(饮酒 | <var>p</var>)(0) + Pr(工作 | <var>p</var>) Pr(<var>y</var> | <var>λ</var>) = (1 − <var>p</var>) <var>λ</var><sup><var>y</var></sup> exp(−<var>λ</var>)/<var>y</var>!</span></div>
+      <p>因为饮酒的僧侣永远不会产生 <span class="math-inline"><var>y</var> &gt; 0</span>，上式只是僧侣既工作——概率为 <span class="math-inline">1 − <var>p</var></span>——又完成 <span class="math-inline"><var>y</var></span> 份手稿的概率。</p>
+      <p>把上面这个分布定义为 ZIPoisson，用参数 <span class="math-inline"><var>p</var></span>（产生零的概率）与 <span class="math-inline"><var>λ</var></span>（Poisson 均值）描述它的形状。那么，零膨胀 Poisson 回归可写成：</p>
+      <div class="equation-block wallis-equation" id="eq-12-zipoisson-regression"><div><var>y</var><sub>i</sub> ∼ ZIPoisson(<var>p</var><sub>i</sub>, <var>λ</var><sub>i</sub>)</div><div>logit(<var>p</var><sub>i</sub>) = <var>α</var><sub><var>p</var></sub> + <var>β</var><sub><var>p</var></sub><var>x</var><sub>i</sub></div><div>log(<var>λ</var><sub>i</sub>) = <var>α</var><sub><var>λ</var></sub> + <var>β</var><sub><var>λ</var></sub><var>x</var><sub>i</sub></div></div>
+      <p>注意，ZIPoisson 中每个过程各有一个线性模型和一个 link 函数，一共两套。两个线性模型的参数不同，因为 <span class="math-inline"><var>x</var></span> 这样的任意预测变量，可能与混合模型的两个部分呈现不同关联。事实上，两个模型甚至不必使用相同的预测变量——可以根据假说，任意构造这两个线性模型。</p>
+      <p>现在万事俱备，只差数据。下面模拟僧侣饮酒与工作的过程，随后再用代码恢复模拟时采用的参数值。</p>
+      <figure class="code-listing" id="code-12-7"><figcaption>R 代码 12.7</figcaption><pre><code># 定义参数
+prob_drink &lt;- 0.2 # 20% 的日子饮酒
+rate_work &lt;- 1    # 平均每天完成 1 份手稿
+
+# 抽取一整年的产量
+N &lt;- 365
+
+# 模拟僧侣饮酒的日子
+set.seed(365)
+drink &lt;- rbinom( N , 1 , prob_drink )
+
+# 模拟完成的手稿数
+y &lt;- (1-drink)*rpois( N , rate_work )</code></pre></figure>
+      <p>我们能够观察到的结果变量是 <code>y</code>，即一串完成手稿数的计数，一年中每天对应一个计数。看看这个结果变量：</p>
+      <figure class="code-listing" id="code-12-8"><figcaption>R 代码 12.8</figcaption><pre><code>simplehist( y , xlab="manuscripts completed" , lwd=4 )
+zeros_drink &lt;- sum(drink)
+zeros_work &lt;- sum(y==0 &amp; drink==0)
+zeros_total &lt;- sum(y==0)
+lines( c(0,0) , c(zeros_work,zeros_total) , lwd=4 , col=rangi2 )</code></pre></figure>
+      <p>结果已经画在图 12.3 右侧。饮酒造成的零用蓝色表示，工作造成的零用黑色表示。相对于典型 Poisson 分布，零的总数被膨胀了。</p>
+      <p>要拟合模型，<code>rethinking</code> 包提供了零膨胀 Poisson likelihood <code>dzipois</code>。它与上面数学表达式的具体关系，见本节末尾的“过度思考”框。<code>dzipois</code> 用起来很直接。这里还会稍稍调整饮酒概率的先验，让 0.5 以下的概率质量多于 0.5 以上——僧侣大概不会多数时候都在饮酒。</p>
+      <figure class="code-listing" id="code-12-9"><figcaption>R 代码 12.9</figcaption><pre><code>m12.3 &lt;- ulam(
+    alist(
+        y ~ dzipois( p , lambda ),
+        logit(p) &lt;- ap,
+        log(lambda) &lt;- al,
+        ap ~ dnorm( -1.5 , 1 ),
+        al ~ dnorm( 1 , 0.5 )
+    ) , data=list(y=y) , chains=4 )
+precis( m12.3 )</code></pre><pre class="code-output"><code>    mean   sd 5.5% 94.5% n_eff Rhat
+ap -1.28 0.35 -1.89 -0.79  657    1
+al  0.01 0.09 -0.14  0.16  759    1</code></pre></figure>
+      <p>把这些后验均值变换到自然尺度：</p>
+      <figure class="code-listing" id="code-12-10"><figcaption>R 代码 12.10</figcaption><pre><code>post &lt;- extract.samples( m12.3 )
+mean( inv_logit( post$ap ) ) # 饮酒概率
+mean( exp( post$al ) )       # 不饮酒时完成手稿的率</code></pre><pre class="code-output"><code>[1] 0.2241255
+[1] 1.017643</code></pre></figure>
+      <p>注意，即使无法判断某个特定日子僧侣究竟有没有饮酒，我们仍能准确估计他们饮酒的日子所占比例。</p>
+      <p>这个例子已经简单到不能再简单。真实问题里，可能会有与零膨胀 Poisson 混合中一个或两个过程相关的预测变量。遇到这种情况，只需把那些变量及其参数加入其中一个或两个线性模型。</p>
+
+      <aside class="overthinking-box" id="overthinking-zipoisson-stan"><h3>过度思考：Stan 中的零膨胀 Poisson 计算</h3><p>函数 <code>dzipois</code> 的实现会防范某些数值误差，所以代码看起来有些费解——只要在 R 提示符下输入 <code>dzipois</code> 就能看到。不过，它真正做的只是实现本节前面定义的 likelihood 公式。我们聚焦于它在 Stan 中的实现。当你告诉 <code>ulam</code> 使用 <code>dzipois</code> 时，它会把模型理解为：</p><figure class="code-listing" id="code-12-11"><figcaption>R 代码 12.11</figcaption><pre><code>m12.3_alt &lt;- ulam(
+    alist(
+        y|y&gt;0 ~ custom( log1m(p) + poisson_lpmf(y|lambda) ),
+        y|y==0 ~ custom( log_mix( p , 0 , poisson_lpmf(0|lambda) ) ),
+        logit(p) &lt;- ap,
+        log(lambda) &lt;- al,
+        ap ~ dnorm(-1.5,1),
+        al ~ dnorm(1,0.5)
+    ) , data=list(y=as.integer(y)) , chains=4 )</code></pre></figure><p>这是同一个模型，只是把混合显式写出，并在 <code>custom</code> 行里加入了一些原始 Stan 代码。查看 <code>stancode(m12.3_alt)</code>，会看到对应的两行：</p><pre class="stan-snippet"><code>if ( y[i] &gt; 0 ) target += log1m(p) + poisson_lpmf(y[i] | lambda);
+if ( y[i] == 0 ) target += log_mix(p, 0, poisson_lpmf(0 | lambda));</code></pre><p><code>target</code> 是计算对数后验的一串项；用 <code>+=</code> 时，就是把另一项加入这叠计算。随后 Stan 通过积极而系统地运用微积分链式法则，利用这串项计算梯度。这里还有几个重要的计算技巧。函数 <code>log1m</code> 计算 1 减某个值之后的对数。我们需要 <span class="math-inline">log(1 − <var>p</var>)</span>；但当 <span class="math-inline"><var>p</var></span> 非常接近 1 时，直接相减可能灾难性地舍入为零，随后对数就会变成负无穷。使用 <code>log1m</code> 能大大降低这种风险。</p><p>函数 <code>log_mix</code> 把两个对数概率混合起来，正好用于零的概率；它也采用巧妙方法避免舍入误差。在这个例子里，它等价于：</p><pre class="stan-snippet"><code>if ( y[i] == 0 ) target += log( p + (1-p)*exp(-lambda) );</code></pre><p>但在 <span class="math-inline"><var>p</var></span> 取极端值时更加稳定。本例中两种写法没有区别，朴素的直接方法也能正常工作；但值得了解更好的做法。你会在代码里反复见到它，否则更复杂的模型可能无法正确运行。最后，请注意数据列表里把 <code>y</code> 强制转换成了整数。使用 <code>ulam</code> 的内置分布时，它会尝试把变量转换为正确的 Stan 类型；如果自行构造分布，就需要自己完成转换。</p></aside>
     </section>
   </section>
 
-  <section class="endnotes" id="chapter-12-notes" role="doc-endnotes"><h2>尾注</h2><ol start="175"><li id="note-175">Williams（1975，1982）。Bolker（2008）在生态数据语境中给出了清晰介绍。 <a class="backref" href="#note-175-ref" aria-label="返回正文">↩</a></li><li id="note-176">另一种很常见的参数化是 <span class="math-inline"><var>α</var> = <var>p̄θ</var></span> 与 <span class="math-inline"><var>β</var> = (1 − <var>p̄</var>)<var>θ</var></span>。<span class="math-inline"><var>p̄</var></span> 与 <span class="math-inline"><var>θ</var></span> 的版本更适合建模，因为我们通常希望把线性模型连接到 beta 分布的中心趋势，而 <span class="math-inline"><var>p̄</var></span> 正是中心趋势的一种度量。 <a class="backref" href="#note-176-ref" aria-label="返回正文">↩</a></li><li id="note-177">Hilbe（2011）整本书都在讨论 gamma-Poisson 回归。 <a class="backref" href="#note-177-ref" aria-label="返回正文">↩</a></li><li id="note-178">Lambert（1992）首次介绍了这种模型。不过，基本的零膨胀方法更早已经出现；文献中还可以找到其他参考资料。 <a class="backref" href="#note-178-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section id="sec-12-3"><h2>12.3 有序类别结果</h2>
+    <p>在社会科学中非常常见、在自然科学中偶尔也会出现这样的结果变量：它像计数一样是离散的，但数值只表示某个维度上不同的有序层级。例如，假如我问你有多喜欢吃鱼，请在 1 到 7 的尺度上作答，你可能回答 5。若对 100 个人提出同样的问题，最终会得到 100 个介于 1 与 7 之间的值。对每个结果值建模时，必须记住这些值有顺序，因为 7 大于 6，6 又大于 5，依此类推。结果就是一组<strong>有序类别</strong>。与计数不同，数值之间的差异并不一定相等。让某人对鱼的偏好从 1 变为 2，可能远比从 5 变为 6 困难。把有序类别直接当作连续测量并不是好主意。<sup id="note-179-ref"><a href="#note-179">179</a></sup></p>
+    <p>幸运的是，这个问题有一种标准而易用的解法。原则上，有序类别变量只是一个多项预测问题（原书第 366 页）；但类别必须有序这一约束，要求特殊处理。我们希望任何相关预测变量随着自身增大，都能让预测依次、渐进地穿过各个类别。例如，如果冰淇淋偏好与年龄呈正关联，那么模型应当随着年龄增加，让预测依次上移：从 3 到 4、从 4 到 5、从 5 到 6，等等。这就带来一项挑战：怎样保证线性模型按正确顺序映射到结果？</p>
+    <p class="continuation-note">累积 link 函数、对数累积赔率参数化与道德直觉数据，将从原书 PDF 第 409 页继续。</p>
+  </section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 12 章 PDF 第 397–405 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 406 页继续。</aside>
+  <section class="endnotes" id="chapter-12-notes" role="doc-endnotes"><h2>尾注</h2><ol start="175"><li id="note-175">Williams（1975，1982）。Bolker（2008）在生态数据语境中给出了清晰介绍。 <a class="backref" href="#note-175-ref" aria-label="返回正文">↩</a></li><li id="note-176">另一种很常见的参数化是 <span class="math-inline"><var>α</var> = <var>p̄θ</var></span> 与 <span class="math-inline"><var>β</var> = (1 − <var>p̄</var>)<var>θ</var></span>。<span class="math-inline"><var>p̄</var></span> 与 <span class="math-inline"><var>θ</var></span> 的版本更适合建模，因为我们通常希望把线性模型连接到 beta 分布的中心趋势，而 <span class="math-inline"><var>p̄</var></span> 正是中心趋势的一种度量。 <a class="backref" href="#note-176-ref" aria-label="返回正文">↩</a></li><li id="note-177">Hilbe（2011）整本书都在讨论 gamma-Poisson 回归。 <a class="backref" href="#note-177-ref" aria-label="返回正文">↩</a></li><li id="note-178">Lambert（1992）首次介绍了这种模型。基本的零膨胀方法虽然出现得更早，但 Lambert 给出了本书采用的版本：用 log 与 logit link 连接两个彼此独立的线性模型。 <a class="backref" href="#note-178-ref" aria-label="返回正文">↩</a></li><li id="note-179">参见 Bürkner 与 Vuorre（2018），以及 Liddell 与 Kruschke（2018）。 <a class="backref" href="#note-179-ref" aria-label="返回正文">↩</a></li></ol></section>
+
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 12 章 PDF 第 397–408 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 409 页继续。</aside>
 </article>

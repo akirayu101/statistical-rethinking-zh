@@ -1022,7 +1022,16 @@
     "custom model": "自定义模型",
     "scrub jay": "灌丛松鸦",
     "row-level unobserved parameter": "行级未观测参数",
-    "structural zero": "结构性零"
+    "structural zero": "结构性零",
+    "zero-inflated Poisson regression": "零膨胀 Poisson 回归",
+    "zero-inflated Poisson likelihood": "零膨胀 Poisson likelihood",
+    "drinking probability": "饮酒概率",
+    "manuscript completion rate": "手稿完成率",
+    "explicit mixture": "显式混合",
+    "chain rule": "链式法则",
+    "ordered category": "有序类别",
+    "ordered level": "有序层级",
+    "ordered categorical variable": "有序类别变量"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "blavaan", "AIC", "DIC", "WAIC", "BIC", "PSIS-LOO", "MCMC", "HMC"
