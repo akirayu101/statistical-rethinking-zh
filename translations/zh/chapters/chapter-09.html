@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-09" data-source-pages="285-290">
-  <header class="chapter-header"><p class="eyebrow">第九章</p><h1>马尔可夫链蒙特卡洛</h1><p class="source-range">当前译稿对应原书 PDF 第 285–290 页</p></header>
+<article class="book-article" data-chapter="chapter-09" data-source-pages="285-293">
+  <header class="chapter-header"><p class="eyebrow">第九章</p><h1>马尔可夫链蒙特卡洛</h1><p class="source-range">当前译稿对应原书 PDF 第 285–293 页</p></header>
 
   <p>在西方历史的大部分时期，偶然性一直扮演反派。古罗马把偶然性人格化为残酷命运女神福尔图娜，她转动着（厄）运之轮。与她相对而坐的是智慧与理解女神密涅瓦。只有绝望之人才会向福尔图娜祈祷，所有人则都会恳求密涅瓦相助。科学当然属于密涅瓦的领域，那里没有福尔图娜可以发挥的有益作用。</p>
   <p>但到了 20 世纪初，福尔图娜与密涅瓦成了合作者。科学家开始出版随机数表，把偶然性的工具用于认识世界。偶然与智慧从此携手；“理解偶然性能够帮助我们获得智慧”这个观念，已很少让人困惑。从天气预报、金融到演化生物学，各领域都由随机过程研究所主导。<sup id="note-137-ref"><a href="#note-137">137</a></sup></p>
@@ -69,10 +69,40 @@ for ( i in 1:num_weeks ) {
     <section id="sec-9-2-2"><h3>9.2.2 高维问题</h3>
       <p>但 Gibbs 抽样存在一些严重限制。第一，你也许并不想使用共轭先验。一旦开始构建多层模型，需要为整个协方差矩阵指定先验，有些共轭先验的形状其实相当病态。等到第 14 章再讨论这个问题。</p>
       <p>第二，随着模型越来越复杂，包含数百、数千乃至数万个参数，Metropolis 与 Gibbs 抽样都会变得惊人地低效。原因是，它们可能长时间困在后验的一小片区域。问题与其说是参数数量很多，不如说参数很多的模型几乎总会在后验中出现高度相关的区域，也就是两个或更多参数在后验样本中彼此高度相关。第 6 章的两条腿例子已经展示过这种情况。为什么这会成为问题？因为高度相关意味着高概率参数组合形成狭窄的脊，而 Metropolis 和 Gibbs 对下一步去哪里作出的愚蠢提议太多，于是它们会被困住。</p>
+      <p>一幅图会让问题更清楚。图 9.3 展示普通 Metropolis 算法试图探索一个具有强负相关（−0.9）的二维后验。高概率参数值形成一条狭窄山谷。先看左图：链从山谷左上方开始，实心点是接受的提议，空心点是拒绝的提议。提议通过给每个参数加上随机高斯噪声生成，并把标准差当作步长。图中显示 50 次提议。山谷如此狭窄，提议很容易落到外面，所以只有约 60% 被接受；链仍能缓慢沿山谷下行，但即便提议获准，它也离前一点很近，因此移动很慢。</p>
+      <p>若增大步长，让提议走得更远，会怎样？现在看图 9.3 右侧。此时只有约 30% 的提议被接受：步长越大，落到山谷之外荒唐位置的提议越多。不过，获准提议确实沿山谷长度方向移动得更快。实践中很难在这种权衡中获胜。Metropolis 与 Gibbs 都会这样被困住，因为它们的提议对后验整体形状了解不足；它们不知道自己要去哪里。</p>
+      <p>高相关例子说明了这个问题，但真实问题更严重，也更有趣。一旦参数数量足够多，任何逐步对单个参数抽样的马尔可夫链方法都会被困住，原因称为<strong>测度集中</strong>。这个名字有些别扭，指的却是一个惊人的事实：高维分布的大部分概率质量总是离分布众数非常远。它很难可视化——多数日子里，我们看不见 100 维空间——但思考二维和三维版本就能理解基本现象。</p>
+      <p>在二维中，高斯分布是一座山，最高点位于中央的众数。设想山由泥土填满——山还能由什么填满呢？——然后问：大部分泥土在哪里？从峰顶向任意方向远离时，高度下降，脚下正对着的泥土变少；但围绕山体、与峰顶距离相同的环带里，泥土比峰顶更多。离峰顶越远，环带面积越大，尽管高度在下降。因此，随着离开峰顶，总泥土量——呃，概率——起初反而增加。等山坡降到零，总泥土量（概率）最终才再次下降。所以，在离峰顶某个径向距离处，泥土（概率质量）达到最大。三维时，它不再是一座山，而是一个模糊球体。球心“峰顶”处密度最高，但离球心越远，体积仍会增加，于是包围球心的一层壳中含有更多球体物质。</p>
+      <p>回到概率分布，这意味着使后验概率最大化的参数值组合——众数——实际上并不位于参数值高度可信的区域中。于是，正确地从高维分布抽样时，根本不会得到靠近众数的点。很容易亲自演示：从高维分布随机抽样——10 维已经足够——再绘制各点的径向距离。下面是代码：</p>
+      <figure class="code-listing" id="code-9-4"><figcaption>R 代码 9.4</figcaption><pre><code>D &lt;- 10
+T &lt;- 1e3
+Y &lt;- rmvnorm(T,rep(0,D),diag(D))
+rad_dist &lt;- function( Y ) sqrt( sum(Y^2) )
+Rd &lt;- sapply( 1:T , function(i) rad_dist( Y[i,] ) )
+dens( Rd )</code></pre></figure>
+      <figure class="book-figure concentration-figure" id="fig-9-4"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的一至一千维高斯分布径向距离密度图"><img src="/media/chapter-09-concentration.svg" alt="维度从一增加到一千时，样本到众数的径向距离密度逐渐远离零"></div><p class="scroll-hint">图较宽，可横向滚动比较不同维度的密度位置。</p><figcaption><strong>图 9.4：</strong>测度集中与高维诅咒。横轴显示参数空间中到众数的径向距离；每条密度对应 1,000 个随机点，曲线上方的数字是维数。随着参数数量增加，众数离我们真正想抽样的值越来越远。</figcaption></figure>
+      <p>图 9.4 同时显示了 1、10、100 与 1,000 维分布对应的密度。横轴是各点离众数的径向距离，因此 0 就是概率峰顶。左侧只有 1 维的普通高斯分布，大部分点都紧挨峰顶，符合预期。但到了 10 维，零点附近已经没有样本；100 维时离峰顶很远，1,000 维时则更远。抽到的点位于远离众数的一层薄薄高维壳中。在这层壳内，成对参数彼此剧烈弯曲，形成抽样器极难沿行的路径。</p>
+      <p>因此，我们需要 Metropolis 与 Gibbs 之外的 MCMC 算法：它们应一次关注整个后验，而不是每次只看一维或少数几维，否则就会困在参数空间狭窄且高度弯曲的区域里。</p>
     </section>
   </section>
 
-  <section class="endnotes" id="chapter-09-notes" role="doc-endnotes"><h2>尾注</h2><ol start="137"><li id="note-137">关于这段历史的更多内容，可参见 Gigerenzer 等（1990）的导论。另见 Rao（1997），其中展示了一本随机数表的示例页，并对这场文化转变作了类似评论。 <a class="backref" href="#note-137-ref" aria-label="返回正文">↩</a></li><li id="note-138">“旅行者”是两种常见隐喻之一；另一种是登山者通过随机跳跃绘制山脉地图。Kruschke（2011）用一位在不同地点筹款的政治人物讲了一个很相似的故事。Kruschke 的书非常出色，风格与覆盖范围和本书颇为不同，因此能通过不同视角和另一组例子，为读者带来许多额外价值。 <a class="backref" href="#note-138-ref" aria-label="返回正文">↩</a></li><li id="note-139">Metropolis 等（1953）。算法以论文第一作者命名，但尚不清楚每位合著者怎样参与了算法的发现与实现。其他作者包括以“氢弹之父”闻名的 Edward Teller、同样著名的物理学家 Marshall Rosenbluth，以及两人的妻子 Augusta 和 Arianna；两位女士完成了大量计算机编程。Nicholas Metropolis 领导这个研究组，而他们的工作又以此前和 Stanisław Ulam 合作的研究为基础：Metropolis 与 Ulam（1949）。 <a class="backref" href="#note-139-ref" aria-label="返回正文">↩</a></li><li id="note-140">Hastings（1970）。 <a class="backref" href="#note-140-ref" aria-label="返回正文">↩</a></li><li id="note-141">最初的论文是 Geman 与 Geman（1984），另见 Casella 与 George（1992）。注意，Gibbs 抽样以统计物理学奠基人之一、物理学家兼数学家 J. W. Gibbs 命名；但 Gibbs 早在 1903 年就已去世，远早于 Metropolis 算法的发明。这个策略以 Gibbs 命名，既是为了纪念他，也因为算法与统计物理学的联系。 <a class="backref" href="#note-141-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section id="sec-9-3"><h2>9.3 哈密顿蒙特卡洛</h2>
+    <blockquote class="book-quote" id="quote-9-jaynes-randomized"><p>似乎存在一条相当普遍的原则：每当某件事有一种随机化做法时，就有一种性能更好、但需要更多思考的非随机化做法。——E. T. Jaynes<sup id="note-142-ref"><a href="#note-142">142</a></sup></p></blockquote>
+    <p>Metropolis 算法与 Gibbs 抽样都是高度随机的程序。它们尝试新的参数值——提议——再与当前值比较好坏。Gibbs 抽样利用目标分布的知识来减少提议的随机性，从而提高效率。这似乎符合上面 Jaynes 的看法：若某种计算有一种随机做法，大概就有一种随机性更少、表现更好的做法，只是后者可能需要多得多的思考。Gibbs 策略虽然有限制，但它优于朴素 Metropolis，靠的是更少的随机性，而不是更多。</p>
+    <p><strong>哈密顿蒙特卡洛</strong>（Hamiltonian Monte Carlo，也称 Hybrid Monte Carlo，HMC）把 Jaynes 的原则推进得更远。HMC 的单次计算比 Metropolis 或 Gibbs 抽样昂贵，却能提出高效得多的提议，因此无需那么多样本就能描述后验分布。尽管每个样本耗时更多，总计算时间反而更少。随着模型复杂到包含数千乃至数万个参数，HMC 真能远胜其他算法，因为后者根本无法工作：等你的链生成可靠的后验近似时，地球早已被太阳吞没。</p>
+    <p>本书余下部分会时不时使用 HMC。你不需要亲自实现它，但理解背后的一些概念，既有助于把握它为何优于 Metropolis 与 Gibbs 抽样，也能理解它会遇到哪些自己独有的问题。</p>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 285–290 页已完成翻译、逐页核对、结构契约及桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 291 页继续。</aside>
+    <section id="sec-9-3-1"><h3>9.3.1 另一个寓言</h3>
+      <p>假设马尔可夫国王的堂兄蒙蒂是大陆上的国王。蒙蒂的王国不是一组离散岛屿，而是沿一条南北向狭窄山谷延伸的连续领土。但国王负有类似义务：按各地人口密度的比例探访臣民。山谷里，人口与海拔成反比——多数人住在谷地中央，住在山坡上的人更少。蒙蒂国王怎样才能履行王室义务？</p>
+      <p>蒙蒂和马尔可夫一样，不愿费心制定日程和计算；也同样有一位受过高等教育、数学天赋出众的顾问，名叫 Hamilton。Hamilton 设计了一种古怪却极高效的方法，也解决了 Metropolis 的一个缺陷：国王几乎从不原地停留，而会不断前往新地点拜访。</p>
+      <p>方法如下。国王的车辆随机选择向北或向南，再带着随机动量出发。车辆上坡时逐渐减速，并在不断下降的动量迫使它掉头时转向；下坡途中又再次加速。经过固定时间后，他们停车下车，开始握手、亲吻婴儿；随后重新上车，再来一次。惊人的是，Hamilton 能在数学上证明：从长期看，这套程序保证各地点的访问频率与相对海拔成反比，而相对海拔又与人口密度成反比。它不仅让国王始终移动，还让访问地点彼此间隔得更好——蒙蒂不像另一位国王那样只访问相邻地点。</p>
+      <p>图 9.5 展示并模拟了这项疯狂计划。横轴是时间，纵轴是位置。国王的旅程从最左端、山谷中央开始；车辆首先向南行驶。曲线宽度表示各时刻的动量。车辆爬坡时减速，短暂掉头后停在第一个访问地点。随后一次又一次，用同样方式选择新地点，但每次从最近地点出发，采用不同的随机方向和动量。初始动量较小时，车辆更早开始掉头；初始动量较大时——例如时间约为 300 的大幅摆动——国王可以在停车前穿越整条山谷。</p>
+      <p>这种策略下，访问地点之间的自相关很低，意味着相邻访问地点的相关接近于零。国王可以从山谷一端移动到另一端；相比之下，Metropolis 方案中的移动高度自相关（图 9.2）。</p>
+      <p class="continuation-note">蒙蒂国王寓言的收尾与图 9.5 将在原书 PDF 第 294 页继续。</p>
+    </section>
+  </section>
+
+  <section class="endnotes" id="chapter-09-notes" role="doc-endnotes"><h2>尾注</h2><ol start="137"><li id="note-137">关于这段历史的更多内容，可参见 Gigerenzer 等（1990）的导论。另见 Rao（1997），其中展示了一本随机数表的示例页，并对这场文化转变作了类似评论。 <a class="backref" href="#note-137-ref" aria-label="返回正文">↩</a></li><li id="note-138">“旅行者”是两种常见隐喻之一；另一种是登山者通过随机跳跃绘制山脉地图。Kruschke（2011）用一位在不同地点筹款的政治人物讲了一个很相似的故事。Kruschke 的书非常出色，风格与覆盖范围和本书颇为不同，因此能通过不同视角和另一组例子，为读者带来许多额外价值。 <a class="backref" href="#note-138-ref" aria-label="返回正文">↩</a></li><li id="note-139">Metropolis 等（1953）。算法以论文第一作者命名，但尚不清楚每位合著者怎样参与了算法的发现与实现。其他作者包括以“氢弹之父”闻名的 Edward Teller、同样著名的物理学家 Marshall Rosenbluth，以及两人的妻子 Augusta 和 Arianna；两位女士完成了大量计算机编程。Nicholas Metropolis 领导这个研究组，而他们的工作又以此前和 Stanisław Ulam 合作的研究为基础：Metropolis 与 Ulam（1949）。 <a class="backref" href="#note-139-ref" aria-label="返回正文">↩</a></li><li id="note-140">Hastings（1970）。 <a class="backref" href="#note-140-ref" aria-label="返回正文">↩</a></li><li id="note-141">最初的论文是 Geman 与 Geman（1984），另见 Casella 与 George（1992）。注意，Gibbs 抽样以统计物理学奠基人之一、物理学家兼数学家 J. W. Gibbs 命名；但 Gibbs 早在 1903 年就已去世，远早于 Metropolis 算法的发明。这个策略以 Gibbs 命名，既是为了纪念他，也因为算法与统计物理学的联系。 <a class="backref" href="#note-141-ref" aria-label="返回正文">↩</a></li><li id="note-142">Jaynes（2003）第 16 章。 <a class="backref" href="#note-142-ref" aria-label="返回正文">↩</a></li></ol></section>
+
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 285–293 页已完成翻译、逐页核对、结构契约及桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 294 页继续。</aside>
 </article>

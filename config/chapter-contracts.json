@@ -1507,7 +1507,7 @@
   },
   "chapter-09": {
     "required_status": "in_progress",
-    "source_pages": [285, 290],
+    "source_pages": [285, 293],
     "required_ids": [
       "fig-9-1",
       "rethinking-stan-was-a-man",
@@ -1522,12 +1522,18 @@
       "sec-9-2-1",
       "fig-9-3",
       "sec-9-2-2",
+      "code-9-4",
+      "fig-9-4",
+      "sec-9-3",
+      "quote-9-jaynes-randomized",
+      "sec-9-3-1",
       "chapter-09-notes",
       "note-137",
       "note-138",
       "note-139",
       "note-140",
-      "note-141"
+      "note-141",
+      "note-142"
     ],
     "required_headings": [
       "马尔可夫链蒙特卡洛",
@@ -1536,20 +1542,24 @@
       "9.2 Metropolis 算法",
       "9.2.1 Gibbs 抽样",
       "9.2.2 高维问题",
+      "9.3 哈密顿蒙特卡洛",
+      "9.3.1 另一个寓言",
       "尾注"
     ],
     "counts": {
-      "section": 5,
-      "figure": 6,
-      "figure img": 3,
-      ".book-figure": 3,
-      ".code-listing": 3,
+      "section": 7,
+      "figure": 8,
+      "figure img": 4,
+      ".book-figure": 4,
+      ".code-listing": 4,
       ".rethinking-box": 1,
+      ".book-quote": 1,
       ".algorithm-steps": 1,
       ".algorithm-steps > li": 4,
       ".metropolis-mapping": 1,
       ".metropolis-mapping > li": 3,
-      ".endnotes li": 5
+      ".continuation-note": 1,
+      ".endnotes li": 6
     }
   }
 }
