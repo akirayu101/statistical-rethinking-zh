@@ -2091,7 +2091,7 @@
   },
   "chapter-12": {
     "required_status": "in_progress",
-    "source_pages": [397, 417],
+    "source_pages": [397, 420],
     "required_ids": [
       "intro-12",
       "sec-12-1",
@@ -2166,6 +2166,18 @@
       "code-12-27",
       "erratum-12-prediction-loop-count",
       "code-12-28",
+      "fig-12-6",
+      "code-12-29",
+      "rethinking-staring-into-the-abyss",
+      "sec-12-4",
+      "note-182-ref",
+      "code-12-30",
+      "code-12-31",
+      "eq-12-education-first-step",
+      "eq-12-education-second-step",
+      "eq-12-education-all-steps",
+      "eq-12-education-ordered-effect",
+      "eq-12-ordered-education-model",
       "chapter-12-notes",
       "note-175",
       "note-176",
@@ -2173,7 +2185,8 @@
       "note-178",
       "note-179",
       "note-180",
-      "note-181"
+      "note-181",
+      "note-182"
     ],
     "required_headings": [
       "怪物与混合",
@@ -2187,24 +2200,25 @@
       "12.3.1 示例：道德直觉",
       "12.3.2 用截距描述有序分布",
       "12.3.3 加入预测变量",
+      "12.4 有序类别预测变量",
       "尾注"
     ],
     "counts": {
-      "section": 11,
-      "figure": 34,
-      "figure img": 6,
-      ".book-figure": 6,
-      ".code-listing": 28,
-      ".code-output": 11,
-      ".rethinking-box": 1,
+      "section": 12,
+      "figure": 38,
+      "figure img": 7,
+      ".book-figure": 7,
+      ".code-listing": 31,
+      ".code-output": 12,
+      ".rethinking-box": 2,
       ".overthinking-box": 2,
       ".book-quote": 3,
-      ".equation-block": 12,
-      ".wallis-equation": 12,
+      ".equation-block": 17,
+      ".wallis-equation": 17,
       ".source-erratum": 6,
       ".chapter-introduction": 1,
       ".continuation-note": 1,
-      ".endnotes li": 7
+      ".endnotes li": 8
     }
   }
 }

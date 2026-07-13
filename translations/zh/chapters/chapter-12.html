@@ -1,4 +1,4 @@
-<article class="book-article" data-chapter="chapter-12" data-source-pages="397-417">
+<article class="book-article" data-chapter="chapter-12" data-source-pages="397-420">
   <header class="chapter-header"><p class="eyebrow">第十二章</p><h1>怪物与混合</h1><p class="source-range">当前译稿对应原书 PDF 第 397–414 页</p></header>
 
   <div class="chapter-introduction" id="intro-12">
@@ -352,11 +352,49 @@ for ( s in 1:50 ) {
 }</code></pre></figure>
       <p>修改上面代码中 <code>kA</code> 与 <code>kC</code> 的取值，可以为模型 <code>m12.5</code> 制作一幅三联图（见第 257 页）。结果显示在图 12.6 的上排，并在边缘以点的形式添上原始数据。每个面板中的黑线表示回答值之间的边界，从下到上编号为 1 到 7；线条的粗细反映后验样本变化造成的预测变异。本例数据量很大，所以预测边界的路径相当确定。</p>
       <p>横轴是意图，取值为 0 或 1。每个面板中各条边界从左到右的高度变化，表示把故事从“无意图”改成“有意图”的预测影响。与此同时，每个面板都把另外两个预测变量——行动与接触——分别固定为 0 或 1。左上面板把两者都设为 0，展示给一个“无行动、无接触、无意图”的故事加入意图之后的预测变化。右上面板把行动设为 1，展示给一个“有行动、无意图”的故事加入意图之后的影响；回想一下，本实验中行动与接触从不同时出现。这个面板呈现的就是行动与意图之间的交互。最后，左下面板把接触设为 1。</p>
-      <p class="continuation-note">左下图对“接触 × 意图”交互的解释、图 12.6 及另一种后验预测直方图，将从原书 PDF 第 418 页继续。</p>
+      <figure class="book-figure trolley-predictions-figure" id="fig-12-6"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的电车模型后验预测六面板图"><img src="/media/chapter-12-trolley-predictions.svg" alt="上排比较三种行动与接触组合下意图对累积概率边界的影响，下排比较对应的模拟回答频数"></div><p class="scroll-hint">移动端可横向滚动，比较三种故事组合的累积概率与模拟频数。</p><figcaption><strong>图 12.6：</strong>含交互项的有序类别模型 <code>m12.5</code> 的后验预测。每个面板都显示预测回答分布怎样随意图变化。上排在其他预测变量取值不同的情况下，显示每个结果的后验概率分布怎样随意图变化；下排显示相同交互，但改用模拟结果的直方图表示。黑色线段对应意图为 0，蓝色线段对应意图为 1。</figcaption></figure>
+      <p>左下面板展示给一个“有接触、无意图”的故事加入意图之后的预测影响。它呈现了接触与意图之间很大的交互效应，也是模型中估计出的最大效应。</p>
+      <p>另一种画法是展示结果所隐含的直方图。只需调用 <code>sim</code> 模拟后验结果：</p>
+      <figure class="code-listing" id="code-12-29"><figcaption>R 代码 12.29</figcaption><pre><code>kA &lt;- 0     # 行动的取值
+kC &lt;- 1     # 接触的取值
+kI &lt;- 0:1   # 要计算的意图取值
+pdat &lt;- data.frame(A=kA,C=kC,I=kI)
+s &lt;- sim( m12.5 , data=pdat )
+simplehist( s , xlab="response" )</code></pre></figure>
+      <p>这些直方图放在图 12.6 的下排。黑色线段表示意图为 0 时的模拟频数，蓝色线段表示意图为 1 时的频数。注意每种情形中间回答 5 与两端回答所占的权重。上排图其实也能看出这一点，但直方图表现得明显得多。这是有序类别的一般特征：某些取值会比其他取值显眼得多。这也正是有序类别模型优于把结果当作普通度量变量的原因之一。</p>
+      <aside class="rethinking-box" id="rethinking-staring-into-the-abyss"><h3>再思考：凝视深渊</h3><p>和前面各章的模型相比，有序 logistic 模型的绘图代码相当复杂。但模型越像怪物，计算并展示预测所需的代码也越像怪物。能力越大，艰辛也越多。与其敬畏或害怕机器，不如看清它的内部。软件可以——而且经常——被写成替我们隐藏一切怪物般的细节，但这并不会让它们消失，只会让模型永远显得神秘。对一些用户，神秘变成敬畏；对另一些用户，神秘变成怀疑。只要我们愿意学习正在使用的模型结构，两种状态都没有必要。如果不愿学习模型结构，就不要独自做统计；请与统计学家合作，或者聘请一位统计学家。</p></aside>
     </section>
   </section>
 
-  <section class="endnotes" id="chapter-12-notes" role="doc-endnotes"><h2>尾注</h2><ol start="175"><li id="note-175">Williams（1975，1982）。Bolker（2008）在生态数据语境中给出了清晰介绍。 <a class="backref" href="#note-175-ref" aria-label="返回正文">↩</a></li><li id="note-176">另一种很常见的参数化是 <span class="math-inline"><var>α</var> = <var>p̄θ</var></span> 与 <span class="math-inline"><var>β</var> = (1 − <var>p̄</var>)<var>θ</var></span>。<span class="math-inline"><var>p̄</var></span> 与 <span class="math-inline"><var>θ</var></span> 的版本更适合建模，因为我们通常希望把线性模型连接到 beta 分布的中心趋势，而 <span class="math-inline"><var>p̄</var></span> 正是中心趋势的一种度量。 <a class="backref" href="#note-176-ref" aria-label="返回正文">↩</a></li><li id="note-177">Hilbe（2011）整本书都在讨论 gamma-Poisson 回归。 <a class="backref" href="#note-177-ref" aria-label="返回正文">↩</a></li><li id="note-178">Lambert（1992）首次介绍了这种模型。基本的零膨胀方法虽然出现得更早，但 Lambert 给出了本书采用的版本：用 log 与 logit link 连接两个彼此独立的线性模型。 <a class="backref" href="#note-178-ref" aria-label="返回正文">↩</a></li><li id="note-179">参见 Bürkner 与 Vuorre（2018），以及 Liddell 与 Kruschke（2018）。 <a class="backref" href="#note-179-ref" aria-label="返回正文">↩</a></li><li id="note-180">McCullagh（1980）被认为引入并推广了这种方法。另见 Fullerton（2009），其中综述并比较了不同模型类型。 <a class="backref" href="#note-180-ref" aria-label="返回正文">↩</a></li><li id="note-181">Cushman 等（2006）。 <a class="backref" href="#note-181-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section id="sec-12-4"><h2>12.4 有序类别预测变量</h2>
+    <p>上一节用带累积 link 的类别模型处理了有序结果变量。那么有序预测变量呢？当然可以像在线性模型中那样，直接把它们当作连续预测变量纳入模型，但这并不理想。和有序结果一样，我们并不真想假设相邻次序值之间的距离都相同。幸运的是，没有必要这样做。除了有序结果之外，我们也能构造有序效应。<sup id="note-182-ref"><a href="#note-182">182</a></sup></p>
+    <p>上一节的 <code>Trolley</code> 数据就提供了一个好例子。先看变量 <code>edu</code>，其中记录每个人已经完成的教育层级：</p>
+    <figure class="code-listing" id="code-12-30"><figcaption>R 代码 12.30</figcaption><pre><code>library(rethinking)
+data(Trolley)
+d &lt;- Trolley
+levels(d$edu)</code></pre><pre class="code-output"><code>[1] "Bachelor's Degree"    "Elementary School"    "Graduate Degree"
+[4] "High School Graduate" "Master's Degree"       "Middle School"
+[7] "Some College"         "Some High School"</code></pre></figure>
+    <p>样本中共有 8 个不同的已完成教育层级。不幸的是，它们并没有按从低到高排列。R 从字符数据构造 <code>factor</code> 变量时，经常会出现这种情况。因此第一步是把它们编码成有序变量：最低层级为 1，最高层级为 8；然后再考虑怎样从中构造有序效应。正确顺序是：[2] Elementary School、[6] Middle School、[8] Some High School、[4] High School Graduate、[7] Some College、[1] Bachelor’s Degree、[5] Master’s Degree、[3] Graduate Degree。只需建立一个由新取值组成的向量，再映射到这些层级上：</p>
+    <figure class="code-listing" id="code-12-31"><figcaption>R 代码 12.31</figcaption><pre><code>edu_levels &lt;- c( 6 , 1 , 8 , 4 , 7 , 2 , 5 , 3 )
+d$edu_new &lt;- edu_levels[ d$edu ]</code></pre></figure>
+    <p>现在，<code>edu_new</code> 按教育程度递增的正确顺序保存了 1 到 8。</p>
+    <p>接下来是有趣的部分。有序预测变量的思想是：取值每提高一级，都对结果带来自己独有的增量效应，也叫边际效应。这意味着要用参数推断每一级的增量效应。8 个教育层级需要 7 个参数；第一层级（Elementary School）被吸收到截距中。第一个增量来自由 Elementary School 升到 Middle School，此时把第一个效应加到线性模型里：</p>
+    <div class="equation-block compact-equation wallis-equation" id="eq-12-education-first-step"><span class="math-line"><var>ϕ</var><sub>i</sub> = <var>δ</var><sub>1</sub> + 其他项</span></div>
+    <p>参数 <span class="math-inline"><var>δ</var><sub>1</sub></span> 表示完成 Middle School 的效应，“其他项”则是线性模型中想要的所有其他项。另一个人继续完成第三层级 Some High School，其线性模型为：</p>
+    <div class="equation-block compact-equation wallis-equation" id="eq-12-education-second-step"><span class="math-line"><var>ϕ</var><sub>i</sub> = <var>δ</var><sub>1</sub> + <var>δ</var><sub>2</sub> + 其他项</span></div>
+    <p>其中 <span class="math-inline"><var>δ</var><sub>2</sub></span> 是完成部分（而非全部）High School 的增量效应。后面依此类推：每完成一个新层级，就再加入一个增量效应。拥有第 8 层级 Graduate Degree 的人，其线性模型为：</p>
+    <div class="equation-block compact-equation wallis-equation" id="eq-12-education-all-steps"><span class="math-line"><var>ϕ</var><sub>i</sub> = ∑<sub><var>j</var>=1</sub><sup>7</sup> <var>δ</var><sub><var>j</var></sub> + 其他项</span></div>
+    <p>所有 <span class="math-inline"><var>δ</var></span> 参数之和就是最大的教育效应。为方便解释，可以把这个最大总和称为一个普通系数 <span class="math-inline"><var>β</var><sub><var>E</var></sub></span>，再让各 <span class="math-inline"><var>δ</var></span> 参数表示它所占的份额。若再定义一个虚拟参数 <span class="math-inline"><var>δ</var><sub>0</sub> = 0</span>，整个表达式就可以写得非常紧凑：</p>
+    <div class="equation-block compact-equation wallis-equation" id="eq-12-education-ordered-effect"><span class="math-line"><var>ϕ</var><sub>i</sub> = <var>β</var><sub><var>E</var></sub> ∑<sub><var>j</var>=0</sub><sup><var>E</var><sub>i</sub>−1</sup> <var>δ</var><sub><var>j</var></sub> + 其他项</span></div>
+    <p>其中 <span class="math-inline"><var>E</var><sub>i</sub></span> 是第 <span class="math-inline"><var>i</var></span> 个人已经完成的教育层级。现在所有 <span class="math-inline"><var>δ</var><sub><var>j</var></sub></span> 之和为 1，只需查看 <span class="math-inline"><var>β</var><sub><var>E</var></sub></span> 就能解释最大教育效应。当某人的 <span class="math-inline"><var>E</var><sub>i</sub> = 1</span> 时，<span class="math-inline"><var>β</var><sub><var>E</var></sub></span> 不会出现在其线性模型里，因为 <span class="math-inline"><var>β</var><sub><var>E</var></sub><var>δ</var><sub>0</sub> = 0</span>。</p>
+    <p>引入 <span class="math-inline"><var>β</var><sub><var>E</var></sub></span> 也有助于定义先验。如果事前预期所有层级都具有相同的增量效应，就希望所有 <span class="math-inline"><var>δ</var><sub><var>j</var></sub></span> 共享相同先验。现在可以这样设置，同时仍为最大效应 <span class="math-inline"><var>β</var><sub><var>E</var></sub></span> 单独指定先验。<span class="math-inline"><var>β</var><sub><var>E</var></sub></span> 也可以为负；此时所有逐级效应都会是逐级的负效应。</p>
+    <p>我知道这一切相当古怪。现在我们已经深入潮汐预测机内部（第 11 章）。理解总要随着使用和练习而来。因此，把教育变量作为有序预测变量加入有序 logit 模型。先写出完整模型的数学形式；结果的概率与线性模型为：</p>
+    <div class="equation-block wallis-equation" id="eq-12-ordered-education-model"><div><var>R</var><sub>i</sub> ∼ Ordered-logit(<var>ϕ</var><sub>i</sub>, <var>κ</var>)</div><div><var>ϕ</var><sub>i</sub> = <var>β</var><sub><var>E</var></sub> ∑<sub><var>j</var>=0</sub><sup><var>E</var><sub>i</sub>−1</sup> <var>δ</var><sub><var>j</var></sub> + <var>β</var><sub><var>A</var></sub><var>A</var><sub>i</sub> + <var>β</var><sub><var>I</var></sub><var>I</var><sub>i</sub> + <var>β</var><sub><var>C</var></sub><var>C</var><sub>i</sub></div></div>
+    <p class="continuation-note">切点与斜率先验、<span class="math-inline"><var>δ</var></span> 向量的 Dirichlet 先验，以及代码 12.32 起的先验模拟，将从原书 PDF 第 421 页继续。</p>
+  </section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 12 章 PDF 第 397–417 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 418 页继续。</aside>
+  <section class="endnotes" id="chapter-12-notes" role="doc-endnotes"><h2>尾注</h2><ol start="175"><li id="note-175">Williams（1975，1982）。Bolker（2008）在生态数据语境中给出了清晰介绍。 <a class="backref" href="#note-175-ref" aria-label="返回正文">↩</a></li><li id="note-176">另一种很常见的参数化是 <span class="math-inline"><var>α</var> = <var>p̄θ</var></span> 与 <span class="math-inline"><var>β</var> = (1 − <var>p̄</var>)<var>θ</var></span>。<span class="math-inline"><var>p̄</var></span> 与 <span class="math-inline"><var>θ</var></span> 的版本更适合建模，因为我们通常希望把线性模型连接到 beta 分布的中心趋势，而 <span class="math-inline"><var>p̄</var></span> 正是中心趋势的一种度量。 <a class="backref" href="#note-176-ref" aria-label="返回正文">↩</a></li><li id="note-177">Hilbe（2011）整本书都在讨论 gamma-Poisson 回归。 <a class="backref" href="#note-177-ref" aria-label="返回正文">↩</a></li><li id="note-178">Lambert（1992）首次介绍了这种模型。基本的零膨胀方法虽然出现得更早，但 Lambert 给出了本书采用的版本：用 log 与 logit link 连接两个彼此独立的线性模型。 <a class="backref" href="#note-178-ref" aria-label="返回正文">↩</a></li><li id="note-179">参见 Bürkner 与 Vuorre（2018），以及 Liddell 与 Kruschke（2018）。 <a class="backref" href="#note-179-ref" aria-label="返回正文">↩</a></li><li id="note-180">McCullagh（1980）被认为引入并推广了这种方法。另见 Fullerton（2009），其中综述并比较了不同模型类型。 <a class="backref" href="#note-180-ref" aria-label="返回正文">↩</a></li><li id="note-181">Cushman 等（2006）。 <a class="backref" href="#note-181-ref" aria-label="返回正文">↩</a></li><li id="note-182">本节的构造基于 Bürkner 与 Charpentier（2018）的策略。<code>brms</code> 包中内置了同样的技术；该包也使用 Stan 进行采样。 <a class="backref" href="#note-182-ref" aria-label="返回正文">↩</a></li></ol></section>
+
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 12 章 PDF 第 397–420 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 421 页继续。</aside>
 </article>

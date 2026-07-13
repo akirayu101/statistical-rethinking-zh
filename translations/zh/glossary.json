@@ -1061,7 +1061,19 @@
     "marginal posterior distribution": "边际后验分布",
     "posterior boundary": "后验边界",
     "cumulative probability curve": "累积概率曲线",
-    "debug": "调试"
+    "debug": "调试",
+    "simulated frequency": "模拟频数",
+    "ordered predictor variable": "有序预测变量",
+    "ordered effect": "有序效应",
+    "completed education level": "已完成教育层级",
+    "incremental effect": "增量效应",
+    "marginal effect": "边际效应",
+    "ordinary metric variable": "普通度量变量",
+    "factor variable": "factor 变量",
+    "character data": "字符数据",
+    "maximum education effect": "最大教育效应",
+    "ordinal value": "次序值",
+    "dummy parameter": "虚拟参数"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "blavaan", "AIC", "DIC", "WAIC", "BIC", "PSIS-LOO", "MCMC", "HMC"

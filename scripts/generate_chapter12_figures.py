@@ -15,6 +15,7 @@ OUT3 = ROOT / "translations" / "zh" / "media" / "chapter-12-zero-inflated-struct
 OUT4 = ROOT / "translations" / "zh" / "media" / "chapter-12-ordered-distribution.svg"
 OUT5 = ROOT / "translations" / "zh" / "media" / "chapter-12-ordered-likelihood.svg"
 OUT6 = ROOT / "translations" / "zh" / "media" / "chapter-12-trolley-slopes.svg"
+OUT7 = ROOT / "translations" / "zh" / "media" / "chapter-12-trolley-predictions.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 BLUE = "#6670ee"
@@ -500,6 +501,105 @@ def trolley_slope_plot() -> None:
     OUT6.write_text("\n".join(parts) + "\n", encoding="utf-8")
 
 
+def trolley_prediction_plot() -> None:
+    """Rebuild the six-panel posterior prediction display in Figure 12.6."""
+    width, height = 1200, 760
+    scenarios = [
+        ("action=0, contact=0", [64, 61, 83, 204, 159, 170, 191], [73, 69, 112, 200, 157, 159, 217]),
+        ("action=1, contact=0", [100, 72, 109, 230, 128, 120, 127], [179, 92, 148, 247, 92, 87, 83]),
+        ("action=0, contact=1", [91, 80, 105, 225, 122, 157, 156], [330, 151, 126, 213, 61, 44, 39]),
+    ]
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">',
+        '<title>图 12.6：含交互项的有序类别模型后验预测</title>',
+        '<desc>上排三个面板显示不同的行动与接触组合下，意图从零变为一时六条累积概率边界的变化；下排用黑色与蓝色线段比较相应的模拟回答频数。</desc>',
+        '<rect width="100%" height="100%" fill="#fbfaf6"/>',
+    ]
+    columns = [70, 430, 790]
+    panel_width = 300
+    top_y0, top_y1 = 80, 320
+    bottom_y0, bottom_y1 = 450, 675
+
+    for panel_index, (title, count0, count1) in enumerate(scenarios):
+        panel_left = columns[panel_index]
+        axis_left, axis_right = panel_left + 54, panel_left + panel_width
+        sx = lambda value, left=axis_left, right=axis_right: left + value * (right - left)
+        sy = lambda value, top=top_y0, bottom=top_y1: bottom - value * (bottom - top)
+        totals = (sum(count0), sum(count1))
+        cumulative0 = [sum(count0[:index]) / totals[0] for index in range(1, 7)]
+        cumulative1 = [sum(count1[:index]) / totals[1] for index in range(1, 7)]
+        parts.extend([
+            text_el((axis_left + axis_right) / 2, 42, title, size=19, anchor="middle", weight=650),
+            f'<rect x="{panel_left}" y="55" width="{panel_width + 20}" height="310" rx="8" fill="#fff" stroke="{GRID}"/>',
+        ])
+        for tick in (0.0, 0.5, 1.0):
+            yy = sy(tick)
+            parts.extend([
+                f'<line x1="{axis_left-6}" y1="{yy:.1f}" x2="{axis_left}" y2="{yy:.1f}" stroke="{INK}"/>',
+                text_el(axis_left - 11, yy + 5, f"{tick:.1f}", size=14, anchor="end"),
+            ])
+        for tick in (0, 1):
+            xx = sx(tick)
+            parts.extend([
+                f'<line x1="{xx:.1f}" y1="{top_y1}" x2="{xx:.1f}" y2="{top_y1+6}" stroke="{INK}"/>',
+                text_el(xx, top_y1 + 25, tick, size=14, anchor="middle"),
+            ])
+        parts.extend([
+            f'<line x1="{axis_left}" y1="{top_y1}" x2="{axis_right}" y2="{top_y1}" stroke="{INK}" stroke-width="1.6"/>',
+            f'<line x1="{axis_left}" y1="{top_y1}" x2="{axis_left}" y2="{top_y0}" stroke="{INK}" stroke-width="1.6"/>',
+            text_el((axis_left + axis_right) / 2, 356, "意图", size=17, anchor="middle"),
+            text_el(panel_left + 17, (top_y0 + top_y1) / 2, "累积概率", size=17, anchor="middle", rotate=-90),
+        ])
+        for boundary, (p0, p1) in enumerate(zip(cumulative0, cumulative1)):
+            for variation in (-0.012, -0.006, 0.006, 0.012):
+                sign = -1 if boundary % 2 else 1
+                y0 = sy(max(0, min(1, p0 + variation * sign)))
+                y1 = sy(max(0, min(1, p1 + variation)))
+                parts.append(f'<line x1="{sx(0):.1f}" y1="{y0:.1f}" x2="{sx(1):.1f}" y2="{y1:.1f}" stroke="#777a74" stroke-width="1" opacity=".22"/>')
+            parts.extend([
+                f'<line x1="{sx(0):.1f}" y1="{sy(p0):.1f}" x2="{sx(1):.1f}" y2="{sy(p1):.1f}" stroke="{INK}" stroke-width="3"/>',
+                f'<circle cx="{sx(0):.1f}" cy="{sy(p0):.1f}" r="5" fill="{BLUE}"/>',
+                f'<circle cx="{sx(1):.1f}" cy="{sy(p1):.1f}" r="5" fill="{BLUE}"/>',
+            ])
+
+        hist_left, hist_right = axis_left, axis_right
+        hx = lambda value, left=hist_left, right=hist_right: left + (value - 1) / 6 * (right - left)
+        hy = lambda value, top=bottom_y0, bottom=bottom_y1: bottom - value / 350 * (bottom - top)
+        parts.extend([
+            text_el((hist_left + hist_right) / 2, 415, title, size=19, anchor="middle", weight=650),
+            f'<rect x="{panel_left}" y="425" width="{panel_width + 20}" height="310" rx="8" fill="#fff" stroke="{GRID}"/>',
+        ])
+        for tick in (0, 100, 200, 300):
+            yy = hy(tick)
+            parts.extend([
+                f'<line x1="{hist_left-6}" y1="{yy:.1f}" x2="{hist_left}" y2="{yy:.1f}" stroke="{INK}"/>',
+                text_el(hist_left - 11, yy + 5, tick, size=14, anchor="end"),
+            ])
+        for category in range(1, 8):
+            xx = hx(category)
+            parts.extend([
+                f'<line x1="{xx:.1f}" y1="{bottom_y1}" x2="{xx:.1f}" y2="{bottom_y1+6}" stroke="{INK}"/>',
+                text_el(xx, bottom_y1 + 24, category, size=14, anchor="middle"),
+                f'<line x1="{xx-4:.1f}" y1="{bottom_y1}" x2="{xx-4:.1f}" y2="{hy(count0[category-1]):.1f}" stroke="{INK}" stroke-width="4"/>',
+                f'<line x1="{xx+4:.1f}" y1="{bottom_y1}" x2="{xx+4:.1f}" y2="{hy(count1[category-1]):.1f}" stroke="{BLUE}" stroke-width="4"/>',
+            ])
+        parts.extend([
+            f'<line x1="{hist_left}" y1="{bottom_y1}" x2="{hist_right}" y2="{bottom_y1}" stroke="{INK}" stroke-width="1.6"/>',
+            f'<line x1="{hist_left}" y1="{bottom_y1}" x2="{hist_left}" y2="{bottom_y0}" stroke="{INK}" stroke-width="1.6"/>',
+            text_el((hist_left + hist_right) / 2, 724, "回答", size=17, anchor="middle"),
+            text_el(panel_left + 17, (bottom_y0 + bottom_y1) / 2, "频数", size=17, anchor="middle", rotate=-90),
+        ])
+
+    parts.extend([
+        '<line x1="890" y1="746" x2="925" y2="746" stroke="#30332e" stroke-width="4"/>',
+        text_el(934, 752, "意图 = 0", size=14),
+        '<line x1="1035" y1="746" x2="1070" y2="746" stroke="#6670ee" stroke-width="4"/>',
+        text_el(1079, 752, "意图 = 1", size=14),
+        "</svg>",
+    ])
+    OUT7.write_text("\n".join(parts) + "\n", encoding="utf-8")
+
+
 if __name__ == "__main__":
     main()
     figure_12_2()
@@ -507,5 +607,6 @@ if __name__ == "__main__":
     figure_12_4()
     figure_12_5()
     trolley_slope_plot()
-    for path in (OUT1, OUT2, OUT3, OUT4, OUT5, OUT6):
+    trolley_prediction_plot()
+    for path in (OUT1, OUT2, OUT3, OUT4, OUT5, OUT6, OUT7):
         print(path)
