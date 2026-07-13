@@ -2258,7 +2258,7 @@
   },
   "chapter-13": {
     "required_status": "in_progress",
-    "source_pages": [429, 449],
+    "source_pages": [429, 452],
     "required_ids": [
       "intro-13",
       "note-185-ref",
@@ -2324,6 +2324,14 @@
       "code-13-24",
       "sec-13-3-2",
       "code-13-25",
+      "sec-13-4",
+      "rethinking-no-free-samples",
+      "sec-13-4-1",
+      "eq-13-devils-funnel",
+      "code-13-26",
+      "note-192-ref",
+      "fig-13-5",
+      "eq-13-funnel-noncentered",
       "chapter-13-notes",
       "note-185",
       "note-186",
@@ -2331,7 +2339,8 @@
       "note-188",
       "note-189",
       "note-190",
-      "note-191"
+      "note-191",
+      "note-192"
     ],
     "required_headings": [
       "有记忆的模型",
@@ -2345,24 +2354,26 @@
       "13.3 不止一种集群类型",
       "13.3.1 多层黑猩猩",
       "13.3.2 更多簇",
+      "13.4 发散转移与非中心化先验",
+      "13.4.1 魔鬼漏斗",
       "尾注"
     ],
     "counts": {
-      "section": 4,
-      "figure": 29,
-      "figure img": 4,
-      ".book-figure": 4,
-      ".code-listing": 25,
-      ".code-output": 8,
-      ".rethinking-box": 4,
+      "section": 5,
+      "figure": 31,
+      "figure img": 5,
+      ".book-figure": 5,
+      ".code-listing": 26,
+      ".code-output": 9,
+      ".rethinking-box": 5,
       ".overthinking-box": 4,
       ".book-quote": 0,
-      ".equation-block": 6,
-      ".wallis-equation": 6,
+      ".equation-block": 8,
+      ".wallis-equation": 8,
       ".source-erratum": 3,
       ".chapter-introduction": 1,
       ".continuation-note": 1,
-      ".endnotes li": 7
+      ".endnotes li": 8
     }
   }
 }

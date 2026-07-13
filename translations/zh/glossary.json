@@ -1146,7 +1146,13 @@
     "hierarchical design": "层级设计",
     "actor cluster": "行动者集群",
     "experimental block": "实验区组",
-    "block cluster": "区组集群"
+    "block cluster": "区组集群",
+    "target acceptance rate": "目标接受率",
+    "steep curvature": "陡峭曲率",
+    "reparameterization": "重新参数化",
+    "centered parameterization": "中心化参数化",
+    "non-centered parameterization": "非中心化参数化",
+    "The Devil's Funnel": "魔鬼漏斗"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "blavaan", "AIC", "DIC", "WAIC", "BIC", "PSIS-LOO", "MCMC", "HMC"

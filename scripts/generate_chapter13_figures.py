@@ -13,6 +13,7 @@ OUT1 = ROOT / "translations" / "zh" / "media" / "chapter-13-tank-shrinkage.svg"
 OUT2 = ROOT / "translations" / "zh" / "media" / "chapter-13-tank-population.svg"
 OUT3 = ROOT / "translations" / "zh" / "media" / "chapter-13-pond-errors.svg"
 OUT4 = ROOT / "translations" / "zh" / "media" / "chapter-13-cluster-variation.svg"
+OUT5 = ROOT / "translations" / "zh" / "media" / "chapter-13-devils-funnel.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 BLUE = "#6670ee"
@@ -492,16 +493,128 @@ def figure_13_4() -> None:
     OUT4.write_text("\n".join(svg), encoding="utf-8")
 
 
+def figure_13_5() -> None:
+    """Draw the centered funnel and its non-centered Gaussian form."""
+    width, height = 1200, 690
+    left = (90.0, 95.0, 555.0, 560.0)
+    right = (665.0, 95.0, 1130.0, 560.0)
+    lx0, ly0, lx1, ly1 = left
+    rx0, ry0, rx1, ry1 = right
+
+    def left_xy(x: float, v: float) -> tuple[float, float]:
+        return lx0 + (x + 5.0) / 10.0 * (lx1 - lx0), ly1 - (v + 4.5) / 9.0 * (ly1 - ly0)
+
+    def right_xy(z: float, v: float) -> tuple[float, float]:
+        return rx0 + (z + 2.3) / 4.6 * (rx1 - rx0), ry1 - (v + 4.5) / 9.0 * (ry1 - ry0)
+
+    svg = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
+        '<title>图 13.5：魔鬼漏斗的中心化与非中心化参数化</title>',
+        '<desc>左图是中心化参数化的漏斗形联合密度等高线，灰色 HMC 轨迹越过陡峭谷壁形成发散转移；右图是同一模型的非中心化参数化，联合密度变为平缓的二维高斯。</desc>',
+        '<rect width="1200" height="690" fill="#fff"/>',
+        text_el((lx0 + lx1) / 2, 48, "中心化参数化", size=23, anchor="middle", weight=600),
+        text_el((rx0 + rx1) / 2, 48, "非中心化参数化", size=23, anchor="middle", weight=600),
+    ]
+
+    for x0, y0, x1, y1 in [left, right]:
+        svg.extend([
+            f'<line x1="{x0}" y1="{y1}" x2="{x1}" y2="{y1}" stroke="{INK}" stroke-width="2"/>',
+            f'<line x1="{x0}" y1="{y0}" x2="{x0}" y2="{y1}" stroke="{INK}" stroke-width="2"/>',
+        ])
+
+    # Exact contour branches of log p(v, x), apart from an additive constant.
+    for level in [-4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0]:
+        positive: list[tuple[float, float]] = []
+        negative: list[tuple[float, float]] = []
+        branches: list[tuple[list[tuple[float, float]], list[tuple[float, float]]]] = []
+        for index in range(361):
+            v = -4.45 + index * 8.9 / 360
+            radicand = 2.0 * math.exp(2.0 * v) * (-v * v / 18.0 - v - level)
+            x = math.sqrt(radicand) if radicand > 0 else 99.0
+            if x <= 5.05:
+                positive.append(left_xy(x, v))
+                negative.append(left_xy(-x, v))
+            elif len(positive) > 1:
+                branches.append((positive, negative))
+                positive, negative = [], []
+        if len(positive) > 1:
+            branches.append((positive, negative))
+        for positive_branch, negative_branch in branches:
+            svg.extend([
+                polyline(positive_branch, fill="none", stroke="#777a74", stroke_width="1.2"),
+                polyline(negative_branch, fill="none", stroke="#777a74", stroke_width="1.2"),
+            ])
+
+    # The non-centered joint density is Gaussian in v and z.
+    for radius in [0.30, 0.48, 0.66, 0.84, 1.02, 1.20, 1.38, 1.46]:
+        points = [
+            right_xy(radius * math.cos(angle), 3.0 * radius * math.sin(angle))
+            for angle in [index * 2.0 * math.pi / 240 for index in range(241)]
+        ]
+        svg.append(polyline(points, fill="none", stroke="#777a74", stroke_width="1.2"))
+
+    left_trajectory = [(-0.20, -0.55), (0.72, 0.18), (0.02, -2.25), (1.06, 0.38), (-1.85, 3.05)]
+    right_trajectory = [(0.02, -0.20), (-1.55, 1.05), (-0.20, 1.78), (0.38, -0.28), (-1.48, -1.05), (-0.30, -4.05)]
+    svg.extend([
+        polyline([left_xy(x, v) for x, v in left_trajectory], fill="none", stroke="#a8aaa5", stroke_width="4"),
+        polyline([right_xy(z, v) for z, v in right_trajectory], fill="none", stroke="#a8aaa5", stroke_width="4"),
+    ])
+    for x, v in left_trajectory[:-1]:
+        px, py = left_xy(x, v)
+        svg.append(f'<circle cx="{px:.1f}" cy="{py:.1f}" r="4.5" fill="{INK}"/>')
+    open_x, open_y = left_xy(*left_trajectory[-1])
+    svg.append(f'<circle cx="{open_x:.1f}" cy="{open_y:.1f}" r="7" fill="#fff" stroke="{INK}" stroke-width="2.3"/>')
+    for z, v in right_trajectory:
+        px, py = right_xy(z, v)
+        svg.append(f'<circle cx="{px:.1f}" cy="{py:.1f}" r="4.5" fill="{INK}"/>')
+    for mapper in [left_xy, right_xy]:
+        px, py = mapper(0, 0)
+        svg.extend([
+            f'<line x1="{px - 8:.1f}" y1="{py - 8:.1f}" x2="{px + 8:.1f}" y2="{py + 8:.1f}" stroke="{INK}" stroke-width="2.2"/>',
+            f'<line x1="{px - 8:.1f}" y1="{py + 8:.1f}" x2="{px + 8:.1f}" y2="{py - 8:.1f}" stroke="{INK}" stroke-width="2.2"/>',
+        ])
+
+    for value in [-4, -2, 0, 2, 4]:
+        x, _ = left_xy(value, -4.5)
+        svg.extend([
+            f'<line x1="{x:.1f}" y1="{ly1}" x2="{x:.1f}" y2="{ly1 + 7}" stroke="{INK}"/>',
+            text_el(x, ly1 + 30, value, size=17, anchor="middle"),
+        ])
+    for value in [-2, -1, 0, 1, 2]:
+        x, _ = right_xy(value, -4.5)
+        svg.extend([
+            f'<line x1="{x:.1f}" y1="{ry1}" x2="{x:.1f}" y2="{ry1 + 7}" stroke="{INK}"/>',
+            text_el(x, ry1 + 30, value, size=17, anchor="middle"),
+        ])
+    for value in [-4, -2, 0, 2, 4]:
+        for x0, mapper in [(lx0, left_xy), (rx0, right_xy)]:
+            _, y = mapper(0, value)
+            svg.extend([
+                f'<line x1="{x0 - 7}" y1="{y:.1f}" x2="{x0}" y2="{y:.1f}" stroke="{INK}"/>',
+                text_el(x0 - 15, y + 6, value, size=17, anchor="end"),
+            ])
+    svg.extend([
+        text_el((lx0 + lx1) / 2, 635, "x", size=22, anchor="middle"),
+        text_el((rx0 + rx1) / 2, 635, "z", size=22, anchor="middle"),
+        text_el(30, (ly0 + ly1) / 2, "v", size=22, anchor="middle", rotate=-90),
+        text_el(605, (ry0 + ry1) / 2, "v", size=22, anchor="middle", rotate=-90),
+        '</svg>',
+    ])
+    OUT5.write_text("\n".join(svg), encoding="utf-8")
+
+
 def main() -> None:
     posterior_means, hyperparameters = sample_posterior()
     figure_13_1(posterior_means, hyperparameters)
     figure_13_2(hyperparameters)
     figure_13_3()
     figure_13_4()
+    figure_13_5()
     print(OUT1)
     print(OUT2)
     print(OUT3)
     print(OUT4)
+    print(OUT5)
 
 
 if __name__ == "__main__":

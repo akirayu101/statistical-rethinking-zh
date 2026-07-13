@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-13" data-source-pages="429-449">
-  <header class="chapter-header"><p class="eyebrow">第十三章</p><h1>有记忆的模型</h1><p class="source-range">当前译稿对应原书 PDF 第 429–449 页</p></header>
+<article class="book-article" data-chapter="chapter-13" data-source-pages="429-452">
+  <header class="chapter-header"><p class="eyebrow">第十三章</p><h1>有记忆的模型</h1><p class="source-range">当前译稿对应原书 PDF 第 429–452 页</p></header>
 
   <div class="chapter-introduction" id="intro-13">
     <p>1985 年，Clive Wearing 失去了心智，却没有失去音乐。<sup id="note-185-ref"><a href="#note-185">185</a></sup> Wearing 是音乐学家，也是一位出色的音乐家；但引起唇疱疹的单纯疱疹病毒钻进了他的大脑，侵蚀了海马体。结果是慢性<strong>顺行性遗忘</strong>：他无法形成新的长期记忆。他仍记得怎样弹钢琴，却不记得自己五分钟前刚弹过。Wearing 如今活在一个个瞬间里，对几分钟前以外的过去一无所知；每一杯咖啡都是他有生以来的第一杯。</p>
@@ -362,10 +362,43 @@ b[3]   -0.48 -0.47
 b[4]    0.28  0.24</code></pre></figure>
     <p>我删去了 <code>coeftab</code> 输出的其余部分，因为现在只关心 <code>b</code> 参数。这些估计并不完全相同，但非常接近。查看 <code>sigma_b</code> 会发现它很小：在 logit 尺度上，各处理之间差异不大，因为它们本来就没有造成多少差别。每种处理又都有大量数据，所以无论如何也不会被汇聚多少。若用 WAIC 或 PSIS 比较 <code>m13.6</code> 与 <code>m13.4</code>，会发现两者在纯预测指标上没有差异。只要每个集群（这里是每种处理）都有大量数据来估计其参数，这就是典型结果。</p>
     <p>不过，<code>m13.6</code> 确实带来了更多<strong>发散转移</strong>。终于该处理它们了。</p>
-    <p class="continuation-note">13.4“发散转移与非中心化先验”将从原书 PDF 第 450 页继续。</p>
   </section>
 
-  <section class="endnotes" id="chapter-13-notes" role="doc-endnotes"><h2>尾注</h2><ol start="185"><li id="note-185">Wearing 的妻子 Deborah 写过一本关于他患病后两人生活的书（Wearing，2005）。他的故事也出现在多部纪录片中；快速搜索互联网还能找到许多新闻报道。 <a class="backref" href="#note-185-ref" aria-label="返回正文">↩</a></li><li id="note-186">Gelman（2005）第 20 页第 6 节列出了一组彼此差异极大的“随机效应”定义，读来颇有趣。 <a class="backref" href="#note-186-ref" aria-label="返回正文">↩</a></li><li id="note-187">Vonesh 与 Bolker（2005）。 <a class="backref" href="#note-187-ref" aria-label="返回正文">↩</a></li><li id="note-188">这里采用 Gelman（2005）的术语。他认为，对大多数人而言，常用的“随机效应”一词几乎无助于理解，反而似乎会助长误解；部分原因是“固定”和“随机”对不同统计学家有不同含义。详见该文第 20–21 页。不过，我完全明白：试图推广 Gelman 的替代术语，基本等同于迎着强风吐口水。 <a class="backref" href="#note-188-ref" aria-label="返回正文">↩</a></li><li id="note-189">“多”也经常指多个线性模型，尤其常见于“层级线性模型”文献。不管怎样，我们谈论的仍是同一种机器人。 <a class="backref" href="#note-189-ref" aria-label="返回正文">↩</a></li><li id="note-190">注意，正则化本身仍有不确定性。所以，这个模型并不完全等同于直接假设一个标准差恒为 1.6 的正则化先验；相反，每个水槽的截距还会对 <span class="math-inline"><var>σ</var></span>（以及 <span class="math-inline"><var>ᾱ</var></span>）的不确定性取平均。 <a class="backref" href="#note-190-ref" aria-label="返回正文">↩</a></li><li id="note-191">这一事实早在人们能够实际使用多层模型之前就已为人所知；可参见 Stein（1955）那篇影响深远的非 Bayes 论文。 <a class="backref" href="#note-191-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section id="sec-13-4"><h2>13.4 发散转移与非中心化先验</h2>
+    <p>在上一节的模型中，Stan 报告了发散转移警告。第 9 章第一次提到它们时，我答应稍后解释，现在正是时候。本节会说明发散转移是什么，以及修复它们的几种实用方法。在多层模型中，发散转移很常见；因此你需要知道怎样修复，而这要求先了解它们为何发生。</p>
+    <p>Hamiltonian Monte Carlo 最出色的特性之一，是它能对效率和准确度进行内部检查。其中一项检查来自物理模拟的约束，几乎不需要额外代价。回想一下，HMC 模拟一个粒子在曲面上无摩擦地流动。任一次转移，也就是把粒子弹动一次，起点的总能量都应等于终点的总能量；封闭系统中的能量就是这样运行的。在纯数学系统中，能量始终正确守恒，这是物理本身的事实。</p>
+    <p>但在数值系统中，情况可能并非如此。有时终点的总能量与起点不同，这时能量就发生了发散。为什么会这样？它往往发生在后验分布于参数空间某个区域非常陡峭时。概率的急剧变化很难让离散的物理模拟准确跟随。算法会比较转移起点与终点的能量来发现这一点；若两者不匹配，就表明探索后验分布这一区域时出现了数值问题。</p>
+    <p>发散转移会被拒绝，因此不会直接破坏后验分布的近似。但它会间接损害近似，因为发生发散的区域很难被正确探索。即使没有出现发散转移，带有陡峭区域的分布也很难探索，链的效率会下降；遗憾的是，这在多层模型中相当常见。</p>
+    <p>有两个简单技巧可以减小发散转移的影响。第一，调整模拟，使粒子不至于越过谷壁；也就是用更高的目标接受率——Stan 的 <code>adapt_delta</code>——进行更多预热。不过，对许多模型而言，无论怎样调节抽样器都无法彻底消除发散。第二个技巧是以新方式书写统计模型，也就是重新参数化。同一个统计模型可以有几种数学上等价、数值上却不同的形式；把模型从一种形式改写为另一种，就叫作<strong>重新参数化</strong>。下面看两个例子。</p>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 13 章 PDF 第 429–449 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 450 页继续。</aside>
+    <aside class="rethinking-box" id="rethinking-no-free-samples"><h3>再思考：没有免费的样本</h3><p>当 Hamiltonian Monte Carlo 抱怨发散转移时，人们很容易退回到另一个抱怨较少的抽样器。这是个错误。例如 Gibbs 抽样器从不会抱怨，只会悄无声息地失败。Gibbs 抽样确实不像 HMC 那样遭遇陡峭曲率的同一种问题，但面对同样的后验分布，它依然会出问题，只是不给任何警告。</p><p>更一般的问题——对不可靠近似发出警告——存在于计算统计的所有领域。R 包 <code>lme4</code> 很适合拟合多层模型；它不是 Bayes 方法，而使用一种巧妙的非 Bayes 算法。该算法有时不可靠，而 <code>lme4</code> 很负责地提醒用户。另一些尝试拟合同类多层模型的包可能远少于它发出警告，但并不因此更加可靠，只是更加不谨慎。</p></aside>
+
+    <h3 id="sec-13-4-1">13.4.1 魔鬼漏斗</h3>
+    <p>无需复杂模型，也会遇到发散转移。假设有两个变量 <var>v</var> 与 <var>x</var> 的如下联合分布：</p>
+    <div class="equation-block wallis-equation" id="eq-13-devils-funnel"><div><var>v</var> ∼ Normal(0, 3)</div><div><var>x</var> ∼ Normal(0, exp(<var>v</var>))</div></div>
+    <p>这里没有数据，只是要从一个联合分布中抽样。这个分布看起来或许古怪，却代表了典型的多层分布：一个变量（这里是 <var>x</var>）的尺度取决于另一个变量（这里是 <var>v</var>）。图 13.5 会把它可视化。可以在 <code>ulam()</code> 中尝试：</p>
+    <figure class="code-listing" id="code-13-26"><figcaption>R 代码 13.26</figcaption><pre><code>m13.7 &lt;- ulam(
+    alist(
+        v ~ normal(0,3),
+        x ~ normal(0,exp(v))
+    ), data=list(N=1) , chains=4 )
+precis( m13.7 )</code></pre><pre class="code-output"><code>   mean     sd   5.5%  94.5% n_eff Rhat
+v  1.90   2.08  -1.49   5.42    39 1.06
+x 18.12 135.97 -31.78 123.84   102 1.04</code></pre></figure>
+    <p>这看起来像个简单问题——只有两个参数——却是一场灾难。你应该会看到大量发散转移，<code>n_eff</code> 与 <code>Rhat</code> 也非常糟糕；不妨再扫一眼轨迹图 <code>traceplot(m13.7)</code>。</p>
+    <p>这个例子叫作<strong>魔鬼漏斗</strong>。<sup id="note-192-ref"><a href="#note-192">192</a></sup>图 13.5 左侧显示了分布的等高线。当 <var>v</var> 较小时，<var>x</var> 的分布会收缩到零附近，形成一条 HMC 粒子必须探索的非常陡峭的谷。陡峭曲面难以模拟，因为模拟并不真正连续，而是以离散步推进。步长过大时，模拟就会越过谷壁；这个误差实际上改变了系统总能量，接下来会发生什么便难以预测。</p>
+    <p>和第 9 章的例子一样，图 13.5 左侧的模拟从叉号开始。模拟找到了谷底，却在转弯时错过方向，猛冲进参数空间。空心点就是一次发散转移：该提议的转移起点与终点能量并不相等。从这个分布抽样会产生大量这类发散，并得到非常不可靠的后验近似。因为这个分布十分简单，可以用网格近似计算，所以本例甚至能证明近似确实不可靠。</p>
+    <figure class="book-figure devils-funnel-figure" id="fig-13-5"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的魔鬼漏斗中心化与非中心化参数化双面板图"><img src="/media/chapter-13-devils-funnel.svg" alt="左图是陡峭漏斗形分布和越过谷壁的发散轨迹，右图是非中心化后得到的二维高斯分布与稳定轨迹"></div><p class="scroll-hint">图较宽，可横向滚动比较中心化漏斗与非中心化高斯几何。</p><figcaption><strong>图 13.5：</strong>当后验很陡、HMC 模拟的步进又太粗而无法跟随时，就会发生发散转移；这些数值误差会被自动检测。左：当 <var>v</var> 很小时，后验在 <var>x</var> = 0 附近形成陡峭山谷；发散转移（空心点）越过谷壁后猛烈冲向参数空间。右：同一模型采用非中心化参数化，山谷被压平。模型定义见正文；复现代码可参考 <code>?HMC_2D_sample</code> 的示例。</figcaption></figure>
+    <p>可以通过重新参数化修复漏斗。若一个参数的分布是另一个参数的函数，通常有两种参数化方式。在本例中，<var>x</var> 的分布是 <var>v</var> 的函数：<span class="math-inline"><var>x</var> ∼ Normal(0, exp(<var>v</var>))</span>。这正是漏斗的来源：随着 <var>v</var> 改变，<var>x</var> 的分布以数值上极不方便的方式改变。这种写法叫作<strong>中心化参数化</strong>。这个名称不太直观，它只表示 <var>x</var> 的分布以一个或多个其他参数为条件。</p>
+    <p>另一种选择是<strong>非中心化参数化</strong>。它把嵌在另一个参数定义里的参数——本例中的 <var>v</var>——移出来。对魔鬼漏斗，可以这样做：</p>
+    <div class="equation-block wallis-equation" id="eq-13-funnel-noncentered"><div><var>v</var> ∼ Normal(0, 3)</div><div><var>z</var> ∼ Normal(0, 1)</div><div><var>x</var> = <var>z</var> exp(<var>v</var>)</div></div>
+    <p>这看起来很疯狂。要理解刚才发生了什么，可以想想变量标准化的常见步骤。本书此前多次在运行模型前标准化数据：减去均值，再除以标准差；得到的新变量均值为零、标准差为一。若要恢复原变量，就反向执行这些步骤：先把标准化变量乘以原标准差，再加回原均值。</p>
+    <p>上面的重新参数化只是把 <var>z</var> 定义成标准化的 <var>x</var>。既然已经标准化，它的均值就是零，标准差就是一。随后为了计算 <var>x</var>，用标准差 exp(<var>v</var>) 乘以 <var>z</var>，逆转标准化。两种情况下均值都为零，所以无需加回均值；如果均值不同，也会在这一步加回。结果是，非中心化版本中的 <var>x</var> 与原先中心化版本中的 <var>x</var> 具有相同分布，<var>v</var> 与 <var>x</var> 的联合分布也完全相同。</p>
+    <p>但运行 Markov 链时，两种写法大不相同。现在不直接抽样 <var>x</var>，而是抽样 <var>z</var>。图 13.5 右侧显示非中心化分布的等高线——现在只是一个二元高斯——并叠加了 HMC 模拟。</p>
+    <p class="continuation-note">非中心化漏斗的 <code>ulam</code> 实现与代码 13.27 将从原书 PDF 第 453 页继续。</p>
+  </section>
+
+  <section class="endnotes" id="chapter-13-notes" role="doc-endnotes"><h2>尾注</h2><ol start="185"><li id="note-185">Wearing 的妻子 Deborah 写过一本关于他患病后两人生活的书（Wearing，2005）。他的故事也出现在多部纪录片中；快速搜索互联网还能找到许多新闻报道。 <a class="backref" href="#note-185-ref" aria-label="返回正文">↩</a></li><li id="note-186">Gelman（2005）第 20 页第 6 节列出了一组彼此差异极大的“随机效应”定义，读来颇有趣。 <a class="backref" href="#note-186-ref" aria-label="返回正文">↩</a></li><li id="note-187">Vonesh 与 Bolker（2005）。 <a class="backref" href="#note-187-ref" aria-label="返回正文">↩</a></li><li id="note-188">这里采用 Gelman（2005）的术语。他认为，对大多数人而言，常用的“随机效应”一词几乎无助于理解，反而似乎会助长误解；部分原因是“固定”和“随机”对不同统计学家有不同含义。详见该文第 20–21 页。不过，我完全明白：试图推广 Gelman 的替代术语，基本等同于迎着强风吐口水。 <a class="backref" href="#note-188-ref" aria-label="返回正文">↩</a></li><li id="note-189">“多”也经常指多个线性模型，尤其常见于“层级线性模型”文献。不管怎样，我们谈论的仍是同一种机器人。 <a class="backref" href="#note-189-ref" aria-label="返回正文">↩</a></li><li id="note-190">注意，正则化本身仍有不确定性。所以，这个模型并不完全等同于直接假设一个标准差恒为 1.6 的正则化先验；相反，每个水槽的截距还会对 <span class="math-inline"><var>σ</var></span>（以及 <span class="math-inline"><var>ᾱ</var></span>）的不确定性取平均。 <a class="backref" href="#note-190-ref" aria-label="返回正文">↩</a></li><li id="note-191">这一事实早在人们能够实际使用多层模型之前就已为人所知；可参见 Stein（1955）那篇影响深远的非 Bayes 论文。 <a class="backref" href="#note-191-ref" aria-label="返回正文">↩</a></li><li id="note-192">这个例子来自 Neal（2003）第 732 页。在那篇论文中，他只称之为“漏斗”，魔鬼从未出现。 <a class="backref" href="#note-192-ref" aria-label="返回正文">↩</a></li></ol></section>
+
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 13 章 PDF 第 429–452 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 453 页继续。</aside>
 </article>
