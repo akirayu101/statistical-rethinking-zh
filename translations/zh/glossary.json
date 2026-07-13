@@ -1178,6 +1178,10 @@
     "transformed parameter": "转换参数",
     "generated quantities": "生成量",
     "exclusion restriction": "排除限制",
+    "bias amplifier": "偏差放大器",
+    "multivariate linear model": "多元线性模型",
+    "error covariance": "误差协方差",
+    "residual correlation": "残差相关",
     "cross-classified varying slopes model": "交叉分类变化斜率模型"
   },
   "protected": [

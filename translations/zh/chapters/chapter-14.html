@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-14" data-source-pages="465-485">
-  <header class="chapter-header"><p class="eyebrow">第十四章</p><h1>协方差历险</h1><p class="source-range">当前译稿对应原书 PDF 第 465–485 页</p></header>
+<article class="book-article" data-chapter="chapter-14" data-source-pages="465-488">
+  <header class="chapter-header"><p class="eyebrow">第十四章</p><h1>协方差历险</h1><p class="source-range">当前译稿对应原书 PDF 第 465–488 页</p></header>
 
   <div class="chapter-introduction" id="intro-14">
     <p>回想上一章导言中的咖啡机器人（原书第 413 页）。这个机器人被设定为在咖啡馆之间移动、点咖啡，并记录等待时间。上一章的重点是：在咖啡馆之间汇聚信息，能让机器人学得更高效；变化截距正是实现这种汇聚的一种机制。</p>
@@ -434,12 +434,88 @@ matrix[4,block_id]:z_block ~ normal( 0 , 1 ),</code></pre>
       <p>借助 DAG 会更容易理解工具变量。在教育与工资的例子中，最简单的教育工具如下：</p>
       <figure class="dag-figure" id="dag-14-education-instrument"><svg viewBox="0 0 840 360" role="img" aria-labelledby="dag-14-instrument-title dag-14-instrument-desc"><title id="dag-14-instrument-title">教育工具变量 DAG</title><desc id="dag-14-instrument-desc">工具 Q 指向教育 E，未观测混杂 U 同时指向教育 E 与工资 W，教育 E 指向工资 W。</desc><defs><marker id="dag14-instrument-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#3f4752"/></marker></defs><g stroke="#3f4752" stroke-width="4" marker-end="url(#dag14-instrument-arrow)"><line x1="150" y1="95" x2="305" y2="245"/><line x1="500" y1="95" x2="345" y2="245"/><line x1="520" y1="100" x2="650" y2="245"/><line x1="365" y1="275" x2="625" y2="275"/></g><g fill="#f0f1fa" stroke="#263f86" stroke-width="3"><circle cx="125" cy="70" r="38"/><circle cx="525" cy="70" r="38" fill="#fff" stroke-dasharray="7 5"/><circle cx="325" cy="275" r="38"/><circle cx="665" cy="275" r="38"/></g><g text-anchor="middle" font-size="30" font-weight="700" fill="#263f86"><text x="125" y="81">Q</text><text x="525" y="81">U</text><text x="325" y="286">E</text><text x="665" y="286">W</text></g></svg><figcaption>工具 <var>Q</var> 像自然实验一样影响教育 <var>E</var>，且只能经 <var>E</var> 影响工资 <var>W</var>。</figcaption></figure>
       <p>这里的工具变量是 <var>Q</var>。给定这张 DAG，<var>Q</var> 满足有效工具变量的全部条件。注意，有效工具可以嵌入复杂得多的图中；若能通过以其他变量为条件满足上述标准，那就拥有了一个工具。</p>
-      <p>怎样在模型中使用 <var>Q</var>？不能像普通预测变量一样，直接把它加进回归。为什么？假设把 <var>W</var> 对 <var>E</var> 作回归——这正是我们想了解的关系；下一页将说明为什么再加入 <var>Q</var> 会适得其反。</p>
-      <p class="continuation-note">工具变量被当作普通预测变量时怎样放大偏差，将从原书 PDF 第 486 页继续。</p>
+      <p>怎样在模型中使用 <var>Q</var>？不能像普通预测变量一样，直接把它加进回归。为什么？假设把 <var>W</var> 对 <var>E</var> 作回归——这正是我们想了解的关系，但关联受到经过 <var>U</var> 的后门路径混杂。若再把 <var>Q</var> 当作另一个预测变量加进模型，坏事就发生了。图中没有经过 <var>Q</var> 的后门路径，但从 <var>Q</var> 到 <var>W</var> 有一条经过 <var>U</var> 的非因果路径：<span class="math-inline"><var>Q</var> → <var>E</var> ← <var>U</var> → <var>W</var></span>。这条路径不是因果性的，因为改变 <var>Q</var> 并不会经此路径改变 <var>W</var>。可是在同一个模型中以 <var>E</var> 为条件，而 <var>E</var> 又是 <var>Q</var> 与 <var>U</var> 的碰撞点，于是非因果路径被打开。这会混杂 <var>Q</var> 的系数；它不会是零，因为它会拾取 <var>U</var> 与 <var>W</var> 之间的关联。结果，<var>E</var> 的系数也可能被混杂得更严重。以这种方式使用时，<var>Q</var> 这样的工具可以称为<strong>偏差放大器</strong>。<sup id="note-196-ref"><a href="#note-196">196</a></sup></p>
+      <p>这些确实很令人困惑，来看一个例子。假设 <var>Q</var> 表示一个人出生在一年中的哪个季度——冬、春、夏、秋。它为什么可能影响教育？因为年初出生的人往往受教育更少：一方面，他们开始上学时生理年龄更大；另一方面，他们也会更早达到合法辍学年龄。现在，若 <var>Q</var> 确实只能通过 <var>E</var> 影响 <var>W</var>，且 <var>Q</var> 也不受混杂因素 <var>U</var> 影响，那么 <var>Q</var> 就是这种神秘的工具变量。这意味着无需测量 <var>U</var>，也能以一种特殊方式对 <span class="math-inline"><var>E</var> → <var>W</var></span> 作出有效因果推断。</p>
+      <p>这个例子基于一项真实研究，<sup id="note-197-ref"><a href="#note-197">197</a></sup> 但这里改用模拟数据，既保持简单，也确保知道正确答案。请记住：面对真实数据，永远不知道正确答案是什么。正因如此，研究模拟例子非常重要——既可验证算法是否有效，也可训练直觉。下面模拟 500 个人：</p>
+      <figure class="code-listing" id="code-14-23"><figcaption>R 代码 14.23</figcaption><pre><code>set.seed(73)
+N &lt;- 500
+U_sim &lt;- rnorm( N )
+Q_sim &lt;- sample( 1:4 , size=N , replace=TRUE )
+E_sim &lt;- rnorm( N , U_sim + Q_sim )
+W_sim &lt;- rnorm( N , U_sim + 0*E_sim )
+dat_sim &lt;- list(
+    W=standardize(W_sim) ,
+    E=standardize(E_sim) ,
+    Q=standardize(Q_sim) )</code></pre></figure>
+      <p>工具 <var>Q</var> 从 1 变化到 4。把 <code>Q_sim</code> 加到 <code>E_sim</code> 的均值后，较大值便与更多教育相关。这里假定教育对工资的真实影响为零，只是为了示例；但工具 <var>Q</var> 的确影响教育，所以可以充当发现 <span class="math-inline"><var>E</var> → <var>W</var></span> 的工具。</p>
+      <p>下面考虑三个模型。首先，若天真地把工资对教育作回归，模型会很确信教育导致更高工资：</p>
+      <figure class="code-listing" id="code-14-24"><figcaption>R 代码 14.24</figcaption><pre><code>m14.4 &lt;- ulam(
+    alist(
+        W ~ dnorm( mu , sigma ),
+        mu &lt;- aW + bEW*E,
+        aW ~ dnorm( 0 , 0.2 ),
+        bEW ~ dnorm( 0 , 0.5 ),
+        sigma ~ dexp( 1 )
+    ) , data=dat_sim , chains=4 , cores=4 )
+precis( m14.4 )</code></pre><pre class="code-output"><code>      mean   sd 5.5% 94.5% n_eff Rhat
+aW    0.00 0.04 -0.06 0.06  2024    1
+bEW   0.40 0.04  0.33 0.46  1996    1
+sigma 0.92 0.03  0.87 0.97  1861    1</code></pre></figure>
+      <p>这只是普通混杂：未测量的 <var>U</var> 正在毁掉推断。若有动机相信教育能提高工资，或许会原样报告这项推断。但即便 <var>E</var> 的确增加 <var>W</var>，这个模型的估计仍会向上偏。仅仅知道 <var>E</var> 对 <var>W</var> 有正向影响还不够；准确度很重要。</p>
+      <p>接着看把 <var>Q</var> 当作普通预测变量加入后会发生什么。修改上面的模型：</p>
+      <figure class="code-listing" id="code-14-25"><figcaption>R 代码 14.25</figcaption><pre><code>m14.5 &lt;- ulam(
+    alist(
+        W ~ dnorm( mu , sigma ),
+        mu &lt;- aW + bEW*E + bQW*Q,
+        aW ~ dnorm( 0 , 0.2 ),
+        bEW ~ dnorm( 0 , 0.5 ),
+        bQW ~ dnorm( 0 , 0.5 ),
+        sigma ~ dexp( 1 )
+    ) , data=dat_sim , chains=4 , cores=4 )
+precis( m14.5 )</code></pre><pre class="code-output"><code>      mean   sd 5.5% 94.5% n_eff Rhat
+aW    0.00 0.04 -0.06  0.06  1526    1
+bEW   0.64 0.05  0.56  0.71  1381    1
+bQW  -0.41 0.05 -0.48 -0.33  1416    1
+sigma 0.86 0.03  0.82  0.90  1823    1</code></pre></figure>
+      <p>这是一场灾难。正如从 DAG 分析预期的那样，<code>bQW</code> 拾取了来自 <var>U</var> 的关联；<code>bEW</code> 则离真相更远。上面是 0.40，现在成了 0.64——这就是偏差放大在行动。</p>
+      <p>现在可以看看怎样正确使用 <var>Q</var>。答案其实很简单：直接使用生成模型。先为 DAG 写一个简单生成版本，它实际上包含四个子模型。第一，工资 <var>W</var> 怎样由教育 <var>E</var> 与未观测混杂 <var>U</var> 共同导致：</p>
+      <div class="equation-block wallis-equation" id="eq-14-iv-wage-generative"><div><var>W</var><sub><var>i</var></sub> ∼ Normal(<var>μ</var><sub><var>w</var>,<var>i</var></sub>, <var>σ</var><sub><var>w</var></sub>)</div><div><var>μ</var><sub><var>w</var>,<var>i</var></sub> = <var>α</var><sub><var>w</var></sub> + <var>β</var><sub><var>ew</var></sub><var>E</var><sub><var>i</var></sub> + <var>U</var><sub><var>i</var></sub></div></div>
+      <p>第二，教育水平 <var>E</var> 怎样由出生季度 <var>Q</var>——还记得这是工具——以及同一个未观测混杂 <var>U</var> 共同导致：</p>
+      <div class="equation-block wallis-equation" id="eq-14-iv-education-generative"><div><var>E</var><sub><var>i</var></sub> ∼ Normal(<var>μ</var><sub><var>e</var>,<var>i</var></sub>, <var>σ</var><sub><var>e</var></sub>)</div><div><var>μ</var><sub><var>e</var>,<var>i</var></sub> = <var>α</var><sub><var>e</var></sub> + <var>β</var><sub><var>qe</var></sub><var>Q</var><sub><var>i</var></sub> + <var>U</var><sub><var>i</var></sub></div></div>
+      <p>第三个模型描述 <var>Q</var>：假定全年四个季度各有四分之一的人出生。</p>
+      <div class="equation-block wallis-equation" id="eq-14-iv-quarter-generative"><var>Q</var><sub><var>i</var></sub> ∼ Categorical([0.25, 0.25, 0.25, 0.25])</div>
+      <p>第四个模型表示未观测混杂 <var>U</var> 服从均值为零、标准差为一的正态分布：</p>
+      <div class="equation-block wallis-equation" id="eq-14-iv-confound-generative"><var>U</var><sub><var>i</var></sub> ∼ Normal(0, 1)</div>
+      <p><var>U</var> 也可以服从其他分布，但目前的生成模型就是如此。</p>
+      <p>现在把这个生成模型翻译成统计模型。可以使用蛮力：直接把每个 <var>U</var><sub><var>i</var></sub> 当成缺失数据并插补；不过下一章才会介绍怎样做。况且，更高效的办法是对它们取平均，转而估计 <var>W</var> 与 <var>E</var> 之间的协方差。于是定义 <var>W</var> 与 <var>E</var> 来自共同的多元正态分布：</p>
+      <div class="equation-block wallis-equation" id="eq-14-iv-joint-wage-education"><div class="annotated-equation-line"><span class="equation-expression"><span class="matrix-2x1"><span><var>W</var><sub><var>i</var></sub></span><span><var>E</var><sub><var>i</var></sub></span></span> ∼ MVNormal(<span class="matrix-2x1"><span><var>μ</var><sub><var>w</var>,<var>i</var></sub></span><span><var>μ</var><sub><var>e</var>,<var>i</var></sub></span></span>, <strong>S</strong>)</span><span class="equation-label">[工资与教育的联合模型]</span></div><div><var>μ</var><sub><var>w</var>,<var>i</var></sub> = <var>α</var><sub><var>w</var></sub> + <var>β</var><sub><var>ew</var></sub><var>E</var><sub><var>i</var></sub></div><div><var>μ</var><sub><var>e</var>,<var>i</var></sub> = <var>α</var><sub><var>e</var></sub> + <var>β</var><sub><var>qe</var></sub><var>Q</var><sub><var>i</var></sub></div></div>
+      <p>第一行的矩阵 <strong>S</strong> 是工资与教育之间的误差协方差。它不是这两个变量的描述性协方差，而是 Gaussian 回归中常用 <var>σ</var> 的矩阵版本。上面是一个<strong>多元线性模型</strong>：含多个同步结果的回归，所有结果都由一个联合误差结构建模。每个变量都有自己的线性模型，从而得到两个 <var>μ</var> 定义。看到教育 <var>E</var> 既是结果，又出现在 <var>W</var> 的均值中充当预测变量，可能会让人不安；但这种统计关系是 DAG 的推论，并没有什么违规之处。它只表示 <var>E</var> 可能影响 <var>W</var>，同时成对的 <var>W</var>、<var>E</var> 值还可能有某种残差相关。若相信这张 DAG，该相关就来自未观测混杂 <var>U</var>。</p>
+      <p>完整模型当然还需要先验。变量已经标准化，因此可使用标准化线性回归的默认先验。<code>ulam</code> 代码如下：</p>
+      <figure class="code-listing" id="code-14-26"><figcaption>R 代码 14.26</figcaption><pre><code>m14.6 &lt;- ulam(
+    alist(
+        c(W,E) ~ multi_normal( c(muW,muE) , Rho , Sigma ),
+        muW &lt;- aW + bEW*E,
+        muE &lt;- aE + bQE*Q,
+        c(aW,aE) ~ normal( 0 , 0.2 ),
+        c(bEW,bQE) ~ normal( 0 , 0.5 ),
+        Rho ~ lkj_corr( 2 ),
+        Sigma ~ exponential( 1 )
+    ), data=dat_sim , chains=4 , cores=4 )
+precis( m14.6 , depth=3 )</code></pre><pre class="code-output"><code>          mean   sd 5.5% 94.5% n_eff Rhat
+aE        0.00 0.03 -0.06 0.05  1351    1
+aW        0.00 0.04 -0.07 0.07  1432    1
+bQE       0.59 0.04  0.53 0.64  1321    1
+bEW      -0.05 0.08 -0.18 0.07  1024    1
+Rho[1,1]  1.00 0.00  1.00 1.00   NaN  NaN
+Rho[1,2]  0.54 0.05  0.46 0.62  1080    1
+Rho[2,1]  0.54 0.05  0.46 0.62  1080    1
+Rho[2,2]  1.00 0.00  1.00 1.00  1361    1
+Sigma[1]  1.02 0.05  0.95 1.10  1085    1</code></pre></figure>
+      <p class="continuation-note">代码 14.26 输出的最后一行与联合模型解释，将从原书 PDF 第 489 页继续。</p>
     </section>
   </section>
 
-  <section class="endnotes" id="chapter-14-notes" role="doc-endnotes"><h2>尾注</h2><ol start="194"><li id="note-194">Lewandowski 等（2009）。“LKJ”来自三位作者姓氏的首字母；作者本人把这种方法称为“洋葱法”。关于它在 Bayesian 模型中的用法，可参见最新版 Stan 参考手册的说明。 <a class="backref" href="#note-194-ref" aria-label="返回正文">↩</a></li><li id="note-195">参见 Gelfand 等（1995）以及 Roberts 和 Sahu（1997）。较新的综述可参见 Papaspiliopoulos 等（2007）；以 Hamiltonian Monte Carlo 为重点的讨论可参见 Betancourt 和 Girolami（2013）。 <a class="backref" href="#note-195-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section class="endnotes" id="chapter-14-notes" role="doc-endnotes"><h2>尾注</h2><ol start="194"><li id="note-194">Lewandowski 等（2009）。“LKJ”来自三位作者姓氏的首字母；作者本人把这种方法称为“洋葱法”。关于它在 Bayesian 模型中的用法，可参见最新版 Stan 参考手册的说明。 <a class="backref" href="#note-194-ref" aria-label="返回正文">↩</a></li><li id="note-195">参见 Gelfand 等（1995）以及 Roberts 和 Sahu（1997）。较新的综述可参见 Papaspiliopoulos 等（2007）；以 Hamiltonian Monte Carlo 为重点的讨论可参见 Betancourt 和 Girolami（2013）。 <a class="backref" href="#note-195-ref" aria-label="返回正文">↩</a></li><li id="note-196">参见 Pearl（2011）。 <a class="backref" href="#note-196-ref" aria-label="返回正文">↩</a></li><li id="note-197">参见 Angrist 和 Krueger（1991）。 <a class="backref" href="#note-197-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 14 章 PDF 第 465–485 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 486 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 14 章 PDF 第 465–488 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 489 页继续。</aside>
 </article>
