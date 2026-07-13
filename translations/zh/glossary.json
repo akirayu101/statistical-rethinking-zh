@@ -990,7 +990,22 @@
     "victim (eagle data)": "受害者",
     "Bald Eagle": "白头海雕",
     "percent ground cover": "地面覆盖率百分比",
-    "forest age": "林龄"
+    "forest age": "林龄",
+    "mixture": "混合",
+    "hybrid likelihood": "混合 likelihood",
+    "over-dispersion": "过度离散",
+    "zero-inflated model": "零膨胀模型",
+    "zero-augmented model": "零增广模型",
+    "ordered categorical model": "有序类别模型",
+    "cumulative link": "累积 link",
+    "ordered categorical predictor": "有序类别预测变量",
+    "dispersion": "离散度",
+    "continuous mixture model": "连续混合模型",
+    "beta-binomial model": "beta-binomial 模型",
+    "beta distribution": "beta 分布",
+    "probability distribution for probabilities": "概率的概率分布",
+    "average probability": "平均概率",
+    "closed-form likelihood": "封闭形式 likelihood"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "blavaan", "AIC", "DIC", "WAIC", "BIC", "PSIS-LOO", "MCMC", "HMC"

@@ -1,0 +1,52 @@
+<article class="book-article" data-chapter="chapter-12" data-source-pages="397-399">
+  <header class="chapter-header"><p class="eyebrow">第十二章</p><h1>怪物与混合</h1><p class="source-range">当前译稿对应原书 PDF 第 397–399 页</p></header>
+
+  <div class="chapter-introduction" id="intro-12">
+    <p>在夏威夷传说中，Nanaue 是一条爱上人类女子的鲨鱼之子。他长成一个凶残的男人，背部中央还长着一张鲨鱼嘴。在希腊传说中，Minotaur 是牛头人身的怪物，由一名人类女子与一头大白牛所生。Gryphon 是一种半鹰半狮的传说怪物。毛利传说中的 Taniwha 则兼具蛇、鸟乃至鲨鱼的特征，很像中国与欧洲神话里的龙。</p>
+    <p>把不同生物的部件拼在一起，很容易就能造出怪物。许多怪物都是混合体，许多统计模型也是。本章要把前几章较简单的组成部分拼接起来，构造 likelihood 与 link 函数。像传说中的怪物一样，这些混合 likelihood 含有其他模型类型的部件；它们继承了各个部件的一些性质，从而帮助我们对具有棘手但常见性质的结果变量建模。既然是怪物，这些模型既强大又危险：它们通常更难估计，也更难理解。不过，只要具备一些知识并保持谨慎，它们就是重要工具。</p>
+    <p>我们会考察三类常见而有用的例子。第一类模型处理<strong>过度离散</strong>：它们扩展上一章的二项模型与 Poisson 模型，稍稍应对未测量的变异来源。第二类是一族<strong>零膨胀模型</strong>与<strong>零增广模型</strong>，每个模型都把一个二元事件同普通 GLM likelihood——例如 Poisson 或二项 likelihood——混合起来。第三类是<strong>有序类别模型</strong>，适用于具有固定顺序的类别结果。它把分类 likelihood 函数同一种特殊的 link 函数（通常是<strong>累积 link</strong>）合并起来。我们还会学习怎样构造有序类别预测变量。</p>
+    <p>这些模型让我们能够改造建模方法，以适应测量中不方便的现实，而不是改造测量去迁就模型的约束。还有许多其他模型也出于这个目的、以这种方式产生——把较简单模型的零件混合起来。我们不可能全部讲完；但以后遇到新类型时，至少会有一个理解它的框架。如果有一天需要构造自己独有的怪物，也尽管动手。只是务必用虚拟数据模拟验证它，再把模型拟合到虚拟数据上，确认能够恢复数据生成过程。</p>
+  </div>
+
+  <section id="sec-12-1"><h2>12.1 过度离散计数</h2>
+    <p>前面一章（第 7 章）曾论证：基于正态分布的模型可能对极端观测过于敏感。问题不一定在于“离群值”是坏数据，而在于过程往往是变量的混合，因而会产生更厚的尾部。假设薄尾的模型——例如纯高斯模型——很容易过度兴奋；改用 Student-t 之类的分布，有助于得到更好的推断和样本外预测。</p>
+    <p>计数模型也是如此。当计数来自不同过程的混合时，变异可能比纯计数模型预期的更大——尾部更厚。这同样会让模型过度兴奋。当计数的变异大于纯过程所允许的程度时，就表现出<strong>过度离散</strong>。变量的方差有时也称为它的<strong>离散度</strong>。对二项过程这样的计数过程，方差与期望值由同一组参数决定。例如，二项分布的期望值是 <span class="math-inline"><var>Np</var></span>，方差是 <span class="math-inline"><var>Np</var>(1 − <var>p</var>)</span>。若在以所有预测变量为条件之后，观测方差仍超过这个量，就说明某个遗漏变量正在给观测计数带来额外离散。</p>
+    <p>这不一定是坏事；这样的模型仍可能产生完全良好的推断。但忽略过度离散，也可能带来忽略任意预测变量时会出现的所有问题。计数中的异质性可能形成混杂，掩盖感兴趣的效应，或产生虚假推断。因此，值得设法处理过度离散。最好的办法当然是找到被遗漏的离散来源，把它纳入模型；不过，即使没有其他可用变量，也能缓解过度离散的影响。下面考察两种常见而有用的策略。</p>
+    <p>本章先考察<strong>连续混合模型</strong>：线性模型不直接连接到观测本身，而是连接到观测的一个分布。本节余下部分会勾勒这类模型，并使用常见的 beta-binomial 与 gamma-Poisson（负二项）模型。上一章末尾已经提到它们，现在则真正给出定义。</p>
+    <p>后面几章会介绍多层模型：它们同时估计每个观测的残差及这些残差的分布。实践中，用多层模型（GLMM，第 13 章）替代连续混合通常更容易，因为多层模型灵活得多，能同时处理过度离散与其他形式的异质性。</p>
+
+    <section id="sec-12-1-1"><h3>12.1.1 Beta-binomial</h3>
+      <p>Beta-binomial 模型假设，每个二项计数观测都有自己独特的成功概率。<sup id="note-175-ref"><a href="#note-175">175</a></sup>模型估计的是各案例成功概率的<strong>分布</strong>，而不是单一的成功概率；预测变量改变的也是这个分布的形状，而不是直接决定每一次成功的概率。</p>
+      <p>结合例子会更容易理解。上一章见过的 <code>UCBadmit</code> 数据，只要忽略院系，就表现出很强的过度离散，因为各院系的基准录取率差异很大。你已经看到，忽略这种变异会对申请者性别作出错误推断。现在拟合一个忽略院系的 beta-binomial 模型，看看它怎样捕捉由遗漏变量造成的变异。</p>
+      <p>对这些数据使用 beta-binomial 模型，意味着假设数据表每一行的观测计数都有一个独特、未观测的录取概率；这些录取概率本身又来自同一个分布。这个共同分布用 beta 分布描述——它是一种“概率的概率分布”。为什么用 beta 分布？因为这样数学上很方便：采用 beta 分布时，可以推导出一个封闭形式的 likelihood 函数，对每个观测未知的概率完成平均。细节见本节末尾原书第 387 页的“过度思考”框。</p>
+      <p>Beta 分布有两个参数：平均概率 <span class="math-inline"><var>p̄</var></span> 与形状参数 <span class="math-inline"><var>θ</var></span>。<sup id="note-176-ref"><a href="#note-176">176</a></sup>形状参数 <span class="math-inline"><var>θ</var></span> 描述分布有多分散。当 <span class="math-inline"><var>θ</var> = 2</span> 时，从 0 到 1 的每个概率都同样可能。<span class="math-inline"><var>θ</var></span> 大于 2 并继续增大时，概率分布会越来越集中；当 <span class="math-inline"><var>θ</var> &lt; 2</span> 时，分布非常分散，以至于接近 0 与 1 的极端概率比均值附近更可能。可以摆弄参数，体会这个分布能呈现哪些形状：</p>
+      <figure class="code-listing" id="code-12-1"><figcaption>R 代码 12.1</figcaption><pre><code>pbar &lt;- 0.5
+theta &lt;- 5
+curve( dbeta2(x,pbar,theta) , from=0 , to=1 ,
+    xlab="probability" , ylab="Density" )</code></pre></figure>
+      <p>试着改变上面代码中的 <code>pbar</code> 与 <code>theta</code>。请记住，这是概率的分布，所以图中的横轴表示各种可能的概率值，纵轴则是从这个分布中抽到横轴上各概率时的密度。它很古怪，但你会习惯的。</p>
+      <p>我们要把线性模型连接到 <span class="math-inline"><var>p̄</var></span>，使预测变量的变化改变分布的中心趋势。数学形式为：</p>
+      <div class="equation-block wallis-equation" id="eq-12-beta-binomial-model"><div><var>A</var><sub>i</sub> ∼ BetaBinomial(<var>N</var><sub>i</sub>, <var>p̄</var><sub>i</sub>, <var>θ</var>)</div><div>logit(<var>p̄</var><sub>i</sub>) = <var>α</var><sub>gid[i]</sub></div><div><var>α</var><sub>j</sub> ∼ Normal(0, 1.5)</div><div><var>θ</var> = <var>ϕ</var> + 2</div><div><var>ϕ</var> ∼ Exponential(1)</div></div>
+      <p>结果 <span class="math-inline"><var>A</var></span> 是 <code>admit</code>，规模 <span class="math-inline"><var>N</var></span> 是 <code>applications</code>，<code>gid[i]</code> 是性别编号：男性为 1，女性为 2。这里为 <span class="math-inline"><var>θ</var></span> 的先验引入了一个小技巧。我们希望假设离散度至少为 2，也就是最低为平坦分布；小于 2 会把概率堆到 0 和 1，大于 2 则越来越集中于单一数值。什么分布的最小值是 2？我们可以自己造一个。指数分布的最小值是 0，但给任何服从指数分布的变量加 2，新变量的最小值就是 2。因此，上面的模型先令 <span class="math-inline"><var>ϕ</var></span> 服从指数分布，再定义 <span class="math-inline"><var>θ</var> = <var>ϕ</var> + 2</span>。</p>
+      <p class="source-erratum" id="erratum-12-and-then"><strong>原文未完句：</strong>上述说明之后，原书另印有一句孤立的 “And then”，没有后续内容；译稿不补写不存在的句子。</p>
+      <p>下面的代码载入数据，再用 <code>ulam</code> 拟合 beta-binomial 模型：</p>
+      <figure class="code-listing" id="code-12-2"><figcaption>R 代码 12.2（跨页，当前为 PDF 第 399 页可见部分）</figcaption><pre><code>library(rethinking)
+data(UCBadmit)
+d &lt;- UCBadmit
+d$gid &lt;- ifelse( d$applicant.gender=="male" , 1L , 2L )
+dat &lt;- list( A=d$admit , N=d$applications , gid=d$gid )
+m12.1 &lt;- ulam(
+    alist(
+        A ~ dbetabinom( N , pbar , theta ),
+        logit(pbar) &lt;- a[gid],
+        a[gid] ~ dnorm( 0 , 1.5 ),
+        transpars&gt; theta &lt;&lt;- phi + 2.0,
+        phi ~ dexp(1)</code></pre></figure>
+      <p class="continuation-note">代码 12.2 的闭合、beta-binomial 后验结果与图 12.1 将从原书 PDF 第 400 页继续。</p>
+    </section>
+  </section>
+
+  <section class="endnotes" id="chapter-12-notes" role="doc-endnotes"><h2>尾注</h2><ol start="175"><li id="note-175">Williams（1975，1982）。Bolker（2008）在生态数据语境中给出了清晰介绍。 <a class="backref" href="#note-175-ref" aria-label="返回正文">↩</a></li><li id="note-176">另一种很常见的参数化是 <span class="math-inline"><var>α</var> = <var>p̄θ</var></span> 与 <span class="math-inline"><var>β</var> = (1 − <var>p̄</var>)<var>θ</var></span>。<span class="math-inline"><var>p̄</var></span> 与 <span class="math-inline"><var>θ</var></span> 的版本更适合建模，因为我们通常希望把线性模型连接到 beta 分布的中心趋势，而 <span class="math-inline"><var>p̄</var></span> 正是中心趋势的一种度量。 <a class="backref" href="#note-176-ref" aria-label="返回正文">↩</a></li></ol></section>
+
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 12 章 PDF 第 397–399 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。代码 12.2 跨页，下一批从 PDF 第 400 页继续。</aside>
+</article>

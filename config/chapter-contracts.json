@@ -2088,5 +2088,46 @@
       ".continuation-note": 0,
       ".endnotes li": 9
     }
+  },
+  "chapter-12": {
+    "required_status": "in_progress",
+    "source_pages": [397, 399],
+    "required_ids": [
+      "intro-12",
+      "sec-12-1",
+      "sec-12-1-1",
+      "note-175-ref",
+      "note-176-ref",
+      "code-12-1",
+      "eq-12-beta-binomial-model",
+      "erratum-12-and-then",
+      "code-12-2",
+      "chapter-12-notes",
+      "note-175",
+      "note-176"
+    ],
+    "required_headings": [
+      "怪物与混合",
+      "12.1 过度离散计数",
+      "12.1.1 Beta-binomial",
+      "尾注"
+    ],
+    "counts": {
+      "section": 3,
+      "figure": 2,
+      "figure img": 0,
+      ".book-figure": 0,
+      ".code-listing": 2,
+      ".code-output": 0,
+      ".rethinking-box": 0,
+      ".overthinking-box": 0,
+      ".book-quote": 0,
+      ".equation-block": 1,
+      ".wallis-equation": 1,
+      ".source-erratum": 1,
+      ".chapter-introduction": 1,
+      ".continuation-note": 1,
+      ".endnotes li": 2
+    }
   }
 }
