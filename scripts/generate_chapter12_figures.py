@@ -16,6 +16,7 @@ OUT4 = ROOT / "translations" / "zh" / "media" / "chapter-12-ordered-distribution
 OUT5 = ROOT / "translations" / "zh" / "media" / "chapter-12-ordered-likelihood.svg"
 OUT6 = ROOT / "translations" / "zh" / "media" / "chapter-12-trolley-slopes.svg"
 OUT7 = ROOT / "translations" / "zh" / "media" / "chapter-12-trolley-predictions.svg"
+OUT8 = ROOT / "translations" / "zh" / "media" / "chapter-12-dirichlet-prior.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 BLUE = "#6670ee"
@@ -600,6 +601,63 @@ def trolley_prediction_plot() -> None:
     OUT7.write_text("\n".join(parts) + "\n", encoding="utf-8")
 
 
+def dirichlet_prior_plot() -> None:
+    """Rebuild Figure 12.7 with deterministic Dirichlet(2, ..., 2) draws."""
+    width, height = 900, 560
+    left, right, top, bottom = 110, 830, 55, 455
+    sx = lambda index: left + (index - 1) / 6 * (right - left)
+    sy = lambda value: bottom - value / 0.4 * (bottom - top)
+    rng = random.Random(1805)
+    draws: list[list[float]] = []
+    for _ in range(10):
+        while True:
+            values = [rng.gammavariate(2.0, 1.0) for _ in range(7)]
+            total = sum(values)
+            draw = [value / total for value in values]
+            if max(draw) <= 0.36:
+                draws.append(draw)
+                break
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">',
+        '<title>图 12.7：Dirichlet 先验的模拟抽样</title>',
+        '<desc>十个由七个概率组成的 Dirichlet 先验向量，每个向量之和为一；第三个向量以粗黑线突出显示。</desc>',
+        '<rect width="100%" height="100%" fill="#fbfaf6"/>',
+        '<rect x="45" y="25" width="825" height="500" rx="8" fill="#fff" stroke="#d9d5c8"/>',
+    ]
+    for tick in (0.0, 0.1, 0.2, 0.3, 0.4):
+        yy = sy(tick)
+        parts.extend([
+            f'<line x1="{left-7}" y1="{yy:.1f}" x2="{left}" y2="{yy:.1f}" stroke="{INK}"/>',
+            f'<line x1="{left}" y1="{yy:.1f}" x2="{right}" y2="{yy:.1f}" stroke="{GRID}" stroke-dasharray="4 7"/>',
+            text_el(left - 14, yy + 5, f"{tick:.1f}", size=15, anchor="end"),
+        ])
+    for index in range(1, 8):
+        xx = sx(index)
+        parts.extend([
+            f'<line x1="{xx:.1f}" y1="{bottom}" x2="{xx:.1f}" y2="{bottom+7}" stroke="{INK}"/>',
+            text_el(xx, bottom + 28, index, size=15, anchor="middle"),
+        ])
+    parts.extend([
+        f'<line x1="{left}" y1="{bottom}" x2="{right}" y2="{bottom}" stroke="{INK}" stroke-width="1.7"/>',
+        f'<line x1="{left}" y1="{bottom}" x2="{left}" y2="{top}" stroke="{INK}" stroke-width="1.7"/>',
+        text_el((left + right) / 2, 520, "索引", size=19, anchor="middle"),
+        text_el(28, (top + bottom) / 2, "概率", size=19, anchor="middle", rotate=-90),
+    ])
+    for draw_index, values in enumerate(draws):
+        if draw_index == 2:
+            continue
+        points = [(sx(index + 1), sy(value)) for index, value in enumerate(values)]
+        parts.append(polyline(points, fill="none", stroke="#555852", stroke_width="1.7", opacity="0.72"))
+        for xx, yy in points:
+            parts.append(f'<circle cx="{xx:.1f}" cy="{yy:.1f}" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>')
+    highlighted = [(sx(index + 1), sy(value)) for index, value in enumerate(draws[2])]
+    parts.append(polyline(highlighted, fill="none", stroke=INK, stroke_width="4.2"))
+    for xx, yy in highlighted:
+        parts.append(f'<circle cx="{xx:.1f}" cy="{yy:.1f}" r="5.5" fill="{INK}" stroke="#fff" stroke-width="1.5"/>')
+    parts.append("</svg>")
+    OUT8.write_text("\n".join(parts) + "\n", encoding="utf-8")
+
+
 if __name__ == "__main__":
     main()
     figure_12_2()
@@ -608,5 +666,6 @@ if __name__ == "__main__":
     figure_12_5()
     trolley_slope_plot()
     trolley_prediction_plot()
-    for path in (OUT1, OUT2, OUT3, OUT4, OUT5, OUT6, OUT7):
+    dirichlet_prior_plot()
+    for path in (OUT1, OUT2, OUT3, OUT4, OUT5, OUT6, OUT7, OUT8):
         print(path)

@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="560" viewBox="0 0 900 560" role="img">
+<title>图 12.7：Dirichlet 先验的模拟抽样</title>
+<desc>十个由七个概率组成的 Dirichlet 先验向量，每个向量之和为一；第三个向量以粗黑线突出显示。</desc>
+<rect width="100%" height="100%" fill="#fbfaf6"/>
+<rect x="45" y="25" width="825" height="500" rx="8" fill="#fff" stroke="#d9d5c8"/>
+<line x1="103" y1="455.0" x2="110" y2="455.0" stroke="#30332e"/>
+<line x1="110" y1="455.0" x2="830" y2="455.0" stroke="#d9d5c8" stroke-dasharray="4 7"/>
+<text x="96.0" y="460.0" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">0.0</text>
+<line x1="103" y1="355.0" x2="110" y2="355.0" stroke="#30332e"/>
+<line x1="110" y1="355.0" x2="830" y2="355.0" stroke="#d9d5c8" stroke-dasharray="4 7"/>
+<text x="96.0" y="360.0" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">0.1</text>
+<line x1="103" y1="255.0" x2="110" y2="255.0" stroke="#30332e"/>
+<line x1="110" y1="255.0" x2="830" y2="255.0" stroke="#d9d5c8" stroke-dasharray="4 7"/>
+<text x="96.0" y="260.0" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">0.2</text>
+<line x1="103" y1="155.0" x2="110" y2="155.0" stroke="#30332e"/>
+<line x1="110" y1="155.0" x2="830" y2="155.0" stroke="#d9d5c8" stroke-dasharray="4 7"/>
+<text x="96.0" y="160.0" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">0.3</text>
+<line x1="103" y1="55.0" x2="110" y2="55.0" stroke="#30332e"/>
+<line x1="110" y1="55.0" x2="830" y2="55.0" stroke="#d9d5c8" stroke-dasharray="4 7"/>
+<text x="96.0" y="60.0" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">0.4</text>
+<line x1="110.0" y1="455" x2="110.0" y2="462" stroke="#30332e"/>
+<text x="110.0" y="483.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">1</text>
+<line x1="230.0" y1="455" x2="230.0" y2="462" stroke="#30332e"/>
+<text x="230.0" y="483.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">2</text>
+<line x1="350.0" y1="455" x2="350.0" y2="462" stroke="#30332e"/>
+<text x="350.0" y="483.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">3</text>
+<line x1="470.0" y1="455" x2="470.0" y2="462" stroke="#30332e"/>
+<text x="470.0" y="483.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">4</text>
+<line x1="590.0" y1="455" x2="590.0" y2="462" stroke="#30332e"/>
+<text x="590.0" y="483.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">5</text>
+<line x1="710.0" y1="455" x2="710.0" y2="462" stroke="#30332e"/>
+<text x="710.0" y="483.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">6</text>
+<line x1="830.0" y1="455" x2="830.0" y2="462" stroke="#30332e"/>
+<text x="830.0" y="483.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">7</text>
+<line x1="110" y1="455" x2="830" y2="455" stroke="#30332e" stroke-width="1.7"/>
+<line x1="110" y1="455" x2="110" y2="55" stroke="#30332e" stroke-width="1.7"/>
+<text x="470.0" y="520.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="400" fill="#30332e">索引</text>
+<text x="28.0" y="255.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="400" fill="#30332e" transform="rotate(-90 28 255.0)">概率</text>
+<polyline points="110.0,136.2 230.0,208.1 350.0,332.3 470.0,317.6 590.0,403.2 710.0,371.5 830.0,416.0" fill="none" stroke="#555852" stroke-width="1.7" opacity="0.72"/>
+<circle cx="110.0" cy="136.2" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="230.0" cy="208.1" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="350.0" cy="332.3" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="470.0" cy="317.6" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="590.0" cy="403.2" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="710.0" cy="371.5" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="830.0" cy="416.0" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<polyline points="110.0,194.4 230.0,143.6 350.0,401.2 470.0,374.5 590.0,286.0 710.0,407.5 830.0,377.6" fill="none" stroke="#555852" stroke-width="1.7" opacity="0.72"/>
+<circle cx="110.0" cy="194.4" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="230.0" cy="143.6" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="350.0" cy="401.2" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="470.0" cy="374.5" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="590.0" cy="286.0" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="710.0" cy="407.5" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="830.0" cy="377.6" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<polyline points="110.0,146.4 230.0,185.1 350.0,371.4 470.0,419.0 590.0,389.3 710.0,420.0 830.0,253.9" fill="none" stroke="#555852" stroke-width="1.7" opacity="0.72"/>
+<circle cx="110.0" cy="146.4" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="230.0" cy="185.1" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="350.0" cy="371.4" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="470.0" cy="419.0" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="590.0" cy="389.3" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="710.0" cy="420.0" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="830.0" cy="253.9" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<polyline points="110.0,399.8 230.0,309.6 350.0,235.7 470.0,360.0 590.0,304.9 710.0,243.7 830.0,331.2" fill="none" stroke="#555852" stroke-width="1.7" opacity="0.72"/>
+<circle cx="110.0" cy="399.8" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="230.0" cy="309.6" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="350.0" cy="235.7" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="470.0" cy="360.0" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="590.0" cy="304.9" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="710.0" cy="243.7" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="830.0" cy="331.2" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<polyline points="110.0,277.4 230.0,408.1 350.0,254.6 470.0,238.9 590.0,365.9 710.0,280.0 830.0,360.1" fill="none" stroke="#555852" stroke-width="1.7" opacity="0.72"/>
+<circle cx="110.0" cy="277.4" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="230.0" cy="408.1" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="350.0" cy="254.6" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="470.0" cy="238.9" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="590.0" cy="365.9" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="710.0" cy="280.0" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="830.0" cy="360.1" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<polyline points="110.0,170.7 230.0,266.9 350.0,363.5 470.0,345.8 590.0,425.4 710.0,294.5 830.0,318.1" fill="none" stroke="#555852" stroke-width="1.7" opacity="0.72"/>
+<circle cx="110.0" cy="170.7" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="230.0" cy="266.9" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="350.0" cy="363.5" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="470.0" cy="345.8" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="590.0" cy="425.4" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="710.0" cy="294.5" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="830.0" cy="318.1" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<polyline points="110.0,324.3 230.0,218.7 350.0,251.1 470.0,372.4 590.0,368.8 710.0,352.7 830.0,297.1" fill="none" stroke="#555852" stroke-width="1.7" opacity="0.72"/>
+<circle cx="110.0" cy="324.3" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="230.0" cy="218.7" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="350.0" cy="251.1" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="470.0" cy="372.4" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="590.0" cy="368.8" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="710.0" cy="352.7" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="830.0" cy="297.1" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<polyline points="110.0,314.0 230.0,326.6 350.0,353.6 470.0,260.4 590.0,215.8 710.0,381.6 830.0,333.1" fill="none" stroke="#555852" stroke-width="1.7" opacity="0.72"/>
+<circle cx="110.0" cy="314.0" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="230.0" cy="326.6" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="350.0" cy="353.6" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="470.0" cy="260.4" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="590.0" cy="215.8" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="710.0" cy="381.6" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="830.0" cy="333.1" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<polyline points="110.0,291.7 230.0,263.5 350.0,400.3 470.0,208.8 590.0,388.8 710.0,347.8 830.0,284.1" fill="none" stroke="#555852" stroke-width="1.7" opacity="0.72"/>
+<circle cx="110.0" cy="291.7" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="230.0" cy="263.5" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="350.0" cy="400.3" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="470.0" cy="208.8" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="590.0" cy="388.8" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="710.0" cy="347.8" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<circle cx="830.0" cy="284.1" r="4.5" fill="#fff" stroke="#555852" stroke-width="1.5"/>
+<polyline points="110.0,237.9 230.0,215.2 350.0,431.6 470.0,343.6 590.0,353.5 710.0,394.6 830.0,208.6" fill="none" stroke="#30332e" stroke-width="4.2"/>
+<circle cx="110.0" cy="237.9" r="5.5" fill="#30332e" stroke="#fff" stroke-width="1.5"/>
+<circle cx="230.0" cy="215.2" r="5.5" fill="#30332e" stroke="#fff" stroke-width="1.5"/>
+<circle cx="350.0" cy="431.6" r="5.5" fill="#30332e" stroke="#fff" stroke-width="1.5"/>
+<circle cx="470.0" cy="343.6" r="5.5" fill="#30332e" stroke="#fff" stroke-width="1.5"/>
+<circle cx="590.0" cy="353.5" r="5.5" fill="#30332e" stroke="#fff" stroke-width="1.5"/>
+<circle cx="710.0" cy="394.6" r="5.5" fill="#30332e" stroke="#fff" stroke-width="1.5"/>
+<circle cx="830.0" cy="208.6" r="5.5" fill="#30332e" stroke="#fff" stroke-width="1.5"/>
+</svg>

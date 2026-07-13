@@ -1,4 +1,4 @@
-<article class="book-article" data-chapter="chapter-12" data-source-pages="397-420">
+<article class="book-article" data-chapter="chapter-12" data-source-pages="397-423">
   <header class="chapter-header"><p class="eyebrow">第十二章</p><h1>怪物与混合</h1><p class="source-range">当前译稿对应原书 PDF 第 397–414 页</p></header>
 
   <div class="chapter-introduction" id="intro-12">
@@ -391,10 +391,72 @@ d$edu_new &lt;- edu_levels[ d$edu ]</code></pre></figure>
     <p>引入 <span class="math-inline"><var>β</var><sub><var>E</var></sub></span> 也有助于定义先验。如果事前预期所有层级都具有相同的增量效应，就希望所有 <span class="math-inline"><var>δ</var><sub><var>j</var></sub></span> 共享相同先验。现在可以这样设置，同时仍为最大效应 <span class="math-inline"><var>β</var><sub><var>E</var></sub></span> 单独指定先验。<span class="math-inline"><var>β</var><sub><var>E</var></sub></span> 也可以为负；此时所有逐级效应都会是逐级的负效应。</p>
     <p>我知道这一切相当古怪。现在我们已经深入潮汐预测机内部（第 11 章）。理解总要随着使用和练习而来。因此，把教育变量作为有序预测变量加入有序 logit 模型。先写出完整模型的数学形式；结果的概率与线性模型为：</p>
     <div class="equation-block wallis-equation" id="eq-12-ordered-education-model"><div><var>R</var><sub>i</sub> ∼ Ordered-logit(<var>ϕ</var><sub>i</sub>, <var>κ</var>)</div><div><var>ϕ</var><sub>i</sub> = <var>β</var><sub><var>E</var></sub> ∑<sub><var>j</var>=0</sub><sup><var>E</var><sub>i</sub>−1</sup> <var>δ</var><sub><var>j</var></sub> + <var>β</var><sub><var>A</var></sub><var>A</var><sub>i</sub> + <var>β</var><sub><var>I</var></sub><var>I</var><sub>i</sub> + <var>β</var><sub><var>C</var></sub><var>C</var><sub>i</sub></div></div>
-    <p class="continuation-note">切点与斜率先验、<span class="math-inline"><var>δ</var></span> 向量的 Dirichlet 先验，以及代码 12.32 起的先验模拟，将从原书 PDF 第 421 页继续。</p>
+    <p>因此，还需要一组先验。切点先验位于 logit 尺度，所以继续使用标准差为 1.5 的常规（也是正则化）先验。斜率先验更窄，因为每个斜率都是对数赔率之差：</p>
+    <div class="equation-block wallis-equation" id="eq-12-education-priors"><div><var>κ</var><sub><var>k</var></sub> ∼ Normal(0, 1.5)</div><div><var>β</var><sub><var>A</var></sub>, <var>β</var><sub><var>I</var></sub>, <var>β</var><sub><var>C</var></sub>, <var>β</var><sub><var>E</var></sub> ∼ Normal(0, 1)</div><div><strong>δ</strong> ∼ Dirichlet(<strong>α</strong>)</div></div>
+    <p>最后一行是新内容。向量 <span class="math-inline"><strong>δ</strong></span> 的先验是 Dirichlet 分布。<sup id="note-183-ref"><a href="#note-183">183</a></sup>Dirichlet 分布是 beta 分布的多变量扩展，本章前面已经见过 beta 分布。和 beta 一样，Dirichlet 是概率的分布：所有取值都在 0 与 1 之间，且总和为 1。beta 是两个概率的分布，Dirichlet 则可以容纳任意多个概率。</p>
+    <p>与 beta 相同，Dirichlet 也由观测的伪计数参数化。在 beta 分布中，参数 <span class="math-inline"><var>α</var></span> 与 <span class="math-inline"><var>β</var></span> 分别是成功和失败的先验计数；在 Dirichlet 分布中，只有一个较长的向量 <span class="math-inline"><strong>α</strong></span>，其中每种可能性各有一个伪计数。若给每个元素相同的值，就得到均匀先验。<span class="math-inline"><strong>α</strong></span> 的取值越大，认为所有概率相同的先验信息就越强。</p>
+    <p>这里使用很弱的先验，把 <span class="math-inline"><strong>α</strong></span> 中每个值都设为 2。先从这个先验模拟，再把 <span class="math-inline"><strong>δ</strong></span> 先验向量所隐含的含义画出来：</p>
+    <figure class="code-listing" id="code-12-32"><figcaption>R 代码 12.32</figcaption><pre><code>library(gtools)
+set.seed(1805)
+delta &lt;- rdirichlet( 10 , alpha=rep(2,7) )
+str(delta)</code></pre><pre class="code-output"><code> num [1:10, 1:7] 0.1053 0.2504 0.1917 0.1241 0.0877 ...</code></pre></figure>
+    <p>结果是 10 个由 7 个概率组成的向量，每个向量之和都是 1。把这些向量画出来：</p>
+    <figure class="code-listing" id="code-12-33"><figcaption>R 代码 12.33</figcaption><pre><code>h &lt;- 3
+plot( NULL , xlim=c(1,7) , ylim=c(0,0.4) , xlab="index" , ylab="probability" )
+for ( i in 1:nrow(delta) ) lines( 1:7 , delta[i,] , type="b" ,
+    pch=ifelse(i==h,16,1) , lwd=ifelse(i==h,4,1.5) ,
+    col=ifelse(i==h,"black",col.alpha("black",0.7)) )</code></pre></figure>
+    <figure class="book-figure dirichlet-prior-figure" id="fig-12-7"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的 Dirichlet 先验向量模拟图"><img src="/media/chapter-12-dirichlet-prior.svg" alt="十个七维概率向量的模拟抽样，其中一个向量以粗黑线突出"></div><p class="scroll-hint">移动端可横向滚动，查看七个索引上的先验概率变异。</p><figcaption><strong>图 12.7：</strong>从 <span class="math-inline"><strong>α</strong> = {2, 2, 2, 2, 2, 2, 2}</span> 的 Dirichlet 先验模拟抽样。突出显示的向量并没有特殊之处，只是用来展示单个向量内部可能存在多大变异。这个先验并不期待所有概率都相等，而是期待任一概率都可能比其他概率更大或更小。</figcaption></figure>
+    <p>编写这个模型时，需要稍微调整变量，才能处理 <span class="math-inline"><var>δ</var><sub>0</sub> = 0</span>。先给出模型代码，再逐项解释：</p>
+    <figure class="code-listing" id="code-12-34"><figcaption>R 代码 12.34</figcaption><pre><code>dat &lt;- list(
+    R = d$response ,
+    action = d$action,
+    intention = d$intention,
+    contact = d$contact,
+    E = as.integer( d$edu_new ),    # 把 edu_new 用作索引
+    alpha = rep( 2 , 7 ) )         # delta 的先验
+
+m12.6 &lt;- ulam(
+    alist(
+        R ~ ordered_logistic( phi , kappa ),
+        phi &lt;- bE*sum( delta_j[1:E] ) + bA*action + bI*intention + bC*contact,
+        kappa ~ normal( 0 , 1.5 ),
+        c(bA,bI,bC,bE) ~ normal( 0 , 1 ),
+        vector[8]: delta_j &lt;&lt;- append_row( 0 , delta ),
+        simplex[7]: delta ~ dirichlet( alpha )
+    ), data=dat , chains=4 , cores=4 )</code></pre></figure>
+    <p>开头只是在建立数据表，现在你应该已经很熟悉了。注意数据表里包含先验参数 <code>alpha</code>。虽然把它当作“数据”传入，但在公式中它只是 Dirichlet 先验的定义。模型本身与上一节的模型相似，区别在于线性模型里的 <code>bE</code> 项，以及公式末尾定义 <code>delta_j</code> 和 <code>delta</code> 的两行。这里还使用了一些更高级的模型语法，不过可以逐项拆开来看。</p>
+    <p>为了对 <span class="math-inline"><var>δ</var></span> 参数求和，线性模型含有 <code>bE*sum(delta_j[1:E])</code>。这段代码计算表达式 <span class="math-inline"><var>β</var><sub><var>E</var></sub> ∑<sub><var>j</var>=0</sub><sup><var>E</var><sub>i</sub>−1</sup> <var>δ</var><sub><var>j</var></sub></span>。向量 <code>delta_j</code> 有 8 个值，第一个是 <span class="math-inline"><var>δ</var><sub>0</sub> = 0</span>，其余 7 个就是另外七个 <span class="math-inline"><var>δ</var></span> 参数。<code>[1:E]</code> 取出前 <code>E</code> 个值，而 <code>E</code> 是每个人的教育层级。</p>
+    <p>代码把真正的参数向量 <code>delta</code> 接到零后面，构造出 <code>delta_j</code>：<code>delta_j &lt;&lt;- append_row( 0 , delta )</code>。<code>append_row</code> 不是 R 函数，而是 Stan 函数；它只是把两个向量粘成一个更长的向量，就像在 R 中执行 <code>c(0,delta)</code>。注意这一行前面的 <code>vector[8]:</code>，这是显式的类型和维度声明：它要求 Stan 把 <code>delta_j</code> 构造成长度为 8 的向量。索引调整就是统计编程无甚乐趣的现实。必须小心追踪每个量去了哪里，不过做得越多就越容易。</p>
+    <p>最后来到 <span class="math-inline"><var>δ</var></span>/<code>delta</code> 参数自身的先验分布。回想一下，这些 <code>delta</code> 值必须加总为 1。所有元素之和为 1（或其他任意常数）的向量有一个专门名称：<strong>单纯形</strong>（simplex）。Stan 提供了特殊变量类型 <code>simplex</code>，替我们强制执行和为 1 的约束；于是就能给向量 <code>delta</code> 指定 Dirichlet 先验。</p>
+    <p>然后模型就能运行。它的抽样速度比本书目前为止的其他模型更慢，但仍不会太久：作者最老的 2013 年款笔记本总共花了 20 分钟。如果没有 4 个核心让 4 条链并行运行，就会更久。无论如何，都应习惯等待一个良好的后验近似，而不是采用某种糟糕却快速的近似。</p>
+    <p>下面查看边际后验分布，并省略 <code>kappa</code> 切点：</p>
+    <figure class="code-listing" id="code-12-35"><figcaption>R 代码 12.35</figcaption><pre><code>precis( m12.6 , depth=2 , omit="kappa" )</code></pre><pre class="code-output"><code>         mean   sd  5.5% 94.5% n_eff Rhat
+bE      -0.32 0.17 -0.61 -0.07  1062    1
+bC      -0.96 0.05 -1.03 -0.88  1716    1
+bI      -0.72 0.04 -0.78 -0.66  2588    1
+bA      -0.70 0.04 -0.76 -0.64  2089    1
+delta[1] 0.23 0.13  0.05  0.47  1422    1
+delta[2] 0.14 0.09  0.03  0.30  2611    1
+delta[3] 0.19 0.11  0.05  0.38  2388    1
+delta[4] 0.17 0.10  0.04  0.35  2234    1
+delta[5] 0.04 0.05  0.01  0.11  1111    1
+delta[6] 0.10 0.07  0.02  0.23  2305    1
+delta[7] 0.12 0.08  0.03  0.26  2118    1</code></pre></figure>
+    <p>教育的总体关联 <code>bE</code> 为负：教育程度越高的人，对所有故事都越不赞同。这个关联小于处理效应。按后验均值，样本中教育程度最高的人对所有故事的赞同度大约降低 0.3，而给故事加入行动会使赞同度降低约 0.7。此时要小心，不要把这个关联解释成因果关系；教育并不是随机化处理变量。</p>
+    <p>要了解增量效应，也就是 <code>delta</code> 参数的情况，必须把它们视为多变量分布。最简单的办法是使用 <code>pairs</code>：</p>
+    <figure class="code-listing" id="code-12-36"><figcaption>R 代码 12.36</figcaption><pre><code>delta_labels &lt;- c("Elem","MidSch","SHS","HSG","SCol","Bach","Mast","Grad")
+pairs( m12.6 , pars="delta" , labels=delta_labels )</code></pre></figure>
+    <p>结果显示在图 12.8。首先，所有这些参数都彼此负相关，这是它们必须加总为 1 的约束所造成的：一个变大，其他参数就必须变小。其次，除一个教育层级外，其他层级平均都会产生某种幅度不大的增量；似乎只有 Some College（SCol）的增量效应非常小，甚至可能没有。</p>
+    <p class="source-erratum" id="erratum-12-is-it-is"><strong>原文语法重复：</strong>原书此处印作 “Is it is only Some College…”，多了一个 <em>is</em>。译稿按语意写成“似乎只有 Some College……”，并在此记录。</p>
+    <p>把上面的后验与一种更传统的模型比较会很有启发性：在传统模型里，教育作为普通连续变量进入模型。先把教育层级归一化到 0 到 1，使所得参数能与上面模型中的参数比较：</p>
+    <figure class="code-listing" id="code-12-37"><figcaption>R 代码 12.37（续）</figcaption><pre><code>dat$edu_norm &lt;- normalize( d$edu_new )
+m12.7 &lt;- ulam(
+    alist(</code></pre></figure>
+    <p class="continuation-note">代码 12.37 的完整模型与后验输出、图 12.8，以及有序教育效应和普通连续教育效应的比较，将从原书 PDF 第 424 页继续。</p>
   </section>
 
-  <section class="endnotes" id="chapter-12-notes" role="doc-endnotes"><h2>尾注</h2><ol start="175"><li id="note-175">Williams（1975，1982）。Bolker（2008）在生态数据语境中给出了清晰介绍。 <a class="backref" href="#note-175-ref" aria-label="返回正文">↩</a></li><li id="note-176">另一种很常见的参数化是 <span class="math-inline"><var>α</var> = <var>p̄θ</var></span> 与 <span class="math-inline"><var>β</var> = (1 − <var>p̄</var>)<var>θ</var></span>。<span class="math-inline"><var>p̄</var></span> 与 <span class="math-inline"><var>θ</var></span> 的版本更适合建模，因为我们通常希望把线性模型连接到 beta 分布的中心趋势，而 <span class="math-inline"><var>p̄</var></span> 正是中心趋势的一种度量。 <a class="backref" href="#note-176-ref" aria-label="返回正文">↩</a></li><li id="note-177">Hilbe（2011）整本书都在讨论 gamma-Poisson 回归。 <a class="backref" href="#note-177-ref" aria-label="返回正文">↩</a></li><li id="note-178">Lambert（1992）首次介绍了这种模型。基本的零膨胀方法虽然出现得更早，但 Lambert 给出了本书采用的版本：用 log 与 logit link 连接两个彼此独立的线性模型。 <a class="backref" href="#note-178-ref" aria-label="返回正文">↩</a></li><li id="note-179">参见 Bürkner 与 Vuorre（2018），以及 Liddell 与 Kruschke（2018）。 <a class="backref" href="#note-179-ref" aria-label="返回正文">↩</a></li><li id="note-180">McCullagh（1980）被认为引入并推广了这种方法。另见 Fullerton（2009），其中综述并比较了不同模型类型。 <a class="backref" href="#note-180-ref" aria-label="返回正文">↩</a></li><li id="note-181">Cushman 等（2006）。 <a class="backref" href="#note-181-ref" aria-label="返回正文">↩</a></li><li id="note-182">本节的构造基于 Bürkner 与 Charpentier（2018）的策略。<code>brms</code> 包中内置了同样的技术；该包也使用 Stan 进行采样。 <a class="backref" href="#note-182-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section class="endnotes" id="chapter-12-notes" role="doc-endnotes"><h2>尾注</h2><ol start="175"><li id="note-175">Williams（1975，1982）。Bolker（2008）在生态数据语境中给出了清晰介绍。 <a class="backref" href="#note-175-ref" aria-label="返回正文">↩</a></li><li id="note-176">另一种很常见的参数化是 <span class="math-inline"><var>α</var> = <var>p̄θ</var></span> 与 <span class="math-inline"><var>β</var> = (1 − <var>p̄</var>)<var>θ</var></span>。<span class="math-inline"><var>p̄</var></span> 与 <span class="math-inline"><var>θ</var></span> 的版本更适合建模，因为我们通常希望把线性模型连接到 beta 分布的中心趋势，而 <span class="math-inline"><var>p̄</var></span> 正是中心趋势的一种度量。 <a class="backref" href="#note-176-ref" aria-label="返回正文">↩</a></li><li id="note-177">Hilbe（2011）整本书都在讨论 gamma-Poisson 回归。 <a class="backref" href="#note-177-ref" aria-label="返回正文">↩</a></li><li id="note-178">Lambert（1992）首次介绍了这种模型。基本的零膨胀方法虽然出现得更早，但 Lambert 给出了本书采用的版本：用 log 与 logit link 连接两个彼此独立的线性模型。 <a class="backref" href="#note-178-ref" aria-label="返回正文">↩</a></li><li id="note-179">参见 Bürkner 与 Vuorre（2018），以及 Liddell 与 Kruschke（2018）。 <a class="backref" href="#note-179-ref" aria-label="返回正文">↩</a></li><li id="note-180">McCullagh（1980）被认为引入并推广了这种方法。另见 Fullerton（2009），其中综述并比较了不同模型类型。 <a class="backref" href="#note-180-ref" aria-label="返回正文">↩</a></li><li id="note-181">Cushman 等（2006）。 <a class="backref" href="#note-181-ref" aria-label="返回正文">↩</a></li><li id="note-182">本节的构造基于 Bürkner 与 Charpentier（2018）的策略。<code>brms</code> 包中内置了同样的技术；该包也使用 Stan 进行采样。 <a class="backref" href="#note-182-ref" aria-label="返回正文">↩</a></li><li id="note-183">Dirichlet 分布得名于德国数学家 Peter Dirichlet（1805–1859）。他的姓氏以及这一分布常被读作类似 “diRIKlay” 或 “diRISHlay”；传说 Peter 本人采用带硬音 K 的读法。Dirichlet 师从当时最优秀的数学家，并在数学的许多领域作出重要贡献。他还娶了 Rebecka Mendelssohn——Felix 与 Fanny Mendelssohn 的妹妹。 <a class="backref" href="#note-183-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 12 章 PDF 第 397–420 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 421 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 12 章 PDF 第 397–423 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 424 页继续。</aside>
 </article>

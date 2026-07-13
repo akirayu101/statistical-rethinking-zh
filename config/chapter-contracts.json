@@ -2091,7 +2091,7 @@
   },
   "chapter-12": {
     "required_status": "in_progress",
-    "source_pages": [397, 420],
+    "source_pages": [397, 423],
     "required_ids": [
       "intro-12",
       "sec-12-1",
@@ -2178,6 +2178,16 @@
       "eq-12-education-all-steps",
       "eq-12-education-ordered-effect",
       "eq-12-ordered-education-model",
+      "eq-12-education-priors",
+      "note-183-ref",
+      "code-12-32",
+      "code-12-33",
+      "fig-12-7",
+      "code-12-34",
+      "code-12-35",
+      "code-12-36",
+      "erratum-12-is-it-is",
+      "code-12-37",
       "chapter-12-notes",
       "note-175",
       "note-176",
@@ -2186,7 +2196,8 @@
       "note-179",
       "note-180",
       "note-181",
-      "note-182"
+      "note-182",
+      "note-183"
     ],
     "required_headings": [
       "怪物与混合",
@@ -2205,20 +2216,20 @@
     ],
     "counts": {
       "section": 12,
-      "figure": 38,
-      "figure img": 7,
-      ".book-figure": 7,
-      ".code-listing": 31,
-      ".code-output": 12,
+      "figure": 45,
+      "figure img": 8,
+      ".book-figure": 8,
+      ".code-listing": 37,
+      ".code-output": 14,
       ".rethinking-box": 2,
       ".overthinking-box": 2,
       ".book-quote": 3,
-      ".equation-block": 17,
-      ".wallis-equation": 17,
-      ".source-erratum": 6,
+      ".equation-block": 18,
+      ".wallis-equation": 18,
+      ".source-erratum": 7,
       ".chapter-introduction": 1,
       ".continuation-note": 1,
-      ".endnotes li": 8
+      ".endnotes li": 9
     }
   }
 }
