@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-08" data-source-pages="257-265">
-  <header class="chapter-header"><p class="eyebrow">第八章</p><h1>条件海牛</h1><p class="source-range">当前译稿对应原书 PDF 第 257–265 页</p></header>
+<article class="book-article" data-chapter="chapter-08" data-source-pages="257-268">
+  <header class="chapter-header"><p class="eyebrow">第八章</p><h1>条件海牛</h1><p class="source-range">当前译稿对应原书 PDF 第 257–268 页</p></header>
 
   <p>海牛（<i>Trichechus manatus</i>）是一种行动缓慢、生活在温暖浅水中的水生哺乳动物。海牛没有天敌，却与摩托艇共享水域，而摩托艇装有螺旋桨。海牛虽与大象有亲缘关系、皮肤也很厚，螺旋桨叶片仍然能够而且确实会杀死它们。大多数成年海牛身上都有与船只相撞留下的某种伤疤（图 8.1，上）。<sup id="note-128-ref"><a href="#note-128">128</a></sup></p>
   <p>阿姆斯特朗—惠特沃思 A.W.38“惠特利”是英国皇家空军的一线轰炸机。第二次世界大战期间，A.W.38 把炸弹和传单带入德国领土。与海牛不同，A.W.38 有凶猛的天敌：高射炮火和截击机火力。许多飞机执行任务后再也没有回来；幸存者身上的伤痕足以证明它们经历过什么（图 8.1，下）。</p>
@@ -115,11 +115,77 @@ sigma 0.14 0.01 0.12 0.15</code></pre></figure>
       <p>其中 <span class="math-inline"><var>A</var><sub>i</sub></span> 是 <code>cont_africa</code>，取 0/1 的指示变量。但我们不采用这个惯例。事实上，它往往是坏主意。我花了很多年才明白这一点，现在想让你免受我见过的那些恐怖。一般性问题在于，我们需要给 <span class="math-inline"><var>γ</var></span> 一个先验。先验当然能做；但在看到数据之前，它必然告诉模型：非洲国家的 <span class="math-inline"><var>μ</var><sub>i</sub></span> 比非洲之外国家的更不确定。这毫无道理。第 4 章引入分类变量时，我们遇到过同一个问题。</p>
       <p>解决办法很简单：非洲国家得到一个截距，非洲之外国家得到另一个截距。此时：</p>
       <div class="equation-block" id="eq-8-indexed-intercepts"><span><var>μ</var><sub>i</sub> = <var>α</var><sub>cid[i]</sub> + <var>β</var>(<var>r</var><sub>i</sub> − <span class="overbar">r</span>)</span></div>
-      <p>这里 <code>cid</code> 是索引变量，即大洲 ID：非洲国家取 1，其他国家取 2。因此共有两个参数 <span class="math-inline"><var>α</var><sub>1</sub></span> 与 <span class="math-inline"><var>α</var><sub>2</sub></span>，每个唯一索引值对应一个。记法 <code>cid[i]</code> 表示第 <span class="math-inline"><var>i</var></span> 行的 <code>cid</code> 值；方括号记法将在原书 PDF 第 266 页继续说明。</p>
+      <p>这里 <code>cid</code> 是索引变量，即大洲 ID：非洲国家取 1，其他国家取 2。因此共有两个参数 <span class="math-inline"><var>α</var><sub>1</sub></span> 与 <span class="math-inline"><var>α</var><sub>2</sub></span>，每个唯一索引值对应一个。记法 <code>cid[i]</code> 表示第 <span class="math-inline"><var>i</var></span> 行的 <code>cid</code> 值。我使用方括号索引变量，因为它比再加一层下标 <span class="math-inline"><var>α</var><sub>cid<sub>i</sub></sub></span> 更易读。先自己建立这个索引：</p>
+      <figure class="code-listing" id="code-8-7"><figcaption>R 代码 8.7</figcaption><pre><code># make variable to index Africa (1) or not (2)
+dd$cid &lt;- ifelse( dd$cont_africa==1 , 1 , 2 )</code></pre></figure>
+      <p>这种索引方法不采用传统的 0/1 指示变量附加项，因此不会迫使我们声称非洲均值天生比其他大洲均值更不确定；只需复用之前的先验。无论非洲的平均对数 GDP 是多少，它几乎肯定落在 1 的正负 0.2 内。请记住，它在结构上与传统方法得到的模型完全相同，只是这样更容易指定合理先验。</p>
+      <p>在 <code>quap</code> 中定义模型，需要在线性模型和先验中加入方括号：</p>
+      <figure class="code-listing" id="code-8-8"><figcaption>R 代码 8.8</figcaption><pre><code>m8.2 &lt;- quap(
+    alist(
+        log_gdp_std ~ dnorm( mu , sigma ) ,
+        mu &lt;- a[cid] + b*( rugged_std - 0.215 ) ,
+        a[cid] ~ dnorm( 1 , 0.1 ) ,
+        b ~ dnorm( 0 , 0.3 ) ,
+        sigma ~ dexp( 1 )
+    ) , data=dd )</code></pre></figure>
+      <p>现在用 WAIC 比较两个模型：</p>
+      <figure class="code-listing" id="code-8-9"><figcaption>R 代码 8.9</figcaption><pre><code>compare( m8.1 , m8.2 )</code></pre><pre class="code-output"><code>       WAIC pWAIC dWAIC weight   SE   dSE
+m8.2 -252.3   4.3   0.0      1 15.3    NA
+m8.1 -188.7   2.7  63.5      0 13.3 15.15</code></pre></figure>
+      <p><code>m8.2</code> 获得全部模型权重。WAIC 差值的标准误约为 15，而差值本身约为 64，所以大洲变量似乎捕捉到了样本中的某种重要关联。<code>precis</code> 输出给出很好的线索。显示向量参数 <code>a</code> 需要 <code>depth=2</code>；这里仅有两个值，默认显示也无妨，但这种向量往往有数百个值，你不会想把每一个都列入表格。</p>
+      <figure class="code-listing" id="code-8-10"><figcaption>R 代码 8.10</figcaption><pre><code>precis( m8.2 , depth=2 )</code></pre><pre class="code-output"><code>      mean   sd 5.5% 94.5%
+a[1]  0.88 0.02 0.85 0.91
+a[2]  1.05 0.01 1.03 1.07
+b    -0.05 0.05 -0.12 0.03
+sigma 0.11 0.01 0.10 0.12</code></pre></figure>
+      <p>参数 <code>a[1]</code> 是非洲国家的截距，可靠地低于 <code>a[2]</code>。两个截距的后验对比为：</p>
+      <figure class="code-listing" id="code-8-11"><figcaption>R 代码 8.11</figcaption><pre><code>post &lt;- extract.samples(m8.2)
+diff_a1_a2 &lt;- post$a[,1] - post$a[,2]
+PI( diff_a1_a2 )</code></pre><pre class="code-output"><code>        5%       94%
+-0.1990056 -0.1378378</code></pre></figure>
+      <p>差值可靠地低于零。</p>
+      <p>接着绘制 <code>m8.2</code> 的后验预测。虽然它的预测表现优于 <code>m8.1</code>，仍无法让非洲内外具有不同斜率。下面从后验抽样，并分别计算非洲与非非洲国家的预测均值和区间：</p>
+      <figure class="code-listing" id="code-8-12"><figcaption>R 代码 8.12</figcaption><pre><code>rugged.seq &lt;- seq( from=-0.1 , to=1.1 , length.out=30 )
+
+# compute mu over samples, fixing cid=2
+mu.NotAfrica &lt;- link( m8.2 ,
+    data=data.frame( cid=2 , rugged_std=rugged.seq ) )
+
+# compute mu over samples, fixing cid=1
+mu.Africa &lt;- link( m8.2 ,
+    data=data.frame( cid=1 , rugged_std=rugged.seq ) )
+
+# summarize to means and intervals
+mu.NotAfrica_mu &lt;- apply( mu.NotAfrica , 2 , mean )
+mu.NotAfrica_ci &lt;- apply( mu.NotAfrica , 2 , PI , prob=0.97 )
+mu.Africa_mu &lt;- apply( mu.Africa , 2 , mean )
+mu.Africa_ci &lt;- apply( mu.Africa , 2 , PI , prob=0.97 )</code></pre></figure>
+      <p>这些后验预测（回溯预测）见图 8.4。非洲国家用蓝色，非洲之外国家用灰黑色。结果只是经济发展与崎岖度之间很弱的负关联；非洲国家的总体经济发展较低，所以蓝色回归线位于黑线下方，却与之平行。加入非洲指示变量只让模型预测更低的非洲均值，完全不能改变斜率。WAIC 说带指示变量的模型好得多，只表明非洲国家的平均 GDP 的确更低；它仍是个糟糕模型。</p>
+      <aside class="rethinking-box" id="rethinking-why-97"><h3>再思考：为什么是 97%？</h3><p>上面的代码以及图 8.4 使用预期均值的 97% 区间，这是很不标准的百分位区间。为什么？本书使用非标准百分比，是为了不断提醒读者：95% 和 5% 之类惯例是任意的，边界也没有意义。离开期望值时，概率连续变化；边界一侧与另一侧的概率几乎相同。此外，97 是质数。这并不让它更优，但也不比仅仅因为我们每只手有五根手指就使用 5 的倍数更荒唐。抵抗四足总纲的暴政。</p></aside>
+      <figure class="book-figure indicator-parallel-figure" id="fig-8-4"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的非洲指示变量平行回归线图"><img src="/media/chapter-08-indicator-parallel.svg" alt="非洲国家与非非洲国家的回归线截距不同但斜率平行"></div><p class="scroll-hint">图较宽，可横向滚动查看全部国家与区间。</p><figcaption><strong>图 8.4：</strong>加入非洲国家指示变量不会影响斜率。非洲国家为蓝色，非非洲国家为黑色；对应颜色显示各组回归均值，阴影为 97% 区间。</figcaption></figure>
+    </section>
+
+    <section id="sec-8-1-3"><h3>8.1.3 添加交互作用才有效</h3><p>怎样恢复本节开头看到的斜率变化？需要真正的交互效应，也就是让斜率同样以大洲为条件。刚才模型中的均值定义为：</p>
+      <div class="equation-block" id="eq-8-parallel-slopes"><span><var>μ</var><sub>i</sub> = <var>α</var><sub>cid[i]</sub> + <var>β</var>(<var>r</var><sub>i</sub> − <span class="overbar">r</span>)</span></div>
+      <p>现在把索引贯彻到底，让斜率也以大洲为条件：</p>
+      <div class="equation-block" id="eq-8-indexed-slopes"><span><var>μ</var><sub>i</sub> = <var>α</var><sub>cid[i]</sub> + <var>β</var><sub>cid[i]</sub>(<var>r</var><sub>i</sub> − <span class="overbar">r</span>)</span></div>
+      <p>传统交互写法会使用指示变量和新的交互参数：</p>
+      <div class="equation-block" id="eq-8-conventional-interaction"><span><var>μ</var><sub>i</sub> = <var>α</var><sub>cid[i]</sub> + (<var>β</var> + <var>γA</var><sub>i</sub>)(<var>r</var><sub>i</sub> − <span class="overbar">r</span>)</span></div>
+      <p>其中 <span class="math-inline"><var>A</var><sub>i</sub></span> 是非洲国家的 0/1 指示变量。这与索引方法等价，却更难指定合理先验：任何给 <span class="math-inline"><var>γ</var></span> 的先验都会让非洲内部斜率比非洲外部斜率更不确定，这同样毫无道理。索引方法则能轻松给两个大洲类别的斜率指定相同先验。</p>
+      <p>像之前一样用 <code>quap</code> 近似新模型的后验。加入崎岖度与是否位于非洲之间的交互作用：</p>
+      <figure class="code-listing" id="code-8-13"><figcaption>R 代码 8.13</figcaption><pre><code>m8.3 &lt;- quap(
+    alist(
+        log_gdp_std ~ dnorm( mu , sigma ) ,
+        mu &lt;- a[cid] + b[cid]*( rugged_std - 0.215 ) ,
+        a[cid] ~ dnorm( 1 , 0.1 ) ,
+        b[cid] ~ dnorm( 0 , 0.3 ) ,
+        sigma ~ dexp( 1 )
+    ) , data=dd )</code></pre></figure>
+      <p>边际后验分布将在原书 PDF 第 269 页继续检查。</p>
     </section>
   </section>
 
   <section class="endnotes" id="chapter-08-notes" role="doc-endnotes"><h2>尾注</h2><ol start="128"><li id="note-128">这里关于海牛的事实均取自 Lightsey 等（2006）和 Rommel 等（2007）。图中的伤痕图取自 <span class="url-text">http://www.learner.org/jnorth/tm/manatee/RollCall.html</span> 的免费教育材料。 <a class="backref" href="#note-128-ref" aria-label="返回正文">↩</a></li><li id="note-129">Wald（1943）。更易懂的介绍和历史背景可参见 Mangel 与 Samaniego（1984）。 <a class="backref" href="#note-129-ref" aria-label="返回正文">↩</a></li><li id="note-130">Wald（1950）。Wald 的奠基论文是 Wald（1939）；强烈推荐 Fienberg（2006）的历史回顾。更技术性的讨论可参见 Berger（1985）、Robert（2007）以及 Jaynes（2003）第 406 页。 <a class="backref" href="#note-130-ref" aria-label="返回正文">↩</a></li><li id="note-131">GDP 即国内生产总值（Gross Domestic Product）。它是最常用的经济表现度量，也是最荒唐的度量之一。用 GDP 衡量经济健康，就像用热量衡量化学反应的质量。 <a class="backref" href="#note-131-ref" aria-label="返回正文">↩</a></li><li id="note-132">Riley 等（1999）。 <a class="backref" href="#note-132-ref" aria-label="返回正文">↩</a></li><li id="note-133">数据来自 Nunn 与 Puga（2011）。 <a class="backref" href="#note-133-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 257–265 页已完成翻译、逐页核对、结构契约及桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 266 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 257–268 页已完成翻译、逐页核对、结构契约及桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 269 页继续。</aside>
 </article>
