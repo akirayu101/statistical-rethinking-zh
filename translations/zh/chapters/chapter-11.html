@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-11" data-source-pages="347-374">
-  <header class="chapter-header"><p class="eyebrow">第十一章</p><h1>上帝给整数加了料</h1><p class="source-range">当前译稿对应原书 PDF 第 347–374 页</p></header>
+<article class="book-article" data-chapter="chapter-11" data-source-pages="347-377">
+  <header class="chapter-header"><p class="eyebrow">第十一章</p><h1>上帝给整数加了料</h1><p class="source-range">当前译稿对应原书 PDF 第 347–377 页</p></header>
 
   <div class="chapter-introduction" id="intro-11">
     <p>太空中的寒冷以 Kelvin 命名，约为 3 Kelvin，也就是绝对零度以上约 3 摄氏度。Kelvin 也是苏格兰格拉斯哥附近一条河流的名字；同一条河又把名字给了 William Thomson，也就是 Kelvin 勋爵（1824 年生，1907 年卒）——英国第一位获封贵族头衔的科学家。Thomson 在格拉斯哥的实验室研究热力学，如今太空的寒冷便以一条苏格兰河流为名。</p>
@@ -512,11 +512,82 @@ for ( i in 1:N ) curve( exp( a[i] + b[i]*x ) , add=TRUE , col=grau() )</code></p
       <p class="source-erratum" id="erratum-11-fig-11-8-labels"><strong>原文勘误：</strong>图 11.8 下排两个面板把截距先验误标为 <code>b ~ dnorm(3,0.5)</code>；代码 11.42 明确表明该参数是 <code>a</code>。译图按代码更正为 <span class="math-inline"><var>α</var> ∼ Normal(3, 0.5)</span>。</p>
       <p>图 11.8 右上角显示了这组先验。强关系仍然可能出现，但大部分概率质量对应的是工具总数与人口对数之间相当平坦的关系。</p>
       <p>在更自然的结果尺度上查看这些先验也会有所帮助。标准化人口对数变量很适合拟合，却不适合思考。人口规模有自然零点，我们希望始终看见它；标准化会摧毁这个零点。下一步将绘制工具总数与未标准化人口对数之间的 100 条先验预测趋势。</p>
-      <p class="continuation-note">图 11.8 下排两种自然尺度的绘图代码、收益递减解释与 Poisson 模型拟合，将从原书 PDF 第 375 页继续。</p>
+      <figure class="code-listing" id="code-11-43"><figcaption>R 代码 11.43</figcaption><pre><code>x_seq &lt;- seq( from=log(100) , to=log(200000) , length.out=100 )
+lambda &lt;- sapply( x_seq , function(x) exp( a + b*x ) )
+plot( NULL , xlim=range(x_seq) , ylim=c(0,500) , xlab="log population" ,
+    ylab="total tools" )
+for ( i in 1:N ) lines( x_seq , lambda[i,] , col=grau() , lwd=1.5 )</code></pre></figure>
+      <p>这幅图位于图 11.8 左下角。请注意，100 件工具大概已经是我们预期在这类数据中见到的最大值。大多数趋势都落在这个范围内，但仍有一些爆炸式选项。最后，再在自然人口尺度上查看同一批曲线：</p>
+      <figure class="code-listing" id="code-11-44"><figcaption>R 代码 11.44</figcaption><pre><code>plot( NULL , xlim=range(exp(x_seq)) , ylim=c(0,500) , xlab="population" ,
+    ylab="total tools" )
+for ( i in 1:N ) lines( exp(x_seq) , lambda[i,] , col=grau() , lwd=1.5 )</code></pre></figure>
+      <p>这幅图位于图 11.8 右下角。在原始人口尺度上，曲线向相反方向弯曲；这是把人口对数放进线性模型的自然结果。采用 log link 的 Poisson 模型，会与预测变量形成 log-linear 关系。当预测变量本身也取对数时，就等于假设原始变量具有收益递减。比较图 11.8 下排两图即可看出：左图曲线若再取对数，就会变成直线；在自然人口尺度上，模型则对人口施加收益递减——每增加一人，工具期望数量的增量都更小。曲线向下弯折并逐渐变平。正因如此，许多预测变量都更适合取对数。模拟这样的先验预测分布，是把这些问题想清楚的有效方法。</p>
+      <p>好了，终于可以近似后验分布了。下面既编写前述交互模型，也编写一个非常简单的纯截距模型。加入纯截距模型，是为了展示 Poisson 模型中参数与模型复杂度之间一个有趣的关系：</p>
+      <figure class="code-listing" id="code-11-45"><figcaption>R 代码 11.45</figcaption><pre><code>dat &lt;- list(
+    T = d$total_tools ,
+    P = d$P ,
+    cid = d$contact_id )
+
+# 纯截距模型
+m11.9 &lt;- ulam(
+    alist(
+        T ~ dpois( lambda ),
+        log(lambda) &lt;- a,
+        a ~ dnorm(3,0.5)
+    ), data=dat , chains=4 , log_lik=TRUE )
+
+# 交互模型
+m11.10 &lt;- ulam(
+    alist(
+        T ~ dpois( lambda ),
+        log(lambda) &lt;- a[cid] + b[cid]*P,
+        a[cid] ~ dnorm( 3 , 0.5 ),
+        b[cid] ~ dnorm( 0 , 0.2 )
+    ), data=dat , chains=4 , log_lik=TRUE )</code></pre></figure>
+      <p>快速查看 PSIS 模型比较，以强调两个重要事实：</p>
+      <figure class="code-listing" id="code-11-46"><figcaption>R 代码 11.46</figcaption><pre><code>compare( m11.9 , m11.10 , func=PSIS )</code></pre><pre class="code-output"><code>          LOO pLOO dLOO weight    SE   dSE
+m11.10   85.5  7.1  0.0      1 13.22    NA
+m11.9   141.1  8.0 55.5      0 33.33 32.78
+Warning messages:
+1: Some Pareto k diagnostic values are too high.</code></pre></figure>
+      <p>第一，我们又收到了 Pareto <var>k</var> 警告，说明存在高影响力点。数据集这么小，这并不意外；但检查后验预测时必须把这一点放在心上。第二，纯截距模型 <code>m11.9</code> 得分比交互模型 <code>m11.10</code> 差并不奇怪，令人惊讶的是：参数更少的模型，其“有效参数个数” <code>pPSIS</code>（输出中标为 <code>pLOO</code>）反而更大。<code>m11.9</code> 只有一个参数，<code>m11.10</code> 却有四个参数。这不是 PSIS 的怪癖；WAIC 会讲出同样的故事。究竟发生了什么？</p>
+      <p>只有在采用平坦先验的简单线性回归中，模型复杂度——也就是过拟合倾向——才与参数个数有清晰关系。例如，一旦分布有界，靠近边界的参数值就会比远离边界的值造成更少过拟合。同一原则也适用于数据分布：任何接近零的计数都更难过拟合。所以，过拟合风险既取决于模型的结构细节，也取决于样本的组成。</p>
+      <p>在这个样本里，过拟合风险的一大来源正是 PSIS 标出的高影响力点。现在绘制后验预测，并按 Pareto <var>k</var> 值缩放和标记高影响力点。下面的代码绘制数据，再叠加每一种人口规模和接触率下工具期望数量的后验预测：</p>
+      <figure class="code-listing" id="code-11-47"><figcaption>R 代码 11.47</figcaption><pre><code>k &lt;- PSIS( m11.10 , pointwise=TRUE )$k
+plot( dat$P , dat$T , xlab="log population (std)" , ylab="total tools" ,
+    col=rangi2 , pch=ifelse( dat$cid==1 , 1 , 16 ) , lwd=2 ,
+    ylim=c(0,75) , cex=1+normalize(k) )
+
+# 设置用于计算预测的横轴取值
+ns &lt;- 100
+P_seq &lt;- seq( from=-1.4 , to=3 , length.out=ns )
+
+# cid=1（低接触率）的预测
+lambda &lt;- link( m11.10 , data=data.frame( P=P_seq , cid=1 ) )
+lmu &lt;- apply( lambda , 2 , mean )
+lci &lt;- apply( lambda , 2 , PI )
+lines( P_seq , lmu , lty=2 , lwd=1.5 )
+shade( lci , P_seq , xpd=TRUE )
+
+# cid=2（高接触率）的预测
+lambda &lt;- link( m11.10 , data=data.frame( P=P_seq , cid=2 ) )
+lmu &lt;- apply( lambda , 2 , mean )
+lci &lt;- apply( lambda , 2 , PI )
+lines( P_seq , lmu , lty=1 , lwd=1.5 )
+shade( lci , P_seq , xpd=TRUE )</code></pre></figure>
+      <figure class="book-figure oceania-posterior-figure" id="fig-11-9"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的大洋洲工具模型后验预测双面板图"><img src="/media/chapter-11-oceania-posterior.svg" alt="大洋洲十个社会的工具总数与人口关系，分别以标准化人口对数和原始人口为横轴；开放点为低接触社会，实心点为高接触社会，曲线及阴影为后验预测"></div><p class="scroll-hint">图较宽，可横向滚动比较标准化人口对数与原始人口尺度。</p><figcaption><strong>图 11.9：</strong>大洋洲工具模型的后验预测。实心点是历史上接触率较高的社会，空心点是接触率较低的社会。点的大小按相对 LOOIS Pareto <var>k</var> 值缩放，点越大，影响力越强。实线是高接触社会的后验均值，虚线是低接触社会的后验均值；阴影区域给出 89% 相容区间。左：模型代码所用的标准化人口对数尺度。右：同一组预测在自然人口尺度上的样子。</figcaption></figure>
+      <p>结果见图 11.9。空心点是低接触社会，实心点是高接触社会，点的大小按 Pareto <var>k</var> 值缩放。虚线是低接触率的后验均值，实线是高接触率的后验均值。</p>
+      <p>右图把同一组预测换到自然尺度，横轴是原始人口规模。绘图代码非常相似，只需逆转标准化，把 <code>P_seq</code> 转回自然尺度，然后在 <code>lines</code> 与 <code>shade</code> 命令中用转换后的序列替换 <code>P_seq</code>：</p>
+      <figure class="code-listing" id="code-11-48"><figcaption>R 代码 11.48（续）</figcaption><pre><code>plot( d$population , d$total_tools , xlab="population" , ylab="total tools" ,
+    col=rangi2 , pch=ifelse( dat$cid==1 , 1 , 16 ) , lwd=2 ,
+    ylim=c(0,75) , cex=1+normalize(k) )
+
+ns &lt;- 100</code></pre></figure>
+      <p class="continuation-note">代码 11.48 的反标准化与自然尺度预测、Hawaii 高影响力分析及机制模型，将从原书 PDF 第 378 页继续。</p>
     </section>
   </section>
 
   <section class="endnotes" id="chapter-11-notes" role="doc-endnotes"><h2>尾注</h2><ol start="166"><li id="note-166">重要数论家 Leopold Kronecker 据称说过：“上帝创造了整数，其余一切皆为人造。”（德文：<span lang="de">Die ganzen Zahlen hat der liebe Gott gemacht, alles andere ist Menschenwerk.</span>） <a class="backref" href="#note-166-ref" aria-label="返回正文">↩</a></li><li id="note-167">Silk 等（2005）。 <a class="backref" href="#note-167-ref" aria-label="返回正文">↩</a></li><li id="note-168">Bickel 等（1975）。 <a class="backref" href="#note-168-ref" aria-label="返回正文">↩</a></li><li id="note-169">Simpson（1951）。 <a class="backref" href="#note-169-ref" aria-label="返回正文">↩</a></li><li id="note-170">例如可参见 Pearl（2014）。关于 Simpson 悖论的论述浩如烟海，以至于你能找到看似彼此矛盾的解释。 <a class="backref" href="#note-170-ref" aria-label="返回正文">↩</a></li><li id="note-171">Kline 与 Boyd（2010）。 <a class="backref" href="#note-171-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 11 章 PDF 第 347–374 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 375 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 11 章 PDF 第 347–377 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 378 页继续。</aside>
 </article>

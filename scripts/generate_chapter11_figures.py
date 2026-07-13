@@ -16,6 +16,7 @@ OUT7 = ROOT / "translations/zh/media/chapter-11-ucb-dag-direct.svg"
 OUT8 = ROOT / "translations/zh/media/chapter-11-ucb-dag-collider.svg"
 OUT9 = ROOT / "translations/zh/media/chapter-11-poisson-intercept-priors.svg"
 OUT10 = ROOT / "translations/zh/media/chapter-11-poisson-slope-priors.svg"
+OUT11 = ROOT / "translations/zh/media/chapter-11-oceania-posterior.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 BLUE = "#6670ee"
@@ -524,6 +525,125 @@ def poisson_slope_priors() -> None:
     OUT10.write_text("\n".join(parts) + "\n", encoding="utf-8")
 
 
+def oceania_posterior_plot() -> None:
+    names = ["Malekula", "Tikopia", "Santa Cruz", "Yap", "Lau Fiji", "Trobriand", "Chuuk", "Manus", "Tonga", "Hawaii"]
+    population = [1100, 1500, 3600, 4791, 7400, 8000, 9200, 13000, 17500, 275000]
+    contact = [1, 1, 1, 2, 2, 2, 2, 1, 2, 1]
+    tools = [13, 22, 24, 43, 33, 19, 40, 28, 55, 71]
+    log_population = [math.log(value) for value in population]
+    log_mean = sum(log_population) / len(log_population)
+    log_sd = math.sqrt(sum((value - log_mean) ** 2 for value in log_population) / (len(log_population) - 1))
+    standardized = [(value - log_mean) / log_sd for value in log_population]
+
+    def fit(group: int) -> tuple[float, float, tuple[float, float, float]]:
+        intercept, slope = 3.0, 0.0
+        indexes = [index for index, value in enumerate(contact) if value == group]
+        for _ in range(30):
+            expected = [math.exp(intercept + slope * standardized[index]) for index in indexes]
+            gradient_a = sum(tools[index] - expected[pos] for pos, index in enumerate(indexes)) - (intercept - 3) / .25
+            gradient_b = sum((tools[index] - expected[pos]) * standardized[index] for pos, index in enumerate(indexes)) - slope / .04
+            m00 = sum(expected) + 4
+            m01 = sum(expected[pos] * standardized[index] for pos, index in enumerate(indexes))
+            m11 = sum(expected[pos] * standardized[index] ** 2 for pos, index in enumerate(indexes)) + 25
+            determinant = m00 * m11 - m01 * m01
+            step_a = (m11 * gradient_a - m01 * gradient_b) / determinant
+            step_b = (-m01 * gradient_a + m00 * gradient_b) / determinant
+            intercept += step_a
+            slope += step_b
+            if abs(step_a) + abs(step_b) < 1e-10:
+                break
+        expected = [math.exp(intercept + slope * standardized[index]) for index in indexes]
+        m00 = sum(expected) + 4
+        m01 = sum(expected[pos] * standardized[index] for pos, index in enumerate(indexes))
+        m11 = sum(expected[pos] * standardized[index] ** 2 for pos, index in enumerate(indexes)) + 25
+        determinant = m00 * m11 - m01 * m01
+        return intercept, slope, (m11 / determinant, -m01 / determinant, m00 / determinant)
+
+    fits = {group: fit(group) for group in (1, 2)}
+
+    def prediction(group: int, predictor: float) -> tuple[float, float, float]:
+        intercept, slope, (variance_a, covariance, variance_b) = fits[group]
+        mean_linear = intercept + slope * predictor
+        variance_linear = variance_a + 2 * predictor * covariance + predictor ** 2 * variance_b
+        standard_error = math.sqrt(max(variance_linear, 0))
+        mean = math.exp(mean_linear + variance_linear / 2)
+        return mean, math.exp(mean_linear - 1.598 * standard_error), math.exp(mean_linear + 1.598 * standard_error)
+
+    width, height = 1200, 620
+    panels = [
+        (35, 45, 550, 500, -1.5, 2.8, "人口对数（标准化）"),
+        (615, 45, 550, 500, 0, 300000, "人口"),
+    ]
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">',
+        '<title>大洋洲工具模型的后验预测</title>',
+        '<desc>左图以标准化人口对数为横轴，右图以原始人口为横轴；实心点表示高接触社会，空心点表示低接触社会，曲线和阴影表示后验均值与百分之八十九相容区间。</desc>',
+        '<rect width="100%" height="100%" fill="#fbfaf6"/>',
+        '<defs>',
+    ]
+    geometries = []
+    for index, (x, y, panel_width, panel_height, xmin, xmax, xlabel) in enumerate(panels):
+        left, right, top, bottom = x + 78, x + panel_width - 22, y + 38, y + panel_height - 72
+        geometries.append((left, right, top, bottom, xmin, xmax))
+        parts.append(f'<clipPath id="oceania-panel-{index}"><rect x="{left}" y="{top}" width="{right-left}" height="{bottom-top}"/></clipPath>')
+    parts.append('</defs>')
+
+    for panel_index, panel in enumerate(panels):
+        x, y, panel_width, panel_height, xmin, xmax, xlabel = panel
+        left, right, top, bottom, *_ = geometries[panel_index]
+        sx = lambda value, left=left, right=right, xmin=xmin, xmax=xmax: left + (value - xmin) / (xmax - xmin) * (right - left)
+        sy = lambda value, top=top, bottom=bottom: bottom - value / 75 * (bottom - top)
+        parts.extend([
+            f'<rect x="{x}" y="{y}" width="{panel_width}" height="{panel_height}" rx="8" fill="#fff" stroke="{GRID}"/>',
+            f'<line x1="{left}" y1="{bottom}" x2="{right}" y2="{bottom}" stroke="{INK}" stroke-width="1.5"/>',
+            f'<line x1="{left}" y1="{bottom}" x2="{left}" y2="{top}" stroke="{INK}" stroke-width="1.5"/>',
+            text((left + right) / 2, y + panel_height - 20, xlabel, size=18, anchor="middle"),
+            text(x + 23, (top + bottom) / 2, "工具总数", size=18, anchor="middle", rotate=-90),
+        ])
+        x_ticks = (-1, 0, 1, 2) if panel_index == 0 else (0, 50000, 150000, 250000)
+        for tick in x_ticks:
+            xx = sx(tick)
+            label = str(tick) if panel_index == 0 else ("0" if tick == 0 else f"{tick // 10000}万")
+            parts.extend([f'<line x1="{xx:.1f}" y1="{bottom}" x2="{xx:.1f}" y2="{bottom+6}" stroke="{INK}"/>', text(xx, bottom + 25, label, size=14, anchor="middle")])
+        for tick in (0, 20, 40, 60):
+            yy = sy(tick)
+            parts.extend([
+                f'<line x1="{left-6}" y1="{yy:.1f}" x2="{left}" y2="{yy:.1f}" stroke="{INK}"/>',
+                text(left - 10, yy + 5, tick, size=14, anchor="end"),
+                f'<line x1="{left}" y1="{yy:.1f}" x2="{right}" y2="{yy:.1f}" stroke="{GRID}" stroke-dasharray="4 6"/>',
+            ])
+
+        predictor_sequence = [-1.5 + 4.5 * index / 119 for index in range(120)] if panel_index == 0 else [-5 + 8 * index / 119 for index in range(120)]
+        display_x = predictor_sequence if panel_index == 0 else [math.exp(value * log_sd + log_mean) for value in predictor_sequence]
+        parts.append(f'<g clip-path="url(#oceania-panel-{panel_index})">')
+        for group, opacity in ((1, .18), (2, .28)):
+            predictions = [prediction(group, value) for value in predictor_sequence]
+            upper = [(display_x[index], values[2]) for index, values in enumerate(predictions)]
+            lower = [(display_x[index], values[1]) for index, values in reversed(list(enumerate(predictions)))]
+            polygon_points = upper + lower
+            coords = " ".join(f"{sx(px):.1f},{sy(py):.1f}" for px, py in polygon_points)
+            parts.append(f'<polygon points="{coords}" fill="#7b7b78" fill-opacity="{opacity}"/>')
+        for group, dash in ((1, ' stroke-dasharray="9 7"'), (2, "")):
+            curve = [(display_x[index], prediction(group, value)[0]) for index, value in enumerate(predictor_sequence)]
+            coords = " ".join(f"{sx(px):.1f},{sy(py):.1f}" for px, py in curve)
+            parts.append(f'<polyline points="{coords}" fill="none" stroke="{INK}" stroke-width="3"{dash}/>')
+
+        pareto = [.24, .22, .28, .60, .31, .56, .33, .27, .69, 1.01]
+        for index, value in enumerate(tools):
+            px = standardized[index] if panel_index == 0 else population[index]
+            radius = 6 + 5 * pareto[index]
+            fill = BLUE if contact[index] == 2 else "#fff"
+            parts.append(f'<circle cx="{sx(px):.1f}" cy="{sy(value):.1f}" r="{radius:.1f}" fill="{fill}" stroke="{BLUE}" stroke-width="3"/>')
+        parts.append('</g>')
+        if panel_index == 0:
+            label_offsets = {3: (-12, -18, "end"), 5: (14, 22, "start"), 8: (-12, -18, "end"), 9: (-12, -18, "end")}
+            for index, (dx, dy, anchor) in label_offsets.items():
+                value = f"{names[index]} ({pareto[index]:.2f})".replace("0.", ".")
+                parts.append(text(sx(standardized[index]) + dx, sy(tools[index]) + dy, value, size=15, anchor=anchor, fill=INK))
+    parts.append('</svg>')
+    OUT11.write_text("\n".join(parts) + "\n", encoding="utf-8")
+
+
 if __name__ == "__main__":
     figure_11_3()
     parameter_plots()
@@ -533,5 +653,6 @@ if __name__ == "__main__":
     dag(OUT8, collider=True)
     poisson_intercept_priors()
     poisson_slope_priors()
-    for path in (OUT1, OUT2, OUT3, OUT4, OUT5, OUT6, OUT7, OUT8, OUT9, OUT10):
+    oceania_posterior_plot()
+    for path in (OUT1, OUT2, OUT3, OUT4, OUT5, OUT6, OUT7, OUT8, OUT9, OUT10, OUT11):
         print(path)

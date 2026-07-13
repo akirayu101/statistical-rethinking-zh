@@ -931,7 +931,13 @@
     "slope prior": "斜率先验",
     "explosive growth": "爆炸式增长",
     "natural zero": "自然零点",
-    "raw population size": "原始人口规模"
+    "raw population size": "原始人口规模",
+    "log-linear relationship": "log-linear 关系",
+    "diminishing returns": "收益递减",
+    "model complexity": "模型复杂度",
+    "bounded distribution": "有界分布",
+    "sample composition": "样本组成",
+    "overfitting risk": "过拟合风险"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "blavaan", "AIC", "DIC", "WAIC", "BIC", "PSIS-LOO", "MCMC", "HMC"
