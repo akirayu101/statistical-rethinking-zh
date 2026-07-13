@@ -1,0 +1,201 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="620" viewBox="0 0 1200 620" role="img">
+<title>高相关下的 Metropolis 链</title>
+<desc>两个面板分别显示步长零点一和零点二五时的五十次提议，实心点为接受，空心点为拒绝。</desc>
+<rect width="100%" height="100%" fill="#fff"/>
+<defs><clipPath id="clip0"><rect x="90" y="85" width="450" height="450"/></clipPath></defs>
+<rect x="90" y="85" width="450" height="450" fill="#fff" stroke="#30332e"/>
+<ellipse cx="315.0" cy="310.0" rx="55.0" ry="5.5" transform="rotate(45 315.0 310.0)" fill="none" stroke="#9b9c97" stroke-width="1" clip-path="url(#clip0)"/>
+<ellipse cx="315.0" cy="310.0" rx="93.0" ry="9.3" transform="rotate(45 315.0 310.0)" fill="none" stroke="#9b9c97" stroke-width="1" clip-path="url(#clip0)"/>
+<ellipse cx="315.0" cy="310.0" rx="131.0" ry="13.1" transform="rotate(45 315.0 310.0)" fill="none" stroke="#9b9c97" stroke-width="1" clip-path="url(#clip0)"/>
+<ellipse cx="315.0" cy="310.0" rx="169.0" ry="16.9" transform="rotate(45 315.0 310.0)" fill="none" stroke="#9b9c97" stroke-width="1" clip-path="url(#clip0)"/>
+<ellipse cx="315.0" cy="310.0" rx="207.0" ry="20.7" transform="rotate(45 315.0 310.0)" fill="none" stroke="#9b9c97" stroke-width="1" clip-path="url(#clip0)"/>
+<ellipse cx="315.0" cy="310.0" rx="245.0" ry="24.5" transform="rotate(45 315.0 310.0)" fill="none" stroke="#9b9c97" stroke-width="1" clip-path="url(#clip0)"/>
+<ellipse cx="315.0" cy="310.0" rx="283.0" ry="28.3" transform="rotate(45 315.0 310.0)" fill="none" stroke="#9b9c97" stroke-width="1" clip-path="url(#clip0)"/>
+<ellipse cx="315.0" cy="310.0" rx="321.0" ry="32.1" transform="rotate(45 315.0 310.0)" fill="none" stroke="#9b9c97" stroke-width="1" clip-path="url(#clip0)"/>
+<ellipse cx="315.0" cy="310.0" rx="359.0" ry="35.9" transform="rotate(45 315.0 310.0)" fill="none" stroke="#9b9c97" stroke-width="1" clip-path="url(#clip0)"/>
+<ellipse cx="315.0" cy="310.0" rx="397.0" ry="39.7" transform="rotate(45 315.0 310.0)" fill="none" stroke="#9b9c97" stroke-width="1" clip-path="url(#clip0)"/>
+<ellipse cx="315.0" cy="310.0" rx="435.0" ry="43.5" transform="rotate(45 315.0 310.0)" fill="none" stroke="#9b9c97" stroke-width="1" clip-path="url(#clip0)"/>
+<ellipse cx="315.0" cy="310.0" rx="473.0" ry="47.3" transform="rotate(45 315.0 310.0)" fill="none" stroke="#9b9c97" stroke-width="1" clip-path="url(#clip0)"/>
+<ellipse cx="315.0" cy="310.0" rx="511.0" ry="51.1" transform="rotate(45 315.0 310.0)" fill="none" stroke="#9b9c97" stroke-width="1" clip-path="url(#clip0)"/>
+<ellipse cx="315.0" cy="310.0" rx="549.0" ry="54.9" transform="rotate(45 315.0 310.0)" fill="none" stroke="#9b9c97" stroke-width="1" clip-path="url(#clip0)"/>
+<ellipse cx="315.0" cy="310.0" rx="587.0" ry="58.7" transform="rotate(45 315.0 310.0)" fill="none" stroke="#9b9c97" stroke-width="1" clip-path="url(#clip0)"/>
+<line x1="104.1" y1="535" x2="104.1" y2="542" stroke="#30332e"/>
+<text x="104.1" y="564" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15">-1.5</text>
+<line x1="83" y1="520.9" x2="90" y2="520.9" stroke="#30332e"/>
+<text x="76" y="525.9" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15">-1.5</text>
+<line x1="174.4" y1="535" x2="174.4" y2="542" stroke="#30332e"/>
+<text x="174.4" y="564" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15">-1</text>
+<line x1="83" y1="450.6" x2="90" y2="450.6" stroke="#30332e"/>
+<text x="76" y="455.6" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15">-1</text>
+<line x1="244.7" y1="535" x2="244.7" y2="542" stroke="#30332e"/>
+<text x="244.7" y="564" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15">-0.5</text>
+<line x1="83" y1="380.3" x2="90" y2="380.3" stroke="#30332e"/>
+<text x="76" y="385.3" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15">-0.5</text>
+<line x1="315.0" y1="535" x2="315.0" y2="542" stroke="#30332e"/>
+<text x="315.0" y="564" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15">0</text>
+<line x1="83" y1="310.0" x2="90" y2="310.0" stroke="#30332e"/>
+<text x="76" y="315.0" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15">0</text>
+<line x1="385.3" y1="535" x2="385.3" y2="542" stroke="#30332e"/>
+<text x="385.3" y="564" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15">0.5</text>
+<line x1="83" y1="239.7" x2="90" y2="239.7" stroke="#30332e"/>
+<text x="76" y="244.7" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15">0.5</text>
+<line x1="455.6" y1="535" x2="455.6" y2="542" stroke="#30332e"/>
+<text x="455.6" y="564" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15">1</text>
+<line x1="83" y1="169.4" x2="90" y2="169.4" stroke="#30332e"/>
+<text x="76" y="174.4" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15">1</text>
+<line x1="525.9" y1="535" x2="525.9" y2="542" stroke="#30332e"/>
+<text x="525.9" y="564" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15">1.5</text>
+<line x1="83" y1="99.1" x2="90" y2="99.1" stroke="#30332e"/>
+<text x="76" y="104.1" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15">1.5</text>
+<circle cx="144.8" cy="196.6" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="142.2" cy="186.3" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="157.9" cy="200.8" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="160.5" cy="207.8" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="142.0" cy="206.9" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="172.9" cy="228.6" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="175.9" cy="219.2" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="163.2" cy="227.9" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="172.4" cy="196.8" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="164.5" cy="193.4" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="166.4" cy="229.1" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="164.9" cy="212.6" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="176.6" cy="200.8" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="160.4" cy="214.7" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="171.0" cy="215.4" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="151.3" cy="209.6" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="171.0" cy="213.7" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="187.4" cy="196.4" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="217.1" cy="198.7" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="245.0" cy="226.1" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="250.1" cy="217.7" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="262.1" cy="237.2" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="279.6" cy="245.5" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="280.5" cy="234.9" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="264.1" cy="243.1" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="258.9" cy="222.7" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="276.4" cy="258.8" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="271.4" cy="281.1" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="280.1" cy="277.3" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="300.5" cy="270.6" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="300.9" cy="244.9" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="316.7" cy="269.4" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="326.9" cy="250.2" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="331.9" cy="286.7" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="358.5" cy="305.0" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="360.5" cy="278.2" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="384.5" cy="301.4" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="360.1" cy="324.1" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="365.2" cy="307.8" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="374.0" cy="310.0" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="344.6" cy="330.6" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="325.8" cy="348.8" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="324.2" cy="352.1" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="332.2" cy="368.1" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="339.4" cy="350.3" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="342.8" cy="359.5" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="328.3" cy="382.4" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="354.1" cy="358.1" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="358.0" cy="352.9" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<circle cx="373.0" cy="342.4" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip0)"/>
+<text x="315.0" y="42" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="22" fill="#263f86">步长 0.1，接受率 0.62</text>
+<text x="315.0" y="594" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="20" fill="#263f86">a₁</text>
+<text x="27" y="310.0" transform="rotate(-90 27 310.0)" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="20" fill="#263f86">a₂</text>
+<defs><clipPath id="clip1"><rect x="675" y="85" width="450" height="450"/></clipPath></defs>
+<rect x="675" y="85" width="450" height="450" fill="#fff" stroke="#30332e"/>
+<ellipse cx="900.0" cy="310.0" rx="55.0" ry="5.5" transform="rotate(45 900.0 310.0)" fill="none" stroke="#9b9c97" stroke-width="1" clip-path="url(#clip1)"/>
+<ellipse cx="900.0" cy="310.0" rx="93.0" ry="9.3" transform="rotate(45 900.0 310.0)" fill="none" stroke="#9b9c97" stroke-width="1" clip-path="url(#clip1)"/>
+<ellipse cx="900.0" cy="310.0" rx="131.0" ry="13.1" transform="rotate(45 900.0 310.0)" fill="none" stroke="#9b9c97" stroke-width="1" clip-path="url(#clip1)"/>
+<ellipse cx="900.0" cy="310.0" rx="169.0" ry="16.9" transform="rotate(45 900.0 310.0)" fill="none" stroke="#9b9c97" stroke-width="1" clip-path="url(#clip1)"/>
+<ellipse cx="900.0" cy="310.0" rx="207.0" ry="20.7" transform="rotate(45 900.0 310.0)" fill="none" stroke="#9b9c97" stroke-width="1" clip-path="url(#clip1)"/>
+<ellipse cx="900.0" cy="310.0" rx="245.0" ry="24.5" transform="rotate(45 900.0 310.0)" fill="none" stroke="#9b9c97" stroke-width="1" clip-path="url(#clip1)"/>
+<ellipse cx="900.0" cy="310.0" rx="283.0" ry="28.3" transform="rotate(45 900.0 310.0)" fill="none" stroke="#9b9c97" stroke-width="1" clip-path="url(#clip1)"/>
+<ellipse cx="900.0" cy="310.0" rx="321.0" ry="32.1" transform="rotate(45 900.0 310.0)" fill="none" stroke="#9b9c97" stroke-width="1" clip-path="url(#clip1)"/>
+<ellipse cx="900.0" cy="310.0" rx="359.0" ry="35.9" transform="rotate(45 900.0 310.0)" fill="none" stroke="#9b9c97" stroke-width="1" clip-path="url(#clip1)"/>
+<ellipse cx="900.0" cy="310.0" rx="397.0" ry="39.7" transform="rotate(45 900.0 310.0)" fill="none" stroke="#9b9c97" stroke-width="1" clip-path="url(#clip1)"/>
+<ellipse cx="900.0" cy="310.0" rx="435.0" ry="43.5" transform="rotate(45 900.0 310.0)" fill="none" stroke="#9b9c97" stroke-width="1" clip-path="url(#clip1)"/>
+<ellipse cx="900.0" cy="310.0" rx="473.0" ry="47.3" transform="rotate(45 900.0 310.0)" fill="none" stroke="#9b9c97" stroke-width="1" clip-path="url(#clip1)"/>
+<ellipse cx="900.0" cy="310.0" rx="511.0" ry="51.1" transform="rotate(45 900.0 310.0)" fill="none" stroke="#9b9c97" stroke-width="1" clip-path="url(#clip1)"/>
+<ellipse cx="900.0" cy="310.0" rx="549.0" ry="54.9" transform="rotate(45 900.0 310.0)" fill="none" stroke="#9b9c97" stroke-width="1" clip-path="url(#clip1)"/>
+<ellipse cx="900.0" cy="310.0" rx="587.0" ry="58.7" transform="rotate(45 900.0 310.0)" fill="none" stroke="#9b9c97" stroke-width="1" clip-path="url(#clip1)"/>
+<line x1="689.1" y1="535" x2="689.1" y2="542" stroke="#30332e"/>
+<text x="689.1" y="564" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15">-1.5</text>
+<line x1="668" y1="520.9" x2="675" y2="520.9" stroke="#30332e"/>
+<text x="661" y="525.9" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15">-1.5</text>
+<line x1="759.4" y1="535" x2="759.4" y2="542" stroke="#30332e"/>
+<text x="759.4" y="564" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15">-1</text>
+<line x1="668" y1="450.6" x2="675" y2="450.6" stroke="#30332e"/>
+<text x="661" y="455.6" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15">-1</text>
+<line x1="829.7" y1="535" x2="829.7" y2="542" stroke="#30332e"/>
+<text x="829.7" y="564" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15">-0.5</text>
+<line x1="668" y1="380.3" x2="675" y2="380.3" stroke="#30332e"/>
+<text x="661" y="385.3" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15">-0.5</text>
+<line x1="900.0" y1="535" x2="900.0" y2="542" stroke="#30332e"/>
+<text x="900.0" y="564" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15">0</text>
+<line x1="668" y1="310.0" x2="675" y2="310.0" stroke="#30332e"/>
+<text x="661" y="315.0" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15">0</text>
+<line x1="970.3" y1="535" x2="970.3" y2="542" stroke="#30332e"/>
+<text x="970.3" y="564" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15">0.5</text>
+<line x1="668" y1="239.7" x2="675" y2="239.7" stroke="#30332e"/>
+<text x="661" y="244.7" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15">0.5</text>
+<line x1="1040.6" y1="535" x2="1040.6" y2="542" stroke="#30332e"/>
+<text x="1040.6" y="564" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15">1</text>
+<line x1="668" y1="169.4" x2="675" y2="169.4" stroke="#30332e"/>
+<text x="661" y="174.4" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15">1</text>
+<line x1="1110.9" y1="535" x2="1110.9" y2="542" stroke="#30332e"/>
+<text x="1110.9" y="564" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15">1.5</text>
+<line x1="668" y1="99.1" x2="675" y2="99.1" stroke="#30332e"/>
+<text x="661" y="104.1" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15">1.5</text>
+<circle cx="767.0" cy="242.8" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="788.9" cy="195.7" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="873.0" cy="230.0" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="800.1" cy="171.4" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="865.2" cy="191.9" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="836.9" cy="188.7" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="832.2" cy="169.4" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="825.0" cy="159.1" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="809.6" cy="175.5" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="812.1" cy="154.1" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="848.3" cy="179.2" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="779.7" cy="103.8" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="808.4" cy="136.1" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="832.4" cy="209.5" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="928.2" cy="280.3" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="900.9" cy="308.1" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="932.0" cy="288.1" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="867.5" cy="300.9" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="920.3" cy="350.7" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="954.1" cy="331.8" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="957.4" cy="388.0" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="1051.6" cy="406.8" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="1098.8" cy="380.7" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="1046.0" cy="390.7" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="1060.1" cy="384.2" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="1093.8" cy="395.6" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="1056.3" cy="399.8" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="1013.8" cy="427.1" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="1040.9" cy="406.9" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="1038.9" cy="397.4" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="1021.2" cy="434.6" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="952.8" cy="404.3" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="1015.2" cy="463.3" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="1076.4" cy="427.0" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="1068.1" cy="420.0" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="950.8" cy="466.4" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="1043.5" cy="523.6" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="974.0" cy="439.5" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="1016.7" cy="402.5" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="1011.0" cy="370.1" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="974.3" cy="398.4" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="1016.6" cy="454.8" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="982.5" cy="445.0" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="989.3" cy="352.4" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="1021.6" cy="366.0" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="913.9" cy="346.9" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="908.1" cy="394.2" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="893.3" cy="373.8" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="930.4" cy="337.6" r="5" fill="#30332e" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<circle cx="906.1" cy="351.8" r="5" fill="#fff" stroke="#30332e" stroke-width="1.6" clip-path="url(#clip1)"/>
+<text x="900.0" y="42" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="22" fill="#263f86">步长 0.25，接受率 0.34</text>
+<text x="900.0" y="594" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="20" fill="#263f86">a₁</text>
+<text x="612" y="310.0" transform="rotate(-90 612 310.0)" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="20" fill="#263f86">a₂</text>
+</svg>

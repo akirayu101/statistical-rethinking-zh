@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-09" data-source-pages="285-287">
-  <header class="chapter-header"><p class="eyebrow">第九章</p><h1>马尔可夫链蒙特卡洛</h1><p class="source-range">当前译稿对应原书 PDF 第 285–287 页</p></header>
+<article class="book-article" data-chapter="chapter-09" data-source-pages="285-290">
+  <header class="chapter-header"><p class="eyebrow">第九章</p><h1>马尔可夫链蒙特卡洛</h1><p class="source-range">当前译稿对应原书 PDF 第 285–290 页</p></header>
 
   <p>在西方历史的大部分时期，偶然性一直扮演反派。古罗马把偶然性人格化为残酷命运女神福尔图娜，她转动着（厄）运之轮。与她相对而坐的是智慧与理解女神密涅瓦。只有绝望之人才会向福尔图娜祈祷，所有人则都会恳求密涅瓦相助。科学当然属于密涅瓦的领域，那里没有福尔图娜可以发挥的有益作用。</p>
   <p>但到了 20 世纪初，福尔图娜与密涅瓦成了合作者。科学家开始出版随机数表，把偶然性的工具用于认识世界。偶然与智慧从此携手；“理解偶然性能够帮助我们获得智慧”这个观念，已很少让人困惑。从天气预报、金融到演化生物学，各领域都由随机过程研究所主导。<sup id="note-137-ref"><a href="#note-137">137</a></sup></p>
@@ -41,11 +41,38 @@ for ( i in 1:num_weeks ) {
     prob_move &lt;- proposal/current
     current &lt;- ifelse( runif(1) &lt; prob_move , proposal , current )
 }</code></pre></figure>
-    <p>我在代码中加了注释，帮助你读懂它。前三行只定义模拟的周数、一个空的历史向量，以及起始岛屿位置（最大的 10 号岛）。随后，<code>for</code> 循环逐周推进：每周先记录国王当前的位置，再模拟一次抛硬币，选出提议岛。这里唯一的小技巧，是确保提议编号为 11 时能够绕回 1 号岛。</p>
-    <p class="continuation-note">代码 9.1 的其余逐行解释将在原书 PDF 第 288 页继续。</p>
+    <p>我在代码中加了注释，帮助你读懂它。前三行只定义模拟的周数、一个空的历史向量，以及起始岛屿位置（最大的 10 号岛）。随后，<code>for</code> 循环逐周推进：每周先记录国王当前的位置，再模拟一次抛硬币，选出提议岛。这里唯一的小技巧，是确保提议编号为 11 时能够绕回 1 号岛，编号为 0 时则绕回 10 号岛。最后生成一个 0 到 1 之间的随机数（<code>runif(1)</code>）；若它小于提议岛人口与当前岛人口之比（<code>proposal/current</code>），国王就移动。</p>
+    <p>模拟结果见图 9.2。左图显示国王在模拟旅程前 100 周的位置：</p>
+    <figure class="code-listing" id="code-9-2"><figcaption>R 代码 9.2</figcaption><pre><code>plot( 1:100 , positions[1:100] )</code></pre></figure>
+    <p>沿图从左向右看，各点显示国王的位置怎样随时间变化。国王会在岛屿之间旅行，有时也会在原地停留数周。这张图展示了 Metropolis 算法让国王走上的那条看似毫无意义的路径；然而右图说明，这条路径远非毫无意义：</p>
+    <figure class="code-listing" id="code-9-3"><figcaption>R 代码 9.3</figcaption><pre><code>plot( table( positions ) )</code></pre></figure>
+    <figure class="book-figure metropolis-king-figure" id="fig-9-2"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的国王位置轨迹与各岛访问周数双面板图"><img src="/media/chapter-09-metropolis-king.svg" alt="左图是前一百周国王所在岛屿，右图是十万周中各岛被访问的周数"></div><p class="scroll-hint">图较宽，可横向滚动比较短期轨迹与长期访问频率。</p><figcaption><strong>图 9.2：</strong>国王遵循 Metropolis 算法的结果。左图显示国王的位置（纵轴）怎样随周数（横轴）变化；在任何特定一周，几乎不可能说出国王会在哪里。右图显示算法的长期行为：在各岛停留的时间最终与其人口规模成比例。</figcaption></figure>
+    <p>现在横轴是岛屿（也是相对人口），纵轴是国王在各岛被找到的周数。完整模拟共 100,000 周（将近 2,000 年）；可以看到，在各岛停留的时间比例收敛到几乎与岛屿相对人口完全成比例。</p>
+    <p>即使允许国王从任意一座岛等概率提议移往任意其他岛，而不只是在相邻岛之间移动，算法仍会以同样方式工作。只要马尔可夫国王仍把提议岛人口与当前岛人口之比当作移动概率，从长期看，他就会在每座岛停留正确的时间。无论群岛多大，算法都有效，哪怕国王不知道其中究竟有多少座岛。他在任何时刻只需知道当前岛和提议岛的人口。于是，无需事先规划，也无需回头记账，马尔可夫国王便能履行按人口比例探访臣民的王室义务。</p>
   </section>
 
-  <section class="endnotes" id="chapter-09-notes" role="doc-endnotes"><h2>尾注</h2><ol start="137"><li id="note-137">关于这段历史的更多内容，可参见 Gigerenzer 等（1990）的导论。另见 Rao（1997），其中展示了一本随机数表的示例页，并对这场文化转变作了类似评论。 <a class="backref" href="#note-137-ref" aria-label="返回正文">↩</a></li><li id="note-138">“旅行者”是两种常见隐喻之一；另一种是登山者通过随机跳跃绘制山脉地图。Kruschke（2011）用一位在不同地点筹款的政治人物讲了一个很相似的故事。Kruschke 的书非常出色，风格与覆盖范围和本书颇为不同，因此能通过不同视角和另一组例子，为读者带来许多额外价值。 <a class="backref" href="#note-138-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section id="sec-9-2"><h2>9.2 Metropolis 算法</h2>
+    <p>马尔可夫国王采用的具体算法，是现实世界中一般 Metropolis 算法的一个特例。<sup id="note-139-ref"><a href="#note-139">139</a></sup>这个算法又是马尔可夫链蒙特卡洛的一个例子。在实际应用中，目标当然不是帮助独裁者安排旅程，而是从未知、通常也很复杂的<strong>目标分布</strong>——例如后验概率分布——中抽取样本。</p>
+    <ul class="metropolis-mapping" id="metropolis-real-world-mapping"><li>目标中的“岛屿”是参数值；它们不必离散，也可以像往常一样取连续范围内的值。</li><li>目标中的“人口规模”是每个参数值处的后验概率。</li><li>目标中的“周”是从模型参数的联合后验中抽取的样本。</li></ul>
+    <p>只要每一步选择提议参数值的方式是对称的——从 A 提议到 B 与从 B 提议到 A 的概率相等——Metropolis 算法最终就会给出一组联合后验样本。随后便能像使用本书已经见过的所有样本一样使用它们。</p>
+    <p>Metropolis 算法是若干未知后验抽样策略的祖辈。本节余下部分将简要解释 Gibbs 抽样背后的概念。Gibbs 抽样远好于朴素 Metropolis，至今在应用贝叶斯统计中仍很常见，但也正在迅速被其他算法取代。</p>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 285–287 页已完成翻译、逐页核对、结构契约及桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 288 页继续。</aside>
+    <section id="sec-9-2-1"><h3>9.2.1 Gibbs 抽样</h3>
+      <p>只要从 A 提议跳到 B 的概率等于从 B 提议到 A 的概率，即提议分布对称，Metropolis 算法就能工作。还有一种更一般的方法，称为 <strong>Metropolis–Hastings 算法</strong>，<sup id="note-140-ref"><a href="#note-140">140</a></sup>它允许不对称提议。放进马尔可夫国王的寓言里，这意味着国王的硬币带有偏向，使他平均而言更常顺时针移动。</p>
+      <p>为什么会想要允许不对称提议的算法？一个原因是，它更容易处理标准差这类以零为边界的参数。更好的原因则是，我们能够生成<strong>聪明的提议</strong>，更高效地探索后验分布。所谓“更高效”，是指用更少步骤就能获得质量同样好的后验分布图景。</p>
+      <p>生成聪明提议最常用的技术称为 <strong>Gibbs 抽样</strong>。<sup id="note-141-ref"><a href="#note-141">141</a></sup>Gibbs 抽样是 Metropolis–Hastings 算法的一种变体，利用巧妙提议提高效率。这里的“高效”是说，与可比的 Metropolis 方法相比，用少得多的样本便能很好地估计后验。这种改进来自<strong>自适应提议</strong>：提议参数值的分布会根据当前参数值，智能地自我调整。</p>
+      <p>Gibbs 抽样怎样计算这些自适应提议，取决于使用称为<strong>共轭对</strong>的特定先验分布与似然组合。共轭对为单个参数的后验分布提供解析解；正是这些解，让 Gibbs 抽样能够在所有参数的联合后验分布中聪明地跳跃。</p>
+      <figure class="book-figure correlated-chains-figure" id="fig-9-3"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的高相关 Metropolis 链双面板图"><img src="/media/chapter-09-correlated-chains.svg" alt="两种提议步长下五十次 Metropolis 提议沿狭窄负相关后验脊移动，实心点被接受，空心点被拒绝"></div><p class="scroll-hint">图较宽，可横向滚动比较两种步长、接受与拒绝的提议。</p><figcaption><strong>图 9.3：</strong>高相关下的 Metropolis 链。实心点表示接受的提议，空心点表示拒绝的提议；两图各显示 50 次提议，使用不同的提议分布步长。左：步长较小时，链沿谷底前进得很慢；约 40% 的提议被拒绝，因为多数落在荒唐位置。右：步长增大后，链移动更快，却会拒绝约 70% 的提议，因为它们往往更加荒唐。维度更高时，几乎不可能把 Metropolis 或 Gibbs 调校到高效状态。</figcaption></figure>
+      <p>实践中，Gibbs 抽样可以很高效，也是 BUGS（Bayesian inference Using Gibbs Sampling）和 JAGS（Just Another Gibbs Sampler）等流行贝叶斯模型拟合软件的基础。在这些程序中，你用与本书目前做法非常相似的定义来编写统计模型；其余工作由软件尽力自动完成。</p>
+    </section>
+
+    <section id="sec-9-2-2"><h3>9.2.2 高维问题</h3>
+      <p>但 Gibbs 抽样存在一些严重限制。第一，你也许并不想使用共轭先验。一旦开始构建多层模型，需要为整个协方差矩阵指定先验，有些共轭先验的形状其实相当病态。等到第 14 章再讨论这个问题。</p>
+      <p>第二，随着模型越来越复杂，包含数百、数千乃至数万个参数，Metropolis 与 Gibbs 抽样都会变得惊人地低效。原因是，它们可能长时间困在后验的一小片区域。问题与其说是参数数量很多，不如说参数很多的模型几乎总会在后验中出现高度相关的区域，也就是两个或更多参数在后验样本中彼此高度相关。第 6 章的两条腿例子已经展示过这种情况。为什么这会成为问题？因为高度相关意味着高概率参数组合形成狭窄的脊，而 Metropolis 和 Gibbs 对下一步去哪里作出的愚蠢提议太多，于是它们会被困住。</p>
+    </section>
+  </section>
+
+  <section class="endnotes" id="chapter-09-notes" role="doc-endnotes"><h2>尾注</h2><ol start="137"><li id="note-137">关于这段历史的更多内容，可参见 Gigerenzer 等（1990）的导论。另见 Rao（1997），其中展示了一本随机数表的示例页，并对这场文化转变作了类似评论。 <a class="backref" href="#note-137-ref" aria-label="返回正文">↩</a></li><li id="note-138">“旅行者”是两种常见隐喻之一；另一种是登山者通过随机跳跃绘制山脉地图。Kruschke（2011）用一位在不同地点筹款的政治人物讲了一个很相似的故事。Kruschke 的书非常出色，风格与覆盖范围和本书颇为不同，因此能通过不同视角和另一组例子，为读者带来许多额外价值。 <a class="backref" href="#note-138-ref" aria-label="返回正文">↩</a></li><li id="note-139">Metropolis 等（1953）。算法以论文第一作者命名，但尚不清楚每位合著者怎样参与了算法的发现与实现。其他作者包括以“氢弹之父”闻名的 Edward Teller、同样著名的物理学家 Marshall Rosenbluth，以及两人的妻子 Augusta 和 Arianna；两位女士完成了大量计算机编程。Nicholas Metropolis 领导这个研究组，而他们的工作又以此前和 Stanisław Ulam 合作的研究为基础：Metropolis 与 Ulam（1949）。 <a class="backref" href="#note-139-ref" aria-label="返回正文">↩</a></li><li id="note-140">Hastings（1970）。 <a class="backref" href="#note-140-ref" aria-label="返回正文">↩</a></li><li id="note-141">最初的论文是 Geman 与 Geman（1984），另见 Casella 与 George（1992）。注意，Gibbs 抽样以统计物理学奠基人之一、物理学家兼数学家 J. W. Gibbs 命名；但 Gibbs 早在 1903 年就已去世，远早于 Metropolis 算法的发明。这个策略以 Gibbs 命名，既是为了纪念他，也因为算法与统计物理学的联系。 <a class="backref" href="#note-141-ref" aria-label="返回正文">↩</a></li></ol></section>
+
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 285–290 页已完成翻译、逐页核对、结构契约及桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 291 页继续。</aside>
 </article>
