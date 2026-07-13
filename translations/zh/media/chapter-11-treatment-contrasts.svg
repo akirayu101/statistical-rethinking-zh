@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="260" viewBox="0 0 900 260" role="img">
+<title>无伙伴与有伙伴处理之间的后验对比</title>
+<desc>db13 与 db24 分别比较亲社会选项在右侧与左侧时，无伙伴处理减去有伙伴处理的后验差异。</desc>
+<rect width="100%" height="100%" fill="#fbfaf6"/>
+<rect x="145" y="11" width="705" height="183" fill="#fff" stroke="#d9d5c8"/>
+<line x1="355.9" y1="11" x2="355.9" y2="194" stroke="#d9d5c8" stroke-width="2"/>
+<line x1="145" y1="35.0" x2="850" y2="35.0" stroke="#d9d5c8" stroke-dasharray="4 5"/>
+<text x="127.0" y="41.0" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="400" fill="#30332e">db13</text>
+<line x1="289.6" y1="35.0" x2="825.9" y2="35.0" stroke="#30332e" stroke-width="4"/>
+<circle cx="560.8" cy="35.0" r="7" fill="#fff" stroke="#30332e" stroke-width="3"/>
+<line x1="145" y1="170.0" x2="850" y2="170.0" stroke="#d9d5c8" stroke-dasharray="4 5"/>
+<text x="127.0" y="176.0" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="400" fill="#30332e">db24</text>
+<line x1="169.1" y1="170.0" x2="681.3" y2="170.0" stroke="#30332e" stroke-width="4"/>
+<circle cx="428.2" cy="170.0" r="7" fill="#fff" stroke="#30332e" stroke-width="3"/>
+<line x1="235.4" y1="194" x2="235.4" y2="202" stroke="#30332e"/>
+<text x="235.4" y="218.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">-0.2</text>
+<line x1="355.9" y1="194" x2="355.9" y2="202" stroke="#30332e"/>
+<text x="355.9" y="218.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">0</text>
+<line x1="476.4" y1="194" x2="476.4" y2="202" stroke="#30332e"/>
+<text x="476.4" y="218.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">0.2</text>
+<line x1="596.9" y1="194" x2="596.9" y2="202" stroke="#30332e"/>
+<text x="596.9" y="218.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">0.4</text>
+<line x1="717.4" y1="194" x2="717.4" y2="202" stroke="#30332e"/>
+<text x="717.4" y="218.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">0.6</text>
+<line x1="837.9" y1="194" x2="837.9" y2="202" stroke="#30332e"/>
+<text x="837.9" y="218.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">0.8</text>
+<text x="497.5" y="248.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="400" fill="#30332e">log-odds 差异</text>
+</svg>

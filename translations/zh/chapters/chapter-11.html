@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-11" data-source-pages="347-353">
-  <header class="chapter-header"><p class="eyebrow">第十一章</p><h1>上帝给整数加了料</h1><p class="source-range">当前译稿对应原书 PDF 第 347–353 页</p></header>
+<article class="book-article" data-chapter="chapter-11" data-source-pages="347-356">
+  <header class="chapter-header"><p class="eyebrow">第十一章</p><h1>上帝给整数加了料</h1><p class="source-range">当前译稿对应原书 PDF 第 347–356 页</p></header>
 
   <div class="chapter-introduction" id="intro-11">
     <p>太空中的寒冷以 Kelvin 命名，约为 3 Kelvin，也就是绝对零度以上约 3 摄氏度。Kelvin 也是苏格兰格拉斯哥附近一条河流的名字；同一条河又把名字给了 William Thomson，也就是 Kelvin 勋爵（1824 年生，1907 年卒）——英国第一位获封贵族头衔的科学家。Thomson 在格拉斯哥的实验室研究热力学，如今太空的寒冷便以一条苏格兰河流为名。</p>
@@ -100,11 +100,77 @@ dat_list &lt;- list(
     pulled_left = d$pulled_left,
     actor = d$actor,
     treatment = as.integer(d$treatment) )</code></pre></figure>
-      <p class="continuation-note">Hamiltonian Monte Carlo 拟合、参数摘要与个体杠杆偏好，将从原书 PDF 第 354 页继续。</p>
+      <p>现在可以启动 Markov 链了。我会在调用中加入 <code>log_lik=TRUE</code>，让 <code>ulam</code> 计算 PSIS 和 WAIC 所需的数值。章末有一个“过度思考”框会非常详细地解释这一点。</p>
+      <figure class="code-listing" id="code-11-11"><figcaption>R 代码 11.11</figcaption><pre><code>m11.4 &lt;- ulam(
+    alist(
+        pulled_left ~ dbinom( 1 , p ) ,
+        logit(p) &lt;- a[actor] + b[treatment] ,
+        a[actor] ~ dnorm( 0 , 1.5 ),
+        b[treatment] ~ dnorm( 0 , 0.5 )
+    ) , data=dat_list , chains=4 , log_lik=TRUE )
+precis( m11.4 , depth=2 )</code></pre><pre class="code-output"><code>      mean   sd  5.5% 94.5% n_eff Rhat
+a[1] -0.45 0.32 -0.95  0.04   690    1
+a[2]  3.86 0.73  2.78  5.09  1417    1
+a[3] -0.75 0.33 -1.28 -0.23   765    1
+a[4] -0.74 0.33 -1.26 -0.21   887    1
+a[5] -0.44 0.32 -0.94  0.10   743    1
+a[6]  0.48 0.32 -0.02  1.00   894    1
+a[7]  1.95 0.40  1.32  2.63   882    1
+b[1] -0.04 0.28 -0.51  0.40   669    1
+b[2]  0.48 0.28  0.04  0.92   675    1
+b[3] -0.38 0.28 -0.83  0.06   768    1
+b[4]  0.37 0.27 -0.07  0.79   666    1</code></pre></figure>
+      <p>这就是潮汐预测机的内部机械。要解释它，还得再做一点工作。前 7 个参数是每只黑猩猩独有的截距，分别表达每个个体拉左侧杠杆的倾向。先把它们放到结果尺度上查看：</p>
+      <figure class="code-listing" id="code-11-12"><figcaption>R 代码 11.12</figcaption><pre><code>post &lt;- extract.samples(m11.4)
+p_left &lt;- inv_logit( post$a )
+plot( precis( as.data.frame(p_left) ) , xlim=c(0,1) )</code></pre></figure>
+      <figure class="book-figure parameter-plot-figure" id="plot-11-actor-probabilities"><div class="figure-scroll"><img src="/media/chapter-11-actor-probabilities.svg" alt="七只黑猩猩拉左侧杠杆概率的后验均值和百分之八十九相容区间"></div><figcaption>代码 11.12 的输出：每一行是一只黑猩猩在结果尺度上的拉左侧杠杆倾向。</figcaption></figure>
+      <p>每一行代表一只黑猩猩，编号对应 <code>actor</code> 的取值。个体 1、3、4 和 5 偏好右侧杠杆；个体 2 和 7 则偏好左侧。个体 2 的偏好尤其强烈。检查数据就会发现，<code>actor 2</code> 在任何试次或处理下都从未拉过右侧杠杆。各个体的基线倾向存在显著差异；这正是让行为科学中的纯实验变得困难的那类效应。像本实验这样获得并测量重复观测，会非常有用。</p>
+      <p>接着看处理效应。由于模型能够扣除个体之间的用手偏好差异，我们希望这些效应估计得更精确。先在 logit 尺度上查看：</p>
+      <figure class="code-listing" id="code-11-13"><figcaption>R 代码 11.13</figcaption><pre><code>labs &lt;- c("R/N","L/N","R/P","L/P")
+plot( precis( m11.4 , depth=2 , pars="b" ) , labels=labs )</code></pre></figure>
+      <figure class="book-figure parameter-plot-figure" id="plot-11-treatment-effects"><div class="figure-scroll"><img src="/media/chapter-11-treatment-effects.svg" alt="R/N、L/N、R/P 与 L/P 四种处理效应在 logit 尺度上的后验均值和百分之八十九相容区间"></div><figcaption>代码 11.13 的输出：四种处理效应在 logit 尺度上的后验分布。</figcaption></figure>
+      <p>我用处理标签替换了参数名。<code>L/N</code> 表示“亲社会选项在左侧／没有伙伴”，<code>R/P</code> 表示“亲社会选项在右侧／伙伴在场”。要理解这些分布，先想想我们的预期：我们寻找的是黑猩猩在伙伴在场时更常选择亲社会选项的证据。这意味着比较第一行与第三行，以及第二行与第四行。你大概已经能看出，这些数据中并没有多少亲社会意图的证据；不过还是计算无伙伴与有伙伴条件之间的差异来确认一下。</p>
+      <figure class="code-listing" id="code-11-14"><figcaption>R 代码 11.14</figcaption><pre><code>diffs &lt;- list(
+    db13 = post$b[,1] - post$b[,3],
+    db24 = post$b[,2] - post$b[,4] )
+plot( precis(diffs) )</code></pre></figure>
+      <figure class="book-figure parameter-plot-figure" id="plot-11-treatment-contrasts"><div class="figure-scroll"><img src="/media/chapter-11-treatment-contrasts.svg" alt="db13 与 db24 两个无伙伴减有伙伴处理对比的后验均值和百分之八十九相容区间"></div><figcaption>代码 11.14 的输出：无伙伴与有伙伴处理之间的两个后验对比。</figcaption></figure>
+      <p>这两个量是无伙伴／有伙伴处理之间的<strong>对比</strong>，尺度仍是拉左侧杠杆的 log-odds。记住那台潮汐预测机！<code>db13</code> 是亲社会选项在右侧时，无伙伴处理减去有伙伴处理的差异。因此，如果有证据表明伙伴在场会增加亲社会选择，那么伙伴在场时应更常拉右侧杠杆，这里就会出现更大的正差异。确实有微弱证据表明，伙伴缺席时个体更常拉左侧杠杆，但相容区间相当宽。<code>db24</code> 是亲社会选项在左侧时的同类差异；此时负差异才符合伙伴在场会增加亲社会选择的说法，而结果显然并非如此。真要说有什么倾向，反而是伙伴缺席时个体更常做出亲社会选择。总体而言，这项实验没有提供令人信服的亲社会选择证据。</p>
+      <p>现在进行后验预测检查。先汇总每个个体在每种处理下拉左侧杠杆的比例，再与后验预测对照。每一种个体与处理组合的比例可这样计算：</p>
+      <figure class="code-listing" id="code-11-15"><figcaption>R 代码 11.15</figcaption><pre><code>pl &lt;- by( d$pulled_left , list( d$actor , d$treatment ) , mean )
+pl[1,]</code></pre><pre class="code-output"><code>        1         2         3         4
+0.3333333 0.5000000 0.2777778 0.5555556</code></pre></figure>
+      <p><code>pl</code> 是一个 7 行 4 列的矩阵：每一行是一只黑猩猩，每一列是一种处理，单元格则是拉左侧杠杆的比例。上面展示第一行，也就是第一个个体的四个比例。模型会对这些值作出预测，因此可以把后验预测与原始数据相比较。记住，我们并不想得到完全吻合的结果——那意味着过拟合；但我们希望理解模型如何看待数据，并从异常之处学习。</p>
+      <p>这些观测值与后验预测一起显示在图 11.4 中。上图只包含原始数据，可用下面的代码复现：</p>
+      <figure class="code-listing" id="code-11-16"><figcaption>R 代码 11.16</figcaption><pre><code>plot( NULL , xlim=c(1,28) , ylim=c(0,1) , xlab="" ,
+    ylab="proportion left lever" , xaxt="n" , yaxt="n" )
+axis( 2 , at=c(0,0.5,1) , labels=c(0,0.5,1) )
+abline( h=0.5 , lty=2 )
+for ( j in 1:7 ) abline( v=(j-1)*4+4.5 , lwd=0.5 )
+for ( j in 1:7 ) text( (j-1)*4+2.5 , 1.1 , concat("actor ",j) , xpd=TRUE )
+for ( j in (1:7)[-2] ) {
+    lines( (j-1)*4+c(1,3) , pl[j,c(1,3)] , lwd=2 , col=rangi2 )
+    lines( (j-1)*4+c(2,4) , pl[j,c(2,4)] , lwd=2 , col=rangi2 )
+}
+points( 1:28 , t(pl) , pch=16 , col="white" , cex=1.7 )
+points( 1:28 , t(pl) , pch=c(1,1,16,16) , col=rangi2 , lwd=2 )
+yoff &lt;- 0.01
+text( 1 , pl[1,1]-yoff , "R/N" , pos=1 , cex=0.8 )
+text( 2 , pl[1,2]+yoff , "L/N" , pos=3 , cex=0.8 )
+text( 3 , pl[1,3]-yoff , "R/P" , pos=1 , cex=0.8 )
+text( 4 , pl[1,4]+yoff , "L/P" , pos=3 , cex=0.8 )
+mtext( "observed proportions\n" )</code></pre></figure>
+      <p>这幅图有很多视觉修饰，所以代码比真正需要的长；本质上只是画出 <code>pl</code> 中的点，再加以装饰。空心点表示无伙伴处理，实心点表示有伙伴处理。在每一对空心点或实心点中，第一个点表示亲社会选项在右侧，第二个表示在左侧。每四个点是一只个体，并在顶部标出编号。</p>
+      <p>图 11.4 的下图展示后验预测。与前几章的 <code>quap</code> 模型一样，可以用 <code>link</code> 计算：</p>
+      <figure class="code-listing" id="code-11-17"><figcaption>R 代码 11.17</figcaption><pre><code>dat &lt;- list( actor=rep(1:7,each=4) , treatment=rep(1:4,times=7) )
+p_post &lt;- link( m11.4 , data=dat )
+p_mu &lt;- apply( p_post , 2 , mean )</code></pre></figure>
+      <p class="continuation-note">后验相容区间、图 11.4 与模型检查的结论，将从原书 PDF 第 357 页继续。</p>
     </section>
   </section>
 
   <section class="endnotes" id="chapter-11-notes" role="doc-endnotes"><h2>尾注</h2><ol start="166"><li id="note-166">重要数论家 Leopold Kronecker 据称说过：“上帝创造了整数，其余一切皆为人造。”（德文：<span lang="de">Die ganzen Zahlen hat der liebe Gott gemacht, alles andere ist Menschenwerk.</span>） <a class="backref" href="#note-166-ref" aria-label="返回正文">↩</a></li><li id="note-167">Silk 等（2005）。 <a class="backref" href="#note-167-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 11 章 PDF 第 347–353 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 354 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 11 章 PDF 第 347–356 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 357 页继续。</aside>
 </article>

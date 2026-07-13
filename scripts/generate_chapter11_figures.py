@@ -7,6 +7,9 @@ import random
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT1 = ROOT / "translations/zh/media/chapter-11-logistic-priors.svg"
+OUT2 = ROOT / "translations/zh/media/chapter-11-actor-probabilities.svg"
+OUT3 = ROOT / "translations/zh/media/chapter-11-treatment-effects.svg"
+OUT4 = ROOT / "translations/zh/media/chapter-11-treatment-contrasts.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 BLUE = "#6670ee"
@@ -139,6 +142,91 @@ def figure_11_3() -> None:
     OUT1.write_text("\n".join(parts) + "\n", encoding="utf-8")
 
 
+def interval_plot(path: Path, *, title_value: str, description: str,
+                  labels: list[str], estimates: list[float], lower: list[float], upper: list[float],
+                  xmin: float, xmax: float, ticks: list[float], xlabel: str) -> None:
+    width = 900
+    height = 150 + len(labels) * 55
+    left, right, top, bottom = 145, 850, 35, height - 90
+    sx = lambda value: left + (value - xmin) / (xmax - xmin) * (right - left)
+    row_step = (bottom - top) / max(1, len(labels) - 1)
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">',
+        f'<title>{esc(title_value)}</title>',
+        f'<desc>{esc(description)}</desc>',
+        '<rect width="100%" height="100%" fill="#fbfaf6"/>',
+        f'<rect x="{left}" y="{top - 24}" width="{right - left}" height="{bottom - top + 48}" fill="#fff" stroke="{GRID}"/>',
+    ]
+    if xmin < 0 < xmax:
+        parts.append(f'<line x1="{sx(0):.1f}" y1="{top - 24}" x2="{sx(0):.1f}" y2="{bottom + 24}" stroke="{GRID}" stroke-width="2"/>')
+    for index, (label, estimate, low, high) in enumerate(zip(labels, estimates, lower, upper)):
+        yy = top + index * row_step
+        parts.extend([
+            f'<line x1="{left}" y1="{yy:.1f}" x2="{right}" y2="{yy:.1f}" stroke="{GRID}" stroke-dasharray="4 5"/>',
+            text(left - 18, yy + 6, label, size=19, anchor="end"),
+            f'<line x1="{sx(low):.1f}" y1="{yy:.1f}" x2="{sx(high):.1f}" y2="{yy:.1f}" stroke="{INK}" stroke-width="4"/>',
+            f'<circle cx="{sx(estimate):.1f}" cy="{yy:.1f}" r="7" fill="#fff" stroke="{INK}" stroke-width="3"/>',
+        ])
+    for tick in ticks:
+        xx = sx(tick)
+        parts.extend([
+            f'<line x1="{xx:.1f}" y1="{bottom + 24}" x2="{xx:.1f}" y2="{bottom + 32}" stroke="{INK}"/>',
+            text(xx, bottom + 48, f"{tick:g}", size=17, anchor="middle"),
+        ])
+    parts.extend([
+        text((left + right) / 2, height - 12, xlabel, size=19, anchor="middle"),
+        '</svg>',
+    ])
+    path.write_text("\n".join(parts) + "\n", encoding="utf-8")
+
+
+def parameter_plots() -> None:
+    actor_means = [-0.45, 3.86, -0.75, -0.74, -0.44, 0.48, 1.95]
+    actor_lower = [-0.95, 2.78, -1.28, -1.26, -0.94, -0.02, 1.32]
+    actor_upper = [0.04, 5.09, -0.23, -0.21, 0.10, 1.00, 2.63]
+    interval_plot(
+        OUT2,
+        title_value="七只黑猩猩拉左侧杠杆的后验概率",
+        description="每行给出一只黑猩猩拉左侧杠杆概率的后验均值与百分之八十九相容区间。",
+        labels=[f"个体 {index}" for index in range(1, 8)],
+        estimates=[inv_logit(value) for value in actor_means],
+        lower=[inv_logit(value) for value in actor_lower],
+        upper=[inv_logit(value) for value in actor_upper],
+        xmin=0,
+        xmax=1,
+        ticks=[0, .2, .4, .6, .8, 1],
+        xlabel="拉左侧杠杆的概率",
+    )
+    interval_plot(
+        OUT3,
+        title_value="四种处理效应的后验分布",
+        description="四行分别给出亲社会选项位于右侧或左侧以及伙伴缺席或在场时的 logit 尺度处理效应。",
+        labels=["R/N", "L/N", "R/P", "L/P"],
+        estimates=[-0.04, 0.48, -0.38, 0.37],
+        lower=[-0.51, 0.04, -0.83, -0.07],
+        upper=[0.40, 0.92, 0.06, 0.79],
+        xmin=-.9,
+        xmax=1,
+        ticks=[-.5, 0, .5, 1],
+        xlabel="logit 尺度上的处理效应",
+    )
+    interval_plot(
+        OUT4,
+        title_value="无伙伴与有伙伴处理之间的后验对比",
+        description="db13 与 db24 分别比较亲社会选项在右侧与左侧时，无伙伴处理减去有伙伴处理的后验差异。",
+        labels=["db13", "db24"],
+        estimates=[.34, .12],
+        lower=[-.11, -.31],
+        upper=[.78, .54],
+        xmin=-.35,
+        xmax=.82,
+        ticks=[-.2, 0, .2, .4, .6, .8],
+        xlabel="log-odds 差异",
+    )
+
+
 if __name__ == "__main__":
     figure_11_3()
-    print(OUT1)
+    parameter_plots()
+    for path in (OUT1, OUT2, OUT3, OUT4):
+        print(path)
