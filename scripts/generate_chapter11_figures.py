@@ -14,6 +14,8 @@ OUT5 = ROOT / "translations/zh/media/chapter-11-chimpanzee-posterior.svg"
 OUT6 = ROOT / "translations/zh/media/chapter-11-ucb-posterior.svg"
 OUT7 = ROOT / "translations/zh/media/chapter-11-ucb-dag-direct.svg"
 OUT8 = ROOT / "translations/zh/media/chapter-11-ucb-dag-collider.svg"
+OUT9 = ROOT / "translations/zh/media/chapter-11-poisson-intercept-priors.svg"
+OUT10 = ROOT / "translations/zh/media/chapter-11-poisson-slope-priors.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 BLUE = "#6670ee"
@@ -398,6 +400,130 @@ def dag(path: Path, *, collider: bool) -> None:
     path.write_text("\n".join(parts) + "\n", encoding="utf-8")
 
 
+def lognormal_density(value: float, mean: float, standard_deviation: float) -> float:
+    if value <= 0:
+        return 0
+    exponent = -((math.log(value) - mean) ** 2) / (2 * standard_deviation ** 2)
+    return math.exp(exponent) / (value * standard_deviation * math.sqrt(2 * math.pi))
+
+
+def poisson_intercept_priors() -> None:
+    width, height = 1000, 560
+    left, right, top, bottom = 105, 955, 70, 475
+    sx = lambda value: left + value / 100 * (right - left)
+    sy = lambda value: bottom - value / .08 * (bottom - top)
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">',
+        '<title>简单 Poisson GLM 截距的先验预测分布</title>',
+        '<desc>黑色曲线是截距服从均值零标准差十的宽先验，蓝色曲线是均值三标准差零点五的正则化先验。</desc>',
+        '<rect width="100%" height="100%" fill="#fbfaf6"/>',
+        f'<rect x="{left}" y="{top}" width="{right-left}" height="{bottom-top}" fill="#fff" stroke="{GRID}"/>',
+    ]
+    for tick in range(0, 101, 20):
+        xx = sx(tick)
+        parts.extend([
+            f'<line x1="{xx:.1f}" y1="{bottom}" x2="{xx:.1f}" y2="{bottom+7}" stroke="{INK}"/>',
+            text(xx, bottom + 30, tick, size=16, anchor="middle"),
+        ])
+    for tick in (0, .02, .04, .06, .08):
+        yy = sy(tick)
+        parts.extend([
+            f'<line x1="{left-7}" y1="{yy:.1f}" x2="{left}" y2="{yy:.1f}" stroke="{INK}"/>',
+            text(left - 12, yy + 5, f"{tick:.2f}", size=16, anchor="end"),
+            f'<line x1="{left}" y1="{yy:.1f}" x2="{right}" y2="{yy:.1f}" stroke="{GRID}" stroke-dasharray="4 6"/>',
+        ])
+    parts.extend([
+        f'<line x1="{left}" y1="{bottom}" x2="{right}" y2="{bottom}" stroke="{INK}" stroke-width="2"/>',
+        f'<line x1="{left}" y1="{bottom}" x2="{left}" y2="{top}" stroke="{INK}" stroke-width="2"/>',
+        text((left + right) / 2, height - 24, "工具数量的先验均值", size=19, anchor="middle"),
+        text(28, (top + bottom) / 2, "密度", size=19, anchor="middle", rotate=-90),
+    ])
+    values = [index / 10 for index in range(1, 1001)]
+    black = [(value, min(.08, lognormal_density(value, 0, 10))) for value in values]
+    blue = [(value, lognormal_density(value, 3, .5)) for value in values]
+    polyline(parts, black, sx, sy, color=INK, width=3)
+    polyline(parts, blue, sx, sy, color=BLUE, width=4)
+    parts.extend([
+        text(sx(8), sy(.060), "α ∼ Normal(0, 10)", size=20, weight=700),
+        text(sx(30), sy(.035), "α ∼ Normal(3, 0.5)", size=20, weight=700, fill=BLUE),
+        '</svg>',
+    ])
+    OUT9.write_text("\n".join(parts) + "\n", encoding="utf-8")
+
+
+def poisson_slope_priors() -> None:
+    width, height = 1200, 1030
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">',
+        '<title>Poisson GLM 斜率先验的四种结果尺度视图</title>',
+        '<desc>上排比较宽斜率先验与正则化斜率先验；下排把正则化先验分别画在人口对数和原始人口尺度上。</desc>',
+        '<rect width="100%" height="100%" fill="#fbfaf6"/>',
+        '<defs>',
+    ]
+    panels = [
+        (45, 45, 540, 430, -2, 2, 0, 100, "β ∼ Normal(0, 10)", "人口对数（标准化）", "工具总数"),
+        (615, 45, 540, 430, -2, 2, 0, 100, "β ∼ Normal(0, 0.2)", "人口对数（标准化）", "工具总数"),
+        (45, 540, 540, 430, math.log(100), math.log(200000), 0, 500, "α ∼ Normal(3, 0.5)，β ∼ Normal(0, 0.2)", "人口对数", "工具总数"),
+        (615, 540, 540, 430, 100, 200000, 0, 500, "α ∼ Normal(3, 0.5)，β ∼ Normal(0, 0.2)", "人口", "工具总数"),
+    ]
+    geometries = []
+    for index, (x, y, panel_width, panel_height, xmin, xmax, ymin, ymax, title_value, xlabel, ylabel) in enumerate(panels):
+        left, right, top, bottom = x + 78, x + panel_width - 22, y + 48, y + panel_height - 68
+        parts.append(f'<clipPath id="slope-panel-{index}"><rect x="{left}" y="{top}" width="{right-left}" height="{bottom-top}"/></clipPath>')
+        geometries.append((left, right, top, bottom, xmin, xmax, ymin, ymax))
+    parts.append('</defs>')
+    for index, panel in enumerate(panels):
+        x, y, panel_width, panel_height, xmin, xmax, ymin, ymax, title_value, xlabel, ylabel = panel
+        left, right, top, bottom, *_ = geometries[index]
+        parts.extend([
+            f'<rect x="{x}" y="{y}" width="{panel_width}" height="{panel_height}" rx="8" fill="#fff" stroke="{GRID}"/>',
+            text((left + right) / 2, y + 28, title_value, size=18, anchor="middle", weight=700, fill="#263f86"),
+            f'<line x1="{left}" y1="{bottom}" x2="{right}" y2="{bottom}" stroke="{INK}" stroke-width="1.5"/>',
+            f'<line x1="{left}" y1="{bottom}" x2="{left}" y2="{top}" stroke="{INK}" stroke-width="1.5"/>',
+            text((left + right) / 2, y + panel_height - 18, xlabel, size=17, anchor="middle"),
+            text(x + 21, (top + bottom) / 2, ylabel, size=17, anchor="middle", rotate=-90),
+        ])
+        if index < 2:
+            x_ticks = (-2, -1, 0, 1, 2)
+        elif index == 2:
+            x_ticks = (6, 8, 10, 12)
+        else:
+            x_ticks = (0, 50000, 100000, 150000, 200000)
+        y_ticks = range(0, int(ymax) + 1, 20 if ymax == 100 else 100)
+        for tick in x_ticks:
+            xx = left + (tick - xmin) / (xmax - xmin) * (right - left)
+            if left <= xx <= right:
+                label = f"{tick // 10000}万" if index == 3 and tick else str(tick)
+                parts.extend([f'<line x1="{xx:.1f}" y1="{bottom}" x2="{xx:.1f}" y2="{bottom+6}" stroke="{INK}"/>', text(xx, bottom + 25, label, size=14, anchor="middle")])
+        for tick in y_ticks:
+            yy = bottom - (tick - ymin) / (ymax - ymin) * (bottom - top)
+            parts.extend([f'<line x1="{left-6}" y1="{yy:.1f}" x2="{left}" y2="{yy:.1f}" stroke="{INK}"/>', text(left - 10, yy + 5, tick, size=14, anchor="end")])
+
+    def add_curves(panel_index: int, curves: list[list[tuple[float, float]]]) -> None:
+        left, right, top, bottom, xmin, xmax, ymin, ymax = geometries[panel_index]
+        sx = lambda value: left + (value - xmin) / (xmax - xmin) * (right - left)
+        sy = lambda value: bottom - (value - ymin) / (ymax - ymin) * (bottom - top)
+        parts.append(f'<g clip-path="url(#slope-panel-{panel_index})">')
+        for curve in curves:
+            polyline(parts, curve, sx, sy, color="#343733", width=1.15)
+        parts.append('</g>')
+
+    standardized = [-2 + 4 * index / 99 for index in range(100)]
+    wide_rng = random.Random(1141)
+    wide_parameters = [(wide_rng.gauss(3, .5), wide_rng.gauss(0, 10)) for _ in range(100)]
+    add_curves(0, [[(x, math.exp(a + b * x)) for x in standardized] for a, b in wide_parameters])
+
+    regular_rng = random.Random(10)
+    regular_parameters = [(regular_rng.gauss(3, .5), regular_rng.gauss(0, .2)) for _ in range(100)]
+    add_curves(1, [[(x, math.exp(a + b * x)) for x in standardized] for a, b in regular_parameters])
+    log_population = [math.log(100) + (math.log(200000) - math.log(100)) * index / 99 for index in range(100)]
+    log_curves = [[(x, math.exp(a + b * x)) for x in log_population] for a, b in regular_parameters]
+    add_curves(2, log_curves)
+    add_curves(3, [[(math.exp(x), y) for x, y in curve] for curve in log_curves])
+    parts.append('</svg>')
+    OUT10.write_text("\n".join(parts) + "\n", encoding="utf-8")
+
+
 if __name__ == "__main__":
     figure_11_3()
     parameter_plots()
@@ -405,5 +531,7 @@ if __name__ == "__main__":
     ucb_posterior_plot()
     dag(OUT7, collider=False)
     dag(OUT8, collider=True)
-    for path in (OUT1, OUT2, OUT3, OUT4, OUT5, OUT6, OUT7, OUT8):
+    poisson_intercept_priors()
+    poisson_slope_priors()
+    for path in (OUT1, OUT2, OUT3, OUT4, OUT5, OUT6, OUT7, OUT8, OUT9, OUT10):
         print(path)

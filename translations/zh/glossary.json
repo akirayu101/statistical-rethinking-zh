@@ -927,7 +927,11 @@
     "technological evolution": "技术演化",
     "tool kit": "工具组合",
     "contact rate": "接触率",
-    "minimum sample size": "最小样本量"
+    "minimum sample size": "最小样本量",
+    "slope prior": "斜率先验",
+    "explosive growth": "爆炸式增长",
+    "natural zero": "自然零点",
+    "raw population size": "原始人口规模"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "blavaan", "AIC", "DIC", "WAIC", "BIC", "PSIS-LOO", "MCMC", "HMC"

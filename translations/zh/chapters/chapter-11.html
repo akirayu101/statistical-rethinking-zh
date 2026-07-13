@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-11" data-source-pages="347-371">
-  <header class="chapter-header"><p class="eyebrow">第十一章</p><h1>上帝给整数加了料</h1><p class="source-range">当前译稿对应原书 PDF 第 347–371 页</p></header>
+<article class="book-article" data-chapter="chapter-11" data-source-pages="347-374">
+  <header class="chapter-header"><p class="eyebrow">第十一章</p><h1>上帝给整数加了料</h1><p class="source-range">当前译稿对应原书 PDF 第 347–374 页</p></header>
 
   <div class="chapter-introduction" id="intro-11">
     <p>太空中的寒冷以 Kelvin 命名，约为 3 Kelvin，也就是绝对零度以上约 3 摄氏度。Kelvin 也是苏格兰格拉斯哥附近一条河流的名字；同一条河又把名字给了 William Thomson，也就是 Kelvin 勋爵（1824 年生，1907 年卒）——英国第一位获封贵族头衔的科学家。Thomson 在格拉斯哥的实验室研究热力学，如今太空的寒冷便以一条苏格兰河流为名。</p>
@@ -478,11 +478,45 @@ d</code></pre><pre class="code-output"><code>       culture population contact t
       <p>现在开始构建模型。首先新增两列：标准化的人口对数，以及接触率的索引变量：</p>
       <figure class="code-listing" id="code-11-37"><figcaption>R 代码 11.37</figcaption><pre><code>d$P &lt;- scale( log(d$population) )
 d$contact_id &lt;- ifelse( d$contact=="high" , 2 , 1 )</code></pre></figure>
-      <p class="continuation-note">包含人口与接触率交互的研究模型及其先验预测检查，将从原书 PDF 第 372 页继续。</p>
+      <p>符合研究假设的模型包含人口对数与接触率之间的交互。数学形式为：</p>
+      <div class="equation-block wallis-equation" id="eq-11-oceanic-interaction-model"><div><var>T</var><sub>i</sub> ∼ Poisson(<var>λ</var><sub>i</sub>)</div><div>log <var>λ</var><sub>i</sub> = <var>α</var><sub>cid[i]</sub> + <var>β</var><sub>cid[i]</sub> log <var>P</var><sub>i</sub></div><div><var>α</var><sub>j</sub> ∼ 待定</div><div><var>β</var><sub>j</sub> ∼ 待定</div></div>
+      <p>其中，<span class="math-inline"><var>P</var></span> 是人口，<code>cid</code> 是 <code>contact_id</code>。</p>
+      <p>接下来需要确定合理的先验。和二项模型一样，线性模型尺度与结果的计数尺度之间存在变换，所以在线性模型尺度上平坦的先验，在结果尺度上并不平坦。先只考虑一个包含截距、并为它指定模糊 Normal(0, 10) 先验的模型：</p>
+      <div class="equation-block wallis-equation" id="eq-11-poisson-intercept-prior"><div><var>T</var><sub>i</sub> ∼ Poisson(<var>λ</var><sub>i</sub>)</div><div>log <var>λ</var><sub>i</sub> = <var>α</var></div><div><var>α</var> ∼ Normal(0, 10)</div></div>
+      <p>这个先验在结果尺度 <span class="math-inline"><var>λ</var></span> 上是什么样？如果 <span class="math-inline"><var>α</var></span> 服从正态分布，那么 <span class="math-inline"><var>λ</var></span> 就服从对数正态分布。用上面的正态均值与标准差绘制对数正态分布：</p>
+      <figure class="code-listing" id="code-11-38"><figcaption>R 代码 11.38</figcaption><pre><code>curve( dlnorm( x , 0 , 10 ) , from=0 , to=100 , n=200 )</code></pre></figure>
+      <p>所得分布是图 11.7 的黑色曲线。横轴取 0 到 100，是因为我们知道太平洋历史上的工具组合都在这个范围内。对于 <span class="math-inline"><var>α</var> ∼ Normal(0, 10)</span> 先验，零附近有一根巨大的尖峰——意味着平均工具数为零——而尾巴极长。到底多长？对数正态分布的均值是 <span class="math-inline">exp(<var>μ</var> + <var>σ</var><sup>2</sup>/2)</span>，这里等于 <span class="math-inline">exp(50)</span>，大得不可能。如果不信，只需模拟：</p>
+      <figure class="code-listing" id="code-11-39"><figcaption>R 代码 11.39</figcaption><pre><code>a &lt;- rnorm(1e4,0,10)
+lambda &lt;- exp(a)
+mean( lambda )</code></pre><pre class="code-output"><code>[1] 9.622994e+12</code></pre></figure>
+      <p>这可真是海量工具，足够铺满整座岛。我们显然能做得更好。</p>
+      <p>建议你修改上面的 <code>curve</code> 代码，试试不同的均值和标准差。关键事实是：log link 会把一半实数——所有负数——映射到结果尺度的 0 与 1 之间。所以，如果先验有一半概率质量在零以下，那么变换后也有一半质量落在 0 到 1 之间。对 Poisson 模型而言，平坦先验毫无意义，甚至能毁掉布拉格。下面是我的弱信息建议：</p>
+      <figure class="code-listing" id="code-11-40"><figcaption>R 代码 11.40</figcaption><pre><code>curve( dlnorm( x , 3 , 0.5 ) , from=0 , to=100 , n=200 )</code></pre></figure>
+      <figure class="book-figure poisson-intercept-prior-figure" id="fig-11-7"><div class="figure-scroll"><img src="/media/chapter-11-poisson-intercept-priors.svg" alt="简单 Poisson GLM 截距的两条先验预测密度；黑色宽先验在零附近尖峰并有极长尾，蓝色正则化先验集中在合理工具数量范围"></div><figcaption><strong>图 11.7：</strong>仅考虑截距 <span class="math-inline"><var>α</var></span> 时，简单 Poisson GLM 的均值 <span class="math-inline"><var>λ</var></span> 的先验预测分布。传统平坦先验（黑色）在结果尺度上产生荒谬预期，其均值为 <span class="math-inline">exp(50)</span>，大得离谱。把更多先验质量移到零以上（蓝色），就能轻易得到更好的先验。</figcaption></figure>
+      <p>图 11.7 也画出了这个蓝色分布。现在均值为 <span class="math-inline">exp(3 + 0.5<sup>2</sup>/2) ≈ 20</span>。我们还没有查看 <code>total_tools</code> 列的均值，也不想查看；这是先验。我们要让先验预测分布待在合理的结果空间，而不是去拟合当前样本。</p>
+      <p>现在需要为人口对数的系数 <span class="math-inline"><var>β</var></span> 指定先验。为了强化对比，还是先考虑传统的平坦先验 <span class="math-inline"><var>β</var> ∼ Normal(0, 10)</span>；惯用先验甚至还会更平坦。把它与截距一起模拟，再画出标准化人口对数与工具总数之间的 100 条先验趋势：</p>
+      <figure class="code-listing" id="code-11-41"><figcaption>R 代码 11.41</figcaption><pre><code>N &lt;- 100
+a &lt;- rnorm( N , 3 , 0.5 )
+b &lt;- rnorm( N , 0 , 10 )
+plot( NULL , xlim=c(-2,2) , ylim=c(0,100) )
+for ( i in 1:N ) curve( exp( a[i] + b[i]*x ) , add=TRUE , col=grau() )</code></pre></figure>
+      <p>这组先验预测分布显示在图 11.8 左上角。曲线围绕零旋转是合理的，因为零就是人口对数的均值。变量已经标准化，所以横轴单位是 <var>z</var> 分数。可以看到，这个先验认为，人口对数与工具总数之间绝大多数可能关系，要么在略高于平均人口对数时爆炸式增长，要么在刚到均值之前灾难性下降。这个先验糟透了。当然，开始拟合模型后会看到，即使 10 个观测也能克服这些糟糕先验；但请记住，我们是在为先验真正会影响结果的情形练习，而任何具体应用都可能属于这种情形。</p>
+      <p>所以换一个紧得多的先验。我其实很想强制 <span class="math-inline"><var>β</var></span> 的先验为正，但还是忍住，让数据自己证明这一点。我们只需抑制先验对不可能的爆炸式关系那份过度热情。经过一些试验，我采用 <span class="math-inline"><var>β</var> ∼ Normal(0, 0.2)</span>：</p>
+      <figure class="code-listing" id="code-11-42"><figcaption>R 代码 11.42</figcaption><pre><code>set.seed(10)
+N &lt;- 100
+a &lt;- rnorm( N , 3 , 0.5 )
+b &lt;- rnorm( N , 0 , 0.2 )
+plot( NULL , xlim=c(-2,2) , ylim=c(0,100) )
+for ( i in 1:N ) curve( exp( a[i] + b[i]*x ) , add=TRUE , col=grau() )</code></pre></figure>
+      <figure class="book-figure poisson-slope-prior-figure" id="fig-11-8"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的 Poisson 斜率先验四面板图"><img src="/media/chapter-11-poisson-slope-priors.svg" alt="四个面板比较平坦与正则化斜率先验，并在标准化人口对数、未标准化人口对数和原始人口尺度上显示工具总数的先验趋势"></div><p class="scroll-hint">图较宽，可横向滚动比较四种尺度下的先验趋势。</p><figcaption><strong>图 11.8：</strong>为 Poisson GLM 的斜率先验苦苦挣扎。左上：平坦先验在结果尺度上产生爆炸式趋势。右上：正则化先验大多留在合理结果空间。左下：横轴换成未标准化的人口对数。右下：横轴换成自然尺度，也就是原始人口规模。</figcaption></figure>
+      <p class="source-erratum" id="erratum-11-fig-11-8-labels"><strong>原文勘误：</strong>图 11.8 下排两个面板把截距先验误标为 <code>b ~ dnorm(3,0.5)</code>；代码 11.42 明确表明该参数是 <code>a</code>。译图按代码更正为 <span class="math-inline"><var>α</var> ∼ Normal(3, 0.5)</span>。</p>
+      <p>图 11.8 右上角显示了这组先验。强关系仍然可能出现，但大部分概率质量对应的是工具总数与人口对数之间相当平坦的关系。</p>
+      <p>在更自然的结果尺度上查看这些先验也会有所帮助。标准化人口对数变量很适合拟合，却不适合思考。人口规模有自然零点，我们希望始终看见它；标准化会摧毁这个零点。下一步将绘制工具总数与未标准化人口对数之间的 100 条先验预测趋势。</p>
+      <p class="continuation-note">图 11.8 下排两种自然尺度的绘图代码、收益递减解释与 Poisson 模型拟合，将从原书 PDF 第 375 页继续。</p>
     </section>
   </section>
 
   <section class="endnotes" id="chapter-11-notes" role="doc-endnotes"><h2>尾注</h2><ol start="166"><li id="note-166">重要数论家 Leopold Kronecker 据称说过：“上帝创造了整数，其余一切皆为人造。”（德文：<span lang="de">Die ganzen Zahlen hat der liebe Gott gemacht, alles andere ist Menschenwerk.</span>） <a class="backref" href="#note-166-ref" aria-label="返回正文">↩</a></li><li id="note-167">Silk 等（2005）。 <a class="backref" href="#note-167-ref" aria-label="返回正文">↩</a></li><li id="note-168">Bickel 等（1975）。 <a class="backref" href="#note-168-ref" aria-label="返回正文">↩</a></li><li id="note-169">Simpson（1951）。 <a class="backref" href="#note-169-ref" aria-label="返回正文">↩</a></li><li id="note-170">例如可参见 Pearl（2014）。关于 Simpson 悖论的论述浩如烟海，以至于你能找到看似彼此矛盾的解释。 <a class="backref" href="#note-170-ref" aria-label="返回正文">↩</a></li><li id="note-171">Kline 与 Boyd（2010）。 <a class="backref" href="#note-171-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 11 章 PDF 第 347–371 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 372 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 11 章 PDF 第 347–374 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 375 页继续。</aside>
 </article>
