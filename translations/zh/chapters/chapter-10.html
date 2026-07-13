@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-10" data-source-pages="323-326">
-  <header class="chapter-header"><p class="eyebrow">第十章</p><h1>大熵与广义线性模型</h1><p class="source-range">当前译稿对应原书 PDF 第 323–326 页</p></header>
+<article class="book-article" data-chapter="chapter-10" data-source-pages="323-329">
+  <header class="chapter-header"><p class="eyebrow">第十章</p><h1>大熵与广义线性模型</h1><p class="source-range">当前译稿对应原书 PDF 第 323–329 页</p></header>
 
   <div class="chapter-introduction" id="intro-10">
     <p>本书大多数读者都有过与缠成一团的电线搏斗的经历。无论在书桌后面，还是塞进箱子里，电线电缆总有把自己打成结的趋势。为什么会这样？当然有真实的物理过程在起作用。但从描述层面看，原因是<strong>熵</strong>：电线最终打结的方式，远远多于保持解开的方式。<sup id="note-153-ref"><a href="#note-153">153</a></sup>所以，假如我仔细地把十几根电线放进箱子，封好箱子再摇晃一番，那么我们应当押注：等我再次打开箱子时，至少有几根电线会缠在一起。我们不需要了解电线或绳结的任何物理学，只需押注熵。能够以多得多的方式发生的事件，也就更有可能发生。</p>
@@ -43,11 +43,43 @@ p$E &lt;- c(2,2,2,2,2)</code></pre></figure>
 
     <figure class="code-listing" id="code-10-4"><figcaption>R 代码 10.4</figcaption><pre><code>ways &lt;- c(1,90,1260,37800,113400)
 logwayspp &lt;- log(ways)/10</code></pre></figure>
-    <p>图 10.1 右下角把这些 <code>logwayspp</code> 值与信息熵 <code>H</code> 画在一起。两组数值包含相同的信息，因为信息熵近似等于每颗石子的对数方式数（细节见本节末的“过度思考”侧栏）。随着石子数量增加，这项近似会越来越好。</p>
-    <p class="continuation-note">信息熵怎样计数独特排列、最大熵分布为何最可信，以及后续例子，将从原书 PDF 第 327 页继续。</p>
+    <p>图 10.1 右下角把这些 <code>logwayspp</code> 值与信息熵 <code>H</code> 画在一起。两组数值包含相同的信息，因为信息熵近似等于每颗石子的对数方式数（细节见本节末的“过度思考”侧栏）。随着石子数量增加，这项近似会越来越好；即使只有 10 颗石子，近似也已经极其准确。信息熵，就是一种计数某个分布对应多少种独特排列的方法。</p>
+    <p>这一点很有用，因为能够以最多方式发生的分布，也是最可信的分布。把它称为<strong>最大熵分布</strong>。从石子例子可以猜到，最大熵分布对应的方式数压倒其他任何分布；最接近最大熵分布的那些分布，其方式数又压倒不那么接近的分布，依此类推。于是，绝大多数独特石子排列要么产生最大熵分布，要么产生与它非常相似的分布。这就是押注最大熵往往有效的原因：它是高可信分布的重心。</p>
+    <p>当然，这种高可信性取决于我们的假设。为了理解假设——约束与数据——在最大熵中的作用，我们将研究两个例子。第一，把高斯分布推导为一个熵最大化问题的解；第二，把早在第 2 章抽弹珠、抛地球时使用的二项分布，推导为另一个熵最大化问题的解。这些推导不会追求严格的数学证明，而会用图形帮助你从概念上体会所谓“熵”究竟在做什么。本节的“过度思考”侧栏则为感兴趣的读者补上数学联系。</p>
+    <p>最重要的是，对自己保持耐心。对概率论的理解与直觉来自经验。即使尚未完全理解最大熵原理，你也已经可以有效地应用它。事实上，也许根本没有人完全理解它。随着时间推移，并在你发现它有用的具体情境中，这条原理会越来越直观。</p>
+
+    <aside class="rethinking-box" id="rethinking-value-of-intuition"><h3>再思考：直觉有什么用？</h3><p>和信息论的许多方面一样，最大熵不太直观。但要注意，直觉只是开发方法时的向导。只要一种方法有效，我们的直觉是否赞同几乎无关紧要。这一点很重要，因为仍有人依据哲学原则和直觉吸引力争论统计方法。哲学确实重要，因为它影响方法的开发与应用；但用它判断一种方法是否有用并不可靠。真正重要的是结果。例如，第 6 章用于推导信息熵的三条判据，并不是使用信息熵的理由。真正的理由是：在其他方法失败的许多问题上，它表现得非常出色。</p></aside>
+
+    <aside class="overthinking-box" id="overthinking-wallis-derivation"><h3>过度思考：Wallis 推导</h3>
+      <p>从直觉上说，只凭信息熵的定义就能为最大熵辩护。但还有另一种归功于 Graham Wallis 的推导，<sup id="note-155-ref"><a href="#note-155">155</a></sup>完全不需要诉诸“信息”。下面是论证的简短版本。假设有 <span class="math-inline"><var>M</var></span> 个可观测事件，我们希望为每一个赋予可信度；同时已知产生这些事件的过程具有一些约束，例如期望值或方差。现在摆好 <span class="math-inline"><var>M</var></span> 只桶，把大量的 <span class="math-inline"><var>N</var></span> 颗独立石子随机抛入其中，让每颗石子落进任一桶的概率都相同。石子全部落下后，数出第 <span class="math-inline"><var>i</var></span> 只桶中的石子数 <span class="math-inline"><var>n</var><sub><var>i</var></sub></span>，并用 <span class="math-inline"><var>p</var><sub><var>i</var></sub> = <var>n</var><sub><var>i</var></sub>/<var>N</var></span> 构造一个候选概率分布。如果候选分布与约束一致，就把它加入列表；否则倒空桶再试一次。重复许多轮后，出现次数最多的分布，就是仍遵守所加约束的最公平分布——这里的“公平”是指抛石子进桶时没有任何偏向。</p>
+      <p>如果能雇佣一个大国的全部人口，连续多年每天抛石子，就可以凭经验完成这件事。幸运的是，这个过程能够用数学研究。任一候选分布的概率，就是它的多项概率：在每只桶落入概率均匀时，观测到这些石子计数的概率为：</p>
+      <div class="equation-block wallis-equation" id="eq-10-wallis-multinomial"><span class="math-line">Pr(<var>n</var><sub>1</sub>, …, <var>n</var><sub><var>m</var></sub>) = <var>N</var>!/(<var>n</var><sub>1</sub>! … <var>n</var><sub><var>m</var></sub>!) ∏<sub><var>i</var>=1</sub><sup><var>M</var></sup>(1/<var>M</var>)<sup><var>n</var><sub><var>i</var></sub></sup> = <var>W</var>(1/<var>M</var>)<sup><var>N</var></sup></span></div>
+      <p>最常实现的分布，会让含阶乘的那个难看分式 <span class="math-inline"><var>W</var></span> 取得最大值。把 <span class="math-inline"><var>W</var></span> 称为<strong>多重度</strong>，因为它表示一组特定计数能够以多少种不同方式实现。例如，所有石子都落进第一只桶只有一种方式：全部都进这只桶，其他桶一颗也没有。但把石子均匀分配到各桶有多得多的方式，因为顺序并不重要。我们关心多重度，是因为要寻找最常发生的分布；选择使多重度最大的分布，就能达到目的。</p>
+      <p>现在离熵只差一步。处理 <span class="math-inline">(1/<var>N</var>) log(<var>W</var>)</span> 更容易，而使它最大化的分布与使 <span class="math-inline"><var>W</var></span> 最大化的分布相同。再注意 <span class="math-inline"><var>n</var><sub><var>i</var></sub> = <var>Np</var><sub><var>i</var></sub></span>，于是：</p>
+      <div class="equation-block wallis-equation" id="eq-10-wallis-log-multiplicity"><span class="math-line">(1/<var>N</var>) log <var>W</var> = (1/<var>N</var>) { log <var>N</var>! − ∑<sub><var>i</var></sub> log[(<var>Np</var><sub><var>i</var></sub>)!] }</span></div>
+      <p>由于 <span class="math-inline"><var>N</var></span> 很大，可以用斯特林近似 <span class="math-inline"><var>N</var> log <var>N</var> − <var>N</var></span> 近似 <span class="math-inline">log <var>N</var>!</span>：</p>
+      <div class="equation-block wallis-equation" id="eq-10-wallis-stirling"><span class="math-line">(1/<var>N</var>) log <var>W</var> ≈ (1/<var>N</var>) { <var>N</var> log <var>N</var> − <var>N</var> − ∑<sub><var>i</var></sub>[<var>Np</var><sub><var>i</var></sub> log(<var>Np</var><sub><var>i</var></sub>) − <var>Np</var><sub><var>i</var></sub>] } = −∑<sub><var>i</var></sub> <var>p</var><sub><var>i</var></sub> log <var>p</var><sub><var>i</var></sub></span></div>
+      <p>这恰好就是 Shannon 信息熵的公式。在满足约束的分布中，使上式最大化的分布，会在仍遵守约束的前提下尽可能均匀地铺开概率。</p>
+      <p>这个结果很容易推广到石子落进各桶的概率不相等的情形。<sup id="note-156-ref"><a href="#note-156">156</a></sup>若先验信息规定石子落进第 <span class="math-inline"><var>i</var></span> 只桶的概率为 <span class="math-inline"><var>q</var><sub><var>i</var></sub></span>，那么需要最大化的量变为：</p>
+      <div class="equation-block wallis-equation" id="eq-10-wallis-prior"><span class="math-line">(1/<var>N</var>) log Pr(<var>n</var><sub>1</sub>, …, <var>n</var><sub><var>m</var></sub>) ≈ −∑<sub><var>i</var></sub> <var>p</var><sub><var>i</var></sub> log(<var>p</var><sub><var>i</var></sub>/<var>q</var><sub><var>i</var></sub>)</span></div>
+      <p>你也许认出了它：这就是第 7 章的 KL 发散，只是前面多了一个负号。这说明，在与约束一致的分布中，使熵最大的分布，也会使它与先验的信息距离最小。先验平坦时，最大熵给出尽可能平坦的分布；先验不平坦时，最大熵更新先验，返回与先验最相似、同时仍与约束一致的分布。这个过程常称为<strong>最小交叉熵</strong>。进一步说，贝叶斯更新本身也可以表示为一个把数据当作约束的最大熵问题之解。<sup id="note-157-ref"><a href="#note-157">157</a></sup>因此，贝叶斯推断可以看作生成这样一个后验分布：在逻辑上与明确信息一致的前提下，尽可能接近先验分布。</p>
+    </aside>
+
+    <section id="sec-10-1-1"><h3>10.1.1 高斯分布</h3>
+      <p>第 4 章（第 74 页）介绍高斯分布时，它来自一个生成过程：1,000 个人反复抛硬币，每抛一次便向左（正面）或向右（反面）走一步。步数相加，必然形成近似高斯钟形曲线的位置分布。这个过程代表自然界产生高斯分布最基本的生成动力：许多微小因素相加时，总和的集合会趋向高斯分布。</p>
+      <p>但显然还有许多其他分布可能出现。例如，抛硬币的动力完全可能把 1,000 人都放到足球场同一侧。为什么自然界没有常常出现这些其他分布？因为每一种能够产生如此不平衡结果的抛硬币序列，都对应着多得多、能够产生近似平衡结果的序列。钟形曲线之所以从经验中涌现，是因为物理系统有极多不同的详细状态能够产生它。无论实际发生什么，最终集合几乎注定近似高斯。因此，如果对一组连续值只知道它的方差——或者只知道它具有有限方差，即使尚不知数值——最安全的押注就是：这组值最终落入极多钟形配置中的某一种。<sup id="note-158-ref"><a href="#note-158">158</a></sup></p>
+      <p>最大熵寻找能够以最多方式产生的分布，因此很擅长找出这种极限分布。又因为概率铺得越均匀，熵就越大，所以最大熵也会寻找在仍遵守约束时最均匀的分布。为了把高斯分布为何是在给定方差下最均匀的分布可视化，考虑一族方差相同的广义分布。<strong>广义正态分布</strong>的概率密度定义为：</p>
+      <div class="equation-block wallis-equation" id="eq-10-generalized-normal"><span class="math-line">Pr(<var>y</var> | <var>μ</var>, <var>α</var>, <var>β</var>) = <var>β</var> / [2<var>α</var> Γ(1/<var>β</var>)] · exp{−(|<var>y</var>−<var>μ</var>|/<var>α</var>)<sup><var>β</var></sup>}</span></div>
+      <p>我们要把方差为 <span class="math-inline"><var>σ</var><sup>2</sup></span> 的普通高斯分布，与几个具有相同方差的广义正态分布作比较。<sup id="note-159-ref"><a href="#note-159">159</a></sup></p>
+
+      <figure class="book-figure gaussian-maxent-figure" id="fig-10-2"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的同方差广义正态密度与熵曲线"><img src="/media/chapter-10-gaussian-maxent.svg" alt="左图比较方差均为一的高斯和三种广义正态密度，右图显示熵在形状参数贝塔等于二的高斯情形达到最大"></div><p class="scroll-hint">图较宽，可横向滚动比较密度形状与熵曲线。</p><figcaption><strong>图 10.2：</strong>最大熵与高斯分布。左：比较高斯分布（蓝色）和几个方差相同的其他连续分布。右：当广义正态分布的曲率与高斯一致，即形状参数等于 2 时，熵达到最大。</figcaption></figure>
+
+      <p>图 10.2 左侧把一个蓝色高斯分布与三个方差相同的广义正态分布画在一起。四个分布的方差都为 <span class="math-inline"><var>σ</var><sup>2</sup> = 1</span>。其中两个广义分布比高斯更尖、尾部更厚：概率从中部重新分配到尾部，同时保持方差不变。第三个广义分布则朝相反方向变化。</p>
+      <p class="continuation-note">第三个广义分布的具体形状、图 10.2 右侧的熵曲线，以及高斯最大熵证明，将从原书 PDF 第 330 页继续。</p>
+    </section>
   </section>
 
-  <section class="endnotes" id="chapter-10-notes" role="doc-endnotes"><h2>尾注</h2><ol start="153"><li id="note-153">Grosberg（1998）。关于拓扑学视角，参见 <span class="url-text">https://doi.org/10.1073/pnas.0611320104</span>。 <a class="backref" href="#note-153-ref" aria-label="返回正文">↩</a></li><li id="note-154">Williams（1980）。另见 Caticha 与 Griffin（2007）和 Griffin（2008）；后两者给出了更清晰的论证与若干完整示例。历史背景可参见 Jaynes（1988）。 <a class="backref" href="#note-154-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section class="endnotes" id="chapter-10-notes" role="doc-endnotes"><h2>尾注</h2><ol start="153"><li id="note-153">Grosberg（1998）。关于拓扑学视角，参见 <span class="url-text">https://doi.org/10.1073/pnas.0611320104</span>。 <a class="backref" href="#note-153-ref" aria-label="返回正文">↩</a></li><li id="note-154">Williams（1980）。另见 Caticha 与 Griffin（2007）和 Griffin（2008）；后两者给出了更清晰的论证与若干完整示例。历史背景可参见 Jaynes（1988）。 <a class="backref" href="#note-154-ref" aria-label="返回正文">↩</a></li><li id="note-155">Jaynes（2003），第 351 页。 <a class="backref" href="#note-155-ref" aria-label="返回正文">↩</a></li><li id="note-156">Williams（1980）。 <a class="backref" href="#note-156-ref" aria-label="返回正文">↩</a></li><li id="note-157">Williams（1980）。另见 Caticha 与 Griffin（2007）和 Griffin（2008）；后两者给出了更清晰的论证与若干完整示例。历史背景可参见 Jaynes（1988）。 <a class="backref" href="#note-157-ref" aria-label="返回正文">↩</a></li><li id="note-158">E. T. Jaynes 把这种现象称为“熵集中”。参见 Jaynes（2003），第 365–370 页。 <a class="backref" href="#note-158-ref" aria-label="返回正文">↩</a></li><li id="note-159">广义正态分布的方差为 <span class="math-inline"><var>α</var><sup>2</sup> Γ(3/<var>β</var>)/Γ(1/<var>β</var>)</span>。给定形状参数 <span class="math-inline"><var>β</var></span>，令 <span class="math-inline"><var>α</var> = <var>σ</var>√[Γ(1/<var>β</var>)/Γ(3/<var>β</var>)]</span>，就能把方差固定为任意指定的 <span class="math-inline"><var>σ</var><sup>2</sup></span>。若想动手试验，<code>rethinking</code> 以 <code>dgnorm</code> 提供了这个密度。 <a class="backref" href="#note-159-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 323–326 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 327 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 323–329 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 330 页继续。</aside>
 </article>

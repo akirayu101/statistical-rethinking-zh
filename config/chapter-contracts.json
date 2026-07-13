@@ -1700,7 +1700,7 @@
   },
   "chapter-10": {
     "required_status": "in_progress",
-    "source_pages": [323, 326],
+    "source_pages": [323, 329],
     "required_ids": [
       "intro-10",
       "note-153-ref",
@@ -1715,30 +1715,54 @@
       "code-10-3",
       "fig-10-1",
       "code-10-4",
+      "rethinking-value-of-intuition",
+      "overthinking-wallis-derivation",
+      "note-155-ref",
+      "eq-10-wallis-multinomial",
+      "eq-10-wallis-log-multiplicity",
+      "eq-10-wallis-stirling",
+      "note-156-ref",
+      "eq-10-wallis-prior",
+      "note-157-ref",
+      "sec-10-1-1",
+      "note-158-ref",
+      "eq-10-generalized-normal",
+      "note-159-ref",
+      "fig-10-2",
       "chapter-10-notes",
       "note-153",
-      "note-154"
+      "note-154",
+      "note-155",
+      "note-156",
+      "note-157",
+      "note-158",
+      "note-159"
     ],
     "required_headings": [
       "大熵与广义线性模型",
       "再思考：贝叶斯更新与最大熵",
       "10.1 最大熵",
+      "再思考：直觉有什么用？",
+      "过度思考：Wallis 推导",
+      "10.1.1 高斯分布",
       "尾注"
     ],
     "counts": {
-      "section": 2,
-      "figure": 5,
-      "figure img": 1,
-      ".book-figure": 1,
+      "section": 3,
+      "figure": 6,
+      "figure img": 2,
+      ".book-figure": 2,
       ".code-listing": 4,
       ".code-output": 1,
-      ".rethinking-box": 1,
+      ".rethinking-box": 2,
+      ".overthinking-box": 1,
       ".book-quote": 1,
-      ".equation-block": 1,
+      ".equation-block": 6,
+      ".wallis-equation": 5,
       ".source-erratum": 1,
       ".chapter-introduction": 1,
       ".continuation-note": 1,
-      ".endnotes li": 2
+      ".endnotes li": 7
     }
   }
 }

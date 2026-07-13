@@ -5,7 +5,8 @@ import math
 
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "translations/zh/media/chapter-10-pebble-entropy.svg"
+OUT1 = ROOT / "translations/zh/media/chapter-10-pebble-entropy.svg"
+OUT2 = ROOT / "translations/zh/media/chapter-10-gaussian-maxent.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 BLUE = "#263f86"
@@ -89,8 +90,80 @@ def scatter_panel(x: float, y: float) -> list[str]:
     return parts
 
 
+def generalized_normal_density(value: float, beta: float) -> float:
+    """Generalized normal density standardized to variance one."""
+    alpha = math.sqrt(math.gamma(1 / beta) / math.gamma(3 / beta))
+    return beta / (2 * alpha * math.gamma(1 / beta)) * math.exp(-((abs(value) / alpha) ** beta))
+
+
+def generalized_normal_entropy(beta: float) -> float:
+    """Differential entropy of a variance-one generalized normal."""
+    alpha = math.sqrt(math.gamma(1 / beta) / math.gamma(3 / beta))
+    return math.log(2 * alpha * math.gamma(1 / beta) / beta) + 1 / beta
+
+
+def figure_10_2() -> None:
+    width, height = 1200, 600
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">',
+        '<title>最大熵与高斯分布</title>',
+        '<desc>左图比较方差均为一的高斯与三种广义正态密度；右图显示广义正态的熵在形状参数贝塔等于二时达到最大。</desc>',
+        '<rect width="100%" height="100%" fill="#fbfaf6"/>',
+    ]
+
+    left, top, plot_w, plot_h = 90, 55, 470, 430
+    sx = lambda value: left + (value + 4.2) / 8.4 * plot_w
+    sy = lambda value: top + (0.75 - value) / 0.75 * plot_h
+    parts.append(f'<rect x="{left}" y="{top}" width="{plot_w}" height="{plot_h}" fill="#fff" stroke="{GRID}"/>')
+    for tick in (-4, -2, 0, 2, 4):
+        xx = sx(tick)
+        parts.extend([f'<line x1="{xx:.1f}" y1="{top + plot_h}" x2="{xx:.1f}" y2="{top + plot_h + 7}" stroke="{INK}"/>', text(xx, top + plot_h + 31, tick, size=16, anchor="middle")])
+    for tick in (0.0, 0.2, 0.4, 0.6):
+        yy = sy(tick)
+        parts.extend([f'<line x1="{left - 7}" y1="{yy:.1f}" x2="{left}" y2="{yy:.1f}" stroke="{INK}"/>', text(left - 13, yy + 5, f"{tick:.1f}", size=15, anchor="end")])
+    parts.extend([
+        text(left + plot_w / 2, height - 35, "取值", size=19, anchor="middle", fill=BLUE),
+        text(28, top + plot_h / 2, "密度", size=19, anchor="middle", fill=BLUE, rotate=-90),
+    ])
+    styles = [(1.0, "#111", 2.2), (1.5, "#777872", 2.2), (4.0, "#111", 2.2), (2.0, "#6670ee", 4.0)]
+    for beta, color, stroke_width in styles:
+        points = []
+        for index in range(701):
+            value = -4.2 + 8.4 * index / 700
+            points.append(f"{sx(value):.1f},{sy(generalized_normal_density(value, beta)):.1f}")
+        parts.append(f'<polyline points="{" ".join(points)}" fill="none" stroke="{color}" stroke-width="{stroke_width}"/>')
+    parts.extend([
+        f'<line x1="{left + 22}" y1="{top + 24}" x2="{left + 62}" y2="{top + 24}" stroke="#6670ee" stroke-width="4"/>',
+        text(left + 72, top + 30, "高斯 β=2", size=16, fill=BLUE),
+    ])
+
+    left2, top2, plot_w2, plot_h2 = 690, 55, 420, 430
+    sx2 = lambda value: left2 + (value - 1) / 3 * plot_w2
+    sy2 = lambda value: top2 + (1.425 - value) / (1.425 - 1.345) * plot_h2
+    parts.append(f'<rect x="{left2}" y="{top2}" width="{plot_w2}" height="{plot_h2}" fill="#fff" stroke="{GRID}"/>')
+    for tick in (1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0):
+        xx = sx2(tick)
+        parts.extend([f'<line x1="{xx:.1f}" y1="{top2 + plot_h2}" x2="{xx:.1f}" y2="{top2 + plot_h2 + 7}" stroke="{INK}"/>', text(xx, top2 + plot_h2 + 31, f"{tick:.1f}", size=15, anchor="middle")])
+    for tick in (1.35, 1.37, 1.39, 1.41):
+        yy = sy2(tick)
+        parts.extend([f'<line x1="{left2 - 7}" y1="{yy:.1f}" x2="{left2}" y2="{yy:.1f}" stroke="{INK}"/>', text(left2 - 13, yy + 5, f"{tick:.2f}", size=15, anchor="end")])
+    entropy_points = []
+    for index in range(601):
+        beta = 1 + 3 * index / 600
+        entropy_points.append(f"{sx2(beta):.1f},{sy2(generalized_normal_entropy(beta)):.1f}")
+    parts.extend([
+        f'<polyline points="{" ".join(entropy_points)}" fill="none" stroke="#6670ee" stroke-width="4"/>',
+        f'<line x1="{sx2(2):.1f}" y1="{top2}" x2="{sx2(2):.1f}" y2="{top2 + plot_h2}" stroke="{INK}" stroke-width="2" stroke-dasharray="8 7"/>',
+        text(left2 + plot_w2 / 2, height - 35, "形状参数 β", size=19, anchor="middle", fill=BLUE),
+        text(628, top2 + plot_h2 / 2, "熵", size=19, anchor="middle", fill=BLUE, rotate=-90),
+        text(sx2(2) + 12, sy2(generalized_normal_entropy(2)) - 12, "最大值 β=2", size=17, fill=BLUE, weight=700),
+        '</svg>',
+    ])
+    OUT2.write_text("\n".join(parts) + "\n", encoding="utf-8")
+
+
 def main() -> int:
-    OUT.parent.mkdir(parents=True, exist_ok=True)
+    OUT1.parent.mkdir(parents=True, exist_ok=True)
     width, height = 1200, 930
     distributions = [
         ("A", [0, 0, 10, 0, 0], 1),
@@ -110,8 +183,10 @@ def main() -> int:
         parts.extend(bar_panel(label, counts, ways, x, y))
     parts.extend(scatter_panel(635, 625))
     parts.append('</svg>')
-    OUT.write_text("\n".join(parts) + "\n", encoding="utf-8")
-    print(f"generated {OUT}")
+    OUT1.write_text("\n".join(parts) + "\n", encoding="utf-8")
+    figure_10_2()
+    print(f"generated {OUT1}")
+    print(f"generated {OUT2}")
     return 0
 
 
