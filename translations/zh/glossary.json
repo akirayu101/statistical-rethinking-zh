@@ -1197,6 +1197,10 @@
     "stochastic block model": "随机区块模型",
     "continuous category": "连续类别",
     "Gaussian process regression": "Gaussian 过程回归",
+    "spatial autocorrelation": "空间自相关",
+    "distance matrix": "距离矩阵",
+    "covariance function": "协方差函数",
+    "geographic similarity": "地理相似性",
     "cross-classified varying slopes model": "交叉分类变化斜率模型"
   },
   "protected": [

@@ -18,6 +18,7 @@ OUT6 = ROOT / "translations" / "zh" / "media" / "chapter-14-neff-comparison.svg"
 OUT7 = ROOT / "translations" / "zh" / "media" / "chapter-14-chimp-predictions.svg"
 OUT8 = ROOT / "translations" / "zh" / "media" / "chapter-14-dyadic-gifts.svg"
 OUT9 = ROOT / "translations" / "zh" / "media" / "chapter-14-social-relations.svg"
+OUT10 = ROOT / "translations" / "zh" / "media" / "chapter-14-gp-distance.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 BLUE = "#6670ee"
@@ -613,6 +614,54 @@ def figure_14_9() -> None:
     OUT9.write_text("\n".join(svg),encoding="utf-8")
 
 
+def figure_14_10() -> None:
+    """Compare linear- and squared-distance covariance functions."""
+    width, height = 920, 650
+    x0, y0, x1, y1 = 115.0, 55.0, 850.0, 535.0
+
+    def xy(distance: float, correlation: float) -> tuple[float, float]:
+        return (
+            x0 + distance / 4.0 * (x1 - x0),
+            y1 - correlation * (y1 - y0),
+        )
+
+    svg = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
+        '<title>图 14.10：距离与协方差函数的形状</title>',
+        '<desc>虚线是随距离指数衰减的线性距离函数，实线是随距离平方呈半高斯衰减的平方距离函数。</desc>',
+        f'<rect width="{width}" height="{height}" fill="#fff"/>',
+        f'<rect x="{x0}" y="{y0}" width="{x1-x0}" height="{y1-y0}" fill="#fff" stroke="{INK}" stroke-width="1.5"/>',
+    ]
+    for value in range(5):
+        x, _ = xy(float(value), 0.0)
+        svg.extend([
+            f'<line x1="{x:.1f}" y1="{y1}" x2="{x:.1f}" y2="{y1+7}" stroke="{INK}"/>',
+            text(x, y1 + 31, str(value), size=17, anchor="middle"),
+        ])
+    for value in [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]:
+        _, y = xy(0.0, value)
+        svg.extend([
+            f'<line x1="{x0-7}" y1="{y:.1f}" x2="{x0}" y2="{y:.1f}" stroke="{INK}"/>',
+            text(x0 - 15, y + 6, f"{value:.1f}", size=17, anchor="end"),
+        ])
+    linear = []
+    squared = []
+    for index in range(161):
+        distance = index / 40.0
+        linear.append(xy(distance, math.exp(-distance)))
+        squared.append(xy(distance, math.exp(-(distance ** 2))))
+    linear_points = " ".join(f"{x:.1f},{y:.1f}" for x, y in linear)
+    squared_points = " ".join(f"{x:.1f},{y:.1f}" for x, y in squared)
+    svg.extend([
+        f'<polyline points="{linear_points}" fill="none" stroke="{INK}" stroke-width="2.5" stroke-dasharray="11 8"/>',
+        f'<polyline points="{squared_points}" fill="none" stroke="{INK}" stroke-width="2.8"/>',
+        text((x0 + x1) / 2, 610, "距离", size=21, anchor="middle", weight=600),
+        text(30, (y0 + y1) / 2, "相关", size=21, anchor="middle", weight=600, rotate=-90),
+        '</svg>',
+    ])
+    OUT10.write_text("\n".join(svg), encoding="utf-8")
+
+
 def main() -> None:
     figure_14_1()
     figure_14_2()
@@ -623,6 +672,7 @@ def main() -> None:
     figure_14_7()
     figure_14_8()
     figure_14_9()
+    figure_14_10()
     print(OUT1)
     print(OUT2)
     print(OUT3)
@@ -632,6 +682,7 @@ def main() -> None:
     print(OUT7)
     print(OUT8)
     print(OUT9)
+    print(OUT10)
 
 
 if __name__ == "__main__":

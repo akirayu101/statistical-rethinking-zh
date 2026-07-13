@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-14" data-source-pages="465-497">
-  <header class="chapter-header"><p class="eyebrow">第十四章</p><h1>协方差历险</h1><p class="source-range">当前译稿对应原书 PDF 第 465–497 页</p></header>
+<article class="book-article" data-chapter="chapter-14" data-source-pages="465-500">
+  <header class="chapter-header"><p class="eyebrow">第十四章</p><h1>协方差历险</h1><p class="source-range">当前译稿对应原书 PDF 第 465–500 页</p></header>
 
   <div class="chapter-introduction" id="intro-14">
     <p>回想上一章导言中的咖啡机器人（原书第 413 页）。这个机器人被设定为在咖啡馆之间移动、点咖啡，并记录等待时间。上一章的重点是：在咖啡馆之间汇聚信息，能让机器人学得更高效；变化截距正是实现这种汇聚的一种机制。</p>
@@ -662,10 +662,59 @@ plot( dy1 , dy2 )</code></pre></figure>
     <p>到目前为止，所有变化效应——无论截距还是斜率——都定义在离散、无序的类别上。例如咖啡馆是独特地点，不存在咖啡馆 1 排在咖啡馆 2 前面的含义；“1”和“2”只是独特事物的标签。蝌蚪池塘、大学院系与单只黑猩猩也一样。为每个集群估计独特参数，可以量化导致集群间变异与集群内观测协变的一些独特特征；跨集群汇聚既提高准确度，也同时描绘变异。</p>
     <p>但年龄、收入或身高这类连续变异维度呢？同龄人共享某些暴露：听过相同音乐、听说过相同政治人物、经历过相同天气事件。年龄相近的人也共享其中一部分，但程度不如完全同龄者。两个人在年龄、收入、身高或其他背景相似性维度上越不相似，协变就越弱。为所有同龄者估计一个独特变化截距、却忽略年龄相近者应有更相似截距，并不合理；而且样本中很可能每个人的年龄都不同，能利用的只有连续相似度差异。</p>
     <p>幸运的是，变化效应方法可以推广到这种连续类别。这样既能为任意年龄估计独特截距（或斜率），又把年龄视为连续维度，使相近年龄拥有更相似的截距（或斜率）。一般方法称为 <strong>Gaussian 过程回归</strong>。<sup id="note-205-ref"><a href="#note-205">205</a></sup> 遗憾的是，这个名字完全没有说明它用来做什么、怎样工作。</p>
-    <p class="continuation-note">Gaussian 过程的协方差函数与大洋洲工具空间自相关示例，将从原书 PDF 第 498 页继续。</p>
+    <p>下面通过一个基本例子说明 Gaussian 过程回归能做什么、又怎样工作。一般目的，是定义一个案例彼此有差异的维度，例如个体年龄或地理位置；然后测量每对案例之间的距离。模型要做的，就是估计距离不同的案例对之间协方差的函数。这个协方差函数把变化效应方法推广到连续类别。</p>
+
+    <section id="sec-14-5-1"><h3>14.5.1 示例：大洋洲工具的空间自相关</h3>
+      <p>第 11 章研究历史上大洋洲社会的工具组合复杂度时（原书 PDF 第 354 页），我们用一个粗糙的二元接触预测变量代理社会间可能存在的交换。但这个变量很不令人满意。第一，它没有说明各社会究竟与哪些社会有接触；若所有邻居都是小岛，即使接触率很高，也未必会增加多少工具复杂度。第二，工具确实会在社会间交换——这一点已知属实——那么即使以所有预测变量为条件，各社会的工具总数也并非相互独立。相反，地理上接近的邻居会因交换而有更相似的工具数。第三，相近岛屿可能共享未测量的地理特征，例如石料或贝壳来源，由此发展出相似的技术产业。因此，空间可能通过多条路径发挥作用。</p>
+      <p>这正是使用 Gaussian 过程回归的经典场景。先定义社会之间的距离矩阵，再估计工具数的相似程度如何依赖地理距离。普通预测变量也可同时放进模型，使社会随距离产生的协变既控制其他技术影响因素，也受到这些因素的控制。</p>
+      <p>先载入数据并查看地理距离矩阵。作者已经查好每对社会间按直线航行的距离；单位是千公里，矩阵随 <code>rethinking</code> 包提供：</p>
+      <figure class="code-listing" id="code-14-37"><figcaption>R 代码 14.37</figcaption><pre><code># 载入距离矩阵
+library(rethinking)
+data(islandsDistMatrix)
+
+# 显示（单位：千公里）
+Dmat &lt;- islandsDistMatrix
+colnames(Dmat) &lt;- c("Ml","Ti","SC","Ya","Fi","Tr","Ch","Mn","To","Ha")
+round(Dmat,1)</code></pre><pre class="code-output"><code>           Ml  Ti  SC  Ya  Fi  Tr  Ch  Mn  To  Ha
+Malekula  0.0 0.5 0.6 4.4 1.2 2.0 3.2 2.8 1.9 5.7
+Tikopia   0.5 0.0 0.3 4.2 1.2 2.0 2.9 2.7 2.0 5.3
+Santa Cruz 0.6 0.3 0.0 3.9 1.6 1.7 2.6 2.4 2.3 5.4
+Yap       4.4 4.2 3.9 0.0 5.4 2.5 1.6 1.6 6.1 7.2
+Lau Fiji  1.2 1.2 1.6 5.4 0.0 3.2 4.0 3.9 0.8 4.9
+Trobriand 2.0 2.0 1.7 2.5 3.2 0.0 1.8 0.8 3.9 6.7
+Chuuk     3.2 2.9 2.6 1.6 4.0 1.8 0.0 1.2 4.8 5.8
+Manus     2.8 2.7 2.4 1.6 3.9 0.8 1.2 0.0 4.6 6.7
+Tonga     1.9 2.0 2.3 6.1 0.8 3.9 4.8 4.6 0.0 5.0
+Hawaii    5.7 5.3 5.4 7.2 4.9 6.7 5.8 6.7 5.0 0.0</code></pre></figure>
+      <p>对角线全为零，因为每个社会距自身都是零公里；矩阵也沿对角线对称，因为从哪一个社会量起，两者之间的距离都相同。</p>
+      <p>我们把这些距离当作技术暴露相似性的度量，从而为每个社会估计变化截距，按地理相似程度解释工具数的非独立性。思路是：每个社会的期望工具数都获得一个基于连续距离度量的变化截距，使它与邻近社会的工具数相关。</p>
+      <p>仍使用第 11 章的“科学”工具模型。第一部分是熟悉的结果变量 Poisson 概率，接着是模型推导出的期望工具数：</p>
+      <div class="equation-block wallis-equation" id="eq-14-oceania-scientific-model"><div><var>T</var><sub><var>i</var></sub> ∼ Poisson(<var>λ</var><sub><var>i</var></sub>)</div><div><var>λ</var><sub><var>i</var></sub> = <var>α</var><var>P</var><sub><var>i</var></sub><sup><var>β</var></sup> / <var>γ</var></div></div>
+      <p>我们想用变化截距参数调整这些 <var>λ</var> 值。直接把截距加进上式可能使 <var>λ</var><sub><var>i</var></sub> 变成负数，所以改用乘法形式：</p>
+      <div class="equation-block wallis-equation" id="eq-14-oceania-gp-model"><div><var>T</var><sub><var>i</var></sub> ∼ Poisson(<var>λ</var><sub><var>i</var></sub>)</div><div><var>λ</var><sub><var>i</var></sub> = exp(<var>k</var><sub>society[<var>i</var>]</sub>) <var>α</var><var>P</var><sub><var>i</var></sub><sup><var>β</var></sup> / <var>γ</var></div></div>
+      <p>其中 <var>k</var><sub>society[<var>i</var>]</sub> 是变化截距。与典型变化截距不同，它根据地理距离而不是离散类别成员关系来估计。</p>
+      <aside class="source-erratum" id="erratum-14-gp-wording"><strong>原文说明：</strong>PDF 第 499 页依次出现 “geographical similarly”、“Poisson probably”、“tools::” 与 “means the inside” 四处明显排印语病；译稿均按上下文语意处理。</aside>
+      <p>Gaussian 过程的核心，是这些截距的多元先验：</p>
+      <div class="equation-block wallis-equation" id="eq-14-gp-intercept-prior"><div><strong><var>k</var></strong> = (<var>k</var><sub>1</sub>, <var>k</var><sub>2</sub>, …, <var>k</var><sub>10</sub>)<sup>T</sup></div><div><strong><var>k</var></strong> ∼ MVNormal((0, 0, …, 0)<sup>T</sup>, <strong>K</strong>)</div><div><var>K</var><sub><var>ij</var></sub> = <var>η</var><sup>2</sup> exp(−<var>ρ</var><sup>2</sup><var>D</var><sub><var>ij</var></sub><sup>2</sup>) + <var>δ</var><sub><var>ij</var></sub><var>σ</var><sup>2</sup></div></div>
+      <p>第一行是截距的十维 Gaussian 先验；之所以有十维，是因为距离矩阵中有十个社会。均值向量全为零，所以平均社会在模型内会把 <var>λ</var> 乘以 exp(0) = 1，不改变期望。负的 <var>k</var> 值会减小 <var>λ</var>，正值则会增大它。</p>
+      <p>这些截距的协方差矩阵名为 <strong>K</strong>，任意社会 <var>i</var> 与 <var>j</var> 之间的协方差是 <var>K</var><sub><var>ij</var></sub>，由上式第二行定义。公式用 <var>η</var>、<var>ρ</var> 与 <var>σ</var> 三个参数，描述社会间协方差怎样随距离改变。它看起来可能很陌生，下面逐块拆解。</p>
+      <p>决定 <strong>K</strong> 之协方差模型形状的部分是 exp(−<var>ρ</var><sup>2</sup><var>D</var><sub><var>ij</var></sub><sup>2</sup>)。<var>D</var><sub><var>ij</var></sub> 是第 <var>i</var> 与第 <var>j</var> 个社会之间的距离，所以这个函数表示两社会的协方差随距离平方呈指数下降；<var>ρ</var> 决定下降速率。它越大，协方差随距离平方下降得越快。</p>
+      <p>为什么要把距离平方？并非必须，这只是一个模型。平方距离是最常见的假设，一方面因为容易用数据拟合，另一方面因为它常有一个现实属性：距离越大，协方差可以下降得越快。把它与线性距离下降方案 exp(−<var>ρ</var><sup>2</sup><var>D</var><sub><var>ij</var></sub>) 画在一起就很直观。示例令 <var>ρ</var><sup>2</sup> = 1：</p>
+      <figure class="code-listing" id="code-14-38"><figcaption>R 代码 14.38</figcaption><pre><code># 线性距离
+curve( exp(-1*x) , from=0 , to=4 , lty=2 ,
+    xlab="distance" , ylab="correlation" )
+
+# 平方距离
+curve( exp(-1*x^2) , add=TRUE )</code></pre></figure>
+      <figure class="book-figure gp-distance-figure" id="fig-14-10"><div class="figure-scroll" tabindex="0" aria-label="线性距离与平方距离协方差函数比较图"><img src="/media/chapter-14-gp-distance.svg" alt="虚线指数衰减，实线起初较慢随后更快衰减至零"></div><figcaption><strong>图 14.10：</strong>距离与协方差 <var>K</var><sub><var>ij</var></sub> 之间的函数形状。横轴是距离，纵轴是任意两个社会 <var>i</var> 与 <var>j</var> 相对于最大值的相关。虚线为线性距离函数，实线为平方距离函数。</figcaption></figure>
+      <p>图 14.10 的纵轴只是整个协方差函数的一部分，可理解为两社会最大相关的比例。虚线的线性距离函数给出精确的指数形状；实线的平方距离函数给出半 Gaussian 下降：起初比指数下降慢，随后迅速加速，最终下降得比指数更快。</p>
+      <p><var>K</var><sub><var>ij</var></sub> 的最后两部分更简单。<var>η</var><sup>2</sup> 是任意两个社会 <var>i</var> 与 <var>j</var> 之间的最大协方差。末尾的 <var>δ</var><sub><var>ij</var></sub><var>σ</var><sup>2</sup> 在 <var>i</var> = <var>j</var> 时提供超出 <var>η</var><sup>2</sup> 的额外协方差，因为 <var>δ</var><sub><var>ij</var></sub> 在 <var>i</var> = <var>j</var> 时等于 1，其他时候为 0。在大洋洲社会数据里，每个社会只有一个观测，这一项不起作用；若每个社会有多个观测，<var>σ</var> 就描述同一社会内这些观测怎样协变。</p>
+      <p>模型会计算 <var>ρ</var>、<var>η</var> 与 <var>σ</var> 的后验分布，也需要为它们指定先验。为便于计算，我们会直接给各参数的平方定义先验，并在同一尺度上估计。这个模型不需要 <var>σ</var>，所以只把它固定在一个无关紧要的常数上。</p>
+      <p class="continuation-note">完整 Gaussian 过程模型、代码 14.39 与后验结果，将从原书 PDF 第 501 页继续。</p>
+    </section>
   </section>
 
   <section class="endnotes" id="chapter-14-notes" role="doc-endnotes"><h2>尾注</h2><ol start="194"><li id="note-194">Lewandowski 等（2009）。“LKJ”来自三位作者姓氏的首字母；作者本人把这种方法称为“洋葱法”。关于它在 Bayesian 模型中的用法，可参见最新版 Stan 参考手册的说明。 <a class="backref" href="#note-194-ref" aria-label="返回正文">↩</a></li><li id="note-195">参见 Gelfand 等（1995）以及 Roberts 和 Sahu（1997）。较新的综述可参见 Papaspiliopoulos 等（2007）；以 Hamiltonian Monte Carlo 为重点的讨论可参见 Betancourt 和 Girolami（2013）。 <a class="backref" href="#note-195-ref" aria-label="返回正文">↩</a></li><li id="note-196">参见 Pearl（2011）。 <a class="backref" href="#note-196-ref" aria-label="返回正文">↩</a></li><li id="note-197">参见 Angrist 和 Krueger（1991）。 <a class="backref" href="#note-197-ref" aria-label="返回正文">↩</a></li><li id="note-198">Feyrer 和 Sacerdote（2009）。 <a class="backref" href="#note-198-ref" aria-label="返回正文">↩</a></li><li id="note-199">参见 Caniglia 等（2019）。 <a class="backref" href="#note-199-ref" aria-label="返回正文">↩</a></li><li id="note-200">参见 Angrist 和 Krueger（1995）以及 Kleibergen 和 Zivot（2003）。据作者所知，对参数化工具变量估计量——Bayesian 或其他形式——仍没有系统且有理论依据的理解；这很奇怪，因为 DAG 已提供正式的非参数理论。真实情况可能是：即使 DAG 表明存在工具，估计在实践中也常不可行。 <a class="backref" href="#note-200-ref" aria-label="返回正文">↩</a></li><li id="note-201">参见 Cohen 和 Malloy（2014）。作者从 Alex Chinco 的博客学到这个例子，参见其 2011 年文章。 <a class="backref" href="#note-201-ref" aria-label="返回正文">↩</a></li><li id="note-202">Thistlethwaite 和 Campbell（1960）。 <a class="backref" href="#note-202-ref" aria-label="返回正文">↩</a></li><li id="note-203">参见 Gelman 和 Imbens（2019）给出的尖锐示例与建议。 <a class="backref" href="#note-203-ref" aria-label="返回正文">↩</a></li><li id="note-204">Koster 和 Leckie（2014）。 <a class="backref" href="#note-204-ref" aria-label="返回正文">↩</a></li><li id="note-205">参见 Neal（1998）这篇高被引综述，其中也有实现说明。 <a class="backref" href="#note-205-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 14 章 PDF 第 465–497 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 498 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 14 章 PDF 第 465–500 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 501 页继续。</aside>
 </article>
