@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-12" data-source-pages="397-411">
-  <header class="chapter-header"><p class="eyebrow">第十二章</p><h1>怪物与混合</h1><p class="source-range">当前译稿对应原书 PDF 第 397–411 页</p></header>
+<article class="book-article" data-chapter="chapter-12" data-source-pages="397-414">
+  <header class="chapter-header"><p class="eyebrow">第十二章</p><h1>怪物与混合</h1><p class="source-range">当前译稿对应原书 PDF 第 397–414 页</p></header>
 
   <div class="chapter-introduction" id="intro-12">
     <p>在夏威夷传说中，Nanaue 是一条爱上人类女子的鲨鱼之子。他长成一个凶残的男人，背部中央还长着一张鲨鱼嘴。在希腊传说中，Minotaur 是牛头人身的怪物，由一名人类女子与一头大白牛所生。Gryphon 是一种半鹰半狮的传说怪物。毛利传说中的 Taniwha 则兼具蛇、鸟乃至鲨鱼的特征，很像中国与欧洲神话里的龙。</p>
@@ -239,11 +239,60 @@ ylab="cumulative proportion" , ylim=c(0,1) )</code></pre></figure>
       <p>接下来，要把直方图重新描述为对数累积赔率，需要一系列截距参数。每个截距都位于对数累积赔率尺度，代表每个结果的累积概率。这只是 link 函数的应用。回答值 <span class="math-inline"><var>y</var><sub>i</sub></span> 小于或等于某个可能结果值 <span class="math-inline"><var>k</var></span> 时，其对数累积赔率为：</p>
       <div class="equation-block compact-equation wallis-equation" id="eq-12-ordered-intercepts"><span class="math-line">log [ Pr(<var>y</var><sub>i</sub> ≤ <var>k</var>) / (1 − Pr(<var>y</var><sub>i</sub> ≤ <var>k</var>)) ] = <var>α</var><sub><var>k</var></sub></span><span class="equation-label">(12.1)</span></div>
       <p>其中，<span class="math-inline"><var>α</var><sub><var>k</var></sub></span> 是每个可能结果值 <span class="math-inline"><var>k</var></span> 独有的“截距”。可以直接计算这些截距参数：</p>
-      <p class="continuation-note">代码 12.15、图 12.5 与有序 likelihood 的差分构造，将从原书 PDF 第 412 页继续。</p>
+      <figure class="code-listing" id="code-12-15"><figcaption>R 代码 12.15</figcaption><pre><code>logit &lt;- function(x) log(x/(1-x)) # 便捷函数
+round( lco &lt;- logit( cum_pr_k ) , 2 )</code></pre><pre class="code-output"><code>    1     2     3    4    5    6   7
+-1.92 -1.27 -0.72 0.25 0.89 1.77 Inf</code></pre></figure>
+      <p>这些值绘制在图 12.4 右侧。注意，最大回答值 7 的累积 logit 是无穷大，因为 <span class="math-inline">log(1/(1 − 1)) = ∞</span>。最大回答值的累积概率总是 1，所以实际上不需要为它设置参数；根据全概率法则，它是免费得到的。因此，对 <span class="math-inline"><var>K</var> = 7</span> 个可能回答值，只需要 <span class="math-inline"><var>K</var> − 1 = 6</span> 个截距。</p>
+      <p>以上都很不错，但我们真正想要的是这些截距的后验分布。这样才能考虑样本量与先验信息，还能加入预测变量（下一小节）。要用 Bayes 定理计算这些截距的后验分布，需要求出每个可能回答值的 likelihood。因此，构造有序类别结果基础模型拟合引擎的最后一步，是用累积概率 <span class="math-inline">Pr(<var>y</var><sub>i</sub> ≤ <var>k</var>)</span> 计算 likelihood <span class="math-inline">Pr(<var>y</var><sub>i</sub> = <var>k</var>)</span>。</p>
+      <figure class="book-figure ordered-likelihood-figure" id="fig-12-5"><div class="figure-scroll" tabindex="0" aria-label="累积概率与各档离散 likelihood 图"><img src="/media/chapter-12-ordered-likelihood.svg" alt="灰色竖线表示七档回答的累积概率，蓝色线段表示相邻累积概率之差即各档离散 likelihood"></div><figcaption><strong>图 12.5：</strong>累积概率与有序 likelihood。横轴显示 1 到 7 的所有可能可观测结果，纵轴显示累积概率。每个结果上方的灰色竖线表示累积概率，它会随着结果值依次增加。蓝色线段表示各个结果的离散概率；这些就是进入 Bayes 定理的 likelihood。</figcaption></figure>
+      <p>图 12.5 展示了具体做法。每个截距 <span class="math-inline"><var>α</var><sub><var>k</var></sub></span> 都为每个 <span class="math-inline"><var>k</var></span> 隐含一个累积概率；只需使用逆 link，把对数累积赔率转换回累积概率。因此，观察到 <span class="math-inline"><var>k</var></span> 并需要它的 likelihood 时，可以通过相减得到：</p>
+      <div class="equation-block compact-equation wallis-equation" id="eq-12-ordered-likelihood"><span class="math-line"><var>p</var><sub><var>k</var></sub> = Pr(<var>y</var><sub>i</sub> = <var>k</var>) = Pr(<var>y</var><sub>i</sub> ≤ <var>k</var>) − Pr(<var>y</var><sub>i</sub> ≤ <var>k</var> − 1)</span><span class="equation-label">(12.2)</span></div>
+      <p>图 12.5 的蓝色线段就是通过相减算出的 likelihood。有了它们，便可以照常计算后验分布。</p>
+      <p>下面看看怎样把它写成模型。有序 logit 的数学表达惯例差异很大；本书采用：</p>
+      <div class="equation-block wallis-equation" id="eq-12-ordered-logit-model"><div><var>R</var><sub>i</sub> ∼ Ordered-logit(<var>ϕ</var><sub>i</sub>, <var>κ</var>) <small>数据的概率</small></div><div><var>ϕ</var><sub>i</sub> = 0 <small>线性模型</small></div><div><var>κ</var><sub>k</sub> ∼ Normal(0, 1.5) <small>每个截距的共同先验</small></div></div>
+      <p>也可以把模型写得更直白：</p>
+      <div class="equation-block wallis-equation" id="eq-12-ordered-logit-literal"><div><var>R</var><sub>i</sub> ∼ Categorical(<strong>p</strong>) <small>数据的概率</small></div><div><var>p</var><sub>1</sub> = <var>q</var><sub>1</sub> <small>每个值 <var>k</var> 的概率</small></div><div><var>p</var><sub>k</sub> = <var>q</var><sub>k</sub> − <var>q</var><sub><var>k</var>−1</sub>，其中 <var>K</var> &gt; <var>k</var> &gt; 1</div><div><var>p</var><sub><var>K</var></sub> = 1 − <var>q</var><sub><var>K</var>−1</sub></div><div>logit(<var>q</var><sub>k</sub>) = <var>κ</var><sub>k</sub> − <var>ϕ</var><sub>i</sub> <small>累积 logit link</small></div><div><var>ϕ</var><sub>i</sub> = 线性模型中的各项 <small>线性模型</small></div><div><var>κ</var><sub>k</sub> ∼ Normal(0, 1.5) <small>每个截距的共同先验</small></div></div>
+      <p class="source-erratum" id="erratum-12-ordered-last-probability"><strong>原文下标不一致：</strong>最大类别概率应为 <span class="math-inline"><var>p</var><sub><var>K</var></sub> = 1 − <var>q</var><sub><var>K</var>−1</sub></span>；原书对应行把最后一个下标印成小写 <span class="math-inline"><var>k</var> − 1</span>。译稿按一般式改为 <span class="math-inline"><var>K</var> − 1</span>，并在此记录。</p>
+      <p>第二种写法很残酷，却揭示了有序 logit 分布其实只是一个类别分布：它接收向量 <span class="math-inline"><strong>p</strong> = {<var>p</var><sub>1</sub>, <var>p</var><sub>2</sub>, <var>p</var><sub>3</sub>, <var>p</var><sub>4</sub>, <var>p</var><sub>5</sub>, <var>p</var><sub>6</sub>}</span>，其中包含最大回答值以下各档回答的概率（本例最大值为 7）。向量中每个回答值 <span class="math-inline"><var>k</var></span>，都由它与截距参数 <span class="math-inline"><var>α</var><sub><var>k</var></sub></span> 的 link 定义。最后，再给这些截距设置弱正则化先验。本例数据很多，几乎任何先验都会被数据压倒；像往常一样，在小样本情境下，必须更认真地考虑先验。例如，在看到数据之前，我们就知道 <span class="math-inline"><var>α</var><sub>1</sub> &lt; <var>α</var><sub>2</sub></span>。</p>
+      <p>无论在 <code>quap</code> 还是 <code>ulam</code> 的代码中，link 函数都已经嵌入 likelihood 函数。这能提高计算效率，也不必强迫你为上面所有例行的中间步骤编程。因此，不加入任何预测变量时，基础模型拟合如下：</p>
+      <figure class="code-listing" id="code-12-16"><figcaption>R 代码 12.16</figcaption><pre><code>m12.4 &lt;- ulam(
+    alist(
+        R ~ dordlogit( 0 , cutpoints ),
+        cutpoints ~ dnorm( 0 , 1.5 )
+    ) , data=list( R=d$response ), chains=4 , cores=4 )</code></pre></figure>
+      <p><code>dordlogit</code> 中的零，是之后要构造的线性模型的占位符。若想改用 <code>quap</code> 拟合，就需要指定 <code>cutpoints</code> 的初始值，否则模型很难启动。具体数值并不重要，但它们在对数累积赔率尺度上的顺序很重要。下面的代码可以运行：</p>
+      <figure class="code-listing" id="code-12-17"><figcaption>R 代码 12.17</figcaption><pre><code>m12.4q &lt;- quap(
+    alist(
+        response ~ dordlogit( 0 , c(a1,a2,a3,a4,a5,a6) ),
+        c(a1,a2,a3,a4,a5,a6) ~ dnorm( 0 , 1.5 )
+    ) , data=d , start=list(a1=-2,a2=-1,a3=0,a4=1,a5=2,a6=2.5) )</code></pre></figure>
+      <p>切点的后验分布位于对数累积赔率尺度：</p>
+      <figure class="code-listing" id="code-12-18"><figcaption>R 代码 12.18</figcaption><pre><code>precis( m12.4 , depth=2 )</code></pre><pre class="code-output"><code>              mean   sd 5.5% 94.5% n_eff Rhat
+cutpoints[1] -1.92 0.03 -1.96 -1.87 1460    1
+cutpoints[2] -1.27 0.02 -1.31 -1.23 2091    1
+cutpoints[3] -0.72 0.02 -0.75 -0.68 2480    1
+cutpoints[4]  0.25 0.02  0.22  0.28 2701    1
+cutpoints[5]  0.89 0.02  0.85  0.92 2373    1
+cutpoints[6]  1.77 0.03  1.72  1.81 2345    1</code></pre></figure>
+      <p>这里的数据很多，所以每个截距的后验都估计得相当精确，从极小的标准差就能看出来。要恢复累积概率：</p>
+      <figure class="code-listing" id="code-12-19"><figcaption>R 代码 12.19</figcaption><pre><code>round( inv_logit(coef(m12.4)) , 3 )</code></pre><pre class="code-output"><code>cutpoints[1] cutpoints[2] cutpoints[3] cutpoints[4] cutpoints[5] cutpoints[6]
+       0.128        0.220        0.328        0.562        0.709        0.854</code></pre></figure>
+      <p>这些当然与前面算出的 <code>cum_pr_k</code> 相同；但现在每个值周围还有一个后验分布，可以衡量不确定性。接下来已经可以加入预测变量了。</p>
+    </section>
+
+    <section id="sec-12-3-3"><h3>12.3.3 加入预测变量</h3>
+      <p>这一通计算到目前为止几乎没带来什么，除了把一张直方图表示成 Bayesian 模型。不过，为了给模型加入服从结果有序约束的预测变量，所有这些准备都是必要的。</p>
+      <p>要纳入预测变量，就把每个回答 <span class="math-inline"><var>k</var></span> 的对数累积赔率定义为其截距 <span class="math-inline"><var>α</var><sub><var>k</var></sub></span> 与普通线性模型之和。例如，假设要把预测变量 <span class="math-inline"><var>x</var></span> 加入模型，可以定义线性模型 <span class="math-inline"><var>ϕ</var><sub>i</sub> = <var>βx</var><sub>i</sub></span>。于是，每个累积 logit 都变为：</p>
+      <div class="equation-block wallis-equation" id="eq-12-ordered-predictor"><div>log [ Pr(<var>y</var><sub>i</sub> ≤ <var>k</var>) / (1 − Pr(<var>y</var><sub>i</sub> ≤ <var>k</var>)) ] = <var>α</var><sub><var>k</var></sub> − <var>ϕ</var><sub>i</sub></div><div><var>ϕ</var><sub>i</sub> = <var>βx</var><sub>i</sub></div></div>
+      <p>这种形式自动保证结果值顺序正确，同时仍能随着预测变量 <span class="math-inline"><var>x</var><sub>i</sub></span> 改变，调整每个单独值的 likelihood。为什么从每个截距中<strong>减去</strong>线性模型 <span class="math-inline"><var>ϕ</var></span>？因为降低最大值以下每个结果值 <span class="math-inline"><var>k</var></span> 的对数累积赔率，必然会把概率质量向上推到更高结果值。于是，<span class="math-inline"><var>β</var></span> 为正就表示 <span class="math-inline"><var>x</var></span> 增大时，<span class="math-inline"><var>y</var></span> 的均值也增大。也可以把 <span class="math-inline"><var>ϕ</var></span> 加上去，写成 <span class="math-inline"><var>α</var><sub><var>k</var></sub> + <var>ϕ</var><sub>i</sub></span>；但那样一来，<span class="math-inline"><var>β</var> &gt; 0</span> 反而表示 <span class="math-inline"><var>x</var></span> 增大时均值下降。</p>
+      <p>举例来说，取模型 <code>m12.4</code> 的后验均值。函数 <code>dordlogit</code> 能直接计算各档概率：</p>
+      <figure class="code-listing" id="code-12-20"><figcaption>R 代码 12.20</figcaption><pre><code>round( pk &lt;- dordlogit( 1:7 , 0 , coef(m12.4) ) , 2 )</code></pre><pre class="code-output"><code>[1] 0.13 0.09 0.11 0.23 0.15 0.15 0.15</code></pre></figure>
+      <p>这些概率所隐含的平均结果值为：</p>
+      <p class="continuation-note">平均结果、将所有切点减去 0.5 的概率移动，以及完整的电车预测变量模型，将从原书 PDF 第 415 页继续。</p>
     </section>
   </section>
 
   <section class="endnotes" id="chapter-12-notes" role="doc-endnotes"><h2>尾注</h2><ol start="175"><li id="note-175">Williams（1975，1982）。Bolker（2008）在生态数据语境中给出了清晰介绍。 <a class="backref" href="#note-175-ref" aria-label="返回正文">↩</a></li><li id="note-176">另一种很常见的参数化是 <span class="math-inline"><var>α</var> = <var>p̄θ</var></span> 与 <span class="math-inline"><var>β</var> = (1 − <var>p̄</var>)<var>θ</var></span>。<span class="math-inline"><var>p̄</var></span> 与 <span class="math-inline"><var>θ</var></span> 的版本更适合建模，因为我们通常希望把线性模型连接到 beta 分布的中心趋势，而 <span class="math-inline"><var>p̄</var></span> 正是中心趋势的一种度量。 <a class="backref" href="#note-176-ref" aria-label="返回正文">↩</a></li><li id="note-177">Hilbe（2011）整本书都在讨论 gamma-Poisson 回归。 <a class="backref" href="#note-177-ref" aria-label="返回正文">↩</a></li><li id="note-178">Lambert（1992）首次介绍了这种模型。基本的零膨胀方法虽然出现得更早，但 Lambert 给出了本书采用的版本：用 log 与 logit link 连接两个彼此独立的线性模型。 <a class="backref" href="#note-178-ref" aria-label="返回正文">↩</a></li><li id="note-179">参见 Bürkner 与 Vuorre（2018），以及 Liddell 与 Kruschke（2018）。 <a class="backref" href="#note-179-ref" aria-label="返回正文">↩</a></li><li id="note-180">McCullagh（1980）被认为引入并推广了这种方法。另见 Fullerton（2009），其中综述并比较了不同模型类型。 <a class="backref" href="#note-180-ref" aria-label="返回正文">↩</a></li><li id="note-181">Cushman 等（2006）。 <a class="backref" href="#note-181-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 12 章 PDF 第 397–411 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 412 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 12 章 PDF 第 397–414 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 415 页继续。</aside>
 </article>

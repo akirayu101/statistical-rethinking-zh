@@ -13,6 +13,7 @@ OUT1 = ROOT / "translations" / "zh" / "media" / "chapter-12-beta-binomial.svg"
 OUT2 = ROOT / "translations" / "zh" / "media" / "chapter-12-poisson-gamma-poisson.svg"
 OUT3 = ROOT / "translations" / "zh" / "media" / "chapter-12-zero-inflated-structure.svg"
 OUT4 = ROOT / "translations" / "zh" / "media" / "chapter-12-ordered-distribution.svg"
+OUT5 = ROOT / "translations" / "zh" / "media" / "chapter-12-ordered-likelihood.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 BLUE = "#6670ee"
@@ -398,10 +399,69 @@ def figure_12_4() -> None:
     OUT4.write_text("\n".join(parts) + "\n", encoding="utf-8")
 
 
+def figure_12_5() -> None:
+    """Rebuild cumulative probabilities and the ordered likelihood differences."""
+    width, height = 900, 610
+    frequencies = [1270, 908, 1072, 2333, 1456, 1447, 1444]
+    total = sum(frequencies)
+    probabilities = [value / total for value in frequencies]
+    cumulative: list[float] = []
+    running = 0.0
+    for value in probabilities:
+        running += value
+        cumulative.append(running)
+    left, right, top, bottom = 115, 845, 70, 505
+    sx = lambda value: left + (value - 1) / 6 * (right - left)
+    sy = lambda value: bottom - value * (bottom - top)
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">',
+        '<title>图 12.5：累积概率与有序 likelihood</title>',
+        '<desc>灰色竖线表示一至七档结果的累积概率，蓝色竖线段表示相邻累积概率之差，也就是各档结果的离散 likelihood。</desc>',
+        '<rect width="100%" height="100%" fill="#fbfaf6"/>',
+        f'<rect x="45" y="35" width="825" height="535" rx="8" fill="#fff" stroke="{GRID}"/>',
+        f'<line x1="{left}" y1="{bottom}" x2="{right}" y2="{bottom}" stroke="{INK}" stroke-width="1.7"/>',
+        f'<line x1="{left}" y1="{bottom}" x2="{left}" y2="{top}" stroke="{INK}" stroke-width="1.7"/>',
+    ]
+    for value in range(1, 8):
+        xx = sx(value)
+        parts.extend([
+            f'<line x1="{xx:.1f}" y1="{bottom}" x2="{xx:.1f}" y2="{bottom+7}" stroke="{INK}"/>',
+            text_el(xx, bottom + 30, value, size=17, anchor="middle"),
+        ])
+    for value in (0, .2, .4, .6, .8, 1.0):
+        yy = sy(value)
+        parts.extend([
+            f'<line x1="{left-7}" y1="{yy:.1f}" x2="{left}" y2="{yy:.1f}" stroke="{INK}"/>',
+            text_el(left - 13, yy + 5, f"{value:.1f}", size=16, anchor="end"),
+            f'<line x1="{left}" y1="{yy:.1f}" x2="{right}" y2="{yy:.1f}" stroke="{GRID}" stroke-dasharray="4 7"/>',
+        ])
+    cumulative_points = [(sx(response), sy(value)) for response, value in zip(range(1, 8), cumulative)]
+    parts.append(polyline(cumulative_points, fill="none", stroke=INK, stroke_width="2.5", stroke_dasharray="12 9"))
+    previous = 0.0
+    for response, value in enumerate(cumulative, 1):
+        xx, yy = sx(response), sy(value)
+        parts.extend([
+            f'<line x1="{xx:.1f}" y1="{bottom}" x2="{xx:.1f}" y2="{yy:.1f}" stroke="#bcbdb9" stroke-width="7"/>',
+            f'<line x1="{xx+13:.1f}" y1="{sy(previous):.1f}" x2="{xx+13:.1f}" y2="{yy:.1f}" stroke="{BLUE}" stroke-width="7"/>',
+            f'<circle cx="{xx:.1f}" cy="{yy:.1f}" r="6" fill="#fff" stroke="{INK}" stroke-width="2"/>',
+            text_el(xx + 22, (sy(previous) + yy) / 2 + 6, response, size=17, fill=BLUE),
+        ])
+        previous = value
+    parts.extend([
+        text_el((left + right) / 2, 585, "回答", size=20, anchor="middle"),
+        text_el(25, (top + bottom) / 2, "累积比例", size=20, anchor="middle", rotate=-90),
+        '<line x1="205" y1="548" x2="250" y2="548" stroke="#bcbdb9" stroke-width="7"/><text x="265" y="554" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,sans-serif" font-size="16" fill="#30332e">累积概率</text>',
+        f'<line x1="430" y1="548" x2="475" y2="548" stroke="{BLUE}" stroke-width="7"/><text x="490" y="554" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,sans-serif" font-size="16" fill="#30332e">离散概率（likelihood）</text>',
+        "</svg>",
+    ])
+    OUT5.write_text("\n".join(parts) + "\n", encoding="utf-8")
+
+
 if __name__ == "__main__":
     main()
     figure_12_2()
     figure_12_3()
     figure_12_4()
-    for path in (OUT1, OUT2, OUT3, OUT4):
+    figure_12_5()
+    for path in (OUT1, OUT2, OUT3, OUT4, OUT5):
         print(path)

@@ -1043,7 +1043,15 @@
     "omission": "不作为",
     "ordered model": "有序模型",
     "response rating": "回答评分",
-    "cumulative proportion": "累积比例"
+    "cumulative proportion": "累积比例",
+    "cutpoint": "切点",
+    "ordered-logit distribution": "有序 logit 分布",
+    "law of total probability": "全概率法则",
+    "weakly regularizing prior": "弱正则化先验",
+    "start value": "初始值",
+    "placeholder": "占位符",
+    "ordered constraint": "有序约束",
+    "probability mass": "概率质量"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "blavaan", "AIC", "DIC", "WAIC", "BIC", "PSIS-LOO", "MCMC", "HMC"
