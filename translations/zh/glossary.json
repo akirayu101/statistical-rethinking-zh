@@ -922,7 +922,12 @@
     "mediation analysis": "中介分析",
     "over-parameterized model": "过参数化模型",
     "posterior correlation": "后验相关",
-    "baseline category": "基线类别"
+    "baseline category": "基线类别",
+    "natural experiment": "自然实验",
+    "technological evolution": "技术演化",
+    "tool kit": "工具组合",
+    "contact rate": "接触率",
+    "minimum sample size": "最小样本量"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "blavaan", "AIC", "DIC", "WAIC", "BIC", "PSIS-LOO", "MCMC", "HMC"

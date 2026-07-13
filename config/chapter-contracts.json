@@ -1852,7 +1852,7 @@
   },
   "chapter-11": {
     "required_status": "in_progress",
-    "source_pages": [347, 368],
+    "source_pages": [347, 371],
     "required_ids": [
       "intro-11",
       "note-166-ref",
@@ -1922,10 +1922,27 @@
       "code-11-34",
       "dag-11-ucb-direct",
       "dag-11-ucb-collider",
+      "rethinking-simpsons-paradox",
+      "note-169-ref",
+      "note-170-ref",
+      "sec-11-2",
+      "erratum-11-poisson-days",
+      "code-11-35",
+      "eq-11-poisson-distribution",
+      "eq-11-poisson-log-link",
+      "sec-11-2-1",
+      "note-171-ref",
+      "code-11-36",
+      "fig-11-6",
+      "list-11-oceanic-hypotheses",
+      "code-11-37",
       "chapter-11-notes",
       "note-166",
       "note-167",
-      "note-168"
+      "note-168",
+      "note-169",
+      "note-170",
+      "note-171"
     ],
     "required_headings": [
       "上帝给整数加了料",
@@ -1934,24 +1951,26 @@
       "11.1.2 相对鲨鱼与绝对企鹅",
       "11.1.3 聚合二项：再次压缩黑猩猩",
       "11.1.4 聚合二项：研究生院录取",
+      "11.2 Poisson 回归",
+      "11.2.1 示例：大洋洲工具复杂度",
       "尾注"
     ],
     "counts": {
-      "section": 6,
-      "figure": 48,
-      "figure img": 10,
-      ".book-figure": 10,
-      ".code-listing": 38,
-      ".code-output": 16,
-      ".rethinking-box": 0,
+      "section": 8,
+      "figure": 52,
+      "figure img": 11,
+      ".book-figure": 11,
+      ".code-listing": 41,
+      ".code-output": 18,
+      ".rethinking-box": 1,
       ".overthinking-box": 1,
       ".book-quote": 0,
-      ".equation-block": 8,
-      ".wallis-equation": 8,
-      ".source-erratum": 0,
+      ".equation-block": 10,
+      ".wallis-equation": 10,
+      ".source-erratum": 1,
       ".chapter-introduction": 1,
       ".continuation-note": 1,
-      ".endnotes li": 3
+      ".endnotes li": 6
     }
   }
 }

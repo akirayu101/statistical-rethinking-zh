@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-11" data-source-pages="347-368">
-  <header class="chapter-header"><p class="eyebrow">第十一章</p><h1>上帝给整数加了料</h1><p class="source-range">当前译稿对应原书 PDF 第 347–368 页</p></header>
+<article class="book-article" data-chapter="chapter-11" data-source-pages="347-371">
+  <header class="chapter-header"><p class="eyebrow">第十一章</p><h1>上帝给整数加了料</h1><p class="source-range">当前译稿对应原书 PDF 第 347–371 页</p></header>
 
   <div class="chapter-introduction" id="intro-11">
     <p>太空中的寒冷以 Kelvin 命名，约为 3 Kelvin，也就是绝对零度以上约 3 摄氏度。Kelvin 也是苏格兰格拉斯哥附近一条河流的名字；同一条河又把名字给了 William Thomson，也就是 Kelvin 勋爵（1824 年生，1907 年卒）——英国第一位获封贵族头衔的科学家。Thomson 在格拉斯哥的实验室研究热力学，如今太空的寒冷便以一条苏格兰河流为名。</p>
@@ -432,12 +432,57 @@ female 0.12 0.04 0.65 0.47 0.67 0.48</code></pre></figure>
       <p><span class="math-inline"><var>U</var></span> 会是什么？不妨设为学业能力。能力可能同时影响院系选择与录取概率。此时，以院系为条件就是在碰撞点上进行条件化，从而打开性别与录取之间的非因果路径 <span class="math-inline"><var>G</var> → <var>D</var> ← <var>U</var> → <var>A</var></span>。本章末尾的练习会请你探索这类可能性。</p>
       <p>最后，你也许已经注意到模型 <code>m11.8</code> 是过参数化的。实际上，<code>a[1]</code> 或 <code>a[2]</code> 中有一个并非必需。为什么？因为各个 <code>delta</code> 参数可以表示每个院系中某一性别的录取率，随后只需要再有一个跨院系的平均偏差。若是非贝叶斯模型，这样做无法奏效；但对我们而言，这种模型完全没问题。</p>
       <p>这些参数的标准差会膨胀，因为 <code>a</code> 与 <code>delta</code> 有许多组合都能与数据吻合。查看 <code>pairs(m11.8)</code> 会看到所有参数之间都存在很高的后验相关。但在结果尺度上，预测要紧致得多；调用 <code>postcheck(m11.8)</code> 就能看到。一切正常。</p>
-      <p>为什么可能想把模型过参数化？因为这样更容易指定先验。若改为把某一性别设为基线，再把另一性别表示成相对于它的偏差，随之而来的先验问题将在下一页说明。</p>
-      <p class="continuation-note">过参数化模型的先验解释、“辛普森悖论”反思框，以及泊松回归，将从原书 PDF 第 369 页继续。</p>
+      <p>为什么可能想把模型过参数化？因为这样更容易指定先验。若把某一性别设为基线，再把另一性别表示成相对于它的偏差，就会无意中假设：在观察数据之前，某一性别的录取率比另一性别更不确定。这并不是说把模型过参数化总是好主意，但它并不违反任何统计原则。抽样完成后，我们随时可以把后验转换成任意其他参数化。唯一的限制，是近似后验所用的算法能否处理这种高度相关；本例可以，我还增加了迭代次数以确保这一点。</p>
+    </section>
+
+    <aside class="rethinking-box" id="rethinking-simpsons-paradox"><h3>再思考：Simpson 悖论不是悖论</h3><p>这个经验例子在统计教学中非常著名，常用来说明一种称为 Simpson 悖论的现象。<sup id="note-169-ref"><a href="#note-169">169</a></sup>和大多数悖论一样，这里没有违反逻辑，违反的只是直觉。既然不同人的直觉不同，Simpson 悖论对不同人也会有不同含义。本例违背的糟糕直觉是：整个总体中的正关联，也应在每个院系内部成立。总体而言，这批数据中的女性确实更难被研究生院录取；但原因是女性申请了那些无论男女都最难录取的院系。</p><p>也许更像悖论的是，这种现象可以在一个样本内无限重复。每当向模型加入另一个预测变量时，结果与某个预测变量之间的任何关联都可能归零或反转。这种反转可能揭示真实的因果影响，也可能只是混杂造成的，正如第 6 章的祖父母例子。我们唯一能做的，是始终对模型保持怀疑，并努力设想它可能怎样欺骗我们。以因果方式思考这类情境通常会有所帮助。<sup id="note-170-ref"><a href="#note-170">170</a></sup></p></aside>
+  </section>
+
+  <section id="sec-11-2"><h2>11.2 Poisson 回归</h2>
+    <p>当结果是从零到某个已知上界的计数时，二项 GLM 很合适。如果可以把数据类比成抛球模型，就应使用二项 GLM。但很多时候，上界并不知道，计数也从未接近任何上限。例如我们捕鱼回来带着 17 条鱼，理论最大值是多少？不管是多少，它都不在数据里。该怎样对鱼的数量建模？</p>
+    <p>事实证明，只要换个角度看，二项模型仍然适用。当二项分布中事件概率 <span class="math-inline"><var>p</var></span> 很小、试验次数 <span class="math-inline"><var>N</var></span> 很大时，它会呈现一种特殊形状。二项分布的期望值就是 <span class="math-inline"><var>Np</var></span>，方差则为 <span class="math-inline"><var>Np</var>(1 − <var>p</var>)</span>。当 <span class="math-inline"><var>N</var></span> 很大而 <span class="math-inline"><var>p</var></span> 很小时，二者近似相等。</p>
+    <p>例如，假设你拥有一座修道院，像印刷术发明前的许多修道院一样，以抄写手稿为业。你雇用了 1,000 名修士，任意一天大约有 1 人抄完一份手稿。由于修士彼此独立工作，手稿长度又各不相同，有些天会完成 3 份甚至更多手稿，许多天则一份也没有。既然这是一个二项过程，每日计数的方差就是 <span class="math-inline"><var>Np</var>(1 − <var>p</var>) = 1000(0.001)(1 − 0.001) ≈ 1</span>。下面模拟 100,000（<code>1e5</code>）天：</p>
+    <p class="source-erratum" id="erratum-11-poisson-days"><strong>原文勘误：</strong>正文把 <code>1e5</code> 写成“10,000 天”，但代码实际模拟的是 100,000 天；译稿按代码更正。</p>
+    <figure class="code-listing" id="code-11-35"><figcaption>R 代码 11.35</figcaption><pre><code>y &lt;- rbinom(1e5,1000,1/1000)
+c( mean(y) , var(y) )</code></pre><pre class="code-output"><code>[1] 0.9968400 0.9928199</code></pre></figure>
+    <p>均值与方差几乎完全相同。这是二项分布的一种特殊形状，称为 <strong>Poisson 分布</strong>。它很有用，因为它让我们能够对试验次数 <span class="math-inline"><var>N</var></span> 未知、或大到无法计数的二项事件建模。</p>
+    <p>再假设一番帝国戏剧之后，你又拥有了另一座修道院。你不知道里面有多少修士辛勤工作，但顾问告诉你，它平均每天产出 2 份手稿。只凭这条信息，就可以推断每天完成手稿数量的完整分布。</p>
+    <p>用 Poisson 分布构建模型时，模型形式甚至比二项模型或高斯模型更简单。这是因为 Poisson 分布只有一个描述其形状的参数，于是数据概率可以写成：</p>
+    <div class="equation-block wallis-equation" id="eq-11-poisson-distribution"><span class="math-line"><var>y</var><sub>i</sub> ∼ Poisson(<var>λ</var>)</span></div>
+    <p>参数 <span class="math-inline"><var>λ</var></span> 是结果 <span class="math-inline"><var>y</var></span> 的期望值，同时也是计数 <span class="math-inline"><var>y</var></span> 的期望方差。</p>
+    <p>还需要一个 link 函数。Poisson 模型的惯用 link 函数，是上一章（原书第 326 页）介绍的 log link。为了嵌入线性模型，我们写成：</p>
+    <div class="equation-block wallis-equation" id="eq-11-poisson-log-link"><div><var>y</var><sub>i</sub> ∼ Poisson(<var>λ</var><sub>i</sub>)</div><div>log(<var>λ</var><sub>i</sub>) = <var>α</var> + <var>β</var>(<var>x</var><sub>i</sub> − <span class="overline">x</span>)</div></div>
+    <p>log link 确保 <span class="math-inline"><var>λ</var><sub>i</sub></span> 始终为正，而计数结果的期望值必须为正。但正如上一章所说，它也意味着预测变量与期望值之间是指数关系。指数关系增长得非常快，几乎没有哪种自然现象能长期保持指数增长。因此，使用 log link 时始终要检查的一件事，是它在预测变量的整个取值范围内是否合理。log 尺度上的先验也会以令人意外的方式缩放，所以先验预测模拟在这里仍然很有帮助。</p>
+
+    <section id="sec-11-2-1"><h3>11.2.1 示例：大洋洲工具复杂度</h3>
+      <p>大洋洲的岛屿社会为技术演化提供了一项自然实验。历史上不同岛屿人口拥有规模不同的工具组合，包括鱼钩、斧头、船、手犁以及许多其他类型的工具。多种理论预测，人口越多，越能发展并维持更复杂的工具组合。因此，大洋洲岛屿面积的自然差异所引起的人口规模自然变异，提供了检验这些想法的自然实验。还有观点认为，就技术演化而言，群体之间的接触率实际上会增加有效人口规模，因此大洋洲社会之间接触率的变异也很重要。</p>
+      <p>我们会用这个主题展开一套标准的 Poisson GLM 分析，并在最后转向一个非标准、但理论动机更强的 Poisson 模型。要分析的数据是 10 个历史大洋洲社会的独特工具类型计数：<sup id="note-171-ref"><a href="#note-171">171</a></sup></p>
+      <figure class="code-listing" id="code-11-36"><figcaption>R 代码 11.36</figcaption><pre><code>library(rethinking)
+data(Kline)
+d &lt;- Kline
+d</code></pre><pre class="code-output"><code>       culture population contact total_tools mean_TU
+1     Malekula       1100     low          13     3.2
+2      Tikopia       1500     low          22     4.7
+3   Santa Cruz       3600     low          24     4.0
+4          Yap       4791    high          43     5.0
+5     Lau Fiji       7400    high          33     5.0
+6    Trobriand       8000    high          19     4.0
+7        Chuuk       9200    high          40     3.8
+8        Manus      13000     low          28     6.6
+9        Tonga      17500    high          55     5.4
+10      Hawaii     275000     low          71     6.6</code></pre></figure>
+      <figure class="book-figure oceanic-map-figure" id="fig-11-6"><div class="figure-scroll"><img src="/media/chapter-11-oceania-societies.jpg" alt="太平洋地图上标出 Kline 数据中 Malekula、Tikopia、Santa Cruz、Yap、Lau Fiji、Trobriand、Chuuk、Manus、Tonga 与 Hawaii 十个社会的位置"></div><figcaption><strong>图 11.6：</strong>Kline 数据中各社会的位置。图中标出了赤道与国际日期变更线。</figcaption></figure>
+      <p>这就是完整的数据集。图 11.6 标出了这些社会在太平洋中的位置。请记住，在计数模型里，数据行数显然不一定等同于“样本量”。除简单线性回归外，参数与“自由度”的关系并不简单。不过这里的数据确实不多，因为能够搜集到可靠资料的历史大洋洲社会本来就不多。和往常一样，我们会用正则化抑制过拟合；但你将看到，这些数据仍然能告诉我们很多。你听说过的任何“推断所需最小样本量”规则，都只是非贝叶斯迷信。如果最后得到的仍是先验，那就说明数据不够；就这么简单。</p>
+      <p><code>total_tools</code> 变量将作为结果变量。我们要对以下想法建模：</p>
+      <ol class="numbered-explanation" id="list-11-oceanic-hypotheses"><li>工具数量随人口规模的对数增加。为什么取对数？因为理论认为真正重要的是人口的数量级，而不是绝对人数。因此，我们要寻找 <code>total_tools</code> 与人口对数之间的正关联。思考机制，可以直觉地看出人口规模的线性影响不可能正确；本节末尾还会进一步讨论机制。</li><li>工具数量随岛屿间接触率增加。没有哪个国家是一座孤岛——即便它真的是岛屿。网络联系更好的岛屿，可能获得或维持更多类型的工具。</li><li>人口对工具计数的影响受高接触率调节。换言之，<code>total_tools</code> 与人口对数之间的关联取决于 <code>contact</code>。因此，我们要寻找人口对数与接触率之间的正交互。</li></ol>
+      <p>现在开始构建模型。首先新增两列：标准化的人口对数，以及接触率的索引变量：</p>
+      <figure class="code-listing" id="code-11-37"><figcaption>R 代码 11.37</figcaption><pre><code>d$P &lt;- scale( log(d$population) )
+d$contact_id &lt;- ifelse( d$contact=="high" , 2 , 1 )</code></pre></figure>
+      <p class="continuation-note">包含人口与接触率交互的研究模型及其先验预测检查，将从原书 PDF 第 372 页继续。</p>
     </section>
   </section>
 
-  <section class="endnotes" id="chapter-11-notes" role="doc-endnotes"><h2>尾注</h2><ol start="166"><li id="note-166">重要数论家 Leopold Kronecker 据称说过：“上帝创造了整数，其余一切皆为人造。”（德文：<span lang="de">Die ganzen Zahlen hat der liebe Gott gemacht, alles andere ist Menschenwerk.</span>） <a class="backref" href="#note-166-ref" aria-label="返回正文">↩</a></li><li id="note-167">Silk 等（2005）。 <a class="backref" href="#note-167-ref" aria-label="返回正文">↩</a></li><li id="note-168">Bickel 等（1975）。 <a class="backref" href="#note-168-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section class="endnotes" id="chapter-11-notes" role="doc-endnotes"><h2>尾注</h2><ol start="166"><li id="note-166">重要数论家 Leopold Kronecker 据称说过：“上帝创造了整数，其余一切皆为人造。”（德文：<span lang="de">Die ganzen Zahlen hat der liebe Gott gemacht, alles andere ist Menschenwerk.</span>） <a class="backref" href="#note-166-ref" aria-label="返回正文">↩</a></li><li id="note-167">Silk 等（2005）。 <a class="backref" href="#note-167-ref" aria-label="返回正文">↩</a></li><li id="note-168">Bickel 等（1975）。 <a class="backref" href="#note-168-ref" aria-label="返回正文">↩</a></li><li id="note-169">Simpson（1951）。 <a class="backref" href="#note-169-ref" aria-label="返回正文">↩</a></li><li id="note-170">例如可参见 Pearl（2014）。关于 Simpson 悖论的论述浩如烟海，以至于你能找到看似彼此矛盾的解释。 <a class="backref" href="#note-170-ref" aria-label="返回正文">↩</a></li><li id="note-171">Kline 与 Boyd（2010）。 <a class="backref" href="#note-171-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 11 章 PDF 第 347–368 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 369 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 11 章 PDF 第 347–371 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 372 页继续。</aside>
 </article>
