@@ -1,4 +1,4 @@
-<article class="book-article" data-chapter="chapter-12" data-source-pages="397-423">
+<article class="book-article" data-chapter="chapter-12" data-source-pages="397-426">
   <header class="chapter-header"><p class="eyebrow">第十二章</p><h1>怪物与混合</h1><p class="source-range">当前译稿对应原书 PDF 第 397–414 页</p></header>
 
   <div class="chapter-introduction" id="intro-12">
@@ -449,14 +449,54 @@ delta[7] 0.12 0.08  0.03  0.26  2118    1</code></pre></figure>
 pairs( m12.6 , pars="delta" , labels=delta_labels )</code></pre></figure>
     <p>结果显示在图 12.8。首先，所有这些参数都彼此负相关，这是它们必须加总为 1 的约束所造成的：一个变大，其他参数就必须变小。其次，除一个教育层级外，其他层级平均都会产生某种幅度不大的增量；似乎只有 Some College（SCol）的增量效应非常小，甚至可能没有。</p>
     <p class="source-erratum" id="erratum-12-is-it-is"><strong>原文语法重复：</strong>原书此处印作 “Is it is only Some College…”，多了一个 <em>is</em>。译稿按语意写成“似乎只有 Some College……”，并在此记录。</p>
+    <figure class="book-figure education-pairs-figure" id="fig-12-8"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的教育增量效应后验配对图"><img src="/media/chapter-12-education-pairs.svg" alt="七个教育增量参数的边际密度、两两散点与相关系数矩阵"></div><p class="scroll-hint">移动端可横向滚动，查看七个教育增量参数的完整配对矩阵。</p><figcaption><strong>图 12.8：</strong>教育增量效应的后验分布。除 Some College（SCol）几乎没有增加之外，每多完成一个教育层级，平均都会增加少量不赞同。</figcaption></figure>
     <p>把上面的后验与一种更传统的模型比较会很有启发性：在传统模型里，教育作为普通连续变量进入模型。先把教育层级归一化到 0 到 1，使所得参数能与上面模型中的参数比较：</p>
-    <figure class="code-listing" id="code-12-37"><figcaption>R 代码 12.37（续）</figcaption><pre><code>dat$edu_norm &lt;- normalize( d$edu_new )
+    <figure class="code-listing" id="code-12-37"><figcaption>R 代码 12.37</figcaption><pre><code>dat$edu_norm &lt;- normalize( d$edu_new )
 m12.7 &lt;- ulam(
-    alist(</code></pre></figure>
-    <p class="continuation-note">代码 12.37 的完整模型与后验输出、图 12.8，以及有序教育效应和普通连续教育效应的比较，将从原书 PDF 第 424 页继续。</p>
+    alist(
+        R ~ ordered_logistic( mu , cutpoints ),
+        mu &lt;- bE*edu_norm + bA*action + bI*intention + bC*contact,
+        c(bA,bI,bC,bE) ~ normal( 0 , 1 ),
+        cutpoints ~ normal( 0 , 1.5 )
+    ), data=dat , chains=4 , cores=4 )
+precis( m12.7 )</code></pre><pre class="code-output"><code>6 vector or matrix parameters hidden. Use depth=2 to show them.
+    mean   sd  5.5% 94.5% n_eff Rhat
+bE -0.10 0.09 -0.24  0.04  2224    1
+bC -0.96 0.05 -1.04 -0.88  2237    1
+bI -0.72 0.04 -0.78 -0.66  2051    1
+bA -0.70 0.04 -0.77 -0.64  1995    1</code></pre></figure>
+    <p>这个模型认为教育与评分之间的关联弱得多。可能的原因是，效应其实并非线性；不同教育层级具有不同的增量关联。</p>
+    <p>这个例子很适合讲解怎样构造有序预测变量。但从因果角度看，一个隐忧是教育关联可能是虚假的。教育与年龄高度相关，因为年龄会“导致”（找不到更合适的词）人们完成不同教育层级。因此，很可能存在一条从教育经年龄到评分的后门路径。本章末尾的练习会要求你画出由此隐含的 DAG，并用一些新模型研究它。</p>
   </section>
 
-  <section class="endnotes" id="chapter-12-notes" role="doc-endnotes"><h2>尾注</h2><ol start="175"><li id="note-175">Williams（1975，1982）。Bolker（2008）在生态数据语境中给出了清晰介绍。 <a class="backref" href="#note-175-ref" aria-label="返回正文">↩</a></li><li id="note-176">另一种很常见的参数化是 <span class="math-inline"><var>α</var> = <var>p̄θ</var></span> 与 <span class="math-inline"><var>β</var> = (1 − <var>p̄</var>)<var>θ</var></span>。<span class="math-inline"><var>p̄</var></span> 与 <span class="math-inline"><var>θ</var></span> 的版本更适合建模，因为我们通常希望把线性模型连接到 beta 分布的中心趋势，而 <span class="math-inline"><var>p̄</var></span> 正是中心趋势的一种度量。 <a class="backref" href="#note-176-ref" aria-label="返回正文">↩</a></li><li id="note-177">Hilbe（2011）整本书都在讨论 gamma-Poisson 回归。 <a class="backref" href="#note-177-ref" aria-label="返回正文">↩</a></li><li id="note-178">Lambert（1992）首次介绍了这种模型。基本的零膨胀方法虽然出现得更早，但 Lambert 给出了本书采用的版本：用 log 与 logit link 连接两个彼此独立的线性模型。 <a class="backref" href="#note-178-ref" aria-label="返回正文">↩</a></li><li id="note-179">参见 Bürkner 与 Vuorre（2018），以及 Liddell 与 Kruschke（2018）。 <a class="backref" href="#note-179-ref" aria-label="返回正文">↩</a></li><li id="note-180">McCullagh（1980）被认为引入并推广了这种方法。另见 Fullerton（2009），其中综述并比较了不同模型类型。 <a class="backref" href="#note-180-ref" aria-label="返回正文">↩</a></li><li id="note-181">Cushman 等（2006）。 <a class="backref" href="#note-181-ref" aria-label="返回正文">↩</a></li><li id="note-182">本节的构造基于 Bürkner 与 Charpentier（2018）的策略。<code>brms</code> 包中内置了同样的技术；该包也使用 Stan 进行采样。 <a class="backref" href="#note-182-ref" aria-label="返回正文">↩</a></li><li id="note-183">Dirichlet 分布得名于德国数学家 Peter Dirichlet（1805–1859）。他的姓氏以及这一分布常被读作类似 “diRIKlay” 或 “diRISHlay”；传说 Peter 本人采用带硬音 K 的读法。Dirichlet 师从当时最优秀的数学家，并在数学的许多领域作出重要贡献。他还娶了 Rebecka Mendelssohn——Felix 与 Fanny Mendelssohn 的妹妹。 <a class="backref" href="#note-183-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section id="sec-12-5"><h2>12.5 总结</h2>
+    <p>本章介绍了几种新的回归类型，它们都是广义线性模型（GLM）的推广。有序 logistic 模型适合具有严格顺序的类别结果；它把累积 link 函数接到类别结果分布上。零膨胀模型把两种不同的结果分布混合起来，从而能对零值过多的结果建模。beta-binomial 与 gamma-Poisson 等过度离散模型，则让每个观测的期望值来自一个分布，而该分布的形状随线性模型变化。下一章会引入多层模型，进一步推广这些模型类型。</p>
+  </section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 12 章 PDF 第 397–423 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 424 页继续。</aside>
+  <section id="sec-12-6"><h2>12.6 练习</h2>
+    <div class="practice-group" aria-labelledby="practice-12-easy"><h3 id="practice-12-easy">简单题</h3>
+      <div class="exercise" id="exercise-12e1"><h4>12E1</h4><p>有序类别变量和无序类别变量有什么区别？请先定义两者，再分别举例。</p></div>
+      <div class="exercise" id="exercise-12e2"><h4>12E2</h4><p>有序 logistic 回归采用哪一种 link 函数？它与普通 logit link 有什么区别？</p></div>
+      <div class="exercise" id="exercise-12e3"><h4>12E3</h4><p>当计数数据存在零膨胀时，使用忽略零膨胀的模型往往会引入哪一种推断错误？</p></div>
+      <div class="exercise" id="exercise-12e4"><h4>12E4</h4><p>过度离散在计数数据中很常见。请举一个可能产生过度离散计数的自然过程。你还能举出一个可能产生欠离散计数的过程吗？</p></div>
+    </div>
+    <div class="practice-group" aria-labelledby="practice-12-medium"><h3 id="practice-12-medium">中等题</h3>
+      <div class="exercise" id="exercise-12m1"><h4>12M1</h4><p>某大学每年以 1 到 4 分评价员工的生产力，1 表示最低，4 表示最高。某一年，该校某院系获得各评分的员工人数依次为（从 1 到 4）：12、36、7、41。计算每个评分的对数累积赔率。</p></div>
+      <div class="exercise" id="exercise-12m2"><h4>12M2</h4><p>用上一题的员工评分数据制作一个图 12.5 的版本。</p></div>
+      <div class="exercise" id="exercise-12m3"><h4>12M3</h4><p>你能否修改本章对零膨胀 Poisson 分布（ZIPoisson）的推导，构造一个零膨胀二项分布？</p></div>
+    </div>
+    <div class="practice-group" aria-labelledby="practice-12-hard"><h3 id="practice-12-hard">困难题</h3>
+      <div class="exercise" id="exercise-12h1"><h4>12H1</h4><p>2014 年有一篇论文以“女性名称的飓风比男性名称的飓风更致命”为题。<sup id="note-184-ref"><a href="#note-184">184</a></sup>顾名思义，论文声称女性名称的飓风造成了更多人员死亡，并解释说，人们会在无意识中把女性名称的飓风评为危险性较低，因此撤离的可能性也较小。</p><p>论文发表后受到统计学家的严厉批评。在本题中，你要探索该论文使用的完整数据，并考察“女性名称的飓风更致命”这一假设。先载入数据：</p><figure class="code-listing" id="code-12-38"><figcaption>R 代码 12.38</figcaption><pre><code>library(rethinking)
+data(Hurricanes)</code></pre></figure><p>查看帮助 <code>?Hurricanes</code>，熟悉各列含义。</p><p>本题重点使用每个飓风名称的 <code>femininity</code> 预测死亡人数。拟合并解释最简单的模型：以 <code>femininity</code> 为预测变量的死亡人数 Poisson 模型。可以使用 <code>map</code> 或 <code>map2stan</code>。把这个模型与只有截距的死亡人数 Poisson 模型比较。名称女性化程度与死亡人数的关联有多强？模型对哪些风暴拟合（回溯预测）得好？对哪些风暴拟合得差？</p></div>
+      <div class="exercise" id="exercise-12h2"><h4>12H2</h4><p>相对于 Poisson，计数几乎总是过度离散的。因此，拟合一个 gamma-Poisson（也叫负二项）模型，用 <code>femininity</code> 预测死亡人数。证明过度离散模型不再显示如此精确的正关联，其 89% 区间与零重叠。你能解释为什么关联强度减弱了吗？</p></div>
+      <div class="exercise" id="exercise-12h3"><h4>12H3</h4><p>要推断死亡人数与女性化程度之间存在很强关联，必须加入交互效应。数据中有两个衡量飓风潜在致死能力的指标：<code>damage_norm</code> 与 <code>min_pressure</code>。请查阅 <code>?Hurricanes</code> 了解它们的含义。可以合理设想，当飓风本身就很致命时，名称女性化程度的影响会更大。这意味着 <code>femininity</code> 与 <code>damage_norm</code>、<code>min_pressure</code> 中一个或两个变量之间存在交互。</p><p>拟合一系列模型来评估这些交互，解释并比较模型。解释估计量时，可以生成反事实预测，对照男性名称和女性名称的飓风。效应大小合理吗？</p></div>
+      <div class="exercise" id="exercise-12h4"><h4>12H4</h4><p>原始飓风论文直接使用风暴损失 <code>damage_norm</code>。由于 Poisson 回归使用 log link，这个假设意味着死亡率会随着风暴强度线性增加而指数增长。因此值得考察另一种假设：真正重要的是风暴强度的对数。请用 <code>log(damage_norm)</code> 作为预测变量来研究这一点。沿用上一题中最好的模型结构，把使用 <code>log(damage_norm)</code> 的模型与直接使用 <code>damage_norm</code> 的模型比较；比较它们的 DIC/WAIC 值以及隐含预测。你得出什么结论？</p></div>
+      <div class="exercise" id="exercise-12h5"><h4>12H5</h4><p>发展心理学中有一个通常归因于 Carol Gilligan 的假设，认为女性和男性在道德推理上具有不同的平均倾向。和社会心理学中的大多数假设一样，它只是描述性的。其观点是：女性更关心照顾（避免伤害），男性则更关心正义和权利。受文化束缚的胡说？是。描述上准确？也许。</p><p>使用 <code>Trolley</code> 数据评估这个假设，并假设 <code>contact</code> 是身体伤害的代理变量。在这些数据里，女性相比男性更在意还是更不在意接触？请找出回答这个问题所需的模型。</p></div>
+      <div class="exercise" id="exercise-12h6"><h4>12H6</h4><p><code>data(Fish)</code> 中的数据记录了对某国家公园的访问，详见 <code>?Fish</code>。关注的问题是：在实际钓鱼时，一位普通游客平均每小时带走多少条鱼？问题在于，并非每个人都尝试钓鱼，所以 <code>fish_caught</code> 的计数存在零膨胀。和本章的僧侣例子一样，存在一个决定谁去钓鱼（工作）的过程，以及另一个在已经钓鱼（工作）的条件下决定每小时鱼数（每天手稿数）的过程。</p><p class="continuation-note">12H6 的 Poisson offset/exposure 要求与完整建模任务，将从原书 PDF 第 427 页继续。</p></div>
+    </div>
+  </section>
+
+  <section class="endnotes" id="chapter-12-notes" role="doc-endnotes"><h2>尾注</h2><ol start="175"><li id="note-175">Williams（1975，1982）。Bolker（2008）在生态数据语境中给出了清晰介绍。 <a class="backref" href="#note-175-ref" aria-label="返回正文">↩</a></li><li id="note-176">另一种很常见的参数化是 <span class="math-inline"><var>α</var> = <var>p̄θ</var></span> 与 <span class="math-inline"><var>β</var> = (1 − <var>p̄</var>)<var>θ</var></span>。<span class="math-inline"><var>p̄</var></span> 与 <span class="math-inline"><var>θ</var></span> 的版本更适合建模，因为我们通常希望把线性模型连接到 beta 分布的中心趋势，而 <span class="math-inline"><var>p̄</var></span> 正是中心趋势的一种度量。 <a class="backref" href="#note-176-ref" aria-label="返回正文">↩</a></li><li id="note-177">Hilbe（2011）整本书都在讨论 gamma-Poisson 回归。 <a class="backref" href="#note-177-ref" aria-label="返回正文">↩</a></li><li id="note-178">Lambert（1992）首次介绍了这种模型。基本的零膨胀方法虽然出现得更早，但 Lambert 给出了本书采用的版本：用 log 与 logit link 连接两个彼此独立的线性模型。 <a class="backref" href="#note-178-ref" aria-label="返回正文">↩</a></li><li id="note-179">参见 Bürkner 与 Vuorre（2018），以及 Liddell 与 Kruschke（2018）。 <a class="backref" href="#note-179-ref" aria-label="返回正文">↩</a></li><li id="note-180">McCullagh（1980）被认为引入并推广了这种方法。另见 Fullerton（2009），其中综述并比较了不同模型类型。 <a class="backref" href="#note-180-ref" aria-label="返回正文">↩</a></li><li id="note-181">Cushman 等（2006）。 <a class="backref" href="#note-181-ref" aria-label="返回正文">↩</a></li><li id="note-182">本节的构造基于 Bürkner 与 Charpentier（2018）的策略。<code>brms</code> 包中内置了同样的技术；该包也使用 Stan 进行采样。 <a class="backref" href="#note-182-ref" aria-label="返回正文">↩</a></li><li id="note-183">Dirichlet 分布得名于德国数学家 Peter Dirichlet（1805–1859）。他的姓氏以及这一分布常被读作类似 “diRIKlay” 或 “diRISHlay”；传说 Peter 本人采用带硬音 K 的读法。Dirichlet 师从当时最优秀的数学家，并在数学的许多领域作出重要贡献。他还娶了 Rebecka Mendelssohn——Felix 与 Fanny Mendelssohn 的妹妹。 <a class="backref" href="#note-183-ref" aria-label="返回正文">↩</a></li><li id="note-184">Jung 等（2014）。 <a class="backref" href="#note-184-ref" aria-label="返回正文">↩</a></li></ol></section>
+
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 12 章 PDF 第 397–426 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 427 页继续。</aside>
 </article>

@@ -1086,7 +1086,18 @@
     "randomized treatment variable": "随机化处理变量",
     "negative correlation": "负相关",
     "ordinary continuous variable": "普通连续变量",
-    "normalize": "归一化"
+    "normalize": "归一化",
+    "posterior pairs plot": "后验配对图",
+    "under-dispersion": "欠离散",
+    "femininity": "女性化程度",
+    "hurricane": "飓风",
+    "storm damage": "风暴损失",
+    "storm strength": "风暴强度",
+    "proxy for physical harm": "身体伤害的代理变量",
+    "national park": "国家公园",
+    "fish caught": "捕获鱼数",
+    "Poisson offset": "Poisson 偏置项",
+    "exposure time": "暴露时间"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "blavaan", "AIC", "DIC", "WAIC", "BIC", "PSIS-LOO", "MCMC", "HMC"

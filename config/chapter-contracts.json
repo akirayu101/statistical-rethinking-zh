@@ -2091,7 +2091,7 @@
   },
   "chapter-12": {
     "required_status": "in_progress",
-    "source_pages": [397, 423],
+    "source_pages": [397, 426],
     "required_ids": [
       "intro-12",
       "sec-12-1",
@@ -2187,7 +2187,28 @@
       "code-12-35",
       "code-12-36",
       "erratum-12-is-it-is",
+      "fig-12-8",
       "code-12-37",
+      "sec-12-5",
+      "sec-12-6",
+      "practice-12-easy",
+      "exercise-12e1",
+      "exercise-12e2",
+      "exercise-12e3",
+      "exercise-12e4",
+      "practice-12-medium",
+      "exercise-12m1",
+      "exercise-12m2",
+      "exercise-12m3",
+      "practice-12-hard",
+      "exercise-12h1",
+      "note-184-ref",
+      "code-12-38",
+      "exercise-12h2",
+      "exercise-12h3",
+      "exercise-12h4",
+      "exercise-12h5",
+      "exercise-12h6",
       "chapter-12-notes",
       "note-175",
       "note-176",
@@ -2197,7 +2218,8 @@
       "note-180",
       "note-181",
       "note-182",
-      "note-183"
+      "note-183",
+      "note-184"
     ],
     "required_headings": [
       "怪物与混合",
@@ -2212,15 +2234,17 @@
       "12.3.2 用截距描述有序分布",
       "12.3.3 加入预测变量",
       "12.4 有序类别预测变量",
+      "12.5 总结",
+      "12.6 练习",
       "尾注"
     ],
     "counts": {
-      "section": 12,
-      "figure": 45,
-      "figure img": 8,
-      ".book-figure": 8,
-      ".code-listing": 37,
-      ".code-output": 14,
+      "section": 14,
+      "figure": 47,
+      "figure img": 9,
+      ".book-figure": 9,
+      ".code-listing": 38,
+      ".code-output": 15,
       ".rethinking-box": 2,
       ".overthinking-box": 2,
       ".book-quote": 3,
@@ -2229,7 +2253,7 @@
       ".source-erratum": 7,
       ".chapter-introduction": 1,
       ".continuation-note": 1,
-      ".endnotes li": 9
+      ".endnotes li": 10
     }
   }
 }

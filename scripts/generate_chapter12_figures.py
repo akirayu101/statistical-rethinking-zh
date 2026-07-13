@@ -17,6 +17,7 @@ OUT5 = ROOT / "translations" / "zh" / "media" / "chapter-12-ordered-likelihood.s
 OUT6 = ROOT / "translations" / "zh" / "media" / "chapter-12-trolley-slopes.svg"
 OUT7 = ROOT / "translations" / "zh" / "media" / "chapter-12-trolley-predictions.svg"
 OUT8 = ROOT / "translations" / "zh" / "media" / "chapter-12-dirichlet-prior.svg"
+OUT9 = ROOT / "translations" / "zh" / "media" / "chapter-12-education-pairs.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 BLUE = "#6670ee"
@@ -658,6 +659,74 @@ def dirichlet_prior_plot() -> None:
     OUT8.write_text("\n".join(parts) + "\n", encoding="utf-8")
 
 
+def education_pairs_plot() -> None:
+    """Rebuild the posterior pairs display for incremental education effects."""
+    width, height = 1200, 1040
+    labels = ["Elem", "MidSch", "SHS", "HSG", "SCol", "Bach", "Mast"]
+    means = [0.23, 0.14, 0.19, 0.17, 0.04, 0.10, 0.12]
+    concentration = 8.0
+    rng = random.Random(1208)
+    draws: list[list[float]] = []
+    for _ in range(320):
+        values = [rng.gammavariate(max(mean * concentration, 0.12), 1.0) for mean in means]
+        total = sum(values)
+        draws.append([value / total for value in values])
+
+    def correlation(x: list[float], y: list[float]) -> float:
+        mx, my = sum(x) / len(x), sum(y) / len(y)
+        numerator = sum((a - mx) * (b - my) for a, b in zip(x, y))
+        denominator = math.sqrt(sum((a - mx) ** 2 for a in x) * sum((b - my) ** 2 for b in y))
+        return numerator / denominator
+
+    margin, cell, gap = 92, 126, 5
+    grid = 7 * cell + 6 * gap
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">',
+        '<title>图 12.8：教育增量效应的后验配对图</title>',
+        '<desc>七个教育增量效应的边际密度、两两散点与相关系数。由于这些参数之和为一，绝大多数两两相关为负。</desc>',
+        '<rect width="100%" height="100%" fill="#fbfaf6"/>',
+        f'<rect x="40" y="25" width="{grid + 104}" height="{grid + 86}" rx="10" fill="#fff" stroke="{GRID}"/>',
+    ]
+    columns = [[draw[index] for draw in draws] for index in range(7)]
+    max_values = [max(column) * 1.04 for column in columns]
+
+    for row in range(7):
+        for col in range(7):
+            x0 = margin + col * (cell + gap)
+            y0 = 55 + row * (cell + gap)
+            parts.append(f'<rect x="{x0}" y="{y0}" width="{cell}" height="{cell}" fill="#fff" stroke="#5f625c" stroke-width="1.1"/>')
+            if row == col:
+                values = columns[row]
+                limit = max_values[row]
+                bins = 18
+                counts = [0] * bins
+                for value in values:
+                    counts[min(bins - 1, int(value / limit * bins))] += 1
+                peak = max(counts)
+                points = [(x0 + index / (bins - 1) * cell, y0 + cell - 10 - count / peak * (cell - 42)) for index, count in enumerate(counts)]
+                parts.extend([
+                    polygon([(x0, y0 + cell - 10), *points, (x0 + cell, y0 + cell - 10)], fill="#dce8f4", opacity=".85"),
+                    polyline(points, fill="none", stroke=INK, stroke_width="2.2"),
+                    text_el(x0 + 9, y0 + 23, labels[row], size=17, weight=650),
+                ])
+            elif row < col:
+                x_limit, y_limit = max_values[col], max_values[row]
+                for draw in draws[::2]:
+                    xx = x0 + 7 + draw[col] / x_limit * (cell - 14)
+                    yy = y0 + cell - 7 - draw[row] / y_limit * (cell - 14)
+                    parts.append(f'<circle cx="{xx:.1f}" cy="{yy:.1f}" r="2.4" fill="#43a0d5" opacity=".28"/>')
+            else:
+                value = correlation(columns[col], columns[row])
+                parts.append(text_el(x0 + cell / 2, y0 + cell / 2 + 8, f"{value:.2f}", size=22, anchor="middle", weight=600))
+
+    parts.extend([
+        text_el(margin + grid / 2, 1008, "教育增量参数", size=20, anchor="middle", weight=650),
+        text_el(24, 55 + grid / 2, "后验分布与两两相关", size=20, anchor="middle", weight=650, rotate=-90),
+        "</svg>",
+    ])
+    OUT9.write_text("\n".join(parts) + "\n", encoding="utf-8")
+
+
 if __name__ == "__main__":
     main()
     figure_12_2()
@@ -667,5 +736,6 @@ if __name__ == "__main__":
     trolley_slope_plot()
     trolley_prediction_plot()
     dirichlet_prior_plot()
-    for path in (OUT1, OUT2, OUT3, OUT4, OUT5, OUT6, OUT7, OUT8):
+    education_pairs_plot()
+    for path in (OUT1, OUT2, OUT3, OUT4, OUT5, OUT6, OUT7, OUT8, OUT9):
         print(path)
