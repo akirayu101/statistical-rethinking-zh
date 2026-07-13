@@ -957,7 +957,15 @@
     "softmax function": "softmax 函数",
     "multinomial logistic regression": "多项逻辑斯蒂回归",
     "pivot category": "枢轴类别",
-    "quantitative trait": "定量特征"
+    "quantitative trait": "定量特征",
+    "predictors matched to outcomes": "预测变量与结果匹配",
+    "predictors matched to observations": "预测变量与观测匹配",
+    "career choice": "职业选择",
+    "expected income": "预期收入",
+    "categorical likelihood": "分类 likelihood",
+    "choice probability": "选择概率",
+    "competing alternatives": "竞争选项",
+    "family income": "家庭收入"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "blavaan", "AIC", "DIC", "WAIC", "BIC", "PSIS-LOO", "MCMC", "HMC"

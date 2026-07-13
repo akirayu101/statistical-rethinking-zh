@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-11" data-source-pages="347-383">
-  <header class="chapter-header"><p class="eyebrow">第十一章</p><h1>上帝给整数加了料</h1><p class="source-range">当前译稿对应原书 PDF 第 347–383 页</p></header>
+<article class="book-article" data-chapter="chapter-11" data-source-pages="347-386">
+  <header class="chapter-header"><p class="eyebrow">第十一章</p><h1>上帝给整数加了料</h1><p class="source-range">当前译稿对应原书 PDF 第 347–386 页</p></header>
 
   <div class="chapter-introduction" id="intro-11">
     <p>太空中的寒冷以 Kelvin 命名，约为 3 Kelvin，也就是绝对零度以上约 3 摄氏度。Kelvin 也是苏格兰格拉斯哥附近一条河流的名字；同一条河又把名字给了 William Thomson，也就是 Kelvin 勋爵（1824 年生，1907 年卒）——英国第一位获封贵族头衔的科学家。Thomson 在格拉斯哥的实验室研究热力学，如今太空的寒冷便以一条苏格兰河流为名。</p>
@@ -647,9 +647,87 @@ lambda_old 1.34 0.21 1.03  1.70      ▁▁▃▇▅▂▁▁▁
 lambda_new 0.52 0.14 0.33  0.77 ▁▁▃▇▇▃▂▁▁▁▁▁▁</code></pre></figure><p>新修道院每天只完成大约一半数量的手稿，所以你不会为它付太多钱。</p></section>
   </section>
 
-  <section id="sec-11-3"><h2>11.3 多项与分类模型</h2><p>二项分布适用于只有两种可能事件、而我们对它们计数的情况。一般而言，可能发生的不止两件事。回想第 2 章的弹珠袋，里面原本只有蓝、白两色弹珠；若再加入红色，每次抽取就可能属于三类，累计计数也横跨三类，最终得到蓝、白、红弹珠各自的数量。</p><p>当可能出现两种以上无序事件，且每类事件概率在试验间恒定时，最大熵分布是<strong>多项分布</strong>。第 10 章把石子投入桶中介绍最大熵时，我们已经隐式遇到过它。二项分布其实只是多项分布的特例，因此公式也像把二项分布外推到三种或更多事件。若有 <span class="math-inline"><var>K</var></span> 类事件，其概率为 <span class="math-inline"><var>p</var><sub>1</sub>, …, <var>p</var><sub>K</sub></span>，那么在总共 <span class="math-inline"><var>n</var></span> 次试验中，观察到各类事件数量 <span class="math-inline"><var>y</var><sub>1</sub>, …, <var>y</var><sub>K</sub></span> 的概率为：</p><div class="equation-block wallis-equation" id="eq-11-multinomial-distribution"><span class="math-line">Pr(<var>y</var><sub>1</sub>, …, <var>y</var><sub>K</sub> | <var>n</var>, <var>p</var><sub>1</sub>, …, <var>p</var><sub>K</sub>) = <var>n</var>! / ∏<sub>i</sub><var>y</var><sub>i</sub>! · ∏<sub>i=1</sub><sup>K</sup><var>p</var><sub>i</sub><sup><var>y</var><sub>i</sub></sup></span></div><p>分式顶部的 <span class="math-inline"><var>n</var>!</span> 只是表示：有多少种不同排列会产生相同的计数 <span class="math-inline"><var>y</var><sub>1</sub>, …, <var>y</var><sub>K</sub></span>。这就是上一章著名的多重度。</p><p>基于多项分布的模型也可称为<strong>分类回归</strong>，通常指像逻辑斯蒂回归一样，每个事件单独占一行的组织方式。在机器学习中，这类模型有时称为<strong>最大熵分类器</strong>。从多项 likelihood 构建 GLM 很复杂：事件类型增多时，建模选择也随之增多，而且构造 likelihood 还有两条不同路线。第一条直接基于多项 likelihood，使用 logit link 的推广；下面会给出一个例子，称为<strong>显式方法</strong>。第二条则出人意料地把多项 likelihood 转换成一系列 Poisson likelihood，稍后再介绍。</p><p>这里惯用且自然的 link 是<strong>多项 logit</strong>，也称 <strong>softmax</strong> 函数。它接收一个分数向量——<span class="math-inline"><var>K</var></span> 类事件各有一个分数——并计算特定事件类型 <span class="math-inline"><var>k</var></span> 的概率：</p><div class="equation-block wallis-equation" id="eq-11-softmax"><span class="math-line">Pr(<var>k</var> | <var>s</var><sub>1</sub>, …, <var>s</var><sub>K</sub>) = exp(<var>s</var><sub>k</sub>) / ∑<sub>i=1</sub><sup>K</sup> exp(<var>s</var><sub>i</sub>)</span></div><p><code>rethinking</code> 包以 <code>softmax</code> 函数提供这个 link。与它结合后，这类 GLM 可称为<strong>多项逻辑斯蒂回归</strong>。</p><p>最大的问题，是怎样处理多个线性模型。在二项 GLM 中，可以任选两类事件之一，为其 log odds 构建一个线性模型，另一类会自动得到处理。但多项（或分类）GLM 对 <span class="math-inline"><var>K</var></span> 类事件需要 <span class="math-inline"><var>K</var> − 1</span> 个线性模型。选择一个结果值作为“枢轴”，其余类别都相对于它建模。每个线性模型都可以使用任意预测变量和参数；它们不必相同，而且往往确有理由不同。只有两类事件时，这些选择都不会出现，因为只有一个线性模型；所以二项 GLM 容易得多。</p><p>存在两种基本情形：（1）预测变量对不同结果值取不同数值；（2）每个结果值拥有不同参数。第一种适用于每类事件都有自己的定量特征、而我们希望估计这些特征与该事件出现概率之间关联的情况。第二种适用于我们关心产生事件的某个实体之特征，而无论最终产生哪一类事件。</p><p class="continuation-note">两类多项模型的完整例子、职业选择模拟与纯 Stan 实现，将从原书 PDF 第 384 页继续。</p></section>
+  <section id="sec-11-3"><h2>11.3 多项与分类模型</h2><p>二项分布适用于只有两种可能事件、而我们对它们计数的情况。一般而言，可能发生的不止两件事。回想第 2 章的弹珠袋，里面原本只有蓝、白两色弹珠；若再加入红色，每次抽取就可能属于三类，累计计数也横跨三类，最终得到蓝、白、红弹珠各自的数量。</p><p>当可能出现两种以上无序事件，且每类事件概率在试验间恒定时，最大熵分布是<strong>多项分布</strong>。第 10 章把石子投入桶中介绍最大熵时，我们已经隐式遇到过它。二项分布其实只是多项分布的特例，因此公式也像把二项分布外推到三种或更多事件。若有 <span class="math-inline"><var>K</var></span> 类事件，其概率为 <span class="math-inline"><var>p</var><sub>1</sub>, …, <var>p</var><sub>K</sub></span>，那么在总共 <span class="math-inline"><var>n</var></span> 次试验中，观察到各类事件数量 <span class="math-inline"><var>y</var><sub>1</sub>, …, <var>y</var><sub>K</sub></span> 的概率为：</p><div class="equation-block wallis-equation" id="eq-11-multinomial-distribution"><span class="math-line">Pr(<var>y</var><sub>1</sub>, …, <var>y</var><sub>K</sub> | <var>n</var>, <var>p</var><sub>1</sub>, …, <var>p</var><sub>K</sub>) = <var>n</var>! / ∏<sub>i</sub><var>y</var><sub>i</sub>! · ∏<sub>i=1</sub><sup>K</sup><var>p</var><sub>i</sub><sup><var>y</var><sub>i</sub></sup></span></div><p>分式顶部的 <span class="math-inline"><var>n</var>!</span> 只是表示：有多少种不同排列会产生相同的计数 <span class="math-inline"><var>y</var><sub>1</sub>, …, <var>y</var><sub>K</sub></span>。这就是上一章著名的多重度。</p><p>基于多项分布的模型也可称为<strong>分类回归</strong>，通常指像逻辑斯蒂回归一样，每个事件单独占一行的组织方式。在机器学习中，这类模型有时称为<strong>最大熵分类器</strong>。从多项 likelihood 构建 GLM 很复杂：事件类型增多时，建模选择也随之增多，而且构造 likelihood 还有两条不同路线。第一条直接基于多项 likelihood，使用 logit link 的推广；下面会给出一个例子，称为<strong>显式方法</strong>。第二条则出人意料地把多项 likelihood 转换成一系列 Poisson likelihood，稍后再介绍。</p><p>这里惯用且自然的 link 是<strong>多项 logit</strong>，也称 <strong>softmax</strong> 函数。它接收一个分数向量——<span class="math-inline"><var>K</var></span> 类事件各有一个分数——并计算特定事件类型 <span class="math-inline"><var>k</var></span> 的概率：</p><div class="equation-block wallis-equation" id="eq-11-softmax"><span class="math-line">Pr(<var>k</var> | <var>s</var><sub>1</sub>, …, <var>s</var><sub>K</sub>) = exp(<var>s</var><sub>k</sub>) / ∑<sub>i=1</sub><sup>K</sup> exp(<var>s</var><sub>i</sub>)</span></div><p><code>rethinking</code> 包以 <code>softmax</code> 函数提供这个 link。与它结合后，这类 GLM 可称为<strong>多项逻辑斯蒂回归</strong>。</p><p>最大的问题，是怎样处理多个线性模型。在二项 GLM 中，可以任选两类事件之一，为其 log odds 构建一个线性模型，另一类会自动得到处理。但多项（或分类）GLM 对 <span class="math-inline"><var>K</var></span> 类事件需要 <span class="math-inline"><var>K</var> − 1</span> 个线性模型。选择一个结果值作为“枢轴”，其余类别都相对于它建模。每个线性模型都可以使用任意预测变量和参数；它们不必相同，而且往往确有理由不同。只有两类事件时，这些选择都不会出现，因为只有一个线性模型；所以二项 GLM 容易得多。</p><p>存在两种基本情形：（1）预测变量对不同结果值取不同数值；（2）每个结果值拥有不同参数。第一种适用于每类事件都有自己的定量特征、而我们希望估计这些特征与该事件出现概率之间关联的情况。第二种适用于我们关心产生事件的某个实体之特征，而无论最终产生哪一类事件。下面分别考察两种情形，并各用一个有经验动机的例子加以说明。两种情形可以混进同一个模型，不过先看各自的纯粹例子，更容易把握区别。</p><p>本节将用纯 Stan 代码构建模型。我们也可以使用 <code>quap</code> 或 <code>ulam</code>，但直接使用 Stan 能更清楚地展示：管理多个并行线性模型需要怎样的数据结构。以后要按自己的用途修改模型——包括加入变化效应和其他小玩意——也会更容易。<sup id="note-172-ref"><a href="#note-172">172</a></sup></p>
 
-  <section class="endnotes" id="chapter-11-notes" role="doc-endnotes"><h2>尾注</h2><ol start="166"><li id="note-166">重要数论家 Leopold Kronecker 据称说过：“上帝创造了整数，其余一切皆为人造。”（德文：<span lang="de">Die ganzen Zahlen hat der liebe Gott gemacht, alles andere ist Menschenwerk.</span>） <a class="backref" href="#note-166-ref" aria-label="返回正文">↩</a></li><li id="note-167">Silk 等（2005）。 <a class="backref" href="#note-167-ref" aria-label="返回正文">↩</a></li><li id="note-168">Bickel 等（1975）。 <a class="backref" href="#note-168-ref" aria-label="返回正文">↩</a></li><li id="note-169">Simpson（1951）。 <a class="backref" href="#note-169-ref" aria-label="返回正文">↩</a></li><li id="note-170">例如可参见 Pearl（2014）。关于 Simpson 悖论的论述浩如烟海，以至于你能找到看似彼此矛盾的解释。 <a class="backref" href="#note-170-ref" aria-label="返回正文">↩</a></li><li id="note-171">Kline 与 Boyd（2010）。 <a class="backref" href="#note-171-ref" aria-label="返回正文">↩</a></li></ol></section>
+    <section id="sec-11-3-1"><h3>11.3.1 预测变量与结果匹配</h3><p>例如，假设你正在为一群年轻人建模职业选择。一个相关预测变量是预期收入。此时，每个线性模型中都会出现同一个参数 <span class="math-inline"><var>β</var><sub>income</sub></span>，用来估计收入特征对职业被选概率的影响；但在各线性模型中，与它相乘的是不同的收入值。</p><p>下面是一个 R 模拟例子。代码模拟三种职业之间的选择，每种职业都有自己的收入特征。这些特征为每类事件赋予一个分数。随后拟合模型时，会把其中一个分数固定，并利用已知的收入特征估计另外两个分数。的确有点绕；顺着实现一步步走，就会清楚得多。先模拟职业选择：</p><figure class="code-listing" id="code-11-55"><figcaption>R 代码 11.55</figcaption><pre><code># 模拟 500 人的职业选择
+N &lt;- 500             # 人数
+income &lt;- c(1,2,5)   # 各职业的预期收入
+score &lt;- 0.5*income  # 基于收入的各职业分数
+# 下一行把分数转换为概率
+p &lt;- softmax(score[1],score[2],score[3])
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 11 章 PDF 第 347–383 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 384 页继续。</aside>
+# 现在模拟选择
+# 结果 career 保存事件类型值，而不是计数
+career &lt;- rep(NA,N)  # 每个人选择的空向量
+# 为每个人抽样所选职业
+set.seed(34302)
+for ( i in 1:N ) career[i] &lt;- sample( 1:3 , size=1 , prob=p )</code></pre></figure><p>为这些虚拟数据拟合模型时，我们使用 <code>dcategorical</code> likelihood，也就是多项逻辑斯蒂回归分布。当结果变量——这里是 <code>career</code>——每一行都保存单个事件类型时，它便适用。要把全部分数转换为概率，我们使用称为 <code>softmax</code> 的多项 logit link。于是每种可能的职业都有自己的线性模型和自己的特征。上面的模拟没有截距；但即使收入不能预测职业选择，仍应有截距来表示频率差异。代码如下：</p><figure class="code-listing" id="code-11-56"><figcaption>R/Stan 代码 11.56</figcaption><pre><code>code_m11.13 &lt;- "
+data{
+    int N; // 人数
+    int K; // 可能的职业数
+    int career[N]; // 结果
+    vector[K] career_income;
+}
+parameters{
+    vector[K-1] a; // 截距
+    real&lt;lower=0&gt; b; // 收入与选择的关联
+}
+model{
+    vector[K] p;
+    vector[K] s;
+    a ~ normal( 0 , 1 );
+    b ~ normal( 0 , 0.5 );
+    s[1] = a[1] + b*career_income[1];
+    s[2] = a[2] + b*career_income[2];
+    s[3] = 0; // 枢轴
+    p = softmax( s );
+    career ~ categorical( p );
+}
+"</code></pre></figure><p>然后设置数据列表并调用 <code>stan</code>：</p><figure class="code-listing" id="code-11-57"><figcaption>R 代码 11.57</figcaption><pre><code>dat_list &lt;- list( N=N , K=3 , career=career , career_income=income )
+m11.13 &lt;- stan( model_code=code_m11.13 , data=dat_list , chains=4 )
+precis( m11.13 , 2 )</code></pre><pre class="code-output"><code>      mean   sd  5.5% 94.5% n_eff Rhat
+a[1]  0.06 0.21 -0.31  0.37   423    1
+a[2] -0.49 0.38 -1.19  0.04   435    1
+b     0.27 0.19  0.02  0.61   460    1</code></pre></figure><p>上面的拟合可能会得到少量发散转移（divergent transition）。你能找出原因吗？</p><p>请注意，这些模型给出的估计极难解释。参数都相对于枢轴结果值，所以正负号会随具体情境而变。在上例中，我把最后一种结果，也就是第三种职业，选作枢轴。若换一个枢轴，就会得到不同的估计，但结果尺度上的预测仍完全相同。它确实就是一台潮汐预测机。因此，若想让结果有意义，必须把参数转换成概率向量。不过本例至少能清楚看出，职业收入的系数 <code>b</code> 为正；只是完全看不出影响到底有多大。</p><p>要做反事实模拟，可以抽取后验样本并自行计算。目标是比较一个收入被改变的反事实职业：在其他职业同时竞争时，它的选择概率会改变多少？这是个微妙的问题，因为概率变化总是依赖其他可选项。下面设想把职业 2 的收入翻倍：</p><figure class="code-listing" id="code-11-58"><figcaption>R 代码 11.58</figcaption><pre><code>post &lt;- extract.samples( m11.13 )
+# 设置 logit 分数
+s1 &lt;- with( post , a[,1] + b*income[1] )
+s2_orig &lt;- with( post , a[,2] + b*income[2] )
+s2_new &lt;- with( post , a[,2] + b*income[2]*2 )
+
+# 计算原始情形与反事实情形的概率
+p_orig &lt;- sapply( 1:length(post$b) , function(i)
+    softmax( c(s1[i],s2_orig[i],0) ) )
+p_new &lt;- sapply( 1:length(post$b) , function(i)
+    softmax( c(s1[i],s2_new[i],0) ) )
+
+# 汇总
+p_diff &lt;- p_new[2,] - p_orig[2,]
+precis( p_diff )</code></pre><pre class="code-output"><code>'data.frame': 4000 obs. of 1 variables:
+       mean   sd 5.5% 94.5% histogram
+p_diff 0.13 0.09 0.01  0.29 ▇▇▅▅▃▂▁▁▁▁</code></pre></figure><p>收入翻倍后，选择该职业的概率平均增加 13%。注意，这个值以计算中与其他职业的比较为条件。这些模型不会脱离一组具体选项给出预测。这不是 bug，选择本来就是这样运作的。</p></section>
+
+    <section id="sec-11-3-2"><h3>11.3.2 预测变量与观测匹配</h3><p>现在考虑另一种例子：每个观测结果都有独特的预测变量值。假设你仍在建模职业选择，但现在想估计每个人的家庭收入与其职业选择之间的关联。对数据的每一行，预测变量在每个线性模型中必须取相同的值；不过现在，各线性模型会用不同的参数与它相乘。这样就能分别估计家庭收入对每类职业选择的影响。</p><figure class="code-listing" id="code-11-59"><figcaption>R/Stan 代码 11.59</figcaption><pre><code>N &lt;- 500
+# 模拟每个人的家庭收入
+family_income &lt;- runif(N)
+# 为每类事件指定独特系数
+b &lt;- c(-2,0,2)
+career &lt;- rep(NA,N)  # 每个人选择的空向量
+for ( i in 1:N ) {
+    score &lt;- 0.5*(1:3) + b*family_income[i]
+    p &lt;- softmax(score[1],score[2],score[3])
+    career[i] &lt;- sample( 1:3 , size=1 , prob=p )
+}
+
+code_m11.14 &lt;- "
+data{
+    int N; // 观测数
+    int K; // 结果值数量
+    int career[N]; // 结果
+    real family_income[N];
+}</code></pre></figure><p class="continuation-note">代码 11.59 的参数块、模型块、拟合结果与解释，将从原书 PDF 第 387 页继续。</p></section>
+  </section>
+
+  <section class="endnotes" id="chapter-11-notes" role="doc-endnotes"><h2>尾注</h2><ol start="166"><li id="note-166">重要数论家 Leopold Kronecker 据称说过：“上帝创造了整数，其余一切皆为人造。”（德文：<span lang="de">Die ganzen Zahlen hat der liebe Gott gemacht, alles andere ist Menschenwerk.</span>） <a class="backref" href="#note-166-ref" aria-label="返回正文">↩</a></li><li id="note-167">Silk 等（2005）。 <a class="backref" href="#note-167-ref" aria-label="返回正文">↩</a></li><li id="note-168">Bickel 等（1975）。 <a class="backref" href="#note-168-ref" aria-label="返回正文">↩</a></li><li id="note-169">Simpson（1951）。 <a class="backref" href="#note-169-ref" aria-label="返回正文">↩</a></li><li id="note-170">例如可参见 Pearl（2014）。关于 Simpson 悖论的论述浩如烟海，以至于你能找到看似彼此矛盾的解释。 <a class="backref" href="#note-170-ref" aria-label="返回正文">↩</a></li><li id="note-171">Kline 与 Boyd（2010）。 <a class="backref" href="#note-171-ref" aria-label="返回正文">↩</a></li><li id="note-172">变化效应应用于行为选择的已发表 Stan 示例，可参见 Koster 与 McElreath（2017）。 <a class="backref" href="#note-172-ref" aria-label="返回正文">↩</a></li></ol></section>
+
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 11 章 PDF 第 347–386 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 387 页继续。</aside>
 </article>

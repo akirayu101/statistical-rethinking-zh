@@ -1852,7 +1852,7 @@
   },
   "chapter-11": {
     "required_status": "in_progress",
-    "source_pages": [347, 383],
+    "source_pages": [347, 386],
     "required_ids": [
       "intro-11",
       "note-166-ref",
@@ -1974,13 +1974,22 @@
       "sec-11-3",
       "eq-11-multinomial-distribution",
       "eq-11-softmax",
+      "note-172-ref",
+      "sec-11-3-1",
+      "code-11-55",
+      "code-11-56",
+      "code-11-57",
+      "code-11-58",
+      "sec-11-3-2",
+      "code-11-59",
       "chapter-11-notes",
       "note-166",
       "note-167",
       "note-168",
       "note-169",
       "note-170",
-      "note-171"
+      "note-171",
+      "note-172"
     ],
     "required_headings": [
       "上帝给整数加了料",
@@ -1994,15 +2003,17 @@
       "11.2.2 负二项（gamma-Poisson）模型",
       "11.2.3 示例：暴露量与 offset",
       "11.3 多项与分类模型",
+      "11.3.1 预测变量与结果匹配",
+      "11.3.2 预测变量与观测匹配",
       "尾注"
     ],
     "counts": {
-      "section": 11,
-      "figure": 73,
+      "section": 13,
+      "figure": 78,
       "figure img": 15,
       ".book-figure": 15,
-      ".code-listing": 58,
-      ".code-output": 21,
+      ".code-listing": 63,
+      ".code-output": 23,
       ".rethinking-box": 1,
       ".overthinking-box": 2,
       ".book-quote": 0,
@@ -2011,7 +2022,7 @@
       ".source-erratum": 3,
       ".chapter-introduction": 1,
       ".continuation-note": 1,
-      ".endnotes li": 6
+      ".endnotes li": 7
     }
   }
 }
