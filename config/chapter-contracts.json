@@ -1343,8 +1343,8 @@
     }
   },
   "chapter-08": {
-    "required_status": "in_progress",
-    "source_pages": [257, 280],
+    "required_status": "verified",
+    "source_pages": [257, 284],
     "required_ids": [
       "fig-8-1",
       "rethinking-abraham-wald",
@@ -1422,6 +1422,21 @@
       "code-8-26",
       "fig-8-8",
       "sec-8-4",
+      "sec-8-5",
+      "practice-8-easy",
+      "exercise-8e1",
+      "exercise-8e2",
+      "exercise-8e3",
+      "practice-8-medium",
+      "exercise-8m1",
+      "exercise-8m2",
+      "exercise-8m3",
+      "practice-8-hard",
+      "exercise-8h1",
+      "exercise-8h2",
+      "exercise-8h3",
+      "exercise-8h4",
+      "code-8-27",
       "chapter-08-notes",
       "note-128",
       "note-129",
@@ -1430,7 +1445,8 @@
       "note-132",
       "note-133",
       "note-134",
-      "note-135"
+      "note-135",
+      "note-136"
     ],
     "required_headings": [
       "条件海牛",
@@ -1452,11 +1468,15 @@
       "8.3.3 绘制后验预测",
       "8.3.4 绘制先验预测",
       "8.4 总结",
+      "8.5 练习",
+      "简单题",
+      "中等题",
+      "困难题",
       "尾注"
     ],
     "counts": {
-      "section": 13,
-      "figure": 36,
+      "section": 14,
+      "figure": 37,
       "figure svg": 2,
       "figure img": 8,
       ".book-figure": 8,
@@ -1469,7 +1489,7 @@
       ".tulips-triptych-figure": 1,
       ".tulips-prior-triptych-figure": 1,
       ".dag-figure": 2,
-      ".code-listing": 26,
+      ".code-listing": 27,
       ".code-output": 10,
       ".equation-block": 20,
       ".model-system-equation": 7,
@@ -1478,9 +1498,11 @@
       ".overthinking-box": 2,
       ".argument-list": 1,
       ".argument-list li": 4,
-      ".source-erratum": 3,
+      ".source-erratum": 4,
       ".interaction-readings li": 2,
-      ".endnotes li": 8
+      ".practice-list": 3,
+      "ol.practice-list > li": 10,
+      ".endnotes li": 9
     }
   }
 }

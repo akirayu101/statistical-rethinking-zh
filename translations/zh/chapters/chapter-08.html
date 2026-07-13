@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-08" data-source-pages="257-280">
-  <header class="chapter-header"><p class="eyebrow">第八章</p><h1>条件海牛</h1><p class="source-range">当前译稿对应原书 PDF 第 257–280 页</p></header>
+<article class="book-article" data-chapter="chapter-08" data-source-pages="257-284">
+  <header class="chapter-header"><p class="eyebrow">第八章</p><h1>条件海牛</h1><p class="source-range">当前译稿对应原书 PDF 第 257–284 页（整章）</p></header>
 
   <p>海牛（<i>Trichechus manatus</i>）是一种行动缓慢、生活在温暖浅水中的水生哺乳动物。海牛没有天敌，却与摩托艇共享水域，而摩托艇装有螺旋桨。海牛虽与大象有亲缘关系、皮肤也很厚，螺旋桨叶片仍然能够而且确实会杀死它们。大多数成年海牛身上都有与船只相撞留下的某种伤疤（图 8.1，上）。<sup id="note-128-ref"><a href="#note-128">128</a></sup></p>
   <p>阿姆斯特朗—惠特沃思 A.W.38“惠特利”是英国皇家空军的一线轰炸机。第二次世界大战期间，A.W.38 把炸弹和传单带入德国领土。与海牛不同，A.W.38 有凶猛的天敌：高射炮火和截击机火力。许多飞机执行任务后再也没有回来；幸存者身上的伤痕足以证明它们经历过什么（图 8.1，下）。</p>
@@ -362,9 +362,40 @@ prior &lt;- extract.prior(m8.5)</code></pre></figure>
     </section>
   </section>
 
-  <section id="sec-8-4"><h2>8.4 总结</h2><p>本章介绍了交互作用，它允许预测变量与结果之间的关联依赖另一个预测变量的值。虽然 DAG 中看不到交互作用，但它们可能对准确推断很重要。交互作用难以解释，因此本章还介绍了三联图，帮助把交互效应可视化。本章没有引入新的编码技巧，但统计模型的总结将在原书 PDF 第 281 页继续。</p></section>
+  <section id="sec-8-4"><h2>8.4 总结</h2><p>本章介绍了交互作用，它允许预测变量与结果之间的关联依赖另一个预测变量的值。虽然 DAG 中看不到交互作用，但它们可能对准确推断很重要。交互作用难以解释，因此本章还介绍了三联图，帮助把交互效应可视化。本章没有引入新的编码技巧，但本章考察的统计模型已经是本书迄今最复杂的一批。若要继续前进，我们将需要更强大的条件化引擎来把模型拟合到数据；这正是下一章的主题。</p></section>
 
-  <section class="endnotes" id="chapter-08-notes" role="doc-endnotes"><h2>尾注</h2><ol start="128"><li id="note-128">这里关于海牛的事实均取自 Lightsey 等（2006）和 Rommel 等（2007）。图中的伤痕图取自 <span class="url-text">http://www.learner.org/jnorth/tm/manatee/RollCall.html</span> 的免费教育材料。 <a class="backref" href="#note-128-ref" aria-label="返回正文">↩</a></li><li id="note-129">Wald（1943）。更易懂的介绍和历史背景可参见 Mangel 与 Samaniego（1984）。 <a class="backref" href="#note-129-ref" aria-label="返回正文">↩</a></li><li id="note-130">Wald（1950）。Wald 的奠基论文是 Wald（1939）；强烈推荐 Fienberg（2006）的历史回顾。更技术性的讨论可参见 Berger（1985）、Robert（2007）以及 Jaynes（2003）第 406 页。 <a class="backref" href="#note-130-ref" aria-label="返回正文">↩</a></li><li id="note-131">GDP 即国内生产总值（Gross Domestic Product）。它是最常用的经济表现度量，也是最荒唐的度量之一。用 GDP 衡量经济健康，就像用热量衡量化学反应的质量。 <a class="backref" href="#note-131-ref" aria-label="返回正文">↩</a></li><li id="note-132">Riley 等（1999）。 <a class="backref" href="#note-132-ref" aria-label="返回正文">↩</a></li><li id="note-133">数据来自 Nunn 与 Puga（2011）。 <a class="backref" href="#note-133-ref" aria-label="返回正文">↩</a></li><li id="note-134">一个很好的例子是法罗群岛大规模的现代隧道系统。群岛的天然地质非常崎岖，历史上走水路一直比走陆路容易得多；但 20 世纪后期，丹麦政府大力投资隧道建设，显著降低了群岛的有效崎岖度。 <a class="backref" href="#note-134-ref" aria-label="返回正文">↩</a></li><li id="note-135">本例改编自 Grafen 与 Hails（2002）；这是一本出色的非贝叶斯应用统计学著作，读者也许会喜欢。它对一些标准线性模型采用了相当独特的几何呈现。 <a class="backref" href="#note-135-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section id="sec-8-5"><h2>8.5 练习</h2>
+    <h3>简单题</h3>
+    <ol class="practice-list" id="practice-8-easy">
+      <li id="exercise-8e1"><strong>8E1.</strong> 对下面每一条因果关系，给出一个会导致交互效应的假想第三变量。<ol><li>面包面团因为酵母而膨起。</li><li>教育带来更高收入。</li><li>汽油让汽车行驶。</li></ol></li>
+      <li id="exercise-8e2"><strong>8E2.</strong> 下列哪些解释调用了交互作用？<ol><li>让洋葱焦糖化，需要用小火烹调，并确保洋葱不会变干。</li><li>汽缸更多或燃油喷射器更好，汽车都会开得更快。</li><li>大多数人的政治信念来自父母，除非他们转而从朋友那里获得。</li><li>聪明的动物物种往往要么高度社会化，要么拥有能操纵物体的附肢（手、触手等）。</li></ol></li>
+      <li id="exercise-8e3"><strong>8E3.</strong> 对 8E2 中的每个解释，写出一个表达所述关系的线性模型。</li>
+    </ol>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 257–280 页已完成翻译、逐页核对、结构契约及桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 281 页继续。</aside>
+    <h3>中等题</h3>
+    <ol class="practice-list" id="practice-8-medium">
+      <li id="exercise-8m1"><strong>8M1.</strong> 回想本章的郁金香例子。假设另一组处理把温室温度调成冷、热两级；本章数据是在低温下收集的。你发现，高温下生长的植物无论水量和遮阴等级如何，全都没有开花。你能用水量、遮阴和温度之间的交互作用解释这个结果吗？</li>
+      <li id="exercise-8m2"><strong>8M2.</strong> 你能构造一个回归方程，使温度为高温时花朵大小恒为零吗？</li>
+      <li id="exercise-8m3"><strong>8M3.</strong> 在北美部分地区，渡鸦依靠狼获取食物。这是因为渡鸦是食肉动物，却通常无法杀死猎物或撕开尸体；狼则能做到，而且容许渡鸦在自己的猎物旁共同进食。这种物种关系通常被称为“物种交互作用”。你能构造一组假想的渡鸦种群规模数据，让这种关系表现为统计交互作用吗？你认为这种生物学交互作用可能是线性的吗？为什么？</li>
+    </ol>
+
+    <h3>困难题</h3>
+    <ol class="practice-list" id="practice-8-hard">
+      <li id="exercise-8h1"><strong>8H1.</strong> 回到本章的 <code>data(tulips)</code> 例子。现在把变量 <code>bed</code> 作为预测变量加入交互模型。不要让 <code>bed</code> 与其他预测变量交互，只把它作为主效应加入。注意，<code>bed</code> 是分类变量；要正确使用它，需要像第 6 章解释的那样构造虚拟变量，或者更好地构造索引变量。</li>
+      <li id="exercise-8h2"><strong>8H2.</strong> 用 WAIC 比较 8H1 的模型与省略 <code>bed</code> 的模型。你能从比较中推断什么？能否把 WAIC 结果与 <code>bed</code> 系数的后验分布协调起来？</li>
+      <li id="exercise-8h3"><strong>8H3.</strong> 再次考虑本章分析的 <code>data(rugged)</code> 经济发展与地形崎岖度数据。例子中的非洲国家塞舌尔远离其他国家形成的点云：它罕见地兼有相对较高的 GDP 和较高的崎岖度。塞舌尔也很特殊：它是一组远离非洲大陆海岸的岛屿，主要经济活动是旅游业。<ol class="alpha-list"><li>聚焦本章的崎岖度交互模型 <code>m8.3</code>。用逐点 WAIC 惩罚和 PSIS Pareto <span class="math-inline"><var>k</var></span> 值度量各国的相对影响力。按这些准则，塞舌尔是否在影响结果？还有其他影响力相对较大的国家吗？如果有，你能解释原因吗？</li><li>现在使用上一章介绍的稳健回归。修改 <code>m8.3</code>，采用 <span class="math-inline"><var>ν</var> = 2</span> 的 Student-t 分布。这会实质性改变结果吗？</li></ol><p class="source-erratum"><strong>原文勘误：</strong>本题两处原印 <code>m8.5</code>，但本章的崎岖度交互模型实际为 <code>m8.3</code>；译稿按实际模型编号更正。</p></li>
+      <li id="exercise-8h4"><strong>8H4.</strong> <code>data(nettle)</code> 中的值是 74 个国家的语言多样性数据。<sup id="note-136-ref"><a href="#note-136">136</a></sup>各列含义如下：<ol><li><code>country</code>：国家名称。</li><li><code>num.lang</code>：被认可的语言数量。</li><li><code>area</code>：面积，单位为平方千米。</li><li><code>k.pop</code>：人口，单位为千人。</li><li><code>num.stations</code>：为后两列提供数据的气象站数量。</li><li><code>mean.growing.season</code>：平均生长季长度，单位为月。</li><li><code>sd.growing.season</code>：生长季长度的标准差，单位为月。</li></ol>
+        <p>用这些数据评估“语言多样性有一部分是粮食安全的产物”这一假说。其思想是：在生产力较高的生态环境中，人们不需要庞大的社会网络来缓冲粮食短缺风险，因此族群可以更小、更自给自足，使人均语言更多。相反，在较差的生态环境中，生计风险更高，人类社会因而通过建立更大的相互义务网络来提供粮食保障；这又产生有助于阻止语言分化的社会力量。</p>
+        <p>具体来说，把人均语言数作为结果变量：</p>
+        <figure class="code-listing" id="code-8-27"><figcaption>R 代码 8.27</figcaption><pre><code>d$lang.per.cap &lt;- d$num.lang / d$k.pop</code></pre></figure>
+        <p>把这个新变量的对数用作回归结果。（这里使用计数模型会更好，但要到第 11 章才会学习。）</p>
+        <p>本题是开放式的，你可以自行决定怎样处理这些假说以及模型建议中存在的不确定性。如果认为某处需要使用 WAIC，就使用；如果认为需要特定先验，就为其辩护；如果认为应以某种方式绘制预测，就照做。请尽量诚实地评估 <code>mean.growing.season</code> 与 <code>sd.growing.season</code> 的主效应，以及二者之间的交互作用，具体要求见下面的 (a)、(b)、(c)。若不确定采用哪种方法，就尝试几种。</p>
+        <ol class="alpha-list"><li>评估这一假说：用 <code>log(lang.per.cap)</code> 度量的语言多样性与平均生长季长度 <code>mean.growing.season</code> 正相关。在回归中考虑把 <code>log(area)</code> 作为协变量（而不是交互项）。解释结果。</li><li>现在评估这一假说：语言多样性与生长季长度的标准差 <code>sd.growing.season</code> 负相关。这个假说源于收成的不确定性会促使人们通过更大的社会网络获得社会保障，从而减少语言数量。再次考虑把 <code>log(area)</code> 作为协变量（而不是交互项）。解释结果。</li><li>最后，评估这一假说：<code>mean.growing.season</code> 与 <code>sd.growing.season</code> 交互，协同减少语言多样性。其思想是，在平均生长季更长的国家，高方差使储存和再分配比其他情况下更重要。这样，人们就能合作保存和保护丰收时的盈余，留到干旱时期使用。这些力量又可能带来更强的社会整合与更少的语言。</li></ol>
+      </li>
+    </ol>
+  </section>
+
+  <section class="endnotes" id="chapter-08-notes" role="doc-endnotes"><h2>尾注</h2><ol start="128"><li id="note-128">这里关于海牛的事实均取自 Lightsey 等（2006）和 Rommel 等（2007）。图中的伤痕图取自 <span class="url-text">http://www.learner.org/jnorth/tm/manatee/RollCall.html</span> 的免费教育材料。 <a class="backref" href="#note-128-ref" aria-label="返回正文">↩</a></li><li id="note-129">Wald（1943）。更易懂的介绍和历史背景可参见 Mangel 与 Samaniego（1984）。 <a class="backref" href="#note-129-ref" aria-label="返回正文">↩</a></li><li id="note-130">Wald（1950）。Wald 的奠基论文是 Wald（1939）；强烈推荐 Fienberg（2006）的历史回顾。更技术性的讨论可参见 Berger（1985）、Robert（2007）以及 Jaynes（2003）第 406 页。 <a class="backref" href="#note-130-ref" aria-label="返回正文">↩</a></li><li id="note-131">GDP 即国内生产总值（Gross Domestic Product）。它是最常用的经济表现度量，也是最荒唐的度量之一。用 GDP 衡量经济健康，就像用热量衡量化学反应的质量。 <a class="backref" href="#note-131-ref" aria-label="返回正文">↩</a></li><li id="note-132">Riley 等（1999）。 <a class="backref" href="#note-132-ref" aria-label="返回正文">↩</a></li><li id="note-133">数据来自 Nunn 与 Puga（2011）。 <a class="backref" href="#note-133-ref" aria-label="返回正文">↩</a></li><li id="note-134">一个很好的例子是法罗群岛大规模的现代隧道系统。群岛的天然地质非常崎岖，历史上走水路一直比走陆路容易得多；但 20 世纪后期，丹麦政府大力投资隧道建设，显著降低了群岛的有效崎岖度。 <a class="backref" href="#note-134-ref" aria-label="返回正文">↩</a></li><li id="note-135">本例改编自 Grafen 与 Hails（2002）；这是一本出色的非贝叶斯应用统计学著作，读者也许会喜欢。它对一些标准线性模型采用了相当独特的几何呈现。 <a class="backref" href="#note-135-ref" aria-label="返回正文">↩</a></li><li id="note-136">数据来自 Nettle（1998）。 <a class="backref" href="#note-136-ref" aria-label="返回正文">↩</a></li></ol></section>
+
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 8 章 PDF 第 257–284 页整章完成；结构契约、逐页对照及桌面/移动端整章验收均通过。第 284 页为空白保留页。</aside>
 </article>
