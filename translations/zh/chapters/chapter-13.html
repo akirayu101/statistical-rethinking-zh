@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-13" data-source-pages="429-437">
-  <header class="chapter-header"><p class="eyebrow">第十三章</p><h1>有记忆的模型</h1><p class="source-range">当前译稿对应原书 PDF 第 429–437 页</p></header>
+<article class="book-article" data-chapter="chapter-13" data-source-pages="429-440">
+  <header class="chapter-header"><p class="eyebrow">第十三章</p><h1>有记忆的模型</h1><p class="source-range">当前译稿对应原书 PDF 第 429–440 页</p></header>
 
   <div class="chapter-introduction" id="intro-13">
     <p>1985 年，Clive Wearing 失去了心智，却没有失去音乐。<sup id="note-185-ref"><a href="#note-185">185</a></sup> Wearing 是音乐学家，也是一位出色的音乐家；但引起唇疱疹的单纯疱疹病毒钻进了他的大脑，侵蚀了海马体。结果是慢性<strong>顺行性遗忘</strong>：他无法形成新的长期记忆。他仍记得怎样弹钢琴，却不记得自己五分钟前刚弹过。Wearing 如今活在一个个瞬间里，对几分钟前以外的过去一无所知；每一杯咖啡都是他有生以来的第一杯。</p>
@@ -130,11 +130,58 @@ dens( inv_logit(sim_tanks) , lwd=2 , adj=0.1 )</code></pre></figure>
 
     <aside class="rethinking-box" id="rethinking-varying-intercepts-overdispersion"><h3>再思考：把变化截距视为过度离散</h3><p>上一章（原书第 381 页）介绍了用 beta-binomial 和 gamma-Poisson 模型处理计数数据的过度离散。变化截距能完成同一件事，让计数结果允许过度离散。原因是：当每个观测计数都有自己的独特截距，而这些截距又通过共同分布汇聚时，模型预测就会像 beta-binomial 或 gamma-Poisson 模型一样预期过度离散。与这两类模型相比，在每个观测结果上放置变化截距的 binomial 或 Poisson 模型，通常更容易估计，也更容易扩展。本章稍后会给出这种方法的例子。</p></aside>
 
-    <aside class="overthinking-box" id="overthinking-variance-component-priors"><h3>过度思考：方差分量的先验</h3><p>本书的示例对方差分量使用弱正则化的指数先验；这里的方差分量，就是估计数据中跨集群变异的 <span class="math-inline"><var>σ</var></span> 参数。这些指数先验在常规多层建模中表现很好：它们只表达对平均标准差的粗略认识，并向零正则化。但在两种常见情境中，它们可能带来问题。第一，有时数据几乎没有多少信息可用于估计方差。例如只有 5 个集群，就有点像只用 5 个数据点估计方差；此时可能需要信息丰富得多的先验。第二，在使用 logit 和 log link 的非线性模型中，地板效应和天花板效应有时会让极端方差值看起来与更现实的方差值同样可信。</p></aside>
-    <p class="continuation-note">方差参数的长尾采样问题、half-Normal 先验，以及 13.2“变化效应与欠拟合/过拟合权衡”将从原书 PDF 第 438 页继续。</p>
+    <aside class="overthinking-box" id="overthinking-variance-component-priors"><h3>过度思考：方差分量的先验</h3><p>本书的示例对方差分量使用弱正则化的指数先验；这里的方差分量，就是估计数据中跨集群变异的 <span class="math-inline"><var>σ</var></span> 参数。这些指数先验在常规多层建模中表现很好：它们只表达对平均标准差的粗略认识，并向零正则化。但在两种常见情境中，它们可能带来问题。第一，有时数据几乎没有多少信息可用于估计方差。例如只有 5 个集群，就有点像只用 5 个数据点估计方差；此时可能需要信息丰富得多的先验。第二，在使用 logit 和 log link 的非线性模型中，地板效应和天花板效应有时会让极端方差值看起来与更现实的方差值同样可信。</p><p>在这种情况下，方差参数的轨迹图可能会在非常大的数值之间摆动。之所以能够这样，是因为指数先验有一条长尾；而如此大的值通常在先验上根本不可能。链往往仍能有效抽样，但效率可能极低，表现为很小的 <code>n_eff</code>，还可能出现许多发散转移。</p><p>要改进这类模型，可以不对方差分量使用指数先验，而改用 half-Normal 先验或其他薄尾先验。half-Normal 是把全部概率质量放在零以上的 Normal 分布，也就是在零以下截断。例如：</p><div class="equation-block wallis-equation" id="eq-13-half-normal-variance"><div><var>S</var><sub>i</sub> ∼ Binomial(<var>N</var><sub>i</sub>, <var>p</var><sub>i</sub>)</div><div>logit(<var>p</var><sub>i</sub>) = <var>α</var><sub>TANK[<var>i</var>]</sub></div><div><var>α</var><sub><var>j</var></sub> ∼ Normal(<var>ᾱ</var>, <var>σ</var>)</div><div><var>ᾱ</var> ∼ Normal(0, 1.5)</div><div><var>σ</var> ∼ Half-Normal(0, 1)</div></div><p>在 <code>ulam</code> 公式中使用 <code>dhalfnorm</code>；在 Stan 模型中，只需给参数指定下界 <code>lower=0</code>。</p></aside>
   </section>
 
-  <section class="endnotes" id="chapter-13-notes" role="doc-endnotes"><h2>尾注</h2><ol start="185"><li id="note-185">Wearing 的妻子 Deborah 写过一本关于他患病后两人生活的书（Wearing，2005）。他的故事也出现在多部纪录片中；快速搜索互联网还能找到许多新闻报道。 <a class="backref" href="#note-185-ref" aria-label="返回正文">↩</a></li><li id="note-186">Gelman（2005）第 20 页第 6 节列出了一组彼此差异极大的“随机效应”定义，读来颇有趣。 <a class="backref" href="#note-186-ref" aria-label="返回正文">↩</a></li><li id="note-187">Vonesh 与 Bolker（2005）。 <a class="backref" href="#note-187-ref" aria-label="返回正文">↩</a></li><li id="note-188">这里采用 Gelman（2005）的术语。他认为，对大多数人而言，常用的“随机效应”一词几乎无助于理解，反而似乎会助长误解；部分原因是“固定”和“随机”对不同统计学家有不同含义。详见该文第 20–21 页。不过，我完全明白：试图推广 Gelman 的替代术语，基本等同于迎着强风吐口水。 <a class="backref" href="#note-188-ref" aria-label="返回正文">↩</a></li><li id="note-189">“多”也经常指多个线性模型，尤其常见于“层级线性模型”文献。不管怎样，我们谈论的仍是同一种机器人。 <a class="backref" href="#note-189-ref" aria-label="返回正文">↩</a></li><li id="note-190">注意，正则化本身仍有不确定性。所以，这个模型并不完全等同于直接假设一个标准差恒为 1.6 的正则化先验；相反，每个水槽的截距还会对 <span class="math-inline"><var>σ</var></span>（以及 <span class="math-inline"><var>ᾱ</var></span>）的不确定性取平均。 <a class="backref" href="#note-190-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section id="sec-13-2"><h2>13.2 变化效应与欠拟合/过拟合权衡</h2>
+    <p>变化截距只是正则化估计，不过它们会在估计每个集群特征的同时，估计集群之间有多大差异，从而实现自适应正则化。这个事实不容易把握；如果仍觉得神秘，本节会进一步把多层估计的性质，与第 7 章最基础的欠拟合/过拟合困境联系起来。</p>
+    <p>相较原始经验估计，变化效应估计的一项主要好处，是能更准确地估计各个集群（水槽）的截距。<sup id="note-191-ref"><a href="#note-191">191</a></sup>平均而言，变化效应确实能更好地估计每个水槽（集群）的均值。原因在于，变化截距能更妥善地权衡欠拟合与过拟合。</p>
+    <p>仍以芦苇蛙为例。假设这里不是实验水槽，而是天然池塘，因此我们关心的是将来对同一批集群作预测。可以从三种角度处理这些池塘未来的存活率：</p>
+    <ol>
+      <li><strong>完全汇聚。</strong>假设池塘总体不变，相当于为所有池塘估计一个共同截距。</li>
+      <li><strong>无汇聚。</strong>假设每个池塘都不能告诉我们其他任何池塘的信息。这就是失忆模型。</li>
+      <li><strong>部分汇聚。</strong>使用上一节那样的自适应正则化先验。</li>
+    </ol>
+    <p>先假设忽略变化截距，只用所有池塘的总体平均值 <span class="math-inline"><var>α</var></span> 为每个池塘作预测。估计 <span class="math-inline"><var>α</var></span> 时用到了大量数据，因此可以非常精确；但 <span class="math-inline"><var>α</var></span> 几乎不可能恰好等于任何特定池塘的均值，结果是总样本均值对数据欠拟合。这就是<strong>完全汇聚</strong>：把所有池塘的数据汇聚成一个估计，再把它应用于每个池塘。这类模型等同于假设池塘之间的变异为零——所有池塘完全相同。</p>
+    <p>第二，假设直接用每个池塘的存活比例作预测，也就是每个池塘使用一个独立截距。图 13.1 的蓝点就是同类估计。每个特定池塘用于估计的数据都很少，所以估计相当不精确；小池塘尤其如此，因为形成估计的数据更少。结果是估计误差很大，并且相当过拟合。每个截距的标准误可能非常大，极端时甚至无穷大。这些估计有时称为<strong>无汇聚估计</strong>：池塘之间不共享任何信息。它就像假设池塘间变异无穷大，因此从一个池塘学到的任何东西都不能帮助预测另一个。</p>
+    <p>第三，估计变化截距时，会对信息作<strong>部分汇聚</strong>，为每个集群产生比总均值更少欠拟合、又比无汇聚估计更少过拟合的估计。因此，它们往往能更好地估计真实的逐集群（逐池塘）均值。池塘里蝌蚪很少时尤其如此，因为无汇聚估计会特别过拟合；每个池塘的数据很多时，变化效应估计与无汇聚估计之间的差异则会更小。</p>
+    <p>为了演示这一点，下面模拟一些蝌蚪数据。这样就能知道真实的逐池塘存活概率，再通过计算各自与目标真值的距离，比较无汇聚估计与部分汇聚估计。余下各小节会展示怎样完成这项模拟。</p>
+    <p>学会以这种方式模拟并验证模型和模型拟合非常有价值。一旦开始使用更复杂的模型，就需要确认代码正常工作，而且自己确实理解模型。可以指定参数值，从模型模拟数据，再检查估计方法能否在可接受的精度范围内恢复参数。即使只是从某个模型结构模拟数据，也会极大促进理解。</p>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 13 章 PDF 第 429–437 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 438 页继续。</aside>
+    <h3 id="sec-13-2-1">13.2.1 模型</h3>
+    <p>第一步是定义要使用的模型。仍采用前面的基本多层 binomial 模型，只是把“水槽”换成“池塘”：</p>
+    <div class="equation-block wallis-equation" id="eq-13-pond-model"><div><var>S</var><sub>i</sub> ∼ Binomial(<var>N</var><sub>i</sub>, <var>p</var><sub>i</sub>)</div><div>logit(<var>p</var><sub>i</sub>) = <var>α</var><sub>POND[<var>i</var>]</sub></div><div><var>α</var><sub><var>j</var></sub> ∼ Normal(<var>ᾱ</var>, <var>σ</var>)</div><div><var>ᾱ</var> ∼ Normal(0, 1.5)</div><div><var>σ</var> ∼ Exponential(1)</div></div>
+    <p>要从这个过程模拟数据，需要为以下量赋值：</p>
+    <ul>
+      <li><span class="math-inline"><var>ᾱ</var></span>：整个池塘总体的平均存活对数赔率；</li>
+      <li><span class="math-inline"><var>σ</var></span>：池塘之间存活对数赔率分布的标准差；</li>
+      <li><span class="math-inline"><strong>α</strong></span>：各个池塘截距组成的向量，每个池塘一个。</li>
+    </ul>
+    <p>还需要为每个池塘指定样本量 <span class="math-inline"><var>N</var><sub>i</sub></span>。作出全部选择后，就能用 <code>rbinom</code> 直接从顶层 binomial 过程轻松模拟蝌蚪存活数。下面一步一步完成。</p>
+    <p>注意，估计时先验是模型的一部分，模拟时却不是。为什么？因为先验属于认识论，而不是本体论。它们表示机器人的初始信息状态，并不是关于自然界如何选择参数值的陈述。</p>
+
+    <h3 id="sec-13-2-2">13.2.2 为参数赋值</h3>
+    <p>下面指定一组能代表真实蝌蚪数据的具体数值，以便绘图展示变化效应估计提高的准确度。稍后可以回来，把它们改成任何想试的数值。先初始化 <span class="math-inline"><var>ᾱ</var></span>、<span class="math-inline"><var>σ</var></span>、池塘数量，以及每个池塘的样本量 <span class="math-inline"><var>n</var><sub>i</sub></span>：</p>
+    <figure class="code-listing" id="code-13-7"><figcaption>R 代码 13.7</figcaption><pre><code>a_bar &lt;- 1.5
+sigma &lt;- 1.5
+nponds &lt;- 60
+Ni &lt;- as.integer( rep( c(5,10,25,35) , each=15 ) )</code></pre></figure>
+    <p>这里选了 60 个池塘，初始蝌蚪密度 5、10、25、35 各 15 个。选择这些密度，是为了展示预测误差怎样随样本量改变。最后一行使用 <code>as.integer</code>，源于 Stan——因而也包括 <code>ulam</code>——工作方式中的一个细微问题，解释见本页末尾的“过度思考”框。</p>
+    <aside class="source-erratum" id="erratum-13-alpha-bar-simulation"><strong>原文说明：</strong>代码 13.7 把 <code>a_bar</code> 设为 1.5，但紧接着的正文写成 <span class="math-inline"><var>ᾱ</var> = 1.4</span>。后续代码实际使用对象 <code>a_bar</code>，因此译稿按可执行代码的 1.5 解释。</aside>
+    <p><span class="math-inline"><var>ᾱ</var> = 1.5</span> 与 <span class="math-inline"><var>σ</var> = 1.5</span> 定义了各个池塘存活对数赔率的高斯分布。现在从均值为 <span class="math-inline"><var>ᾱ</var></span>、标准差为 <span class="math-inline"><var>σ</var></span> 的高斯分布，模拟全部 60 个截距值：</p>
+    <figure class="code-listing" id="code-13-8"><figcaption>R 代码 13.8</figcaption><pre><code>set.seed(5005)
+a_pond &lt;- rnorm( nponds , mean=a_bar , sd=sigma )</code></pre></figure>
+    <p>可以查看 <code>a_pond</code> 的内容。它应包含 60 个对数赔率值，每个模拟池塘一个。最后，把其中一部分信息装进数据框，方便整理：</p>
+    <figure class="code-listing" id="code-13-9"><figcaption>R 代码 13.9</figcaption><pre><code>dsim &lt;- data.frame( pond=1:nponds , Ni=Ni , true_a=a_pond )</code></pre></figure>
+    <p>查看模拟数据 <code>dsim</code>。第一列是 1 到 60 的池塘索引，第二列是每个池塘的初始蝌蚪数，第三列是每个池塘真实的存活对数赔率。</p>
+
+    <aside class="overthinking-box" id="overthinking-data-types-stan"><h3>过度思考：数据类型与 Stan 模型</h3><p>R 中的数值数据有两种基本类型：整数和实数。像“3”这样的数既可能是整数，也可能是实数。在计算机内部，整数与实数（<code>numeric</code>）的表示不同。例如，可以用两种类型生成相同的数值向量：</p><figure class="code-listing" id="code-13-10"><figcaption>R 代码 13.10</figcaption><pre><code>class(1:3)
+class(c(1,2,3))</code></pre><pre class="code-output"><code>[1] "integer"
+[1] "numeric"</code></pre></figure><p>通常不必管理这些类型，因为 R 会代劳。但把值传给 Stan 或其他外部程序时，内部表示往往很重要；Stan 与 <code>ulam</code> 有时尤其要求显式整数。例如在 binomial 模型中，指定试验次数的“size”变量必须是整数类型。若 size 变量属于“real”类型，也就是 R 所称的 <code>numeric</code>，Stan 可能给出一条令人困惑的“找不到函数”警告。把数据传给 Stan 或 <code>ulam</code> 前使用 <code>as.integer</code>，即可解决问题。</p></aside>
+    <p class="continuation-note">13.2.3“模拟存活数”、无汇聚估计与部分汇聚模型拟合将从原书 PDF 第 441 页继续。</p>
+  </section>
+
+  <section class="endnotes" id="chapter-13-notes" role="doc-endnotes"><h2>尾注</h2><ol start="185"><li id="note-185">Wearing 的妻子 Deborah 写过一本关于他患病后两人生活的书（Wearing，2005）。他的故事也出现在多部纪录片中；快速搜索互联网还能找到许多新闻报道。 <a class="backref" href="#note-185-ref" aria-label="返回正文">↩</a></li><li id="note-186">Gelman（2005）第 20 页第 6 节列出了一组彼此差异极大的“随机效应”定义，读来颇有趣。 <a class="backref" href="#note-186-ref" aria-label="返回正文">↩</a></li><li id="note-187">Vonesh 与 Bolker（2005）。 <a class="backref" href="#note-187-ref" aria-label="返回正文">↩</a></li><li id="note-188">这里采用 Gelman（2005）的术语。他认为，对大多数人而言，常用的“随机效应”一词几乎无助于理解，反而似乎会助长误解；部分原因是“固定”和“随机”对不同统计学家有不同含义。详见该文第 20–21 页。不过，我完全明白：试图推广 Gelman 的替代术语，基本等同于迎着强风吐口水。 <a class="backref" href="#note-188-ref" aria-label="返回正文">↩</a></li><li id="note-189">“多”也经常指多个线性模型，尤其常见于“层级线性模型”文献。不管怎样，我们谈论的仍是同一种机器人。 <a class="backref" href="#note-189-ref" aria-label="返回正文">↩</a></li><li id="note-190">注意，正则化本身仍有不确定性。所以，这个模型并不完全等同于直接假设一个标准差恒为 1.6 的正则化先验；相反，每个水槽的截距还会对 <span class="math-inline"><var>σ</var></span>（以及 <span class="math-inline"><var>ᾱ</var></span>）的不确定性取平均。 <a class="backref" href="#note-190-ref" aria-label="返回正文">↩</a></li><li id="note-191">这一事实早在人们能够实际使用多层模型之前就已为人所知；可参见 Stein（1955）那篇影响深远的非 Bayes 论文。 <a class="backref" href="#note-191-ref" aria-label="返回正文">↩</a></li></ol></section>
+
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 13 章 PDF 第 429–440 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 441 页继续。</aside>
 </article>

@@ -1129,7 +1129,14 @@
     "global average": "总体平均值",
     "population distribution of survival": "存活率总体分布",
     "variance component": "方差分量",
-    "pool information across clusters": "跨集群汇聚信息"
+    "pool information across clusters": "跨集群汇聚信息",
+    "half-Normal prior": "half-Normal 先验",
+    "complete pooling": "完全汇聚",
+    "no pooling": "无汇聚",
+    "no-pooling estimate": "无汇聚估计",
+    "parameter recovery": "参数恢复",
+    "integer type": "整数类型",
+    "real type": "实数类型"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "blavaan", "AIC", "DIC", "WAIC", "BIC", "PSIS-LOO", "MCMC", "HMC"

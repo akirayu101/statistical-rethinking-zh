@@ -2258,7 +2258,7 @@
   },
   "chapter-13": {
     "required_status": "in_progress",
-    "source_pages": [429, 437],
+    "source_pages": [429, 440],
     "required_ids": [
       "intro-13",
       "note-185-ref",
@@ -2284,35 +2284,51 @@
       "fig-13-2",
       "rethinking-varying-intercepts-overdispersion",
       "overthinking-variance-component-priors",
+      "eq-13-half-normal-variance",
+      "sec-13-2",
+      "note-191-ref",
+      "sec-13-2-1",
+      "eq-13-pond-model",
+      "sec-13-2-2",
+      "code-13-7",
+      "erratum-13-alpha-bar-simulation",
+      "code-13-8",
+      "code-13-9",
+      "overthinking-data-types-stan",
+      "code-13-10",
       "chapter-13-notes",
       "note-185",
       "note-186",
       "note-187",
       "note-188",
       "note-189",
-      "note-190"
+      "note-190",
+      "note-191"
     ],
     "required_headings": [
       "有记忆的模型",
       "13.1 示例：多层蝌蚪",
+      "13.2 变化效应与欠拟合/过拟合权衡",
+      "13.2.1 模型",
+      "13.2.2 为参数赋值",
       "尾注"
     ],
     "counts": {
-      "section": 2,
-      "figure": 8,
+      "section": 3,
+      "figure": 12,
       "figure img": 2,
       ".book-figure": 2,
-      ".code-listing": 6,
-      ".code-output": 2,
+      ".code-listing": 10,
+      ".code-output": 3,
       ".rethinking-box": 3,
-      ".overthinking-box": 2,
+      ".overthinking-box": 3,
       ".book-quote": 0,
-      ".equation-block": 2,
-      ".wallis-equation": 2,
-      ".source-erratum": 1,
+      ".equation-block": 4,
+      ".wallis-equation": 4,
+      ".source-erratum": 2,
       ".chapter-introduction": 1,
       ".continuation-note": 1,
-      ".endnotes li": 6
+      ".endnotes li": 7
     }
   }
 }
