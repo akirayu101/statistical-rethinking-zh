@@ -1852,32 +1852,47 @@
   },
   "chapter-11": {
     "required_status": "in_progress",
-    "source_pages": [347, 347],
+    "source_pages": [347, 350],
     "required_ids": [
       "intro-11",
       "note-166-ref",
+      "fig-11-1",
+      "sec-11-1",
+      "eq-11-binomial-distribution",
+      "list-11-binomial-forms",
+      "sec-11-1-1",
+      "note-167-ref",
+      "fig-11-2",
+      "code-11-1",
+      "list-11-treatment-combinations",
+      "code-11-2",
+      "code-11-3",
       "chapter-11-notes",
-      "note-166"
+      "note-166",
+      "note-167"
     ],
     "required_headings": [
       "上帝给整数加了料",
+      "11.1 二项回归",
+      "11.1.1 逻辑斯蒂回归：亲社会黑猩猩",
       "尾注"
     ],
     "counts": {
-      "section": 1,
-      "figure": 0,
-      "figure img": 0,
-      ".book-figure": 0,
-      ".code-listing": 0,
+      "section": 3,
+      "figure": 5,
+      "figure img": 2,
+      ".book-figure": 2,
+      ".code-listing": 3,
       ".code-output": 0,
       ".rethinking-box": 0,
       ".overthinking-box": 0,
       ".book-quote": 0,
-      ".equation-block": 0,
+      ".equation-block": 1,
+      ".wallis-equation": 1,
       ".source-erratum": 0,
       ".chapter-introduction": 1,
       ".continuation-note": 1,
-      ".endnotes li": 1
+      ".endnotes li": 2
     }
   }
 }

@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-11" data-source-pages="347-347">
-  <header class="chapter-header"><p class="eyebrow">第十一章</p><h1>上帝给整数加了料</h1><p class="source-range">当前译稿对应原书 PDF 第 347 页</p></header>
+<article class="book-article" data-chapter="chapter-11" data-source-pages="347-350">
+  <header class="chapter-header"><p class="eyebrow">第十一章</p><h1>上帝给整数加了料</h1><p class="source-range">当前译稿对应原书 PDF 第 347–350 页</p></header>
 
   <div class="chapter-introduction" id="intro-11">
     <p>太空中的寒冷以 Kelvin 命名，约为 3 Kelvin，也就是绝对零度以上约 3 摄氏度。Kelvin 也是苏格兰格拉斯哥附近一条河流的名字；同一条河又把名字给了 William Thomson，也就是 Kelvin 勋爵（1824 年生，1907 年卒）——英国第一位获封贵族头衔的科学家。Thomson 在格拉斯哥的实验室研究热力学，如今太空的寒冷便以一条苏格兰河流为名。</p>
@@ -9,9 +9,44 @@
     <p>本章将构建两类最常见计数模型的完整实例。我们把一族相关方法称为<strong>二项回归</strong>：它们都针对二元分类——生/死、接受/拒绝、左/右——建模，并且两类的总数已知。这与第 2 章的弹珠和抛球例子相似，只是现在可以加入预测变量。<strong>Poisson 回归</strong>是一种对最大值未知的计数建模的 GLM——例如肯尼亚的大象数量、某博士项目收到的申请数量、一期 <cite>Psychological Science</cite> 中显著性检验的数量。正如第 10 章所述，Poisson 模型是二项模型的特殊情形；本章末尾还会介绍其他几种计数回归。</p>
   </div>
 
-  <p class="continuation-note">图 11.1、前面各章工具在本章中的复用方式，以及 11.1“二项回归”，将从原书 PDF 第 348 页继续。</p>
+  <figure class="book-figure tide-predictor-figure" id="fig-11-1"><div class="figure-scroll"><img src="/media/chapter-11-tide-predictor.jpg" alt="William Thomson 的第三代潮汐预测机设计，由多组滑轮、缆索、齿轮与转盘组成"></div><figcaption><strong>图 11.1：</strong>William Thomson 的第三代潮汐预测机设计。（图片来源：<span class="url-text">https://en.wikipedia.org/wiki/Tide-predicting_machine</span>）</figcaption></figure>
 
-  <section class="endnotes" id="chapter-11-notes" role="doc-endnotes"><h2>尾注</h2><ol start="166"><li id="note-166">重要数论家 Leopold Kronecker 据称说过：“上帝创造了整数，其余一切皆为人造。”（德文：<span lang="de">Die ganzen Zahlen hat der liebe Gott gemacht, alles andere ist Menschenwerk.</span>） <a class="backref" href="#note-166-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <p>本章以及后续各章的所有示例，都会使用前面各章介绍的全部工具。正则化先验、信息准则与 MCMC 估计会交织在数据分析示例中。因此，在学习每一种新 GLM 的示例时，你也会练习并加深对以往课程的理解。</p>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 11 章 PDF 第 347 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 348 页继续。</aside>
+  <section id="sec-11-1"><h2>11.1 二项回归</h2>
+    <p>回想前几章的抛球模型。那个模型是二项模型，结果是水样本的计数。但它还不是广义线性模型，因为没有预测变量与结果相关联。现在我们的工作，就是把观测计数与那些关联于不同平均计数的变量配对。</p>
+    <p>二项分布记作：</p>
+    <div class="equation-block wallis-equation" id="eq-11-binomial-distribution"><span class="math-line"><var>y</var> ∼ Binomial(<var>n</var>, <var>p</var>)</span></div>
+    <p>其中，<span class="math-inline"><var>y</var></span> 是计数（零或正整数），<span class="math-inline"><var>p</var></span> 是任意一次“试验”成功的概率，<span class="math-inline"><var>n</var></span> 是试验次数。上一章已经证明：作为广义线性模型的基础，当每次试验必须产生两种事件之一、且期望值恒定时，二项分布具有最大熵。对于这类变量，不存在熵更高的其他观测前概率假设。在已知取值约束下，它是我们能够使用的最平坦数据先验。</p>
+    <p>使用二项概率函数的 GLM 有两种常见形式；它们其实是同一个模型，只是数据组织方式不同：</p>
+    <ol class="numbered-explanation" id="list-11-binomial-forms"><li><strong>逻辑斯蒂回归</strong>（logistic regression）：数据按单次试验组织，每个结果变量只能取 0 或 1。</li><li><strong>聚合二项回归</strong>（aggregated binomial regression）：把协变量取值相同的单次试验聚合在一起。此时结果可以取零，或不超过试验次数 <span class="math-inline"><var>n</var></span> 的任意正整数。</li></ol>
+    <p>两种形式使用同一个 logit link 函数（原书第 324 页），所以有时都称为“逻辑斯蒂”回归，因为 logit 函数的逆函数就是 logistic。通过聚合结果变量，可以把逻辑斯蒂形式转换为聚合形式；通过展开结果变量，也可以从聚合形式转换为逻辑斯蒂形式。下面会各自完整演示一个例子。</p>
+    <p>与其他 GLM 一样，二项回归并不保证产生形状漂亮的多元高斯后验分布，因此二次近似并非总能令人满意。我们会用 <code>quap</code> 处理一些例子，也会用 <code>ulam</code> 做 MCMC 抽样来核对推断。两种方法都做，是为了让你体会：即使原则上不该奏效，二次近似实际上多常能够工作；以及它为什么会在特定情境中失效。这很有用，因为即使你再也不用二次近似，你的频率学派同事仍一直在用，而你也许应当对他们的估计保持一点怀疑。</p>
+
+    <section id="sec-11-1-1"><h3>11.1.1 逻辑斯蒂回归：亲社会黑猩猩</h3>
+      <p>这个例子的数据来自一项旨在评估黑猩猩（<i>Pan troglodytes</i>）亲社会倾向的实验。<sup id="note-167-ref"><a href="#note-167">167</a></sup>实验结构模仿了经济学家与心理学家在人类学生（<i>Homo sapiens studiensis</i>）身上进行的许多常见实验。图 11.2 中，一只焦点黑猩猩坐在长桌一端，面前左右各有一个杠杆。桌面上有四只碟子，其中可能放着它想要的食物。桌子右侧的两只碟子通过机械装置连接右侧杠杆，左侧两只碟子同样连接左侧杠杆。</p>
+      <p>焦点动物拉动左侧或右侧任一杠杆时，同侧的两只碟子会分别滑向桌子两端，把其中的东西送到相对的两端。在所有实验试次中，焦点动物一侧的两只碟子都装有食物；但桌子另一侧只有一只碟子装有食物。因此，两个杠杆都会把食物送给焦点动物，只有其中一个杠杆还会把食物送到桌子另一端。</p>
+      <p>实验有两种条件。在<strong>伙伴条件</strong>下，另一只黑猩猩像图 11.2 那样坐在桌子另一端；在<strong>控制条件</strong>下，桌子另一端空着。最后，两种平衡处理会交替改变桌子另一端的食物位于左侧还是右侧。这有助于发现每只焦点动物是否偏好使用某一只手。</p>
+      <p>人类学生参加这类实验时，几乎总会选择连接两份食物的杠杆——也就是亲社会选项——但只在另一名学生坐在桌子对面时如此。驱动本研究的问题是：焦点黑猩猩会不会有相似表现，在另一只动物在场时更常选择亲社会选项？用线性模型的话说，我们想估计条件（另一只动物在场或不在场）与选项（哪一侧是亲社会选项）之间的交互。</p>
+
+      <figure class="book-figure chimpanzee-prosociality-figure" id="fig-11-2"><div class="figure-scroll"><img src="/media/chapter-11-chimpanzee-prosociality.png" alt="从焦点动物视角观察的黑猩猩亲社会实验，近端左右有两个杠杆，桌面两侧各有食物碟，另一只黑猩猩坐在对面"></div><figcaption><strong>图 11.2：</strong>从焦点动物视角观察的黑猩猩亲社会实验。前景标出左右杠杆；拉动任一杠杆都会展开中央的手风琴式装置，把食物托盘推向桌子两端。靠近焦点动物的两只托盘都有食物，另一端只有一只托盘有食物。伙伴条件下，图示的另一只动物坐在桌子对面；否则另一端为空。</figcaption></figure>
+
+      <p>从 <code>rethinking</code> 包载入数据：</p>
+      <figure class="code-listing" id="code-11-1"><figcaption>R 代码 11.1</figcaption><pre><code>library(rethinking)
+data(chimpanzees)
+d &lt;- chimpanzees</code></pre></figure>
+      <p>可查看内置帮助 <code>?chimpanzees</code>，了解所有可用变量的详细信息。我们把 <code>pulled_left</code> 作为待预测结果，把 <code>prosoc_left</code> 与 <code>condition</code> 作为预测变量。结果变量 <code>pulled_left</code> 是 0/1 指示变量，表示焦点动物是否拉动左侧杠杆。预测变量 <code>prosoc_left</code> 也是 0/1 指示变量，表示左侧杠杆是否连接亲社会选项——也就是有两份食物的一侧：连接记为 1，未连接记为 0。预测变量 <code>condition</code> 是另一个 0/1 指示变量，伙伴条件取值 1，控制条件取值 0。</p>
+      <p>我们希望推断 <code>prosoc_left</code> 与 <code>condition</code> 每一种组合下会发生什么。共有四种组合：</p>
+      <ol class="numbered-explanation" id="list-11-treatment-combinations"><li><code>prosoc_left = 0</code> 且 <code>condition = 0</code>：两份食物在右侧，没有伙伴。</li><li><code>prosoc_left = 1</code> 且 <code>condition = 0</code>：两份食物在左侧，没有伙伴。</li><li><code>prosoc_left = 0</code> 且 <code>condition = 1</code>：两份食物在右侧，伙伴在场。</li><li><code>prosoc_left = 1</code> 且 <code>condition = 1</code>：两份食物在左侧，伙伴在场。</li></ol>
+      <p>惯常做法是用这些虚拟变量构建线性交互模型。我们不会这样做，原因已在第 5 章讨论过：使用虚拟变量很难构造合理的先验。取而代之，我们建立一个取值为 1 到 4 的索引变量，索引上面的四种组合。一个非常快捷的做法是：</p>
+      <figure class="code-listing" id="code-11-2"><figcaption>R 代码 11.2</figcaption><pre><code>d$treatment &lt;- 1 + d$prosoc_left + 2*d$condition</code></pre></figure>
+      <p>现在，<code>treatment</code> 包含 1 到 4，与上面列表中的编号对应。可以用交叉表验证：</p>
+      <figure class="code-listing" id="code-11-3"><figcaption>R 代码 11.3</figcaption><pre><code>xtabs( ~ treatment + prosoc_left + condition , d )</code></pre></figure>
+      <p class="continuation-note">交叉表说明、研究问题所对应的二项模型、Bernoulli 等价写法与先验预测模拟，将从原书 PDF 第 351 页继续。</p>
+    </section>
+  </section>
+
+  <section class="endnotes" id="chapter-11-notes" role="doc-endnotes"><h2>尾注</h2><ol start="166"><li id="note-166">重要数论家 Leopold Kronecker 据称说过：“上帝创造了整数，其余一切皆为人造。”（德文：<span lang="de">Die ganzen Zahlen hat der liebe Gott gemacht, alles andere ist Menschenwerk.</span>） <a class="backref" href="#note-166-ref" aria-label="返回正文">↩</a></li><li id="note-167">Silk 等（2005）。 <a class="backref" href="#note-167-ref" aria-label="返回正文">↩</a></li></ol></section>
+
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 11 章 PDF 第 347–350 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 351 页继续。</aside>
 </article>

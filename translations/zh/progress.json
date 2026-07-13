@@ -71,9 +71,9 @@
   },
   "chapter-11": {
     "status": "in_progress",
-    "translated_pages": [347],
-    "reviewed_pages": [347],
-    "verified_pages": [347],
-    "notes": "第 11 章 PDF 第 347 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 348 页继续。"
+    "translated_pages": [347, 348, 349, 350],
+    "reviewed_pages": [347, 348, 349, 350],
+    "verified_pages": [347, 348, 349, 350],
+    "notes": "第 11 章 PDF 第 347–350 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 351 页继续。"
   }
 }
