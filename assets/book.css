@@ -148,6 +148,8 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .symmetry-equation { display: flex; flex-direction: column; gap: .6rem; }
 .symmetry-equation small { color: var(--muted); font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; }
 .continuous-interaction-equation { display: flex; flex-direction: column; gap: .55rem; }
+.tulips-triptych-figure .figure-scroll img,
+.tulips-prior-triptych-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
 #sec-7-7 > .continuation-note { display: none; }
 .laffer-practice-figure { width: min(100%, 32rem); margin: 2rem auto; transform: none; }
 .laffer-practice-figure svg { display: block; width: 28rem; max-width: none; height: auto; margin: 0 auto; }
