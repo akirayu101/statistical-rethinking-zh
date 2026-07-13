@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate deterministic Chinese SVGs for Chapter 9 Figures 9.2 through 9.9."""
+"""Generate deterministic Chinese SVGs for Chapter 9 Figures 9.2 through 9.11."""
 from pathlib import Path
 import math
 import random
@@ -13,6 +13,8 @@ OUT6 = ROOT / "translations/zh/media/chapter-09-hmc-trajectories.svg"
 OUT7 = ROOT / "translations/zh/media/chapter-09-pairs-posterior.svg"
 OUT8 = ROOT / "translations/zh/media/chapter-09-traceplot.svg"
 OUT9 = ROOT / "translations/zh/media/chapter-09-trankplot.svg"
+OUT10 = ROOT / "translations/zh/media/chapter-09-chain-diagnostics.svg"
+OUT11 = ROOT / "translations/zh/media/chapter-09-weak-prior.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 BLUE = "#6670ee"
 INK = "#30332e"
@@ -490,6 +492,199 @@ def figure_9_9() -> None:
     OUT9.write_text('\n'.join(body), encoding='utf-8')
 
 
+def figure_9_10() -> None:
+    """Contrast sick and healed trace/rank plots for three chains."""
+    w, h = 1200, 1050
+    panel_w = 470
+    lefts = (85, 645)
+    colors = (INK, BLUE, "#aeb0ab")
+    body = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" role="img">',
+        '<title>病态与恢复健康的马尔可夫链诊断图</title>',
+        '<desc>上半部为平坦先验模型的病态轨迹图与秩图，下半部为加入弱信息先验后的健康结果。</desc>',
+        '<rect width="100%" height="100%" fill="#fff"/>',
+    ]
+
+    def draw_trace(left, top, label, n_eff, series, low, high, clip_id):
+        panel_h = 175
+        sx = lambda index: left + index / 999 * panel_w
+        sy = lambda value: top + (high - value) / (high - low) * panel_h
+        body.extend([
+            f'<defs><clipPath id="{clip_id}"><rect x="{left}" y="{top}" width="{panel_w}" height="{panel_h}"/></clipPath></defs>',
+            f'<rect x="{left}" y="{top}" width="{panel_w/2}" height="{panel_h}" fill="#e2e3e0"/>',
+            f'<rect x="{left}" y="{top}" width="{panel_w}" height="{panel_h}" fill="none" stroke="{INK}"/>',
+            f'<text x="{left}" y="{top-13}" font-family="{FONT}" font-size="22" fill="{INK}">{label}</text>',
+            f'<text x="{left+panel_w}" y="{top-13}" text-anchor="end" font-family="{FONT}" font-size="18" fill="{INK}">n_eff = {n_eff}</text>',
+        ])
+        for chain, values in enumerate(series):
+            points = " ".join(f"{sx(i):.1f},{sy(value):.1f}" for i, value in enumerate(values))
+            body.append(f'<polyline points="{points}" fill="none" stroke="{colors[chain]}" stroke-width="1.35" opacity=".9" clip-path="url(#{clip_id})"/>')
+        for draw in (200, 400, 600, 800, 1000):
+            x = left + draw / 1000 * panel_w
+            body.extend([
+                f'<line x1="{x:.1f}" y1="{top+panel_h}" x2="{x:.1f}" y2="{top+panel_h+6}" stroke="{INK}"/>',
+                f'<text x="{x:.1f}" y="{top+panel_h+27}" text-anchor="middle" font-family="{FONT}" font-size="14">{draw}</text>',
+            ])
+        for value in (low, (low + high) / 2, high):
+            y = sy(value)
+            label_value = f'{value:g}'
+            body.extend([
+                f'<line x1="{left-6}" y1="{y:.1f}" x2="{left}" y2="{y:.1f}" stroke="{INK}"/>',
+                f'<text x="{left-12}" y="{y+5:.1f}" text-anchor="end" font-family="{FONT}" font-size="14">{label_value}</text>',
+            ])
+
+    def draw_rank(left, top, label, n_eff, sick, seed):
+        panel_h = 155
+        body.extend([
+            f'<line x1="{left}" y1="{top+panel_h}" x2="{left+panel_w}" y2="{top+panel_h}" stroke="{INK}"/>',
+            f'<line x1="{left}" y1="{top}" x2="{left}" y2="{top+panel_h}" stroke="{INK}"/>',
+            f'<text x="{left}" y="{top-13}" font-family="{FONT}" font-size="22" fill="{INK}">{label}</text>',
+            f'<text x="{left+panel_w}" y="{top-13}" text-anchor="end" font-family="{FONT}" font-size="18" fill="{INK}">n_eff = {n_eff}</text>',
+        ])
+        rng = random.Random(seed)
+        bins = 20
+        for chain, color in enumerate(colors):
+            if sick:
+                heights = []
+                for index in range(bins):
+                    phase = index / (bins - 1)
+                    if chain == 0:
+                        baseline = 18 + 45 * phase
+                    elif chain == 1:
+                        baseline = 64 - 48 * phase
+                    else:
+                        baseline = 39 + 18 * math.sin(phase * 3 * math.pi)
+                    heights.append(max(8, baseline + rng.gauss(0, 7)))
+            else:
+                heights = [max(12, 42 + rng.gauss(0, 8)) for _ in range(bins)]
+            points = []
+            bin_width = panel_w / bins
+            for index, height in enumerate(heights):
+                x1 = left + index * bin_width
+                x2 = x1 + bin_width
+                y = top + panel_h - min(height, 72) / 72 * (panel_h - 12)
+                if index == 0:
+                    points.append((x1, top + panel_h))
+                points.extend(((x1, y), (x2, y)))
+            points.append((left + panel_w, top + panel_h))
+            body.append(f'<polyline points="{" ".join(f"{x:.1f},{y:.1f}" for x,y in points)}" fill="none" stroke="{color}" stroke-width="2" opacity=".92"/>')
+
+    def sick_alpha(seed):
+        rng = random.Random(seed)
+        value = rng.uniform(-300, 300)
+        values = []
+        for index in range(1000):
+            value = .992 * value + rng.gauss(0, 65)
+            if index in (170 + seed % 40, 540 + seed % 50, 875 - seed % 35):
+                value += rng.choice((-1, 1)) * rng.uniform(1000, 1800)
+            values.append(value)
+        return values
+
+    def sick_sigma(seed):
+        rng = random.Random(seed)
+        value = rng.uniform(300, 900)
+        values = []
+        for index in range(1000):
+            value = abs(.975 * value + rng.gauss(0, 180))
+            if index in (130 + seed % 60, 515 + seed % 45, 790 + seed % 55):
+                value += rng.uniform(4500, 10500)
+            values.append(value)
+        return values
+
+    def healthy_alpha(seed):
+        rng = random.Random(seed)
+        previous = 0.0
+        values = []
+        for _ in range(1000):
+            previous = -.12 * previous + rng.gauss(0, 1.05)
+            values.append(.1 + previous)
+        return values
+
+    def healthy_sigma(seed):
+        rng = random.Random(seed)
+        previous = 0.0
+        values = []
+        for _ in range(1000):
+            previous = .08 * previous + rng.gauss(0, .48)
+            values.append(max(.15, math.exp(.28 + previous)))
+        return values
+
+    draw_trace(lefts[0], 60, "alpha", 116, [sick_alpha(912 + i * 19) for i in range(3)], -2400, 2400, "sick-alpha")
+    draw_trace(lefts[1], 60, "sigma", 179, [sick_sigma(948 + i * 23) for i in range(3)], 0, 12000, "sick-sigma")
+    draw_rank(lefts[0], 320, "alpha", 116, True, 961)
+    draw_rank(lefts[1], 320, "sigma", 179, True, 962)
+    body.append(f'<line x1="45" y1="530" x2="1155" y2="530" stroke="#888b85" stroke-width="1.5"/>')
+    draw_trace(lefts[0], 590, "alpha", 478, [healthy_alpha(970 + i * 17) for i in range(3)], -7, 4, "healthy-alpha")
+    draw_trace(lefts[1], 590, "sigma", 438, [healthy_sigma(990 + i * 13) for i in range(3)], 0, 8, "healthy-sigma")
+    draw_rank(lefts[0], 850, "alpha", 478, False, 1011)
+    draw_rank(lefts[1], 850, "sigma", 438, False, 1012)
+    body.extend(['</svg>', ''])
+    OUT10.write_text('\n'.join(body), encoding='utf-8')
+
+
+def figure_9_11() -> None:
+    """Plot weak priors and posteriors for alpha and sigma."""
+    w, h = 1200, 600
+    panels = ((90, 65, 470, 410), (680, 65, 430, 410))
+    body = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" role="img">',
+        '<title>弱信息先验与后验</title>',
+        '<desc>左图比较 alpha 的正态先验与后验，右图比较 sigma 的指数先验与后验。</desc>',
+        '<rect width="100%" height="100%" fill="#fff"/>',
+    ]
+
+    def normal_density(x, mean, sd):
+        return math.exp(-.5 * ((x - mean) / sd) ** 2) / (sd * math.sqrt(2 * math.pi))
+
+    left, top, pw, ph = panels[0]
+    sx = lambda x: left + (x + 16) / 32 * pw
+    sy = lambda y: top + (.42 - y) / .42 * ph
+    body.append(f'<rect x="{left}" y="{top}" width="{pw}" height="{ph}" fill="#fff" stroke="{INK}"/>')
+    for tick in (-15, -10, -5, 0, 5, 10, 15):
+        body.extend([f'<line x1="{sx(tick):.1f}" y1="{top+ph}" x2="{sx(tick):.1f}" y2="{top+ph+7}" stroke="{INK}"/>', f'<text x="{sx(tick):.1f}" y="{top+ph+29}" text-anchor="middle" font-family="{FONT}" font-size="16">{tick}</text>'])
+    for tick in (0, .1, .2, .3, .4):
+        body.extend([f'<line x1="{left-7}" y1="{sy(tick):.1f}" x2="{left}" y2="{sy(tick):.1f}" stroke="{INK}"/>', f'<text x="{left-13}" y="{sy(tick)+5:.1f}" text-anchor="end" font-family="{FONT}" font-size="16">{tick:.1f}</text>'])
+    prior_points = [(sx(-16 + i * 32 / 320), sy(normal_density(-16 + i * 32 / 320, 1, 10))) for i in range(321)]
+    posterior_points = [(sx(-16 + i * 32 / 320), sy(normal_density(-16 + i * 32 / 320, .1, 1.13))) for i in range(321)]
+    body.extend([
+        f'<polyline points="{" ".join(f"{x:.1f},{y:.1f}" for x,y in prior_points)}" fill="none" stroke="{INK}" stroke-width="2.3" stroke-dasharray="9 8"/>',
+        f'<polyline points="{" ".join(f"{x:.1f},{y:.1f}" for x,y in posterior_points)}" fill="none" stroke="{BLUE}" stroke-width="3.4"/>',
+        f'<text x="{sx(8):.1f}" y="{sy(.055):.1f}" font-family="{FONT}" font-size="19" fill="{INK}">先验</text>',
+        f'<text x="{sx(2.5):.1f}" y="{sy(.23):.1f}" font-family="{FONT}" font-size="19" fill="{BLUE}">后验</text>',
+        f'<text x="{left+pw/2}" y="{h-45}" text-anchor="middle" font-family="{FONT}" font-size="21" fill="#263f86">alpha</text>',
+        f'<text x="30" y="{top+ph/2}" transform="rotate(-90 30 {top+ph/2})" text-anchor="middle" font-family="{FONT}" font-size="21" fill="#263f86">密度</text>',
+    ])
+
+    left, top, pw, ph = panels[1]
+    sx = lambda x: left + x / 10.5 * pw
+    sy = lambda y: top + (.82 - y) / .82 * ph
+    body.extend([
+        f'<defs><clipPath id="weak-prior-sigma"><rect x="{left}" y="{top}" width="{pw}" height="{ph}"/></clipPath></defs>',
+        f'<rect x="{left}" y="{top}" width="{pw}" height="{ph}" fill="#fff" stroke="{INK}"/>',
+    ])
+    for tick in (0, 2, 4, 6, 8, 10):
+        body.extend([f'<line x1="{sx(tick):.1f}" y1="{top+ph}" x2="{sx(tick):.1f}" y2="{top+ph+7}" stroke="{INK}"/>', f'<text x="{sx(tick):.1f}" y="{top+ph+29}" text-anchor="middle" font-family="{FONT}" font-size="16">{tick}</text>'])
+    for tick in (0, .2, .4, .6, .8):
+        body.extend([f'<line x1="{left-7}" y1="{sy(tick):.1f}" x2="{left}" y2="{sy(tick):.1f}" stroke="{INK}"/>', f'<text x="{left-13}" y="{sy(tick)+5:.1f}" text-anchor="end" font-family="{FONT}" font-size="16">{tick:.1f}</text>'])
+    def gamma_density(x, shape=5.0, rate=3.0):
+        if x <= 0:
+            return 0.0
+        return rate ** shape / math.gamma(shape) * x ** (shape - 1) * math.exp(-rate * x)
+    prior_points = [(sx(i * 10.5 / 320), sy(math.exp(-(i * 10.5 / 320)))) for i in range(1, 321)]
+    posterior_points = [(sx(i * 10.5 / 320), sy(gamma_density(i * 10.5 / 320))) for i in range(1, 321)]
+    body.extend([
+        f'<polyline points="{" ".join(f"{x:.1f},{y:.1f}" for x,y in prior_points)}" fill="none" stroke="{INK}" stroke-width="2.3" stroke-dasharray="9 8" clip-path="url(#weak-prior-sigma)"/>',
+        f'<polyline points="{" ".join(f"{x:.1f},{y:.1f}" for x,y in posterior_points)}" fill="none" stroke="{BLUE}" stroke-width="3.4" clip-path="url(#weak-prior-sigma)"/>',
+        f'<text x="{sx(3.2):.1f}" y="{sy(.13):.1f}" font-family="{FONT}" font-size="19" fill="{INK}">先验</text>',
+        f'<text x="{sx(2.2):.1f}" y="{sy(.46):.1f}" font-family="{FONT}" font-size="19" fill="{BLUE}">后验</text>',
+        f'<text x="{left+pw/2}" y="{h-45}" text-anchor="middle" font-family="{FONT}" font-size="21" fill="#263f86">sigma</text>',
+        f'<text x="{left-60}" y="{top+ph/2}" transform="rotate(-90 {left-60} {top+ph/2})" text-anchor="middle" font-family="{FONT}" font-size="21" fill="#263f86">密度</text>',
+        '</svg>',
+        '',
+    ])
+    OUT11.write_text('\n'.join(body), encoding='utf-8')
+
+
 def main() -> None:
     figure_9_2()
     figure_9_3()
@@ -499,6 +694,8 @@ def main() -> None:
     figure_9_7()
     figure_9_8()
     figure_9_9()
+    figure_9_10()
+    figure_9_11()
     print(OUT2)
     print(OUT3)
     print(OUT4)
@@ -507,6 +704,8 @@ def main() -> None:
     print(OUT7)
     print(OUT8)
     print(OUT9)
+    print(OUT10)
+    print(OUT11)
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-09" data-source-pages="285-311">
-  <header class="chapter-header"><p class="eyebrow">第九章</p><h1>马尔可夫链蒙特卡洛</h1><p class="source-range">当前译稿对应原书 PDF 第 285–311 页</p></header>
+<article class="book-article" data-chapter="chapter-09" data-source-pages="285-314">
+  <header class="chapter-header"><p class="eyebrow">第九章</p><h1>马尔可夫链蒙特卡洛</h1><p class="source-range">当前译稿对应原书 PDF 第 285–314 页</p></header>
 
   <p>在西方历史的大部分时期，偶然性一直扮演反派。古罗马把偶然性人格化为残酷命运女神福尔图娜，她转动着（厄）运之轮。与她相对而坐的是智慧与理解女神密涅瓦。只有绝望之人才会向福尔图娜祈祷，所有人则都会恳求密涅瓦相助。科学当然属于密涅瓦的领域，那里没有福尔图娜可以发挥的有益作用。</p>
   <p>但到了 20 世纪初，福尔图娜与密涅瓦成了合作者。科学家开始出版随机数表，把偶然性的工具用于认识世界。偶然与智慧从此携手；“理解偶然性能够帮助我们获得智慧”这个观念，已很少让人困惑。从天气预报、金融到演化生物学，各领域都由随机过程研究所主导。<sup id="note-137-ref"><a href="#note-137">137</a></sup></p>
@@ -422,11 +422,53 @@ model{
     <section id="sec-9-5-3"><h3>9.5.3 驯服一条狂野的链</h3>
       <p>有些模型的一个常见问题，是后验密度中存在宽阔而平坦的区域。正如你可能猜到的，这最常出现在使用平坦先验时。它可能制造一条狂野而四处游荡的马尔可夫链，不规则地抽到极大的正参数值和极小的负参数值。</p>
       <p>来看一个简单例子。接下来的代码尝试估计两个高斯观测值 −1 和 1 的均值与标准差，却使用了完全平坦的先验。</p>
-      <p class="continuation-note">狂野链示例的模型代码、诊断输出与轨迹图将在原书 PDF 第 312 页继续。</p>
+      <figure class="code-listing" id="code-9-22"><figcaption>R 代码 9.22</figcaption><pre><code>y &lt;- c(-1,1)
+set.seed(11)
+m9.2 &lt;- ulam(
+    alist(
+        y ~ dnorm( mu , sigma ) ,
+        mu &lt;- alpha ,
+        alpha ~ dnorm( 0 , 1000 ) ,
+        sigma ~ dexp( 0.0001 )
+    ) , data=list(y=y) , chains=3 )</code></pre></figure>
+      <p>现在查看 <code>precis</code> 输出：</p>
+      <figure class="code-listing" id="code-9-23"><figcaption>R 代码 9.23</figcaption><pre><code>precis( m9.2 )</code></pre><pre class="code-output"><code>        mean      sd   5.5%  94.5% n_eff Rhat
+alpha  69.38  393.89 -363.57 739.53   116 1.03
+sigma 568.53 1247.18    6.81 2563.38  179 1.02</code></pre></figure>
+      <p>哇！这个后验不可能是对的。−1 和 1 的均值是 0，所以原本希望 <code>alpha</code> 的均值也在 0 附近；结果却得到疯狂的数值和宽得难以置信的区间。<code>sigma</code> 的推断也没有更好。<code>n_eff</code> 与 <code>Rhat</code> 诊断同样不妙：总共抽取了 1,500 个样本，估计有效样本数却只有 116 和 179。你实际运行得到的数字可能不同，但定性上会同样糟糕。</p>
+      <p>此外还应该看到几条警告，其中包括：</p>
+      <figure class="code-listing warning-listing" id="warning-9-divergent"><figcaption>Stan 警告：预热后存在发散转移</figcaption><pre class="code-output"><code>Warning messages:
+1: There were 67 divergent transitions after warmup. Increasing adapt_delta
+above 0.95 may help. See
+http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup</code></pre></figure>
+      <p>这个网址给出了有用建议。简短版本是：Stan 检测到探索完整后验时存在问题，这些问题就是<strong>发散转移</strong>。后面章节会作更完整的解释；暂时把它们理解为 Stan 在告诉你链出了问题。对于简单模型，提高控制参数 <code>adapt_delta</code> 通常能消除发散转移，本节末尾的“过度思考”框会进一步解释。可以尝试在 <code>ulam</code> 调用中加入 <code>control=list(adapt_delta=0.99)</code>，而 <code>ulam</code> 的默认值是 0.95。不过在这个特定案例中，它不会有多大帮助，因为问题更深，出在模型本身。</p>
+      <p>还应该看到第二条警告：</p>
+      <figure class="code-listing warning-listing" id="warning-9-pairs"><figcaption>Stan 警告：检查变量对图</figcaption><pre class="code-output"><code>2: Examine the pairs() plot to diagnose sampling problems</code></pre></figure>
+      <p>这里指的是 Stan 的 <code>pairs</code> 方法，而不是 <code>ulam</code> 的方法。可以尝试运行 <code>pairs( m9.2@stanfit )</code>。它与 <code>ulam</code> 的变量对图相似，但会把发散转移标成红色。正因如此，这张图无法在本书中复现；请务必在自己的机器上检查。光是后验的形状就应该足以动摇你的信心。</p>
+      <p>再看这次拟合的轨迹图 <code>traceplot(m9.2)</code>，即图 9.10 的最上排。奇怪估计之所以出现，是因为马尔可夫链似乎一直四处漂移，偶尔还会尖冲到极端值。这不是一组健康的链，不能提供有用样本。图中也显示了 <code>trankplot(m9.2)</code>：秩直方图会长时间由某条链高于或低于其他链，说明后验探索很差。</p>
+      <figure class="book-figure chain-diagnostics-figure" id="fig-9-10"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的病态链与健康链轨迹图和秩图对比"><img src="/media/chapter-09-chain-diagnostics.svg" alt="上半部显示平坦先验模型的三条病态链，下半部显示弱信息先验模型恢复健康后的轨迹图和秩图"></div><p class="scroll-hint">图较宽，可横向滚动比较病态链与恢复健康后的全部诊断面板。</p><figcaption><strong>图 9.10：</strong>诊断并治愈一条病态马尔可夫链。上两排是模型 <code>m9.2</code> 三条链的轨迹图与 trank plot；这些链并不健康，不应拿来推断。下两排显示模型 <code>m9.3</code> 加入弱信息先验后，症状立刻消失。比较两个模型轨迹图时，务必注意纵轴尺度。</figcaption></figure>
+      <p>用弱信息先验很容易驯服这条特定的链。上面的模型之所以在两个维度上狂野漂移，是因为数据极少，只有两个观测，而且先验平坦。平坦先验声称，先验上参数的每一个可能取值都同样可信。对 <code>alpha</code> 这类可能拥有无限多个取值的参数，这意味着马尔可夫链偶尔必须抽到一些极端而难以置信的值，例如负三千万。这些极端漂移压垮了整条链。若似然更强，链就不会有问题，因为它会更贴近 0。</p>
+      <p>不过，即使不增加数据，也只需在先验中加入一点点信息，就能制止这种荒唐行为。采用下面的模型：</p>
+      <div class="equation-block model-system-equation" id="eq-9-weak-prior-model"><div><var>y</var><sub>i</sub> ∼ Normal(<var>μ</var>, <var>σ</var>)</div><div><var>μ</var> = <var>α</var></div><div><var>α</var> ∼ Normal(1, 10)</div><div><var>σ</var> ∼ Exponential(1)</div></div>
+      <p>这里只是为 <span class="math-inline"><var>α</var></span> 和 <span class="math-inline"><var>σ</var></span> 加入了弱信息先验。图 9.11 会画出这些先验，让你看到它们究竟有多弱。不过，先重新近似后验：</p>
+      <figure class="code-listing" id="code-9-24"><figcaption>R 代码 9.24</figcaption><pre><code>set.seed(11)
+m9.3 &lt;- ulam(
+    alist(
+        y ~ dnorm( mu , sigma ) ,
+        mu &lt;- alpha ,
+        alpha ~ dnorm( 1 , 10 ) ,
+        sigma ~ dexp( 1 )
+    ) , data=list(y=y) , chains=3 )
+precis( m9.3 )</code></pre><pre class="code-output"><code>       mean   sd  5.5% 94.5% n_eff Rhat
+alpha  0.10 1.13 -1.60  1.97   478    1
+sigma  1.52 0.72  0.67  2.86   438    1</code></pre></figure>
+      <p>这就好多了。再看图 9.10 的下半部分，轨迹图和 trank plot 都很健康。各条链围绕相同的值保持平稳，混合也很好；不再狂奔到数千之外，发散转移也消失了。</p>
+      <figure class="book-figure weak-prior-figure" id="fig-9-11"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的弱信息先验与后验密度对比"><img src="/media/chapter-09-weak-prior.svg" alt="左图比较 alpha 的正态先验与后验，右图比较 sigma 的指数先验与后验"></div><p class="scroll-hint">图较宽，可横向滚动比较两个参数的先验与后验。</p><figcaption><strong>图 9.11：</strong>弱信息先验模型 <code>m9.3</code> 的先验（虚线）和后验（蓝线）。即使只有两个观测，似然也能轻易压过这些先验；然而，没有它们却无法成功近似后验。</figcaption></figure>
+      <p class="continuation-note">图 9.11 的详细解读、“统计计算民间定理”与发散转移侧栏将在原书 PDF 第 315 页继续。</p>
     </section>
   </section>
 
   <section class="endnotes" id="chapter-09-notes" role="doc-endnotes"><h2>尾注</h2><ol start="137"><li id="note-137">关于这段历史的更多内容，可参见 Gigerenzer 等（1990）的导论。另见 Rao（1997），其中展示了一本随机数表的示例页，并对这场文化转变作了类似评论。 <a class="backref" href="#note-137-ref" aria-label="返回正文">↩</a></li><li id="note-138">“旅行者”是两种常见隐喻之一；另一种是登山者通过随机跳跃绘制山脉地图。Kruschke（2011）用一位在不同地点筹款的政治人物讲了一个很相似的故事。Kruschke 的书非常出色，风格与覆盖范围和本书颇为不同，因此能通过不同视角和另一组例子，为读者带来许多额外价值。 <a class="backref" href="#note-138-ref" aria-label="返回正文">↩</a></li><li id="note-139">Metropolis 等（1953）。算法以论文第一作者命名，但尚不清楚每位合著者怎样参与了算法的发现与实现。其他作者包括以“氢弹之父”闻名的 Edward Teller、同样著名的物理学家 Marshall Rosenbluth，以及两人的妻子 Augusta 和 Arianna；两位女士完成了大量计算机编程。Nicholas Metropolis 领导这个研究组，而他们的工作又以此前和 Stanisław Ulam 合作的研究为基础：Metropolis 与 Ulam（1949）。 <a class="backref" href="#note-139-ref" aria-label="返回正文">↩</a></li><li id="note-140">Hastings（1970）。 <a class="backref" href="#note-140-ref" aria-label="返回正文">↩</a></li><li id="note-141">最初的论文是 Geman 与 Geman（1984），另见 Casella 与 George（1992）。注意，Gibbs 抽样以统计物理学奠基人之一、物理学家兼数学家 J. W. Gibbs 命名；但 Gibbs 早在 1903 年就已去世，远早于 Metropolis 算法的发明。这个策略以 Gibbs 命名，既是为了纪念他，也因为算法与统计物理学的联系。 <a class="backref" href="#note-141-ref" aria-label="返回正文">↩</a></li><li id="note-142">Jaynes（2003）第 16 章。 <a class="backref" href="#note-142-ref" aria-label="返回正文">↩</a></li><li id="note-143">参见 Neal（2012）与 Betancourt（2017）。 <a class="backref" href="#note-143-ref" aria-label="返回正文">↩</a></li><li id="note-144">严格说并非总动量，而是动量平方和：<span class="math-inline"><var>K</var> = ∑<sub><var>i</var></sub> <var>p</var><sub><var>i</var></sub><sup>2</sup>/2</span>，其中 <span class="math-inline"><var>p</var></span> 是动量值向量。这个表达式来自能量守恒，后面讨论发散转移时会再谈。 <a class="backref" href="#note-144-ref" aria-label="返回正文">↩</a></li><li id="note-145">参见 Hoffman 与 Gelman（2011），以及 Stan 用户手册中的更多细节。 <a class="backref" href="#note-145-ref" aria-label="返回正文">↩</a></li><li id="note-146">见 Neal（2012）中的代码。 <a class="backref" href="#note-146-ref" aria-label="返回正文">↩</a></li><li id="note-147">关于一段兼顾计算实践与数学基础的简明 MCMC 历史，可参见 Robert 与 Casella（2011）。 <a class="backref" href="#note-147-ref" aria-label="返回正文">↩</a></li><li id="note-148">参见 Vehtari 等（2019a），<span class="url-text">https://arxiv.org/abs/1903.08008</span>。 <a class="backref" href="#note-148-ref" aria-label="返回正文">↩</a></li><li id="note-149">更多细节和背景文献可参见 Brooks 等（2011）第 6 章。 <a class="backref" href="#note-149-ref" aria-label="返回正文">↩</a></li><li id="note-150">Gelman 与 Rubin（1992）。 <a class="backref" href="#note-150-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 285–311 页已完成翻译、逐页核对、结构契约及桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 312 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 285–314 页已完成翻译、逐页核对、结构契约及桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 315 页继续。</aside>
 </article>
