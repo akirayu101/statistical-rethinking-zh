@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720">
+<title>图 13.1：水槽存活率的部分汇聚</title>
+<desc>蓝色实心点是四十八个水槽的经验存活比例，黑色空心点是多层模型的后验均值；多层估计均向总体平均存活率收缩，小水槽的收缩更明显。</desc>
+<rect width="1200" height="720" fill="#fff"/>
+<line x1="115.0" y1="565.0" x2="1110.0" y2="565.0" stroke="#30332e" stroke-width="2"/>
+<line x1="115.0" y1="70.0" x2="115.0" y2="565.0" stroke="#30332e" stroke-width="2"/>
+<line x1="108.0" y1="565.0" x2="115.0" y2="565.0" stroke="#30332e"/>
+<text x="100.0" y="571.0" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">0.0</text>
+<line x1="108.0" y1="466.0" x2="115.0" y2="466.0" stroke="#30332e"/>
+<text x="100.0" y="472.0" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">0.2</text>
+<line x1="108.0" y1="367.0" x2="115.0" y2="367.0" stroke="#30332e"/>
+<text x="100.0" y="373.0" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">0.4</text>
+<line x1="108.0" y1="268.0" x2="115.0" y2="268.0" stroke="#30332e"/>
+<text x="100.0" y="274.0" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">0.6</text>
+<line x1="108.0" y1="169.0" x2="115.0" y2="169.0" stroke="#30332e"/>
+<text x="100.0" y="175.0" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">0.8</text>
+<line x1="108.0" y1="70.0" x2="115.0" y2="70.0" stroke="#30332e"/>
+<text x="100.0" y="76.0" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">1.0</text>
+<line x1="115.0" y1="565.0" x2="115.0" y2="572.0" stroke="#30332e"/>
+<text x="115.0" y="594.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">1</text>
+<line x1="432.6" y1="565.0" x2="432.6" y2="572.0" stroke="#30332e"/>
+<text x="432.6" y="594.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">16</text>
+<line x1="771.3" y1="565.0" x2="771.3" y2="572.0" stroke="#30332e"/>
+<text x="771.3" y="594.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">32</text>
+<line x1="1110.0" y1="565.0" x2="1110.0" y2="572.0" stroke="#30332e"/>
+<text x="1110.0" y="594.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">48</text>
+<line x1="443.1" y1="70.0" x2="443.1" y2="565.0" stroke="#777" stroke-width="1.5"/>
+<line x1="781.9" y1="70.0" x2="781.9" y2="565.0" stroke="#777" stroke-width="1.5"/>
+<line x1="115.0" y1="173.3" x2="1110.0" y2="173.3" stroke="#30332e" stroke-width="2" stroke-dasharray="10 8"/>
+<circle cx="115.0" cy="119.5" r="7" fill="#6670ee"/>
+<circle cx="115.0" cy="120.5" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="136.2" cy="70.0" r="7" fill="#6670ee"/>
+<circle cx="136.2" cy="91.1" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="157.3" cy="218.5" r="7" fill="#6670ee"/>
+<circle cx="157.3" cy="201.5" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="178.5" cy="70.0" r="7" fill="#6670ee"/>
+<circle cx="178.5" cy="90.7" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="199.7" cy="119.5" r="7" fill="#6670ee"/>
+<circle cx="199.7" cy="121.0" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="220.9" cy="119.5" r="7" fill="#6670ee"/>
+<circle cx="220.9" cy="120.7" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="242.0" cy="70.0" r="7" fill="#6670ee"/>
+<circle cx="242.0" cy="92.2" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="263.2" cy="119.5" r="7" fill="#6670ee"/>
+<circle cx="263.2" cy="121.6" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="284.4" cy="367.0" r="7" fill="#6670ee"/>
+<circle cx="284.4" cy="340.3" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="305.5" cy="119.5" r="7" fill="#6670ee"/>
+<circle cx="305.5" cy="122.0" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="326.7" cy="218.5" r="7" fill="#6670ee"/>
+<circle cx="326.7" cy="202.6" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="347.9" cy="268.0" r="7" fill="#6670ee"/>
+<circle cx="347.9" cy="245.6" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="369.0" cy="218.5" r="7" fill="#6670ee"/>
+<circle cx="369.0" cy="201.9" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="390.2" cy="317.5" r="7" fill="#6670ee"/>
+<circle cx="390.2" cy="291.6" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="411.4" cy="119.5" r="7" fill="#6670ee"/>
+<circle cx="411.4" cy="122.8" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="432.6" cy="119.5" r="7" fill="#6670ee"/>
+<circle cx="432.6" cy="121.6" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="453.7" cy="89.8" r="7" fill="#6670ee"/>
+<circle cx="453.7" cy="95.6" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="474.9" cy="109.6" r="7" fill="#6670ee"/>
+<circle cx="474.9" cy="112.4" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="496.1" cy="129.4" r="7" fill="#6670ee"/>
+<circle cx="496.1" cy="128.3" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="517.2" cy="70.0" r="7" fill="#6670ee"/>
+<circle cx="517.2" cy="82.0" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="538.4" cy="109.6" r="7" fill="#6670ee"/>
+<circle cx="538.4" cy="111.1" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="559.6" cy="109.6" r="7" fill="#6670ee"/>
+<circle cx="559.6" cy="110.8" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="580.7" cy="109.6" r="7" fill="#6670ee"/>
+<circle cx="580.7" cy="110.9" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="601.9" cy="149.2" r="7" fill="#6670ee"/>
+<circle cx="601.9" cy="145.0" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="623.1" cy="446.2" r="7" fill="#6670ee"/>
+<circle cx="623.1" cy="432.9" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="644.3" cy="307.6" r="7" fill="#6670ee"/>
+<circle cx="644.3" cy="297.3" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="665.4" cy="485.8" r="7" fill="#6670ee"/>
+<circle cx="665.4" cy="468.8" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="686.6" cy="386.8" r="7" fill="#6670ee"/>
+<circle cx="686.6" cy="373.7" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="707.8" cy="307.6" r="7" fill="#6670ee"/>
+<circle cx="707.8" cy="297.6" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="728.9" cy="169.0" r="7" fill="#6670ee"/>
+<circle cx="728.9" cy="164.3" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="750.1" cy="406.6" r="7" fill="#6670ee"/>
+<circle cx="750.1" cy="393.2" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="771.3" cy="367.0" r="7" fill="#6670ee"/>
+<circle cx="771.3" cy="355.1" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="792.4" cy="84.1" r="7" fill="#6670ee"/>
+<circle cx="792.4" cy="89.1" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="813.6" cy="98.3" r="7" fill="#6670ee"/>
+<circle cx="813.6" cy="101.0" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="834.8" cy="98.3" r="7" fill="#6670ee"/>
+<circle cx="834.8" cy="100.7" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="856.0" cy="126.6" r="7" fill="#6670ee"/>
+<circle cx="856.0" cy="125.3" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="877.1" cy="126.6" r="7" fill="#6670ee"/>
+<circle cx="877.1" cy="125.7" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="898.3" cy="70.0" r="7" fill="#6670ee"/>
+<circle cx="898.3" cy="79.4" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="919.5" cy="98.3" r="7" fill="#6670ee"/>
+<circle cx="919.5" cy="100.0" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="940.6" cy="112.4" r="7" fill="#6670ee"/>
+<circle cx="940.6" cy="113.0" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="961.8" cy="508.4" r="7" fill="#6670ee"/>
+<circle cx="961.8" cy="495.1" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="983.0" cy="395.3" r="7" fill="#6670ee"/>
+<circle cx="983.0" cy="386.8" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="1004.1" cy="381.1" r="7" fill="#6670ee"/>
+<circle cx="1004.1" cy="371.9" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="1025.3" cy="367.0" r="7" fill="#6670ee"/>
+<circle cx="1025.3" cy="358.1" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="1046.5" cy="253.9" r="7" fill="#6670ee"/>
+<circle cx="1046.5" cy="246.5" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="1067.7" cy="395.3" r="7" fill="#6670ee"/>
+<circle cx="1067.7" cy="387.3" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="1088.8" cy="126.6" r="7" fill="#6670ee"/>
+<circle cx="1088.8" cy="126.3" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<circle cx="1110.0" cy="324.6" r="7" fill="#6670ee"/>
+<circle cx="1110.0" cy="317.5" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<text x="612.5" y="650.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="400" fill="#30332e">水槽编号</text>
+<text x="35.0" y="317.5" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="400" fill="#30332e" transform="rotate(-90 35 317.5)">存活比例</text>
+<text x="273.8" y="550.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="20" font-weight="400" fill="#30332e">小水槽</text>
+<text x="612.5" y="550.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="20" font-weight="400" fill="#30332e">中水槽</text>
+<text x="951.2" y="550.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="20" font-weight="400" fill="#30332e">大水槽</text>
+<circle cx="785" cy="680" r="7" fill="#6670ee"/>
+<text x="803.0" y="686.0" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">经验存活比例</text>
+<circle cx="955" cy="680" r="7" fill="#fff" stroke="#30332e" stroke-width="2.2"/>
+<text x="973.0" y="686.0" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">多层模型后验均值</text>
+</svg>

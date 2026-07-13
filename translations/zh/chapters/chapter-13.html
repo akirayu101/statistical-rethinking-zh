@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-13" data-source-pages="429-434">
-  <header class="chapter-header"><p class="eyebrow">第十三章</p><h1>有记忆的模型</h1><p class="source-range">当前译稿对应原书 PDF 第 429–434 页</p></header>
+<article class="book-article" data-chapter="chapter-13" data-source-pages="429-437">
+  <header class="chapter-header"><p class="eyebrow">第十三章</p><h1>有记忆的模型</h1><p class="source-range">当前译稿对应原书 PDF 第 429–437 页</p></header>
 
   <div class="chapter-introduction" id="intro-13">
     <p>1985 年，Clive Wearing 失去了心智，却没有失去音乐。<sup id="note-185-ref"><a href="#note-185">185</a></sup> Wearing 是音乐学家，也是一位出色的音乐家；但引起唇疱疹的单纯疱疹病毒钻进了他的大脑，侵蚀了海马体。结果是慢性<strong>顺行性遗忘</strong>：他无法形成新的长期记忆。他仍记得怎样弹钢琴，却不记得自己五分钟前刚弹过。Wearing 如今活在一个个瞬间里，对几分钟前以外的过去一无所知；每一杯咖啡都是他有生以来的第一杯。</p>
@@ -83,14 +83,58 @@ m13.1 215.9 4.43  15.9 4.03  26.2      0</code></pre></figure>
 
     <p>为了体会这种自适应正则化的影响，下面绘图比较模型 <code>m13.1</code> 与 <code>m13.2</code> 的后验均值。后续代码很长，只是因为它给图形加上了信息丰富的标签；最基础的部分就是开头几行，用来提取样本并计算均值。</p>
     <aside class="source-erratum" id="erratum-13-mean-median"><strong>原文说明：</strong>代码 13.5 前的正文明确说“计算均值”，但紧接着的代码注释写成“计算每个水槽截距的中位数”；下一页实际执行的是 <code>apply(post$a, 2, mean)</code>。译稿保留这处不一致，并以实际执行的均值计算为准。</aside>
-    <figure class="code-listing" id="code-13-5"><figcaption>R 代码 13.5（续）</figcaption><pre><code># 提取 Stan 样本
+    <figure class="code-listing" id="code-13-5"><figcaption>R 代码 13.5</figcaption><pre><code># 提取 Stan 样本
 post &lt;- extract.samples(m13.2)
 
-# 原书注释：计算每个水槽截距的中位数</code></pre></figure>
-    <p class="continuation-note">代码 13.5 的 logistic 变换、图 13.1 与收缩现象的解释将从原书 PDF 第 435 页继续。</p>
+# 原书注释：计算每个水槽截距的中位数
+# 实际代码计算均值，并用 logistic 变换成概率
+d$propsurv.est &lt;- logistic( apply( post$a , 2 , mean ) )
+
+# 显示每个水槽的原始存活比例
+plot( d$propsurv , ylim=c(0,1) , pch=16 , xaxt="n" ,
+    xlab="tank" , ylab="proportion survival" , col=rangi2 )
+axis( 1 , at=c(1,16,32,48) , labels=c(1,16,32,48) )
+
+# 叠加后验均值
+points( d$propsurv.est )
+
+# 标出跨水槽的后验平均概率
+abline( h=mean(inv_logit(post$a_bar)) , lty=2 )
+
+# 在不同水槽密度之间画竖直分隔线
+abline( v=16.5 , lwd=0.5 )
+abline( v=32.5 , lwd=0.5 )
+text( 8 , 0 , "small tanks" )
+text( 16+8 , 0 , "medium tanks" )
+text( 32+8 , 0 , "large tanks" )</code></pre></figure>
+    <p>结果见图 13.1。横轴是 1 到 48 的水槽编号，纵轴是水槽中的存活比例。蓝色实心点表示根据观测计数计算的原始比例；这些值已经在数据框的 <code>propsurv</code> 列中。黑色空心圆则是变化截距估计。原书正文把它们称为“中位数”，但代码实际计算的是均值，见上方原文说明。大约位于 0.8 的水平虚线表示水槽总体的典型存活比例，并不等于经验平均存活率。灰色竖线把初始蝌蚪数不同的水槽分开：左侧 10 只，中间 25 只，右侧 35 只。</p>
+    <p>首先，每个水槽的多层估计都比原始经验估计更接近虚线。仿佛整组黑色空心圆都向数据中心的虚线收缩，而把蓝点留在外侧。这种现象称为<strong>收缩</strong>，来自正则化，正如第 7 章所见。第二，小水槽的估计比蓝点收缩得更远。图中从左到右，蝌蚪初始密度由 10 增至 25、再增至 35。最小水槽里，空心估计与经验蓝点的差异很明显；最大水槽中则几乎没有差异。样本量越小，变化截距收缩得越多。第三，蓝点离虚线越远，它与对应多层估计之间的距离也越大；一个水槽的经验比例离总体平均值 <span class="math-inline"><var>α</var></span> 越远，收缩就越强。</p>
+    <p>这三种现象有同一个原因：跨集群（水槽）汇聚信息，以改进估计。这里的汇聚意味着，每个水槽都会提供信息，用来改进其他所有水槽的估计。之所以每个水槽都能这样帮忙，是因为我们假定各水槽的变化对数赔率彼此相关：它们来自同一个分布，本例中就是正态分布。一旦作出分布假设，就能用 Bayes 定理在集群间以最优方式共享信息——当然，这种最优只存在于小世界中。</p>
+    <figure class="book-figure tank-shrinkage-figure" id="fig-13-1"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的四十八个水槽经验存活率与多层模型估计比较图"><img src="/media/chapter-13-tank-shrinkage.svg" alt="蓝色实心点表示每个水槽的经验存活比例，黑色空心点表示多层模型后验均值，所有估计都向水平虚线所示的总体平均值收缩"></div><p class="scroll-hint">图较宽，可横向滚动比较小、中、大水槽的收缩程度。</p><figcaption><strong>图 13.1：</strong>四十八个蝌蚪水槽的经验存活比例（蓝色实心点），与多层模型的逐水槽参数（黑色空心圆）叠加。虚线标出所有水槽的平均存活比例；竖线分隔初始密度为 10、25 和 35 只蝌蚪的小、中、大水槽。每个水槽的多层后验均值都比经验比例更接近虚线，反映了跨水槽汇聚信息如何帮助推断每个水槽。</figcaption></figure>
+
+    <p>推断出的存活率总体分布是什么样？可以像往常一样，从后验分布抽样来可视化。先画 100 个高斯分布，分别对应 <span class="math-inline"><var>ᾱ</var></span> 与 <span class="math-inline"><var>σ</var></span> 联合后验的前 100 个样本；再为单个水槽抽取 8,000 个新的存活对数赔率。结果就是水槽总体中存活率变异的后验分布。不过在抽样前要记住：从后验分布“抽样”并不是模拟经验抽样，它只是刻画并处理分布不确定性的一种方便办法。现在开始抽样：</p>
+    <figure class="code-listing" id="code-13-6"><figcaption>R 代码 13.6</figcaption><pre><code># 显示后验中的前 100 个总体
+plot( NULL , xlim=c(-3,4) , ylim=c(0,0.35) ,
+    xlab="log-odds survive" , ylab="Density" )
+for ( i in 1:100 )
+    curve( dnorm(x,post$a_bar[i],post$sigma[i]) , add=TRUE ,
+    col=col.alpha("black",0.2) )
+
+# 从后验分布抽取 8,000 个想象中的水槽
+sim_tanks &lt;- rnorm( 8000 , post$a_bar , post$sigma )
+
+# 变换为概率并可视化
+dens( inv_logit(sim_tanks) , lwd=2 , adj=0.1 )</code></pre></figure>
+    <figure class="book-figure tank-population-figure" id="fig-13-2"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的水槽总体存活率后验双面板图"><img src="/media/chapter-13-tank-population.svg" alt="左图是一百条水槽总体存活对数赔率的高斯分布，右图是八千个新水槽的存活概率密度"></div><p class="scroll-hint">图较宽，可横向滚动比较对数赔率总体与变换后的存活概率。</p><figcaption><strong>图 13.2：</strong>推断出的跨水槽存活率总体。左：从模型 <code>m13.2</code> 后验抽出的 100 个存活对数赔率高斯分布。右：8,000 个新模拟水槽的存活概率，对左侧总体分布的后验不确定性取了平均。</figcaption></figure>
+    <p>注意，存活对数赔率总体分布的位置 <span class="math-inline"><var>ᾱ</var></span> 与尺度 <span class="math-inline"><var>σ</var></span> 都存在不确定性。全部不确定性都会传播到模拟得到的存活概率中。</p>
+
+    <aside class="rethinking-box" id="rethinking-varying-intercepts-overdispersion"><h3>再思考：把变化截距视为过度离散</h3><p>上一章（原书第 381 页）介绍了用 beta-binomial 和 gamma-Poisson 模型处理计数数据的过度离散。变化截距能完成同一件事，让计数结果允许过度离散。原因是：当每个观测计数都有自己的独特截距，而这些截距又通过共同分布汇聚时，模型预测就会像 beta-binomial 或 gamma-Poisson 模型一样预期过度离散。与这两类模型相比，在每个观测结果上放置变化截距的 binomial 或 Poisson 模型，通常更容易估计，也更容易扩展。本章稍后会给出这种方法的例子。</p></aside>
+
+    <aside class="overthinking-box" id="overthinking-variance-component-priors"><h3>过度思考：方差分量的先验</h3><p>本书的示例对方差分量使用弱正则化的指数先验；这里的方差分量，就是估计数据中跨集群变异的 <span class="math-inline"><var>σ</var></span> 参数。这些指数先验在常规多层建模中表现很好：它们只表达对平均标准差的粗略认识，并向零正则化。但在两种常见情境中，它们可能带来问题。第一，有时数据几乎没有多少信息可用于估计方差。例如只有 5 个集群，就有点像只用 5 个数据点估计方差；此时可能需要信息丰富得多的先验。第二，在使用 logit 和 log link 的非线性模型中，地板效应和天花板效应有时会让极端方差值看起来与更现实的方差值同样可信。</p></aside>
+    <p class="continuation-note">方差参数的长尾采样问题、half-Normal 先验，以及 13.2“变化效应与欠拟合/过拟合权衡”将从原书 PDF 第 438 页继续。</p>
   </section>
 
   <section class="endnotes" id="chapter-13-notes" role="doc-endnotes"><h2>尾注</h2><ol start="185"><li id="note-185">Wearing 的妻子 Deborah 写过一本关于他患病后两人生活的书（Wearing，2005）。他的故事也出现在多部纪录片中；快速搜索互联网还能找到许多新闻报道。 <a class="backref" href="#note-185-ref" aria-label="返回正文">↩</a></li><li id="note-186">Gelman（2005）第 20 页第 6 节列出了一组彼此差异极大的“随机效应”定义，读来颇有趣。 <a class="backref" href="#note-186-ref" aria-label="返回正文">↩</a></li><li id="note-187">Vonesh 与 Bolker（2005）。 <a class="backref" href="#note-187-ref" aria-label="返回正文">↩</a></li><li id="note-188">这里采用 Gelman（2005）的术语。他认为，对大多数人而言，常用的“随机效应”一词几乎无助于理解，反而似乎会助长误解；部分原因是“固定”和“随机”对不同统计学家有不同含义。详见该文第 20–21 页。不过，我完全明白：试图推广 Gelman 的替代术语，基本等同于迎着强风吐口水。 <a class="backref" href="#note-188-ref" aria-label="返回正文">↩</a></li><li id="note-189">“多”也经常指多个线性模型，尤其常见于“层级线性模型”文献。不管怎样，我们谈论的仍是同一种机器人。 <a class="backref" href="#note-189-ref" aria-label="返回正文">↩</a></li><li id="note-190">注意，正则化本身仍有不确定性。所以，这个模型并不完全等同于直接假设一个标准差恒为 1.6 的正则化先验；相反，每个水槽的截距还会对 <span class="math-inline"><var>σ</var></span>（以及 <span class="math-inline"><var>ᾱ</var></span>）的不确定性取平均。 <a class="backref" href="#note-190-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 13 章 PDF 第 429–434 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 435 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 13 章 PDF 第 429–437 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 438 页继续。</aside>
 </article>
