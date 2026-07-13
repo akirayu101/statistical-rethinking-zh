@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-14" data-source-pages="465-479">
-  <header class="chapter-header"><p class="eyebrow">第十四章</p><h1>协方差历险</h1><p class="source-range">当前译稿对应原书 PDF 第 465–479 页</p></header>
+<article class="book-article" data-chapter="chapter-14" data-source-pages="465-482">
+  <header class="chapter-header"><p class="eyebrow">第十四章</p><h1>协方差历险</h1><p class="source-range">当前译稿对应原书 PDF 第 465–482 页</p></header>
 
   <div class="chapter-introduction" id="intro-14">
     <p>回想上一章导言中的咖啡机器人（原书第 413 页）。这个机器人被设定为在咖啡馆之间移动、点咖啡，并记录等待时间。上一章的重点是：在咖啡馆之间汇聚信息，能让机器人学得更高效；变化截距正是实现这种汇聚的一种机制。</p>
@@ -288,11 +288,83 @@ m14.3 &lt;- ulam(
           gq&gt; matrix[4,4]:Rho_block &lt;&lt;- Chol_to_Corr(L_Rho_block)
     ) , data=dat , chains=4 , cores=4 , log_lik=TRUE )</code></pre></figure>
     <p>不再有发散转移！上面的代码展示了 <code>ulam</code> 的多项高级功能。尤其要注意最后两行：它们从 Cholesky 因子计算普通相关矩阵，方便解释相关。每行前面的 <code>gq&gt;</code> 标签告诉 Stan 只在每次转移结束时执行这项计算，效率更高。若仍想了解细节，可看后面的“过度思考”框，其中会给出这个模型的原始 Stan 版本。</p>
-    <p>非中心化参数化在这里有何帮助？比较两个模型的 <code>precis</code> 输出，会看到它们得出的推断大致相同；有效样本数与实际抽样效率的比较将从下一页继续。</p>
-    <p class="continuation-note">中心化与非中心化参数化的有效样本比较，将从原书 PDF 第 480 页继续。</p>
+    <p>非中心化参数化在这里有何帮助？比较两个模型的 <code>precis</code> 输出，会看到它们得出的推断大致相同；但非中心化模型的 <code>n_eff</code> 值大得多，而且实际抽样也更快。下面用一张简单散点图直观展示有效样本数的差异：</p>
+    <aside class="source-erratum" id="erratum-14-neff-model-label"><strong>原文说明：</strong>原书 PDF 第 480 页正文把有效样本数更大、抽样更快的模型写成 <code>m14.2</code>；但紧邻的图注、代码 14.20 与后续解释都明确表明应为非中心化模型 <code>m14.3</code>。译稿按这一一致证据订正。</aside>
+    <figure class="code-listing" id="code-14-20"><figcaption>R 代码 14.20</figcaption><pre><code># 提取各模型的 n_eff 值
+neff_nc &lt;- precis(m14.3,3,pars=c("alpha","beta"))$n_eff
+neff_c &lt;- precis(m14.2,3,pars=c("alpha","beta"))$n_eff
+plot( neff_c , neff_nc , xlab="centered (default)" ,
+    ylab="non-centered (cholesky)" , lwd=1.5 )
+abline(a=0,b=1,lty=2)</code></pre></figure>
+    <figure class="book-figure neff-comparison-figure" id="fig-14-6"><div class="figure-scroll" tabindex="0" aria-label="中心化与非中心化模型有效样本量散点图"><img src="/media/chapter-14-neff-comparison.svg" alt="绝大多数参数的非中心化有效样本量明显高于中心化有效样本量，并远在等值虚线上方"></div><figcaption><strong>图 14.6：</strong>交叉分类变化斜率模型的中心化参数化 <code>m14.2</code> 与非中心化参数化 <code>m14.3</code> 的有效样本数 <code>n_eff</code> 分布。两个模型得到等价推断，但非中心化版本的抽样效率高得多。</figcaption></figure>
+    <p>图 14.6 展示了结果。非中心化版本抽样高效得多，每个参数都产生了更多有效样本。实际意义是：要得到同样好的后验分布写照，所需的真实迭代次数 <code>iter</code> 会更少。数据集较大时，节省下来的可能是数小时；而在某些问题中，中心化版本根本无法给出有用的后验。</p>
+    <p>这个模型共有 76 个参数：4 个平均处理效应、行动者上的 <span class="math-inline">4 × 7</span> 个变化效应、区组上的 <span class="math-inline">4 × 6</span> 个变化效应、8 个标准差，以及 12 个自由相关参数。可以用 <code>precis(m14.3,depth=3)</code> 自己逐一检查。但从有效复杂度看，模型只有大约 27 个参数——可以查看 <code>WAIC(m14.3)</code>。行动者与区组各自的变化效应总体会对变化效应本身施加正则化；因此照例，每一个变化截距或斜率所占的有效参数都少于 1。</p>
+    <p>可以检查标准差参数，感受变化效应受到正则化的强弱：</p>
+    <figure class="code-listing" id="code-14-21"><figcaption>R 代码 14.21</figcaption><pre><code>precis( m14.3 , depth=2 , pars=c("sigma_actor","sigma_block") )</code></pre><pre class="code-output"><code>               mean   sd 5.5% 94.5% n_eff Rhat
+sigma_actor[1] 1.37 0.47 0.77  2.20   832    1
+sigma_actor[2] 0.91 0.40 0.42  1.62  1108    1
+sigma_actor[3] 1.85 0.55 1.12  2.82   961    1
+sigma_actor[4] 1.58 0.58 0.87  2.58  1109    1
+sigma_block[1] 0.40 0.32 0.04  0.98  1112    1
+sigma_block[2] 0.42 0.33 0.03  1.03   903    1
+sigma_block[3] 0.31 0.28 0.02  0.80  1740    1
+sigma_block[4] 0.48 0.37 0.04  1.16   942    1</code></pre></figure>
+    <p>这些只是后验均值，而收缩会在整个后验分布上取平均。较小的值意味着正则化得更强，因此区组效应尤其受到激进收缩。正是这种正则化把 76 个实际参数压缩成了 WAIC 意义下约 27 个有效参数；PSIS 也会给出近似相同的答案。</p>
+    <p>变化效应能适应数据，其过拟合却比普通固定效应少得多。这个例子还说明，若不检查斜率变异，可能错过很重要的模式：某条平均斜率可以接近零，但各集群之间仍可能存在显著的斜率变异。</p>
+    <p>接下来把后验预测与数据比较，做法与第 11 章相同：在每位行动者、每种处理下先计算观测均值，再用 <code>link</code> 生成后验预测。这里把区组固定为 5，因为它的估计效应几乎为零；这样得到的是接近平均区组的预测。</p>
+    <figure class="code-listing" id="code-14-22"><figcaption>R 代码 14.22</figcaption><pre><code># 计算每位行动者在每种处理下的均值
+pl &lt;- by( d$pulled_left , list( d$actor , d$treatment ) , mean )
+
+# 用 link 生成后验预测
+datp &lt;- list(
+    actor=rep(1:7,each=4) ,
+    tid=rep(1:4,times=7) ,
+    block_id=rep(5,times=4*7) )
+p_post &lt;- link( m14.3 , data=datp )
+p_mu &lt;- apply( p_post , 2 , mean )
+p_ci &lt;- apply( p_post , 2 , PI )
+
+# 设置图形
+plot( NULL , xlim=c(1,28) , ylim=c(0,1) , xlab="" ,
+    ylab="proportion left lever" , xaxt="n" , yaxt="n" )
+axis( 2 , at=c(0,0.5,1) , labels=c(0,0.5,1) )
+abline( h=0.5 , lty=2 )
+for ( j in 1:7 ) abline( v=(j-1)*4+4.5 , lwd=0.5 )
+for ( j in 1:7 ) text( (j-1)*4+2.5 , 1.1 , concat("actor ",j) , xpd=TRUE )
+
+xo &lt;- 0.1 # 错开原始数据与预测的距离
+# 原始数据
+for ( j in (1:7)[-2] ) {
+    lines( (j-1)*4+c(1,3)-xo , pl[j,c(1,3)] , lwd=2 , col=rangi2 )
+    lines( (j-1)*4+c(2,4)-xo , pl[j,c(2,4)] , lwd=2 , col=rangi2 )
+}
+points( 1:28-xo , t(pl) , pch=16 , col="white" , cex=1.7 )
+points( 1:28-xo , t(pl) , pch=c(1,1,16,16) , col=rangi2 , lwd=2 )
+
+yoff &lt;- 0.175
+text( 1-xo , pl[1,1]-yoff , "R/N" , pos=1 , cex=0.8 )
+text( 2-xo , pl[1,2]+yoff , "L/N" , pos=3 , cex=0.8 )
+text( 3-xo , pl[1,3]-yoff , "R/P" , pos=1 , cex=0.8 )
+text( 4-xo , pl[1,4]+yoff , "L/P" , pos=3 , cex=0.8 )
+
+# 后验预测
+for ( j in (1:7)[-2] ) {
+    lines( (j-1)*4+c(1,3)+xo , p_mu[(j-1)*4+c(1,3)] , lwd=2 )
+    lines( (j-1)*4+c(2,4)+xo , p_mu[(j-1)*4+c(2,4)] , lwd=2 )
+}
+for ( i in 1:28 ) lines( c(i,i)+xo , p_ci[,i] , lwd=1 )
+points( 1:28+xo , p_mu , pch=16 , col="white" , cex=1.3 )
+points( 1:28+xo , p_mu , pch=c(1,1,16,16) )</code></pre></figure>
+    <figure class="book-figure chimp-predictions-figure" id="fig-14-7"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的七位行动者原始数据与后验预测比较图"><img src="/media/chapter-14-chimp-predictions.svg" alt="七位行动者的蓝色原始比例与黑色部分汇聚后验预测，含百分之八十九相容区间"></div><p class="scroll-hint">图较宽，可横向滚动比较七位行动者。</p><figcaption><strong>图 14.7：</strong>模型 <code>m14.3</code> 的后验预测（黑色）与原始数据（蓝色）比较。线段是 89% 相容区间。空心圆表示没有伙伴的处理，实心圆表示有伙伴的处理；亲社会选项的位置按右—左—右—左交替，如行动者 1 的标注所示。</figcaption></figure>
+    <p>结果见图 14.7。原始数据为蓝色，后验均值与 89% 相容区间为黑色。和前一章一样，空心圆表示没有伙伴，实心圆表示有伙伴；亲社会处理按右—左—右—左交替。与先前最明显的区别，是模型容纳了更大的个体间变异：只要每位行动者的数据足够，就让其拥有自己的参数。</p>
+    <aside class="source-erratum" id="erratum-14-allows-achieves"><strong>原文说明：</strong>原书 PDF 第 482 页的 “allows achieves this” 是明显语法错误；译稿按上下文译为“让其拥有自己的参数便能做到这一点”。</aside>
+    <p>不过，后验并非只是复述数据——好几处都发生了收缩，行动者 2 最明显。回想一下，行动者 2 在每种处理和区组中都总是拉左侧杠杆，所以蓝点紧贴图顶；后验预测却向内收缩。为什么处理 1 和 2 比其他处理收缩得更多？因为这些处理在行动者之间的变异较小。回看上一页代码 14.21 的 <code>precis</code> 输出：一种处理下行动者间变异越小，同一处理内行动者的收缩就越强。</p>
+    <p>对这个实验的解释没有改变：这些黑猩猩在有无伙伴的处理中并没有表现出一致差异。不过这里的模型仍有优势。它允许一些个体对处理作出不同响应，因此能够揭示这样一种情形：某种处理的平均效应为零，但有些个体反应强烈。本例不是这样；然而我们常常对响应的分布比对平均响应更感兴趣，所以能估计处理效应分布的模型非常有用。</p>
+    <p>例如阿司匹林是一种止痛药，但并非所有人都同样受益。只看平均止痛效果，往往不如了解谁会受益、受益程度如何这一整套响应分布来得有意义。变化斜率模型正是用来描述这种异质性。</p>
+    <p class="continuation-note">多层模型非中心化参数化的矩阵细节，将从原书 PDF 第 483 页的“过度思考”框继续。</p>
   </section>
 
   <section class="endnotes" id="chapter-14-notes" role="doc-endnotes"><h2>尾注</h2><ol start="194"><li id="note-194">Lewandowski 等（2009）。“LKJ”来自三位作者姓氏的首字母；作者本人把这种方法称为“洋葱法”。关于它在 Bayesian 模型中的用法，可参见最新版 Stan 参考手册的说明。 <a class="backref" href="#note-194-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 14 章 PDF 第 465–479 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 480 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 14 章 PDF 第 465–482 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 483 页继续。</aside>
 </article>
