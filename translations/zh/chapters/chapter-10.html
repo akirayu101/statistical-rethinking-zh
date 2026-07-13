@@ -1,16 +1,53 @@
-<article class="book-article" data-chapter="chapter-10" data-source-pages="323">
-  <header class="chapter-header"><p class="eyebrow">第十章</p><h1>大熵与广义线性模型</h1><p class="source-range">当前译稿对应原书 PDF 第 323 页</p></header>
+<article class="book-article" data-chapter="chapter-10" data-source-pages="323-326">
+  <header class="chapter-header"><p class="eyebrow">第十章</p><h1>大熵与广义线性模型</h1><p class="source-range">当前译稿对应原书 PDF 第 323–326 页</p></header>
 
   <div class="chapter-introduction" id="intro-10">
     <p>本书大多数读者都有过与缠成一团的电线搏斗的经历。无论在书桌后面，还是塞进箱子里，电线电缆总有把自己打成结的趋势。为什么会这样？当然有真实的物理过程在起作用。但从描述层面看，原因是<strong>熵</strong>：电线最终打结的方式，远远多于保持解开的方式。<sup id="note-153-ref"><a href="#note-153">153</a></sup>所以，假如我仔细地把十几根电线放进箱子，封好箱子再摇晃一番，那么我们应当押注：等我再次打开箱子时，至少有几根电线会缠在一起。我们不需要了解电线或绳结的任何物理学，只需押注熵。能够以多得多的方式发生的事件，也就更有可能发生。</p>
     <p>利用熵并不能帮你解开电线，却能帮助你解决选择分布时的一些问题。统计模型迫使我们作出许多选择，其中一些选择涉及表示不确定性的分布。我们必须为每个参数选择一个先验分布，也必须选择一个似然函数，作为数据的分布。宽高斯先验和线性回归的高斯似然，都是惯常选择。这些惯常选择在许多情况下好得不合常理，但它们往往并不是最佳选择。使用全部信息可以让推断更有力，而要做到这一点，通常必须超越惯例。</p>
     <p>要超越惯例，最好有一些原则来指导选择。工程师要建造一座非传统的桥梁时，工程学原理会帮助他作出选择；研究者要构建一个非传统模型时，熵则提供了一条选择概率分布的有用原则：<strong>押注熵最大的分布</strong>。为什么？有三类理由。</p>
     <p>第一，熵最大的分布最宽、所含信息最少。选择熵最大的分布，意味着在仍与我们认为自己掌握的过程知识一致的前提下，把概率尽可能均匀地铺开。选择先验时，这意味着选择与我们对参数所拥有的任何部分科学知识相容、而又信息最少的分布；选择似然时，这意味着把结果变量所受的约束固定下来，再数清结果能够以哪些方式产生，并据此选择相应的分布。两种情况下，所得分布都体现了最少的信息，同时忠实于我们提供的信息。</p>
-    <p>第二，自然界往往会产生高熵的经验分布。第 4 章介绍高斯分布时，我演示过：任何不断把波动相加的过程，最终都会趋近具有独特高斯形状的经验分布。除了位置和方差，这种形状不包含有关底层过程的任何信息；因此，它具有最大熵。</p>
-    <p class="continuation-note">其他自然过程怎样产生非高斯的最大熵分布，以及本章导论的后续内容，将从原书 PDF 第 324 页继续。</p>
+    <p>第二，自然界往往会产生高熵的经验分布。第 4 章介绍高斯分布时，我演示过：任何不断把波动相加的过程，最终都会趋近具有独特高斯形状的经验分布。除了位置和方差，这种形状不包含有关底层过程的任何信息；因此，它具有最大熵。加法以外的自然过程同样倾向于产生最大熵分布。不过，它们不是高斯分布，因为它们保留了有关底层过程的不同信息。</p>
+    <p>第三，不管它为什么有效，它往往就是有效。即使我们不理解数学程序，它们仍然可能很有效。小世界（第 2 章）中的任何逻辑，都不能保证在大世界里有用。科学之所以使用逻辑，是因为它在解决真实世界问题方面有着卓越的有效记录。这就是历史性的理由：这种方法过去解决过困难问题。它不能保证解决你的问题，但任何方法都无法作出这种保证。</p>
+    <p>本章是广义线性模型与最大熵原理的概念性导论。<strong>广义线性模型</strong>（generalized linear model，GLM）很像前几章的线性回归：它用一个线性模型替换似然函数的某个参数。不过，GLM 不必使用高斯似然；任何似然函数都可以使用，描述其形状的任意一个或全部参数也都可以接上线性模型。最大熵原理帮助我们选择似然函数：把关于结果变量约束的明确假设作为依据，选择与已知约束相容的最保守分布。无论贝叶斯还是非贝叶斯方法，这条原理都能推导出许多统计方法中最常见的似然函数，同时为如何在它们之间作选择提供清晰理由。</p>
+    <p>本章之后的几章将培养处理不同类型 GLM 的计算技能。第 11 章讨论计数变量模型；第 12 章探索更复杂的模型，例如有序结果与混合模型。这些章节有些部分专门针对特定模型类型，所以暂时不感兴趣的章节可以跳过。不过，从第 13 章开始的多层模型章节会使用二项计数模型，因此熟悉第 11 章的材料会很有帮助。</p>
   </div>
 
-  <section class="endnotes" id="chapter-10-notes" role="doc-endnotes"><h2>尾注</h2><ol start="153"><li id="note-153">Grosberg（1998）。关于拓扑学视角，参见 <span class="url-text">https://doi.org/10.1073/pnas.0611320104</span>。 <a class="backref" href="#note-153-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <aside class="rethinking-box" id="rethinking-bayesian-updating-maxent"><h3>再思考：贝叶斯更新与最大熵</h3><p>贝叶斯更新推导出的后验分布，是另一类概率分布，也同样属于熵最大化。所有与假定约束和观测数据一致的分布中，后验分布相对于先验具有最大熵，也就是最小交叉熵。<sup id="note-154-ref"><a href="#note-154">154</a></sup>这一事实不会改变你的计算方式，却应当让你更深刻地体会贝叶斯推断与信息论之间的根本联系。值得注意的是，贝叶斯更新与最大熵一样，都会产生仍与我们假设一致、而信息最少的分布。也可以说，在满足约束与数据的前提下，后验分布对先验的发散尽可能小。</p></aside>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 323 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 324 页继续。</aside>
+  <section id="sec-10-1"><h2>10.1 最大熵</h2>
+    <p>第 6 章已经介绍过信息论的基础。简要说，我们要寻找一种满足三条判据的不确定性度量：（1）它应当连续；（2）随着可能事件数量增加而增大；（3）它应当可加。对于概率分布 <span class="math-inline"><var>p</var></span>，若每种可能事件 <span class="math-inline"><var>i</var></span> 的概率为 <span class="math-inline"><var>p</var><sub><var>i</var></sub></span>，那么由这三条判据唯一确定的不确定性度量，恰好就是平均对数概率：</p>
+    <div class="equation-block" id="eq-10-information-entropy"><span><var>H</var>(<var>p</var>) = − ∑<sub><var>i</var></sub> <var>p</var><sub><var>i</var></sub> log <var>p</var><sub><var>i</var></sub></span></div>
+    <p>这个函数称为<strong>信息熵</strong>。</p>
+
+    <p>最大熵原理把这项不确定性度量应用到概率分布的选择问题上。也许最简单的表述是：</p>
+    <blockquote class="book-quote" id="quote-10-maxent-principle"><p>能够以最多方式发生的分布，也就是信息熵最大的分布。熵最大的分布，是遵守其约束的最保守分布。</p></blockquote>
+    <p>这个想法一点也不直观；如果你觉得奇怪，那很正常。</p>
+    <p>为了开始理解最大熵，暂时忘掉信息与概率论。设想面前有 5 只桶和一堆分别编号的 10 颗石子。你站在那里抛出全部 10 颗石子，每一颗落进任意一只桶的概率都相同。这意味着，10 颗独立石子的每一种具体排列都同样可能：全部落进 3 号桶，与 1 号石子落进 2 号桶、2–9 号石子落进 3 号桶、10 号石子落进 4 号桶，二者的概率完全相同。</p>
+    <p>但有些<strong>类型</strong>的排列要可能得多。有些排列看起来相同，因为各只桶里的石子数量相同；这些就是石子的分布。图 10.1 展示了五种这样的分布。例如，让全部石子都落进 3 号桶只有 1 种排列方式（图 A）；让 1 颗落进 2 号桶、8 颗落进 3 号桶、1 颗落进 4 号桶则有 90 种排列方式（图 B）。图 C、D、E 表明：分布在各桶间配置的石子数量越均匀，对应的独特排列数增长得越快。当每只桶都有 2 颗石子时（图 E），实现这一分布共有 113,400 种方式；不存在能以更多方式实现的其他石子分布。</p>
+    <p class="source-erratum" id="erratum-10-1-distribution-b"><strong>原文勘误：</strong>正文把图 B 写成 2、8、2 颗石子，总数会变成 12；代码 10.1、图 10.1 和 90 种排列方式都表明应为 1、8、1，译稿按一致证据更正。</p>
+    <p>先把每一种石子分布放进一个列表：</p>
+    <figure class="code-listing" id="code-10-1"><figcaption>R 代码 10.1</figcaption><pre><code>p &lt;- list()
+p$A &lt;- c(0,0,10,0,0)
+p$B &lt;- c(0,1,8,1,0)
+p$C &lt;- c(0,2,6,2,0)
+p$D &lt;- c(1,2,4,2,1)
+p$E &lt;- c(2,2,2,2,2)</code></pre></figure>
+    <p>然后把每个分布归一化为概率分布。只需用每只桶的石子数除以石子总数：</p>
+    <figure class="code-listing" id="code-10-2"><figcaption>R 代码 10.2</figcaption><pre><code>p_norm &lt;- lapply( p , function(q) q/sum(q))</code></pre></figure>
+    <p>它们现在都是概率分布，因此可以计算每一个的信息熵。这里唯一的技巧，是记住洛必达法则（见第 211 页）：</p>
+    <figure class="code-listing" id="code-10-3"><figcaption>R 代码 10.3</figcaption><pre><code>( H &lt;- sapply( p_norm , function(q) -sum(ifelse(q==0,0,q*log(q))) ) )</code></pre><pre class="code-output"><code>        A         B         C         D         E
+0.0000000 0.6390319 0.9502705 1.4708085 1.6094379</code></pre></figure>
+    <p>所以，能够以远远最多方式实现的分布 E，也拥有最大的熵。这并非巧合。为了理解原因，先计算每一种分布可以实现的方式数的对数，再用这个对数除以石子总数 10，得到每颗石子的对数方式数。图 10.1 同时展示了五种分布及其关系：</p>
+
+    <figure class="book-figure pebble-entropy-figure" id="fig-10-1"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的五种石子分布及熵与方式数关系图"><img src="/media/chapter-10-pebble-entropy.svg" alt="五个条形图显示十颗石子在五只桶中的 A 到 E 五种分布，右下散点图显示信息熵随每颗石子的对数方式数增加"></div><p class="scroll-hint">图较宽，可横向滚动比较五种分布与右下角的熵关系图。</p><figcaption><strong>图 10.1：</strong>用熵度量能够产生同一分布的系统独特排列数。图 A–E 展示把 10 颗石子排成五种不同分布时，各自具有多少种独特方式。右下：各分布的信息熵，与产生该分布的每颗石子对数方式数之间的关系。</figcaption></figure>
+
+    <figure class="code-listing" id="code-10-4"><figcaption>R 代码 10.4</figcaption><pre><code>ways &lt;- c(1,90,1260,37800,113400)
+logwayspp &lt;- log(ways)/10</code></pre></figure>
+    <p>图 10.1 右下角把这些 <code>logwayspp</code> 值与信息熵 <code>H</code> 画在一起。两组数值包含相同的信息，因为信息熵近似等于每颗石子的对数方式数（细节见本节末的“过度思考”侧栏）。随着石子数量增加，这项近似会越来越好。</p>
+    <p class="continuation-note">信息熵怎样计数独特排列、最大熵分布为何最可信，以及后续例子，将从原书 PDF 第 327 页继续。</p>
+  </section>
+
+  <section class="endnotes" id="chapter-10-notes" role="doc-endnotes"><h2>尾注</h2><ol start="153"><li id="note-153">Grosberg（1998）。关于拓扑学视角，参见 <span class="url-text">https://doi.org/10.1073/pnas.0611320104</span>。 <a class="backref" href="#note-153-ref" aria-label="返回正文">↩</a></li><li id="note-154">Williams（1980）。另见 Caticha 与 Griffin（2007）和 Griffin（2008）；后两者给出了更清晰的论证与若干完整示例。历史背景可参见 Jaynes（1988）。 <a class="backref" href="#note-154-ref" aria-label="返回正文">↩</a></li></ol></section>
+
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 323–326 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 327 页继续。</aside>
 </article>

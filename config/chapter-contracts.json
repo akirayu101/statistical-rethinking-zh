@@ -1700,22 +1700,45 @@
   },
   "chapter-10": {
     "required_status": "in_progress",
-    "source_pages": [323, 323],
+    "source_pages": [323, 326],
     "required_ids": [
       "intro-10",
       "note-153-ref",
+      "rethinking-bayesian-updating-maxent",
+      "note-154-ref",
+      "sec-10-1",
+      "eq-10-information-entropy",
+      "quote-10-maxent-principle",
+      "erratum-10-1-distribution-b",
+      "code-10-1",
+      "code-10-2",
+      "code-10-3",
+      "fig-10-1",
+      "code-10-4",
       "chapter-10-notes",
-      "note-153"
+      "note-153",
+      "note-154"
     ],
     "required_headings": [
       "大熵与广义线性模型",
+      "再思考：贝叶斯更新与最大熵",
+      "10.1 最大熵",
       "尾注"
     ],
     "counts": {
-      "section": 1,
+      "section": 2,
+      "figure": 5,
+      "figure img": 1,
+      ".book-figure": 1,
+      ".code-listing": 4,
+      ".code-output": 1,
+      ".rethinking-box": 1,
+      ".book-quote": 1,
+      ".equation-block": 1,
+      ".source-erratum": 1,
       ".chapter-introduction": 1,
       ".continuation-note": 1,
-      ".endnotes li": 1
+      ".endnotes li": 2
     }
   }
 }
