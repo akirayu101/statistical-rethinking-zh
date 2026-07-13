@@ -1012,7 +1012,17 @@
     "gamma-Poisson regression": "gamma-Poisson 回归",
     "rate distribution": "率分布",
     "pure Poisson process": "纯 Poisson 过程",
-    "rate variation": "率变异"
+    "rate variation": "率变异",
+    "continuous mixture": "连续混合",
+    "latent probability": "潜在概率",
+    "aggregation level": "聚合层级",
+    "mixture model": "混合模型",
+    "pure process": "纯过程",
+    "zero-inflated outcome": "零膨胀结果",
+    "custom model": "自定义模型",
+    "scrub jay": "灌丛松鸦",
+    "row-level unobserved parameter": "行级未观测参数",
+    "structural zero": "结构性零"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "blavaan", "AIC", "DIC", "WAIC", "BIC", "PSIS-LOO", "MCMC", "HMC"

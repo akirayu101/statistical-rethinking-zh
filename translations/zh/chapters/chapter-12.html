@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-12" data-source-pages="397-402">
-  <header class="chapter-header"><p class="eyebrow">第十二章</p><h1>怪物与混合</h1><p class="source-range">当前译稿对应原书 PDF 第 397–402 页</p></header>
+<article class="book-article" data-chapter="chapter-12" data-source-pages="397-405">
+  <header class="chapter-header"><p class="eyebrow">第十二章</p><h1>怪物与混合</h1><p class="source-range">当前译稿对应原书 PDF 第 397–405 页</p></header>
 
   <div class="chapter-introduction" id="intro-12">
     <p>在夏威夷传说中，Nanaue 是一条爱上人类女子的鲨鱼之子。他长成一个凶残的男人，背部中央还长着一张鲨鱼嘴。在希腊传说中，Minotaur 是牛头人身的怪物，由一名人类女子与一头大白牛所生。Gryphon 是一种半鹰半狮的传说怪物。毛利传说中的 Taniwha 则兼具蛇、鸟乃至鲨鱼的特征，很像中国与欧洲神话里的龙。</p>
@@ -105,12 +105,34 @@ m12.2 &lt;- ulam(
     </section>
 
     <section id="sec-12-1-3"><h3>12.1.3 过度离散、熵与信息准则</h3>
-      <p>Beta-binomial 与 gamma-Poisson 模型，分别在与普通二项分布和 Poisson 分布相同的约束下达到最大熵。它们只是试图解释概率中未观测的异质性——</p>
-      <p class="continuation-note">率的未观测异质性、图 12.2、信息准则注意事项与“连续混合”框将从原书 PDF 第 403 页继续。</p>
+      <figure class="book-figure poisson-gamma-comparison-figure" id="fig-12-2"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的纯 Poisson 与 gamma-Poisson 模型双面板比较图"><img src="/media/chapter-12-poisson-gamma-poisson.svg" alt="左图为受 Hawaii 强烈影响的纯 Poisson 大洋洲工具模型，右图为预测区间更宽、受 Hawaii 影响较小的 gamma-Poisson 模型"></div><p class="scroll-hint">图较宽，可横向滚动比较两种模型的趋势与预测区间。</p><figcaption><strong>图 12.2：</strong>大洋洲工具的 Poisson 模型（左）受到 Hawaii 的强烈影响；等价的 gamma-Poisson 模型（右）受 Hawaii 的影响小得多，因为模型预期均值周围会有更大变异。阴影区域明显变宽，正体现了增加的变异。</figcaption></figure>
+      <p>Beta-binomial 与 gamma-Poisson 模型，分别在与普通二项分布和 Poisson 分布相同的约束下达到最大熵。它们只是试图解释概率与率中未观测的异质性。因此，尽管这些模型拟合起来可能困难得多，却仍可像普通二项与 Poisson GLM 那样理解。从使用信息准则比较模型的角度看，beta-binomial 模型是二项模型，gamma-Poisson（负二项）模型则是 Poisson 模型。</p>
+      <p>不过，除非非常清楚自己在做什么，否则不要对这些模型使用 WAIC 与 PSIS。普通二项模型和 Poisson 模型可以把数据行聚合或拆开，而不改变任何因果假设；beta-binomial 与 gamma-Poisson 模型却并非如此。原因是，beta-binomial 或 gamma-Poisson likelihood 会给数据的<strong>每一行</strong>分配一个未观测参数。接下来计算对数 likelihood 时，数据的组织方式会决定服从 beta 分布或 Gamma 分布的变异怎样进入模型。</p>
+      <p>例如，本章前面考察的 beta-binomial 模型，每一行都包含计数。当时各行是院系与性别的组合，并假定同一院系—性别组合中的所有申请者共享一个未知的基准录取概率。我们真正想做的是把每份申请都视为一项观测，在申请层面计算 WAIC，从而估计一份新申请投向已知院系—性别组合时的准确度。确实可以把数据拆开，让每一行只包含一份申请；但这样就丢掉了 beta-binomial 模型所蕴含的信息：原数据同一行中的所有申请者共享同一个潜在概率。这非常麻烦。</p>
+      <p>怎么办？下一章会介绍怎样用多层模型纳入过度离散，到那时这个障碍就会减轻。为什么？因为多层模型可以在任意聚合层级上为概率或率分配异质性。</p>
+
+      <aside class="overthinking-box" id="overthinking-continuous-mixtures"><h3>过度思考：连续混合</h3><p>Beta-binomial 这样的分布称为<strong>连续混合</strong>，因为模型假定每个二项计数都有自己独立的、服从 beta 分布的成功概率，而 beta 分布是连续的，不是离散的。因此，beta-binomial 的参数只是每个案例中的抽取次数（与普通二项分布的“规模” <span class="math-inline"><var>n</var></span> 相同），以及描述 beta 分布形状的两个参数。由此可得，从 beta-binomial 过程中观察到 <span class="math-inline"><var>y</var></span> 次成功的概率为：</p><div class="equation-block wallis-equation" id="eq-12-continuous-mixture"><span class="math-line"><var>f</var>(<var>y</var> | <var>n</var>, <var>p̄</var>, <var>θ</var>) = ∫<sub>0</sub><sup>1</sup> <var>g</var>(<var>y</var> | <var>n</var>, <var>p</var>)<var>h</var>(<var>p</var> | <var>p̄</var>, <var>θ</var>) d<var>p</var></span></div><p>其中，<span class="math-inline"><var>f</var></span> 是 beta-binomial 密度，<span class="math-inline"><var>g</var></span> 是二项分布，<span class="math-inline"><var>h</var></span> 是 beta 密度。上面的积分和应用概率中的多数积分一样，只是在计算一个平均值：把 <span class="math-inline"><var>y</var></span> 的概率对 <span class="math-inline"><var>p</var></span> 的所有取值取平均。<span class="math-inline"><var>p</var></span> 值来自均值为 <span class="math-inline"><var>p̄</var></span>、尺度为 <span class="math-inline"><var>θ</var></span> 的 beta 分布。成功概率 <span class="math-inline"><var>p</var></span> 不再是自由参数，因为它由 beta 分布产生。Gamma-Poisson 密度也有类似形式，只是把 Poisson 概率对率的 Gamma 分布取平均。</p><p>对 beta-binomial 与 gamma-Poisson 来说，上面的积分都可以化为封闭形式。需要解析形式时，随时可以查阅这些封闭表达式；R 函数 <code>dbetabinom</code> 与 <code>dgampois</code> 已经用它们提供了计算。</p></aside>
     </section>
   </section>
 
-  <section class="endnotes" id="chapter-12-notes" role="doc-endnotes"><h2>尾注</h2><ol start="175"><li id="note-175">Williams（1975，1982）。Bolker（2008）在生态数据语境中给出了清晰介绍。 <a class="backref" href="#note-175-ref" aria-label="返回正文">↩</a></li><li id="note-176">另一种很常见的参数化是 <span class="math-inline"><var>α</var> = <var>p̄θ</var></span> 与 <span class="math-inline"><var>β</var> = (1 − <var>p̄</var>)<var>θ</var></span>。<span class="math-inline"><var>p̄</var></span> 与 <span class="math-inline"><var>θ</var></span> 的版本更适合建模，因为我们通常希望把线性模型连接到 beta 分布的中心趋势，而 <span class="math-inline"><var>p̄</var></span> 正是中心趋势的一种度量。 <a class="backref" href="#note-176-ref" aria-label="返回正文">↩</a></li><li id="note-177">Hilbe（2011）整本书都在讨论 gamma-Poisson 回归。 <a class="backref" href="#note-177-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section id="sec-12-2"><h2>12.2 零膨胀结果</h2>
+    <p>我们能够测量的事物，往往并不是某种纯过程的产物，而是多个过程的混合。只要同一种观测可能由不同原因造成，混合模型就可能有用。混合模型使用不止一个简单概率分布，对多种原因的混合建模；实际上，这类模型会为同一个结果变量使用不止一个 likelihood。</p>
+    <p>计数变量尤其容易需要混合处理，因为零计数往往不止一种来路。“零”表示什么也没发生；而什么也没发生，可能是因为事件发生率很低，也可能是因为产生事件的过程根本没有启动。假如我们在林地里数灌丛松鸦，记录到零，既可能是林地中没有灌丛松鸦，也可能是我们在开始观察前就把它们全吓跑了。不论哪种情况，数据里都出现一个零。</p>
+    <p>本节将展示怎样构造简单的零膨胀模型。仍然可以使用早先模型中的相同部件，只是装配方式不同。因此，即使永远不需要使用或解释零膨胀模型，看看它们如何构造，也应当能够拓展你的建模想象力。</p>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 12 章 PDF 第 397–402 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 403 页继续。</aside>
+    <aside class="rethinking-box" id="rethinking-breaking-law"><h3>再思考：打破定律</h3><p>科学界有时会形成一种围绕统计推断的焦虑文化。过去，研究者很难自行构造和研究自定义模型，因为必须先依赖统计学家把模型研究妥当。这便引发了对非常规模型的担忧，仿佛它们会违反统计学定律。如今，统计计算能力已经强大得多。你可以设想自己的生成过程，从中模拟数据，写出模型，再验证它能否恢复真实参数值。你不必等一位数学家来把所需模型“合法化”。</p></aside>
+
+    <section id="sec-12-2-1"><h3>12.2.1 示例：零膨胀 Poisson</h3>
+      <p>第 11 章用修道院制作手稿的例子介绍了 Poisson GLM。每天，大量僧侣各自完成抄写少量手稿。这个过程本质上是二项过程；但因为试验次数很多、概率极低，所以分布趋近 Poisson。</p>
+      <figure class="book-figure zero-inflated-structure-figure" id="fig-12-3"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的零膨胀生成结构与模拟频数图"><img src="/media/chapter-12-zero-inflated-structure.svg" alt="左侧决策树显示僧侣饮酒或工作两条路径，右侧频数图显示零膨胀手稿计数及饮酒造成的额外零"></div><p class="scroll-hint">图较宽，可横向滚动比较生成结构与模拟频数。</p><figcaption><strong>图 12.3：</strong>左：零膨胀 likelihood 的计算结构。从顶部开始，僧侣以概率 <span class="math-inline"><var>p</var></span> 饮酒，或以概率 <span class="math-inline">1 − <var>p</var></span> 工作。饮酒的僧侣总会产生观测 <span class="math-inline"><var>y</var> = 0</span>；工作的僧侣则可能产生 <span class="math-inline"><var>y</var> = 0</span> 或 <span class="math-inline"><var>y</var> &gt; 0</span>。右：零膨胀观测的频数分布。零上方的蓝色线段表示由饮酒造成的 <span class="math-inline"><var>y</var> = 0</span> 观测。在真实数据里，我们通常看不出各个零究竟来自哪个过程。</figcaption></figure>
+      <p>现在设想，僧侣有些日子会休息。这些日子里没有手稿完成；酒窖反而会打开，大家从事一些更世俗的享乐。身为修道院主人，你想知道僧侣多常饮酒。推断的障碍在于：即使在诚实工作、没有饮酒的日子里，也可能纯属偶然地出现零。那么，怎样估计饮酒天数呢？</p>
+      <p>我们来构造一个混合模型解决这个问题。<sup id="note-178-ref"><a href="#note-178">178</a></sup>要考虑数据里的任意一个零都可能来自两个过程：（1）僧侣整天饮酒；（2）僧侣当天工作，却没能完成任何手稿。令 <span class="math-inline"><var>p</var></span> 表示僧侣整天饮酒的概率，令 <span class="math-inline"><var>λ</var></span> 表示他们工作时完成手稿的平均数量。</p>
+      <p>要启动这个模型，需要定义一个把两个过程混在一起的 likelihood 函数。为了理解怎样构造这种怪物，可以把僧侣是否饮酒想成一次抛硬币的结果（图 12.3）。“硬币”一面画着酒桶，另一面画着羽毛笔。酒桶朝上的概率是 <span class="math-inline"><var>p</var></span>，可以取 0 到 1 之间的任意值。根据抛硬币的结果，僧侣要么开始饮酒，要么开始抄写。饮酒的僧侣完成的手稿数总是零；工作的僧侣完成的手稿数则服从均值率为 <span class="math-inline"><var>λ</var></span> 的 Poisson 分布。因此，即使僧侣工作，也仍可能观察到零。</p>
+      <p class="continuation-note">零膨胀 Poisson 的零值与非零值 likelihood、双线性模型，以及代码 12.7 将从原书 PDF 第 406 页继续。</p>
+    </section>
+  </section>
+
+  <section class="endnotes" id="chapter-12-notes" role="doc-endnotes"><h2>尾注</h2><ol start="175"><li id="note-175">Williams（1975，1982）。Bolker（2008）在生态数据语境中给出了清晰介绍。 <a class="backref" href="#note-175-ref" aria-label="返回正文">↩</a></li><li id="note-176">另一种很常见的参数化是 <span class="math-inline"><var>α</var> = <var>p̄θ</var></span> 与 <span class="math-inline"><var>β</var> = (1 − <var>p̄</var>)<var>θ</var></span>。<span class="math-inline"><var>p̄</var></span> 与 <span class="math-inline"><var>θ</var></span> 的版本更适合建模，因为我们通常希望把线性模型连接到 beta 分布的中心趋势，而 <span class="math-inline"><var>p̄</var></span> 正是中心趋势的一种度量。 <a class="backref" href="#note-176-ref" aria-label="返回正文">↩</a></li><li id="note-177">Hilbe（2011）整本书都在讨论 gamma-Poisson 回归。 <a class="backref" href="#note-177-ref" aria-label="返回正文">↩</a></li><li id="note-178">Lambert（1992）首次介绍了这种模型。不过，基本的零膨胀方法更早已经出现；文献中还可以找到其他参考资料。 <a class="backref" href="#note-178-ref" aria-label="返回正文">↩</a></li></ol></section>
+
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 12 章 PDF 第 397–405 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 406 页继续。</aside>
 </article>

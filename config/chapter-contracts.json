@@ -2091,7 +2091,7 @@
   },
   "chapter-12": {
     "required_status": "in_progress",
-    "source_pages": [397, 402],
+    "source_pages": [397, 405],
     "required_ids": [
       "intro-12",
       "sec-12-1",
@@ -2112,10 +2112,19 @@
       "eq-12-gamma-poisson",
       "code-12-6",
       "sec-12-1-3",
+      "fig-12-2",
+      "overthinking-continuous-mixtures",
+      "eq-12-continuous-mixture",
+      "sec-12-2",
+      "rethinking-breaking-law",
+      "sec-12-2-1",
+      "fig-12-3",
+      "note-178-ref",
       "chapter-12-notes",
       "note-175",
       "note-176",
-      "note-177"
+      "note-177",
+      "note-178"
     ],
     "required_headings": [
       "怪物与混合",
@@ -2123,24 +2132,26 @@
       "12.1.1 Beta-binomial",
       "12.1.2 负二项或 gamma-Poisson",
       "12.1.3 过度离散、熵与信息准则",
+      "12.2 零膨胀结果",
+      "12.2.1 示例：零膨胀 Poisson",
       "尾注"
     ],
     "counts": {
-      "section": 5,
-      "figure": 7,
-      "figure img": 1,
-      ".book-figure": 1,
+      "section": 7,
+      "figure": 9,
+      "figure img": 3,
+      ".book-figure": 3,
       ".code-listing": 6,
       ".code-output": 1,
-      ".rethinking-box": 0,
-      ".overthinking-box": 0,
+      ".rethinking-box": 1,
+      ".overthinking-box": 1,
       ".book-quote": 0,
-      ".equation-block": 2,
-      ".wallis-equation": 2,
+      ".equation-block": 3,
+      ".wallis-equation": 3,
       ".source-erratum": 2,
       ".chapter-introduction": 1,
       ".continuation-note": 1,
-      ".endnotes li": 3
+      ".endnotes li": 4
     }
   }
 }

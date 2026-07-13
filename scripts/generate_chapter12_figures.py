@@ -9,7 +9,13 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "translations" / "zh" / "media" / "chapter-12-beta-binomial.svg"
+OUT1 = ROOT / "translations" / "zh" / "media" / "chapter-12-beta-binomial.svg"
+OUT2 = ROOT / "translations" / "zh" / "media" / "chapter-12-poisson-gamma-poisson.svg"
+OUT3 = ROOT / "translations" / "zh" / "media" / "chapter-12-zero-inflated-structure.svg"
+FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
+INK = "#30332e"
+BLUE = "#6670ee"
+GRID = "#d9d5c8"
 
 
 def logistic(x: float) -> float:
@@ -27,6 +33,32 @@ def polyline(points: list[tuple[float, float]], **attrs: object) -> str:
     attr_text = " ".join(f'{k.replace("_", "-")}="{v}"' for k, v in attrs.items())
     coords = " ".join(f"{x:.1f},{y:.1f}" for x, y in points)
     return f'<polyline points="{coords}" {attr_text}/>'
+
+
+def text_el(
+    x: float,
+    y: float,
+    value: object,
+    *,
+    size: int = 18,
+    anchor: str = "start",
+    weight: int = 400,
+    fill: str = INK,
+    rotate: int | None = None,
+) -> str:
+    transform = f' transform="rotate({rotate} {x} {y})"' if rotate is not None else ""
+    escaped = str(value).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    return (
+        f'<text x="{x:.1f}" y="{y:.1f}" text-anchor="{anchor}" '
+        f'font-family="{FONT}" font-size="{size}" font-weight="{weight}" fill="{fill}"{transform}>'
+        f"{escaped}</text>"
+    )
+
+
+def polygon(points: list[tuple[float, float]], **attrs: object) -> str:
+    attr_text = " ".join(f'{key.replace("_", "-")}="{value}"' for key, value in attrs.items())
+    coords = " ".join(f"{x:.1f},{y:.1f}" for x, y in points)
+    return f'<polygon points="{coords}" {attr_text}/>'
 
 
 def main() -> None:
@@ -131,10 +163,167 @@ def main() -> None:
         '<circle cx="700" cy="616" r="7" fill="#fff" stroke="#222" stroke-width="2.2"/><text class="legend" x="718" y="622">p̄ 后验均值与 89% 区间；+ 为预测计数区间</text>',
         '</svg>',
     ])
-    OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text("\n".join(svg), encoding="utf-8")
-    print(OUT)
+    OUT1.parent.mkdir(parents=True, exist_ok=True)
+    OUT1.write_text("\n".join(svg), encoding="utf-8")
+
+
+def figure_12_2() -> None:
+    """Rebuild the Poisson versus gamma-Poisson comparison on source page 403."""
+    width, height = 1200, 650
+    population = [1100, 1500, 3600, 4791, 7400, 8000, 9200, 13000, 17500, 275000]
+    contact = [1, 1, 1, 2, 2, 2, 2, 1, 2, 1]
+    tools = [13, 22, 24, 43, 33, 19, 40, 28, 55, 71]
+    panels = ((35, "纯 Poisson 模型"), (625, "gamma-Poisson 模型"))
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">',
+        '<title>图 12.2：纯 Poisson 与 gamma-Poisson 的大洋洲工具模型比较</title>',
+        '<desc>两个面板都显示人口与工具总数的关系。左侧纯 Poisson 模型受 Hawaii 强烈影响，右侧 gamma-Poisson 模型的预测区间更宽，两种接触率趋势也更接近。</desc>',
+        '<rect width="100%" height="100%" fill="#fbfaf6"/>',
+        '<defs>',
+    ]
+    geometries: list[tuple[float, float, float, float]] = []
+    for index, (x, _) in enumerate(panels):
+        left, right, top, bottom = x + 78, x + 545, 78, 535
+        geometries.append((left, right, top, bottom))
+        parts.append(f'<clipPath id="chapter12-panel-{index}"><rect x="{left}" y="{top}" width="{right-left}" height="{bottom-top}"/></clipPath>')
+    parts.append("</defs>")
+
+    for panel_index, (panel_x, title) in enumerate(panels):
+        left, right, top, bottom = geometries[panel_index]
+        sx = lambda value, left=left, right=right: left + value / 300000 * (right - left)
+        sy = lambda value, top=top, bottom=bottom: bottom - (value - 10) / 65 * (bottom - top)
+        parts.extend([
+            text_el((left + right) / 2, 40, title, size=24, anchor="middle", weight=650),
+            f'<rect x="{panel_x}" y="55" width="545" height="520" rx="8" fill="#fff" stroke="{GRID}"/>',
+        ])
+        for tick in (0, 50000, 150000, 250000):
+            xx = sx(tick)
+            label = "0" if tick == 0 else f"{tick // 10000}万"
+            parts.extend([
+                f'<line x1="{xx:.1f}" y1="{bottom}" x2="{xx:.1f}" y2="{bottom+7}" stroke="{INK}"/>',
+                text_el(xx, bottom + 28, label, size=15, anchor="middle"),
+            ])
+        for tick in (10, 20, 30, 40, 50, 60, 70):
+            yy = sy(tick)
+            parts.extend([
+                f'<line x1="{left-7}" y1="{yy:.1f}" x2="{left}" y2="{yy:.1f}" stroke="{INK}"/>',
+                text_el(left - 12, yy + 5, tick, size=15, anchor="end"),
+                f'<line x1="{left}" y1="{yy:.1f}" x2="{right}" y2="{yy:.1f}" stroke="{GRID}" stroke-dasharray="4 7"/>',
+            ])
+        parts.extend([
+            f'<line x1="{left}" y1="{bottom}" x2="{right}" y2="{bottom}" stroke="{INK}" stroke-width="1.7"/>',
+            f'<line x1="{left}" y1="{bottom}" x2="{left}" y2="{top}" stroke="{INK}" stroke-width="1.7"/>',
+            text_el((left + right) / 2, 610, "人口", size=19, anchor="middle"),
+            text_el(panel_x + 22, (top + bottom) / 2, "工具总数", size=19, anchor="middle", rotate=-90),
+            f'<g clip-path="url(#chapter12-panel-{panel_index})">',
+        ])
+
+        xs = [1000 + index * 299000 / 159 for index in range(160)]
+        high = [(value, 3.0 + 0.71 * value ** 0.42) for value in xs]
+        if panel_index == 0:
+            low = [(value, 4.58 * value ** 0.216) for value in xs]
+            high_bounds = (
+                [(value, max(10, mean * 0.72)) for value, mean in high],
+                [(value, mean * 1.64 + 5) for value, mean in high],
+            )
+            low_bounds = (
+                [(value, max(10, mean * 0.80)) for value, mean in low],
+                [(value, mean * 1.22 + 2) for value, mean in low],
+            )
+        else:
+            low = [(value, 2.13 * value ** 0.282) for value in xs]
+            high_bounds = (
+                [(value, max(10, mean * 0.50)) for value, mean in high],
+                [(value, mean * 1.72 + 8) for value, mean in high],
+            )
+            low_bounds = (
+                [(value, max(10, mean * 0.55)) for value, mean in low],
+                [(value, mean * 1.66 + 12) for value, mean in low],
+            )
+        for bounds, shade in ((high_bounds, "#d8d8d6"), (low_bounds, "#b8b8b5")):
+            lower, upper = bounds
+            region = upper + list(reversed(lower))
+            parts.append(polygon([(sx(x), sy(y)) for x, y in region], fill=shade))
+        parts.append(polyline([(sx(x), sy(y)) for x, y in high], fill="none", stroke=INK, stroke_width="3.2"))
+        parts.append(polyline([(sx(x), sy(y)) for x, y in low], fill="none", stroke=INK, stroke_width="3.2", stroke_dasharray="11 8"))
+        for index, value in enumerate(tools):
+            fill = BLUE if contact[index] == 2 else "#fff"
+            parts.append(f'<circle cx="{sx(population[index]):.1f}" cy="{sy(value):.1f}" r="8" fill="{fill}" stroke="{BLUE}" stroke-width="3"/>')
+        parts.append("</g>")
+        if panel_index == 1:
+            parts.extend([
+                text_el(sx(62000), sy(68), "高接触率", size=17),
+                text_el(sx(85000), sy(50), "低接触率", size=17),
+            ])
+    parts.extend([
+        '<circle cx="315" cy="636" r="6" fill="#6670ee" stroke="#6670ee" stroke-width="2"/>',
+        text_el(330, 642, "高接触社会", size=15),
+        '<circle cx="490" cy="636" r="6" fill="#fff" stroke="#6670ee" stroke-width="2"/>',
+        text_el(505, 642, "低接触社会", size=15),
+        "</svg>",
+    ])
+    OUT2.write_text("\n".join(parts) + "\n", encoding="utf-8")
+
+
+def figure_12_3() -> None:
+    """Rebuild the zero-inflated likelihood tree and simulated count distribution."""
+    width, height = 1200, 610
+    chart_left, chart_right, chart_top, chart_bottom = 690, 1120, 78, 500
+    sx = lambda value: chart_left + value / 5 * (chart_right - chart_left)
+    sy = lambda value: chart_bottom - value / 180 * (chart_bottom - chart_top)
+    frequencies = [108, 106, 70, 12, 2, 1]
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">',
+        '<title>图 12.3：零膨胀 likelihood 的结构与模拟计数</title>',
+        '<desc>左侧决策树显示僧侣以概率 p 饮酒并必然产生零，或以概率一减 p 工作并产生零或正计数。右侧直方线图显示一年模拟数据，零上方的蓝色线段标出由饮酒造成的结构性零。</desc>',
+        '<rect width="100%" height="100%" fill="#fbfaf6"/>',
+        '<defs><marker id="chapter12-arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#30332e"/></marker></defs>',
+        text_el(330, 42, "零膨胀 likelihood 的生成结构", size=23, anchor="middle", weight=650),
+        text_el((chart_left + chart_right) / 2, 42, "一年手稿产量的模拟分布", size=23, anchor="middle", weight=650),
+        '<circle cx="330" cy="115" r="18" fill="#fff" stroke="#30332e" stroke-width="2.5"/>',
+        '<circle cx="185" cy="255" r="18" fill="#fff" stroke="#30332e" stroke-width="2.5"/>',
+        '<circle cx="475" cy="255" r="18" fill="#fff" stroke="#30332e" stroke-width="2.5"/>',
+        '<line x1="317" y1="128" x2="199" y2="242" stroke="#30332e" stroke-width="2.7" marker-end="url(#chapter12-arrow)"/>',
+        '<line x1="343" y1="128" x2="461" y2="242" stroke="#30332e" stroke-width="2.7" marker-end="url(#chapter12-arrow)"/>',
+        '<line x1="185" y1="274" x2="185" y2="390" stroke="#30332e" stroke-width="2.7" marker-end="url(#chapter12-arrow)"/>',
+        '<line x1="464" y1="268" x2="270" y2="397" stroke="#30332e" stroke-width="2.7" marker-end="url(#chapter12-arrow)"/>',
+        '<line x1="475" y1="274" x2="475" y2="390" stroke="#30332e" stroke-width="2.7" marker-end="url(#chapter12-arrow)"/>',
+        text_el(260, 183, "p", size=22, anchor="middle"),
+        text_el(402, 183, "1 − p", size=22, anchor="middle"),
+        text_el(150, 262, "饮酒", size=22, anchor="end"),
+        text_el(510, 262, "工作", size=22),
+        text_el(210, 437, "观测到 y = 0", size=21, anchor="middle"),
+        text_el(480, 437, "观测到 y > 0", size=21, anchor="middle"),
+        f'<rect x="{chart_left-18}" y="{chart_top-10}" width="{chart_right-chart_left+36}" height="{chart_bottom-chart_top+20}" fill="#fff" stroke="{GRID}"/>',
+    ]
+    for tick in (0, 50, 100, 150):
+        yy = sy(tick)
+        parts.extend([
+            f'<line x1="{chart_left-7}" y1="{yy:.1f}" x2="{chart_left}" y2="{yy:.1f}" stroke="{INK}"/>',
+            text_el(chart_left - 13, yy + 5, tick, size=16, anchor="end"),
+            f'<line x1="{chart_left}" y1="{yy:.1f}" x2="{chart_right}" y2="{yy:.1f}" stroke="{GRID}" stroke-dasharray="4 7"/>',
+        ])
+    for value in range(6):
+        xx = sx(value)
+        parts.extend([
+            f'<line x1="{xx:.1f}" y1="{chart_bottom}" x2="{xx:.1f}" y2="{chart_bottom+7}" stroke="{INK}"/>',
+            text_el(xx, chart_bottom + 29, value, size=16, anchor="middle"),
+            f'<line x1="{xx:.1f}" y1="{chart_bottom}" x2="{xx:.1f}" y2="{sy(frequencies[value]):.1f}" stroke="{INK}" stroke-width="7" stroke-linecap="round"/>',
+        ])
+    parts.extend([
+        f'<line x1="{sx(0):.1f}" y1="{sy(frequencies[0]):.1f}" x2="{sx(0):.1f}" y2="{sy(172):.1f}" stroke="{BLUE}" stroke-width="7"/>',
+        f'<line x1="{chart_left}" y1="{chart_bottom}" x2="{chart_right}" y2="{chart_bottom}" stroke="{INK}" stroke-width="1.7"/>',
+        f'<line x1="{chart_left}" y1="{chart_bottom}" x2="{chart_left}" y2="{chart_top}" stroke="{INK}" stroke-width="1.7"/>',
+        text_el((chart_left + chart_right) / 2, 570, "完成的手稿数", size=20, anchor="middle"),
+        text_el(635, (chart_top + chart_bottom) / 2, "频数", size=20, anchor="middle", rotate=-90),
+        "</svg>",
+    ])
+    OUT3.write_text("\n".join(parts) + "\n", encoding="utf-8")
 
 
 if __name__ == "__main__":
     main()
+    figure_12_2()
+    figure_12_3()
+    for path in (OUT1, OUT2, OUT3):
+        print(path)
