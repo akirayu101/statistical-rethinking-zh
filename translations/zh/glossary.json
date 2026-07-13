@@ -1164,7 +1164,14 @@
     "multilevel regression with post-stratification": "带后分层的多层回归",
     "MRP": "MRP",
     "contraception": "避孕",
-    "contiguous index": "连续索引"
+    "contiguous index": "连续索引",
+    "varying slope": "变化斜率",
+    "exchangeable index": "可交换索引",
+    "joint population": "联合总体",
+    "multivariate Gaussian distribution": "多元高斯分布",
+    "instrumental variable": "工具变量",
+    "phylogenetic regression": "系统发育回归",
+    "network regression": "网络回归"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "blavaan", "AIC", "DIC", "WAIC", "BIC", "PSIS-LOO", "MCMC", "HMC"
