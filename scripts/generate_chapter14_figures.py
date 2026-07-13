@@ -11,20 +11,31 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT1 = ROOT / "translations" / "zh" / "media" / "chapter-14-cafe-waits.svg"
 OUT2 = ROOT / "translations" / "zh" / "media" / "chapter-14-cafe-population.svg"
 OUT3 = ROOT / "translations" / "zh" / "media" / "chapter-14-lkj-priors.svg"
+OUT4 = ROOT / "translations" / "zh" / "media" / "chapter-14-correlation-posterior.svg"
+OUT5 = ROOT / "translations" / "zh" / "media" / "chapter-14-cafe-shrinkage.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 BLUE = "#6670ee"
 MUTED = "#6d7069"
 GRID = "#ddd9ce"
+RAW_EFFECTS = [
+    (4.226046, -1.134052), (2.108932, -0.903905), (4.494089, -2.172498),
+    (3.252529, -1.287843), (1.719674, 0.109898), (4.293128, -1.328395),
+    (3.597890, -0.984925), (4.018012, -1.783040), (4.010418, -1.351040),
+    (3.532372, -0.890874), (1.815719, -0.284000), (3.849647, -1.191521),
+    (3.981051, -2.031068), (3.142615, -0.901156), (4.606483, -2.508728),
+    (3.373496, -1.025639), (4.236192, -1.222369), (5.755987, -0.876604),
+    (3.121060, 0.014418), (3.728481, -1.038116),
+]
 
 
 def text(x: float, y: float, value: str, *, size: int = 18, anchor: str = "start",
-         weight: int = 400, rotate: int | None = None) -> str:
+         weight: int = 400, fill: str = INK, rotate: int | None = None) -> str:
     transform = f' transform="rotate({rotate} {x} {y})"' if rotate is not None else ""
     return (
         f'<text x="{x:.1f}" y="{y:.1f}" text-anchor="{anchor}" '
         f'font-family="{FONT}" font-size="{size}" font-weight="{weight}" '
-        f'fill="{INK}"{transform}>{value}</text>'
+        f'fill="{fill}"{transform}>{value}</text>'
     )
 
 
@@ -198,13 +209,207 @@ def figure_14_3() -> None:
     OUT3.write_text("\n".join(svg), encoding="utf-8")
 
 
+def figure_14_4() -> None:
+    width, height = 920, 620
+    x0, y0, x1, y1 = 110.0, 65.0, 850.0, 510.0
+    grid = [-0.999 + index * 1.998 / 500.0 for index in range(501)]
+    log_weights = []
+    for rho in grid:
+        # Raw cafe estimates have covariance Sigma(rho) plus known sampling covariance.
+        a, b, d = 1.05, 0.5 * rho - 0.05, 0.35
+        determinant = a * d - b * b
+        log_density = math.log(0.75 * (1.0 - rho * rho))
+        for intercept, slope in RAW_EFFECTS:
+            dx, dy = intercept - 3.5, slope + 1.0
+            quadratic = (d * dx * dx - 2.0 * b * dx * dy + a * dy * dy) / determinant
+            log_density += -0.5 * (math.log(determinant) + quadratic)
+        log_weights.append(log_density)
+    peak = max(log_weights)
+    weights = [math.exp(value - peak) for value in log_weights]
+    step = grid[1] - grid[0]
+    normalization = sum(weights) * step
+    posterior = [value / normalization for value in weights]
+
+    def xy(x: float, y: float) -> tuple[float, float]:
+        return x0 + (x + 1.0) / 2.0 * (x1 - x0), y1 - y / 2.6 * (y1 - y0)
+
+    svg = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
+        "<title>图 14.4：截距与斜率相关的先验和后验</title>",
+        "<desc>蓝色后验密度集中在负相关，峰值约为负零点六；黑色虚线是较宽的 LKJcorr 二先验密度。</desc>",
+        f'<rect width="{width}" height="{height}" fill="#fff"/>',
+        f'<line x1="{x0}" y1="{y1}" x2="{x1}" y2="{y1}" stroke="{INK}" stroke-width="1.5"/>',
+        f'<line x1="{x0}" y1="{y0}" x2="{x0}" y2="{y1}" stroke="{INK}" stroke-width="1.5"/>',
+    ]
+    post_coords = " ".join(f"{x:.1f},{y:.1f}" for x, y in (xy(rho, density) for rho, density in zip(grid, posterior)))
+    prior_coords = " ".join(f"{x:.1f},{y:.1f}" for x, y in (xy(rho, 0.75 * (1-rho*rho)) for rho in grid))
+    svg.extend([
+        f'<polyline points="{post_coords}" fill="none" stroke="{BLUE}" stroke-width="4"/>',
+        f'<polyline points="{prior_coords}" fill="none" stroke="{INK}" stroke-width="3" stroke-dasharray="11 9"/>',
+    ])
+    for tick in [-1.0, -0.5, 0.0, 0.5, 1.0]:
+        x, _ = xy(tick, 0)
+        svg.extend([
+            f'<line x1="{x:.1f}" y1="{y1}" x2="{x:.1f}" y2="{y1+7}" stroke="{INK}" stroke-width="1.4"/>',
+            text(x, y1 + 31, f"{tick:.1f}", size=18, anchor="middle"),
+        ])
+    for tick in [0.0, 0.5, 1.0, 1.5, 2.0, 2.5]:
+        _, y = xy(-1, tick)
+        svg.extend([
+            f'<line x1="{x0-7}" y1="{y:.1f}" x2="{x0}" y2="{y:.1f}" stroke="{INK}" stroke-width="1.4"/>',
+            text(x0 - 15, y + 6, f"{tick:.1f}", size=18, anchor="end"),
+        ])
+    svg.extend([
+        text(275, 170, "后验", size=20, weight=700, fill=BLUE),
+        text(610, 345, "先验", size=20, weight=700),
+        text((x0 + x1) / 2, 585, "相关系数", size=21, anchor="middle", weight=600),
+        text(32, (y0 + y1) / 2, "密度", size=21, anchor="middle", weight=600, rotate=-90),
+        "</svg>",
+    ])
+    OUT4.write_text("\n".join(svg), encoding="utf-8")
+
+
+def inverse_2x2(matrix: tuple[tuple[float, float], tuple[float, float]]) -> tuple[tuple[float, float], tuple[float, float]]:
+    a, b = matrix[0]
+    c, d = matrix[1]
+    determinant = a * d - b * c
+    return ((d / determinant, -b / determinant), (-c / determinant, a / determinant))
+
+
+def posterior_effects() -> list[tuple[float, float]]:
+    sigma = ((1.0, -0.35), (-0.35, 0.25))
+    total = ((1.05, -0.40), (-0.40, 0.35))
+    total_inverse = inverse_2x2(total)
+    gain = (
+        (
+            sigma[0][0] * total_inverse[0][0] + sigma[0][1] * total_inverse[1][0],
+            sigma[0][0] * total_inverse[0][1] + sigma[0][1] * total_inverse[1][1],
+        ),
+        (
+            sigma[1][0] * total_inverse[0][0] + sigma[1][1] * total_inverse[1][0],
+            sigma[1][0] * total_inverse[0][1] + sigma[1][1] * total_inverse[1][1],
+        ),
+    )
+    result = []
+    for intercept, slope in RAW_EFFECTS:
+        dx, dy = intercept - 3.5, slope + 1.0
+        result.append((
+            3.5 + gain[0][0] * dx + gain[0][1] * dy,
+            -1.0 + gain[1][0] * dx + gain[1][1] * dy,
+        ))
+    return result
+
+
+def figure_14_5() -> None:
+    width, height = 1240, 640
+    panels = [(90.0, 65.0, 580.0, 525.0), (720.0, 65.0, 1210.0, 525.0)]
+    posterior = posterior_effects()
+
+    def left_xy(x: float, y: float) -> tuple[float, float]:
+        x0, y0, x1, y1 = panels[0]
+        return x0 + (x - 1.5) / 4.7 * (x1 - x0), y1 - (y + 2.7) / 3.0 * (y1 - y0)
+
+    def right_xy(x: float, y: float) -> tuple[float, float]:
+        x0, y0, x1, y1 = panels[1]
+        return x0 + (x - 1.5) / 4.7 * (x1 - x0), y1 - (y - 1.0) / 4.2 * (y1 - y0)
+
+    def contours(mapper, mean: tuple[float, float], covariance: tuple[tuple[float, float], tuple[float, float]]) -> list[str]:
+        a, b = covariance[0]
+        d = covariance[1][1]
+        l11 = math.sqrt(a)
+        l21 = b / l11
+        l22 = math.sqrt(d - l21 * l21)
+        lines = []
+        for level in [0.1, 0.3, 0.5, 0.8, 0.99]:
+            radius = math.sqrt(-2.0 * math.log(1.0 - level))
+            points = []
+            for index in range(181):
+                theta = index * 2.0 * math.pi / 180.0
+                ux, uy = math.cos(theta), math.sin(theta)
+                x = mean[0] + radius * l11 * ux
+                y = mean[1] + radius * (l21 * ux + l22 * uy)
+                points.append(mapper(x, y))
+            coords = " ".join(f"{x:.1f},{y:.1f}" for x, y in points)
+            lines.append(f'<polyline points="{coords}" fill="none" stroke="#b8bbb5" stroke-width="2"/>')
+        return lines
+
+    svg = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
+        "<title>图 14.5：二维收缩</title>",
+        "<desc>左图比较截距斜率的原始无汇聚估计与部分汇聚后验均值；右图在晨午等待时间尺度上显示相同收缩。连线展示每家咖啡馆被拉向总体的位置。</desc>",
+        f'<rect width="{width}" height="{height}" fill="#fff"/>',
+    ]
+    for x0, y0, x1, y1 in panels:
+        svg.append(f'<rect x="{x0}" y="{y0}" width="{x1-x0}" height="{y1-y0}" fill="#fff" stroke="{INK}" stroke-width="1.5"/>')
+    svg.extend([
+        '<defs>',
+        '<clipPath id="left-panel"><rect x="90" y="65" width="490" height="460"/></clipPath>',
+        '<clipPath id="right-panel"><rect x="720" y="65" width="490" height="460"/></clipPath>',
+        '</defs>',
+        '<g clip-path="url(#left-panel)">',
+    ])
+    svg.extend(contours(left_xy, (3.5, -1.0), ((1.0, -0.35), (-0.35, 0.25))))
+    svg.extend(['</g>', '<g clip-path="url(#right-panel)">'])
+    svg.extend(contours(right_xy, (3.5, 2.5), ((1.0, 0.65), (0.65, 0.55))))
+    svg.append('</g>')
+
+    for (raw_a, raw_b), (post_a, post_b) in zip(RAW_EFFECTS, posterior):
+        rx, ry = left_xy(raw_a, raw_b)
+        px, py = left_xy(post_a, post_b)
+        svg.extend([
+            f'<line x1="{rx:.1f}" y1="{ry:.1f}" x2="{px:.1f}" y2="{py:.1f}" stroke="{INK}" stroke-width="1.6"/>',
+            f'<circle cx="{rx:.1f}" cy="{ry:.1f}" r="5.5" fill="{BLUE}"/>',
+            f'<circle cx="{px:.1f}" cy="{py:.1f}" r="6" fill="#fff" stroke="{INK}" stroke-width="2"/>',
+        ])
+        raw_morning, raw_afternoon = raw_a, raw_a + raw_b
+        post_morning, post_afternoon = post_a, post_a + post_b
+        rx, ry = right_xy(raw_morning, raw_afternoon)
+        px, py = right_xy(post_morning, post_afternoon)
+        svg.extend([
+            f'<line x1="{rx:.1f}" y1="{ry:.1f}" x2="{px:.1f}" y2="{py:.1f}" stroke="{INK}" stroke-width="1.6"/>',
+            f'<circle cx="{rx:.1f}" cy="{ry:.1f}" r="5.5" fill="{BLUE}"/>',
+            f'<circle cx="{px:.1f}" cy="{py:.1f}" r="6" fill="#fff" stroke="{INK}" stroke-width="2"/>',
+        ])
+
+    x_start, y_start = right_xy(1.5, 1.5)
+    x_end, y_end = right_xy(5.2, 5.2)
+    svg.append(f'<line x1="{x_start:.1f}" y1="{y_start:.1f}" x2="{x_end:.1f}" y2="{y_end:.1f}" stroke="{INK}" stroke-width="2" stroke-dasharray="10 8"/>')
+    for panel_index, mapper in enumerate([left_xy, right_xy]):
+        x0, y0, x1, y1 = panels[panel_index]
+        for tick in [2, 3, 4, 5, 6]:
+            x, _ = mapper(tick, -2.7 if panel_index == 0 else 1.0)
+            svg.extend([
+                f'<line x1="{x:.1f}" y1="{y1}" x2="{x:.1f}" y2="{y1+7}" stroke="{INK}"/>',
+                text(x, y1 + 28, str(tick), size=17, anchor="middle"),
+            ])
+        y_ticks = [-2.5, -2.0, -1.5, -1.0, -0.5, 0.0] if panel_index == 0 else [1, 2, 3, 4, 5]
+        for tick in y_ticks:
+            _, y = mapper(1.5, tick)
+            svg.extend([
+                f'<line x1="{x0-7}" y1="{y:.1f}" x2="{x0}" y2="{y:.1f}" stroke="{INK}"/>',
+                text(x0 - 15, y + 6, f"{tick:g}", size=17, anchor="end"),
+            ])
+    svg.extend([
+        text(335, 600, "截距", size=21, anchor="middle", weight=600),
+        text(35, 295, "斜率", size=21, anchor="middle", weight=600, rotate=-90),
+        text(965, 600, "上午等待时间", size=21, anchor="middle", weight=600),
+        text(665, 295, "下午等待时间", size=21, anchor="middle", weight=600, rotate=-90),
+        "</svg>",
+    ])
+    OUT5.write_text("\n".join(svg), encoding="utf-8")
+
+
 def main() -> None:
     figure_14_1()
     figure_14_2()
     figure_14_3()
+    figure_14_4()
+    figure_14_5()
     print(OUT1)
     print(OUT2)
     print(OUT3)
+    print(OUT4)
+    print(OUT5)
 
 
 if __name__ == "__main__":

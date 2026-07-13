@@ -2439,7 +2439,7 @@
   },
   "chapter-14": {
     "required_status": "in_progress",
-    "source_pages": [465, 473],
+    "source_pages": [465, 476],
     "required_ids": [
       "intro-14",
       "eq-14-cafe-varying-slopes",
@@ -2478,6 +2478,12 @@
       "fig-14-3",
       "code-14-12",
       "code-14-13",
+      "fig-14-4",
+      "code-14-14",
+      "code-14-15",
+      "code-14-16",
+      "fig-14-5",
+      "code-14-17",
       "chapter-14-notes",
       "note-194"
     ],
@@ -2494,10 +2500,10 @@
     ],
     "counts": {
       "section": 2,
-      "figure": 16,
-      "figure img": 3,
-      ".book-figure": 3,
-      ".code-listing": 13,
+      "figure": 22,
+      "figure img": 5,
+      ".book-figure": 5,
+      ".code-listing": 17,
       ".code-output": 1,
       ".rethinking-box": 2,
       ".overthinking-box": 1,

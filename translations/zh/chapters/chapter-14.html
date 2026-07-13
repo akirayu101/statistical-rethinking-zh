@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-14" data-source-pages="465-473">
-  <header class="chapter-header"><p class="eyebrow">第十四章</p><h1>协方差历险</h1><p class="source-range">当前译稿对应原书 PDF 第 465–473 页</p></header>
+<article class="book-article" data-chapter="chapter-14" data-source-pages="465-476">
+  <header class="chapter-header"><p class="eyebrow">第十四章</p><h1>协方差历险</h1><p class="source-range">当前译稿对应原书 PDF 第 465–476 页</p></header>
 
   <div class="chapter-introduction" id="intro-14">
     <p>回想上一章导言中的咖啡机器人（原书第 413 页）。这个机器人被设定为在咖啡馆之间移动、点咖啡，并记录等待时间。上一章的重点是：在咖啡馆之间汇聚信息，能让机器人学得更高效；变化截距正是实现这种汇聚的一种机制。</p>
@@ -146,10 +146,81 @@ R &lt;- rlkjcorr( 1e4 , K=2 , eta=2 )    # 先验
 dens( R[,1,2] , add=TRUE , lty=2 )</code></pre></figure>
     <p>结果见图 14.4，其中还增加了一些装饰，并加入先验作比较。蓝色密度是截距与斜率相关的后验分布；后验集中在负值，因为模型学到了图 14.2 中可见的负相关。要记住，模型并没有看到真实截距和斜率，它能使用的只有上午和下午观测到的等待时间。</p>
     <p>如果好奇先验的影响，就应改变先验并重复分析。建议尝试平坦先验 <span class="math-inline">LKJcorr(1)</span>，再试正则化更强的 <span class="math-inline">LKJcorr(4)</span> 或 <span class="math-inline">LKJcorr(5)</span>。</p>
-    <p class="continuation-note">图 14.4 的先验—后验相关比较与后续收缩分析，将从原书 PDF 第 474 页继续。</p>
+    <figure class="book-figure correlation-posterior-figure" id="fig-14-4"><div class="figure-scroll" tabindex="0" aria-label="截距斜率相关的先验与后验密度"><img src="/media/chapter-14-correlation-posterior.svg" alt="蓝色后验密度集中于负相关，黑色虚线 LKJcorr 二先验更宽并以零为中心"></div><figcaption><strong>图 14.4：</strong>截距与斜率相关的后验分布。蓝色：相关的后验分布，可靠地低于零。虚线：先验分布，即 <span class="math-inline">LKJcorr(2)</span> 密度。</figcaption></figure>
+
+    <p>接着考察收缩。多层模型会估计每家咖啡馆截距与斜率的后验分布，并利用这些变化效应之间推断出的相关跨参数汇聚信息。这与用截距间变异在截距之间汇聚、用斜率间变异在斜率之间汇聚完全相同。方差与相关共同定义一个推断出的变化效应多元高斯先验；这个从数据学到的先验会自适应地正则化截距和斜率。</p>
+    <p>为了看清这种自适应正则化——也就是收缩——的后果，绘制变化效应的后验均值，并与原始、无汇聚估计比较。同时画出推断先验（截距与斜率总体）的等高线，帮助可视化收缩。下面的代码绘制无汇聚估计与后验均值：</p>
+    <figure class="code-listing" id="code-14-14"><figcaption>R 代码 14.14</figcaption><pre><code># 直接从数据计算无汇聚估计
+a1 &lt;- sapply( 1:N_cafes ,
+        function(i) mean(wait[cafe_id==i &amp; afternoon==0]) )
+b1 &lt;- sapply( 1:N_cafes ,
+        function(i) mean(wait[cafe_id==i &amp; afternoon==1]) ) - a1
+
+# 提取部分汇聚估计的后验均值
+post &lt;- extract.samples(m14.1)
+a2 &lt;- apply( post$a_cafe , 2 , mean )
+b2 &lt;- apply( post$b_cafe , 2 , mean )
+
+# 绘制两者并用线连接
+plot( a1 , b1 , xlab="intercept" , ylab="slope" ,
+    pch=16 , col=rangi2 , ylim=c( min(b1)-0.1 , max(b1)+0.1 ) ,
+    xlim=c( min(a1)-0.1 , max(a1)+0.1 ) )
+points( a2 , b2 , pch=1 )
+for ( i in 1:N_cafes ) lines( c(a1[i],a2[i]) , c(b1[i],b2[i]) )</code></pre></figure>
+    <p>再叠加总体等高线：</p>
+    <figure class="code-listing" id="code-14-15"><figcaption>R 代码 14.15</figcaption><pre><code># 计算后验均值对应的二元 Gaussian
+Mu_est &lt;- c( mean(post$a) , mean(post$b) )
+rho_est &lt;- mean( post$Rho[,1,2] )
+sa_est &lt;- mean( post$sigma_cafe[,1] )
+sb_est &lt;- mean( post$sigma_cafe[,2] )
+cov_ab &lt;- sa_est*sb_est*rho_est
+Sigma_est &lt;- matrix( c(sa_est^2,cov_ab,cov_ab,sb_est^2) , ncol=2 )
+
+# 绘制等高线
+library(ellipse)
+for ( l in c(0.1,0.3,0.5,0.8,0.99) )
+    lines(ellipse(Sigma_est,centre=Mu_est,level=l),
+        col=col.alpha("black",0.2))</code></pre></figure>
+    <p>结果见图 14.5 左侧。蓝色点是每家咖啡馆的无汇聚估计，空心点是变化效应模型的后验均值；同一家店的两个点由线连接。由于两个维度都发生收缩，每个空心点都从蓝色点向等高线中心移动。离中心更远的蓝色点收缩更强，因为在推断总体下，它们的可信度更低。</p>
+    <p>还要注意，收缩并不是沿直线径直指向中心。图上方中部那家咖啡馆最能说明这一点：它的截距一般，所以位于横轴中间，但斜率异常高，所以位于纵轴顶部。其他咖啡馆汇聚来的信息让模型怀疑这个斜率；而总体中的截距与斜率相关，因此把斜率向下收缩时，也会收缩截距。所有倾斜的收缩线都反映了截距与斜率之间的负相关。</p>
+    <p>图 14.5 右侧在结果尺度上呈现同一信息。只要知道线性模型，就能计算这些平均结果：</p>
+    <figure class="code-listing" id="code-14-16"><figcaption>R 代码 14.16</figcaption><pre><code># 把变化效应转换成等待时间
+wait_morning_1 &lt;- (a1)
+wait_afternoon_1 &lt;- (a1 + b1)
+wait_morning_2 &lt;- (a2)
+wait_afternoon_2 &lt;- (a2 + b2)
+
+# 绘制两者并用线连接
+plot( wait_morning_1 , wait_afternoon_1 , xlab="morning wait" ,
+    ylab="afternoon wait" , pch=16 , col=rangi2 ,
+    ylim=c( min(wait_afternoon_1)-0.1 , max(wait_afternoon_1)+0.1 ) ,
+    xlim=c( min(wait_morning_1)-0.1 , max(wait_morning_1)+0.1 ) )
+points( wait_morning_2 , wait_afternoon_2 , pch=1 )
+for ( i in 1:N_cafes )
+    lines( c(wait_morning_1[i],wait_morning_2[i]) ,
+    c(wait_afternoon_1[i],wait_afternoon_2[i]) )
+abline( a=0 , b=1 , lty=2 )</code></pre></figure>
+
+    <figure class="book-figure cafe-shrinkage-figure" id="fig-14-5"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的二维收缩双面板图"><img src="/media/chapter-14-cafe-shrinkage.svg" alt="左图在截距斜率尺度比较无汇聚点和部分汇聚点，右图在晨午等待时间尺度显示同一收缩"></div><p class="scroll-hint">图较宽，可横向滚动比较参数尺度与结果尺度上的二维收缩。</p><figcaption><strong>图 14.5：</strong>二维收缩。左：原始无汇聚截距和斜率（蓝色实心点）与部分汇聚后验均值（空心圆）比较；灰色等高线表示推断出的变化效应总体。右：结果尺度上的相同估计。</figcaption></figure>
+
+    <p>要加入右图的等高线，需要方差与协方差。可以使用公式——Gaussian 随机变量之间有一些简单关系；但为了让这节课更一般，这里改用模拟，让你看到怎样计算任何感兴趣的量：</p>
+    <figure class="code-listing" id="code-14-17"><figcaption>R 代码 14.17</figcaption><pre><code># 用模拟得到结果尺度上的收缩分布
+v &lt;- mvrnorm( 1e4 , Mu_est , Sigma_est )
+v[,2] &lt;- v[,1] + v[,2] # 计算下午等待时间
+Sigma_est2 &lt;- cov(v)
+Mu_est2 &lt;- Mu_est
+Mu_est2[2] &lt;- Mu_est[1]+Mu_est[2]
+
+# 绘制等高线
+library(ellipse)
+for ( l in c(0.1,0.3,0.5,0.8,0.99) )
+    lines(ellipse(Sigma_est2,centre=Mu_est2,level=l),
+        col=col.alpha("black",0.5))</code></pre></figure>
+    <p>右图横轴是每家咖啡馆以分钟计的预期上午等待时间，纵轴是预期下午等待时间。蓝色点仍是数据的无汇聚经验估计，空心点是使用汇聚估计的后验预测；对角虚线表示上午与下午等待时间相等。需要体会的是，参数尺度上的收缩会自然地在我们真正关心的结果尺度上产生收缩，同时还蕴含由灰色等高线表示的等待时间总体。这个总体现在呈正相关：上午等待越久的咖啡馆，下午往往也越久——毕竟它们很热门。不过，总体大部分仍位于等待时间相等的虚线下方；平均而言，下午会等得更短。</p>
+    <p class="continuation-note">14.2“高级变化斜率”将从原书 PDF 第 477 页继续。</p>
   </section>
 
   <section class="endnotes" id="chapter-14-notes" role="doc-endnotes"><h2>尾注</h2><ol start="194"><li id="note-194">Lewandowski 等（2009）。“LKJ”来自三位作者姓氏的首字母；作者本人把这种方法称为“洋葱法”。关于它在 Bayesian 模型中的用法，可参见最新版 Stan 参考手册的说明。 <a class="backref" href="#note-194-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 14 章 PDF 第 465–473 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 474 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 14 章 PDF 第 465–476 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 477 页继续。</aside>
 </article>
