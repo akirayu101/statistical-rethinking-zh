@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-14" data-source-pages="465-467">
-  <header class="chapter-header"><p class="eyebrow">第十四章</p><h1>协方差历险</h1><p class="source-range">当前译稿对应原书 PDF 第 465–467 页</p></header>
+<article class="book-article" data-chapter="chapter-14" data-source-pages="465-470">
+  <header class="chapter-header"><p class="eyebrow">第十四章</p><h1>协方差历险</h1><p class="source-range">当前译稿对应原书 PDF 第 465–470 页</p></header>
 
   <div class="chapter-introduction" id="intro-14">
     <p>回想上一章导言中的咖啡机器人（原书第 413 页）。这个机器人被设定为在咖啡馆之间移动、点咖啡，并记录等待时间。上一章的重点是：在咖啡馆之间汇聚信息，能让机器人学得更高效；变化截距正是实现这种汇聚的一种机制。</p>
@@ -33,8 +33,69 @@ b &lt;- (-1)         # 下午与上午的平均等待时间差
 sigma_a &lt;- 1      # 截距的标准差
 sigma_b &lt;- 0.5    # 斜率的标准差
 rho &lt;- (-0.7)     # 截距与斜率的相关</code></pre></figure>
-    <p class="continuation-note">怎样把这些总体参数组成均值向量与方差—协方差矩阵，将从原书 PDF 第 468 页继续。</p>
+    <p>这些值定义了整个咖啡馆总体。为了用它们为机器人模拟一批咖啡馆，需要把它们组成一个二维多元高斯分布；这意味着需要一个含两个均值的向量，以及一个 2 × 2 的方差—协方差矩阵。均值最简单，所需向量就是：</p>
+    <figure class="code-listing" id="code-14-2"><figcaption>R 代码 14.2</figcaption><pre><code>Mu &lt;- c( a , b )</code></pre></figure>
+    <p>就这样。<code>a</code> 中的值是平均截距，即上午等待时间；<code>b</code> 中的值是平均斜率，即下午与上午的等待时间差。</p>
+    <p>方差—协方差矩阵按下面的方式排列：</p>
+    <div class="equation-block wallis-equation" id="eq-14-covariance-layout"><div><span class="matrix-2x2"><span>截距的方差</span><span>截距与斜率的协方差</span><span>截距与斜率的协方差</span><span>斜率的方差</span></span></div></div>
+    <p>写成数学形式：</p>
+    <div class="equation-block wallis-equation" id="eq-14-covariance-matrix"><div><span class="matrix-2x2"><span><var>σ</var><sub><var>α</var></sub><sup>2</sup></span><span><var>σ</var><sub><var>α</var></sub><var>σ</var><sub><var>β</var></sub><var>ρ</var></span><span><var>σ</var><sub><var>α</var></sub><var>σ</var><sub><var>β</var></sub><var>ρ</var></span><span><var>σ</var><sub><var>β</var></sub><sup>2</sup></span></span></div></div>
+    <p>截距方差是 <span class="math-inline"><var>σ</var><sub><var>α</var></sub><sup>2</sup></span>，斜率方差是 <span class="math-inline"><var>σ</var><sub><var>β</var></sub><sup>2</sup></span>，它们位于矩阵对角线上。另两个元素相同，都是 <span class="math-inline"><var>σ</var><sub><var>α</var></sub><var>σ</var><sub><var>β</var></sub><var>ρ</var></span>，即截距与斜率的协方差：两个标准差与相关的乘积。把普通方差想成变量与自身的协方差，或许会有帮助。如果你对协方差的定义已经生疏——没关系，大多数人都是如此——可以看后面的“过度思考”框。</p>
+    <p>用 R 代码构造这个矩阵有好几种办法。这里展示两种常见方法。第一种是直接用 <code>matrix</code> 构造整个协方差矩阵：</p>
+    <figure class="code-listing" id="code-14-3"><figcaption>R 代码 14.3</figcaption><pre><code>cov_ab &lt;- sigma_a*sigma_b*rho
+Sigma &lt;- matrix( c(sigma_a^2,cov_ab,cov_ab,sigma_b^2) , ncol=2 )</code></pre></figure>
+    <p>别扭之处在于，R 以这种方式定义矩阵时，会先沿一列向下填满，再移到下一列，因此上面代码中的顺序看起来有些古怪，但结果是对的。要理解“沿列向下填充”，试一下：</p>
+    <figure class="code-listing" id="code-14-4"><figcaption>R 代码 14.4</figcaption><pre><code>matrix( c(1,2,3,4) , nrow=2 , ncol=2 )</code></pre><pre class="code-output"><code>     [,1] [,2]
+[1,]    1    3
+[2,]    2    4</code></pre></figure>
+    <p>第一列填满后，R 才从第二列顶端重新开始。</p>
+    <p>另一种常见的协方差矩阵构造方式，在概念上非常有用：先分别处理标准差和相关，再用矩阵乘法得到协方差矩阵。稍后定义先验时还会采用这种方法，所以值得现在就看清楚：</p>
+    <figure class="code-listing" id="code-14-5"><figcaption>R 代码 14.5</figcaption><pre><code>sigmas &lt;- c(sigma_a,sigma_b) # 标准差
+Rho &lt;- matrix( c(1,rho,rho,1) , nrow=2 ) # 相关矩阵
+
+# 现在用矩阵乘法得到协方差矩阵
+Sigma &lt;- diag(sigmas) %*% Rho %*% diag(sigmas)</code></pre></figure>
+    <p>如果不确定 <code>diag(sigmas)</code> 做了什么，可以在 R 提示符中只输入 <code>diag(sigmas)</code> 看看。</p>
+    <p>现在可以模拟一些各有独特截距与斜率的咖啡馆了。先定义咖啡馆数量：</p>
+    <figure class="code-listing" id="code-14-6"><figcaption>R 代码 14.6</figcaption><pre><code>N_cafes &lt;- 20</code></pre></figure>
+    <p>要模拟它们的性质，只需从 <code>Mu</code> 与 <code>Sigma</code> 定义的多元高斯分布中随机抽样：</p>
+    <figure class="code-listing" id="code-14-7"><figcaption>R 代码 14.7</figcaption><pre><code>library(MASS)
+set.seed(5) # 用于复现示例
+vary_effects &lt;- mvrnorm( N_cafes , Mu , Sigma )</code></pre></figure>
+    <p>注意上面的 <code>set.seed(5)</code>。加入它，是为了让你精确复现示例图中的结果。特定数字 5 会产生一条特定的随机数序列，每个不同的数字都会生成不同序列。在代码中加入这样的 <code>set.seed</code>，能让其他人精确复现你的分析。稍后应当尝试不再调用 <code>set.seed</code>，或者换一个数字重做示例，以体会不同模拟之间的变异。</p>
+    <p>现在看看 <code>vary_effects</code> 的内容。它应当是一个 20 行、2 列的矩阵：每一行是一家咖啡馆，第一列是截距，第二列是斜率。为了让结构更透明，把两列拆成命名清楚的向量：</p>
+    <figure class="code-listing" id="code-14-8"><figcaption>R 代码 14.8</figcaption><pre><code>a_cafe &lt;- vary_effects[,1]
+b_cafe &lt;- vary_effects[,2]</code></pre></figure>
+    <p>为了可视化这些截距和斜率，把两者相互作图。下面的代码还会画出总体分布的等高线：</p>
+    <figure class="code-listing" id="code-14-9"><figcaption>R 代码 14.9</figcaption><pre><code>plot( a_cafe , b_cafe , col=rangi2 ,
+    xlab="intercepts (a_cafe)" , ylab="slopes (b_cafe)" )
+
+# 叠加总体分布
+library(ellipse)
+for ( l in c(0.1,0.3,0.5,0.8,0.99) )
+    lines(ellipse(Sigma,centre=Mu,level=l),col=col.alpha("black",0.2))</code></pre></figure>
+    <p>图 14.2 显示一次典型结果。在某一次具体模拟中，相关未必都如此明显；但平均而言，<code>a_cafe</code> 中的截距与 <code>b_cafe</code> 中的斜率相关为 −0.7，在散点图中能够看出这种趋势。图中的等高线由 <code>ellipse</code> 包生成（请确保已安装），表示抽取这 20 家咖啡馆的截距—斜率多元高斯总体。</p>
+
+    <figure class="book-figure cafe-population-figure" id="fig-14-2"><div class="figure-scroll" tabindex="0" aria-label="二十家咖啡馆截距与斜率散点及总体等高线"><img src="/media/chapter-14-cafe-population.svg" alt="二十个咖啡馆截距与斜率散点沿负相关方向分布，并叠加多元高斯总体的灰色椭圆等高线"></div><figcaption><strong>图 14.2：</strong>从统计总体抽取的 20 家咖啡馆。横轴是每家咖啡馆的截距（平均上午等待时间），纵轴是斜率（下午与上午的平均等待时间差）。灰色椭圆表示截距与斜率的多元高斯总体。</figcaption></figure>
+
+    <aside class="overthinking-box" id="overthinking-14-variance-covariance-correlation"><h3>过度思考：方差、协方差与相关</h3>
+      <p>在典型的统计用法中，我们用三个参数定义协方差：（1）第一个变量的标准差，例如 <span class="math-inline"><var>σ</var><sub><var>α</var></sub></span>；（2）第二个变量的标准差，例如 <span class="math-inline"><var>σ</var><sub><var>β</var></sub></span>；（3）两个变量之间的相关，例如 <span class="math-inline"><var>ρ</var><sub><var>αβ</var></sub></span>。为什么协方差等于 <span class="math-inline"><var>σ</var><sub><var>α</var></sub><var>σ</var><sub><var>β</var></sub><var>ρ</var><sub><var>αβ</var></sub></span>？</p>
+      <p>变量 <var>x</var> 与 <var>y</var> 之间的协方差通常定义为：</p>
+      <div class="equation-block wallis-equation" id="eq-14-covariance-definition"><div><span class="math-line">cov(<var>x</var>, <var>y</var>) = E(<var>xy</var>) − E(<var>x</var>)E(<var>y</var>)</span></div><div><span class="math-line">var(<var>x</var>) = cov(<var>x</var>, <var>x</var>) = E(<var>x</var><sup>2</sup>) − E(<var>x</var>)<sup>2</sup></span></div></div>
+      <p>也可以说，“协方差等于乘积的平均值减去平均值的乘积”。方差只是它的特殊情形，即变量与自身的协方差。若只考虑期望为零的随机变量——这没有损失，因为随时可以重新居中——那么就只剩 <span class="math-inline">cov(<var>x</var>, <var>y</var>) = E(<var>xy</var>)</span> 与 <span class="math-inline">var(<var>x</var>) = E(<var>x</var><sup>2</sup>)</span>。</p>
+      <p>相关只是重新缩放后的协方差，使最小值为 −1、最大值为 1。用最大可能的协方差去除，就能把协方差标准化；这个最大值是 <span class="math-inline">√{var(<var>x</var>)var(<var>y</var>)}</span>，也就是两个标准差的乘积。</p>
+      <p>下面说明它为何确实是 <span class="math-inline">cov(<var>x</var>, <var>y</var>) = E(<var>xy</var>)</span> 能取得的最大值。当第二个变量 <var>y</var> 只是 <var>x</var> 的重新缩放副本时，协方差最大。比如令 <span class="math-inline"><var>y</var><sub><var>i</var></sub> = <var>p x</var><sub><var>i</var></sub></span>，其中 <var>p</var> 是 0.5 或 1.5 之类的比例。于是 <span class="math-inline"><var>y</var> = <var>px</var></span> 只是被拉伸的 <var>x</var>，而 <span class="math-inline">cov(<var>x</var>, <var>y</var>) = E(<var>px</var><sup>2</sup>) = <var>p</var>E(<var>x</var><sup>2</sup>)</span>。同时，<span class="math-inline">var(<var>x</var>) = E(<var>x</var><sup>2</sup>)</span>，<span class="math-inline">var(<var>y</var>) = E(<var>p</var><sup>2</sup><var>x</var><sup>2</sup>) = <var>p</var><sup>2</sup>E(<var>x</var><sup>2</sup>)</span>。还觉得有趣吗？马上就结束。两者方差乘积的平方根正好是 <span class="math-inline"><var>p</var>E(<var>x</var><sup>2</sup>) = cov(<var>x</var>, <var>y</var>)</span>；这就是协方差能达到的最大值。</p>
+      <p>因此，若想得到标准化的关联度量——相关——就用协方差除以这个最大值：</p>
+      <div class="equation-block wallis-equation" id="eq-14-correlation-definition"><div class="math-line"><var>ρ</var><sub><var>xy</var></sub> = <span class="fraction"><span>cov(<var>x</var>, <var>y</var>)</span><span>√{var(<var>x</var>)var(<var>y</var>)}</span></span></div></div>
+      <p>把这个方程对 <span class="math-inline">cov(<var>x</var>, <var>y</var>)</span> 求解，就得到：</p>
+      <div class="equation-block wallis-equation" id="eq-14-covariance-product"><div class="math-line">cov(<var>x</var>, <var>y</var>) = √{var(<var>x</var>)var(<var>y</var>)}<var>ρ</var><sub><var>xy</var></sub> = <var>σ</var><sub><var>x</var></sub><var>σ</var><sub><var>y</var></sub><var>ρ</var><sub><var>xy</var></sub></div></div>
+      <p>呼。以上只是为了说明，应用统计中把协方差写成 <span class="math-inline">cov(<var>x</var>, <var>y</var>) = <var>σ</var><sub><var>x</var></sub><var>σ</var><sub><var>y</var></sub><var>ρ</var><sub><var>xy</var></sub></span>，既有充分依据，也很方便。</p>
+    </aside>
+
+    <h3 id="sec-14-1-2">14.1.2 模拟观测</h3>
+    <p>模拟快要完成了。上面模拟的是各家咖啡馆及其平均性质；现在只需再模拟机器人访问这些咖啡馆并收集数据。下面将让机器人访问每家咖啡馆 10 次，上午 5 次、下午 5 次；机器人记录每次访问的等待时间，再把全部访问合并成一个共同的数据框。</p>
+    <p class="continuation-note">模拟访问的代码 14.10 与后续变化斜率模型，将从原书 PDF 第 471 页继续。</p>
   </section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 14 章 PDF 第 465–467 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 468 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 14 章 PDF 第 465–470 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 471 页继续。</aside>
 </article>

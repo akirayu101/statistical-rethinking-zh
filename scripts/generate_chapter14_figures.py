@@ -3,11 +3,13 @@
 
 from __future__ import annotations
 
+import math
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT1 = ROOT / "translations" / "zh" / "media" / "chapter-14-cafe-waits.svg"
+OUT2 = ROOT / "translations" / "zh" / "media" / "chapter-14-cafe-population.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 BLUE = "#6670ee"
@@ -82,9 +84,77 @@ def figure_14_1() -> None:
     OUT1.write_text("\n".join(svg), encoding="utf-8")
 
 
+def figure_14_2() -> None:
+    width, height = 920, 670
+    x0, y0, x1, y1 = 115.0, 70.0, 850.0, 565.0
+    points = [
+        (4.223962, -1.609356), (2.010498, -0.751770), (4.565811, -1.948265),
+        (3.343635, -1.192654), (1.700971, -0.585562), (4.134373, -1.144454),
+        (3.794469, -1.626466), (3.946598, -1.715279), (3.864267, -0.907168),
+        (3.467614, -0.680405), (2.242875, -0.618152), (4.159506, -1.659212),
+        (4.300283, -2.112547), (3.506948, -1.440643), (4.382086, -1.879898),
+        (3.521133, -1.350699), (4.216713, -0.919280), (5.913003, -1.231362),
+        (3.477306, -0.357034), (3.774899, -1.057046),
+    ]
+
+    def xy(x: float, y: float) -> tuple[float, float]:
+        px = x0 + (x - 1.5) / (6.2 - 1.5) * (x1 - x0)
+        py = y1 - (y + 2.2) / 2.0 * (y1 - y0)
+        return px, py
+
+    svg = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
+        "<title>图 14.2：从截距与斜率总体抽取的二十家咖啡馆</title>",
+        "<desc>二十个空心蓝点表示咖啡馆截距和斜率。灰色椭圆是相关为负零点七的多元高斯总体等高线，呈现截距越高、斜率越负的趋势。</desc>",
+        f'<rect width="{width}" height="{height}" fill="#fff"/>',
+        f'<rect x="{x0}" y="{y0}" width="{x1-x0}" height="{y1-y0}" fill="#fff" stroke="{INK}" stroke-width="1.5"/>',
+        f'<defs><clipPath id="plot-clip"><rect x="{x0}" y="{y0}" width="{x1-x0}" height="{y1-y0}"/></clipPath></defs>',
+        '<g clip-path="url(#plot-clip)">',
+    ]
+    # Cholesky factor of [[1, -0.35], [-0.35, 0.25]].
+    l21, l22 = -0.35, math.sqrt(0.1275)
+    for level in [0.1, 0.3, 0.5, 0.8, 0.99]:
+        radius = math.sqrt(-2.0 * math.log(1.0 - level))
+        contour = []
+        for index in range(181):
+            theta = index * 2.0 * math.pi / 180.0
+            ux, uy = math.cos(theta), math.sin(theta)
+            cx = 3.5 + radius * ux
+            cy = -1.0 + radius * (l21 * ux + l22 * uy)
+            contour.append(xy(cx, cy))
+        coords = " ".join(f"{x:.1f},{y:.1f}" for x, y in contour)
+        svg.append(f'<polyline points="{coords}" fill="none" stroke="#b8bbb5" stroke-width="2"/>')
+    svg.append("</g>")
+
+    for x, y in points:
+        px, py = xy(x, y)
+        svg.append(f'<circle cx="{px:.1f}" cy="{py:.1f}" r="6" fill="#fff" stroke="{BLUE}" stroke-width="2.2"/>')
+
+    for tick in [2, 3, 4, 5, 6]:
+        x, _ = xy(tick, -2.2)
+        svg.extend([
+            f'<line x1="{x:.1f}" y1="{y1}" x2="{x:.1f}" y2="{y1+7}" stroke="{INK}" stroke-width="1.4"/>',
+            text(x, y1 + 31, str(tick), size=18, anchor="middle"),
+        ])
+    for tick in [-2.0, -1.5, -1.0, -0.5]:
+        _, y = xy(1.5, tick)
+        svg.extend([
+            f'<line x1="{x0-7}" y1="{y:.1f}" x2="{x0}" y2="{y:.1f}" stroke="{INK}" stroke-width="1.4"/>',
+            text(x0 - 15, y + 6, f"{tick:.1f}", size=18, anchor="end"),
+        ])
+    svg.extend([
+        text((x0 + x1) / 2, 635, "截距（a_cafe）", size=21, anchor="middle", weight=600),
+        text(32, (y0 + y1) / 2, "斜率（b_cafe）", size=21, anchor="middle", weight=600, rotate=-90),
+        "</svg>",
+    ])
+    OUT2.write_text("\n".join(svg), encoding="utf-8")
+
+
 def main() -> None:
     figure_14_1()
+    figure_14_2()
     print(OUT1)
+    print(OUT2)
 
 
 if __name__ == "__main__":
