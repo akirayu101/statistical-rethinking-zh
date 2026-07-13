@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-10" data-source-pages="323-344">
-  <header class="chapter-header"><p class="eyebrow">第十章</p><h1>大熵与广义线性模型</h1><p class="source-range">当前译稿对应原书 PDF 第 323–344 页</p></header>
+<article class="book-article" data-chapter="chapter-10" data-source-pages="323-346">
+  <header class="chapter-header"><p class="eyebrow">第十章</p><h1>大熵与广义线性模型</h1><p class="source-range">完整译稿对应原书 PDF 第 323–346 页</p></header>
 
   <div class="chapter-introduction" id="intro-10">
     <p>本书大多数读者都有过与缠成一团的电线搏斗的经历。无论在书桌后面，还是塞进箱子里，电线电缆总有把自己打成结的趋势。为什么会这样？当然有真实的物理过程在起作用。但从描述层面看，原因是<strong>熵</strong>：电线最终打结的方式，远远多于保持解开的方式。<sup id="note-153-ref"><a href="#note-153">153</a></sup>所以，假如我仔细地把十几根电线放进箱子，封好箱子再摇晃一番，那么我们应当押注：等我再次打开箱子时，至少有几根电线会缠在一起。我们不需要了解电线或绳结的任何物理学，只需押注熵。能够以多得多的方式发生的事件，也就更有可能发生。</p>
@@ -272,11 +272,24 @@ distributions &lt;- H[2,]</code></pre></figure>
     <section id="sec-10-2-5"><h3>10.2.5 GLM 与信息准则</h3>
       <p>第 6 章关于信息准则与正则化先验的内容，同样适用于 GLM。不过，现在有了这么多新的结果分布可供使用，人们很容易想用信息准则来比较采用不同似然函数的模型。高斯分布与二项分布哪个更好？难道不能直接让 WAIC 或交叉验证替我们判定吗？</p>
       <p>遗憾的是，WAIC（或任何其他信息准则）无法解决这个问题。问题在于，离差中有一部分是归一化常数。这个常数会影响离差的绝对大小，却不会影响对数据的拟合。由于所有信息准则都以离差为基础，它们的大小也会依赖这些常数。</p>
-      <p class="continuation-note">为什么只应比较采用同一类结果分布的模型，以及 10.2.5 的其余说明，将从原书 PDF 第 345 页继续。</p>
+      <p>只要参与比较的所有模型都采用同一种结果分布——高斯、二项、指数、Gamma、Poisson 或其他分布——这就没有问题，因为按差值比较模型时，这些常数会相互抵消。但如果两个模型使用不同的结果分布，常数便不会抵消，AIC、DIC、WAIC 或 LOO 的差异就可能把你引向错误结论。</p>
+      <p>真正需要记住的，只是应当比较采用同一类似然的模型。当然，使用不同似然的模型并非不能比较，只是不能用信息准则比较。幸运的是，至少对于普通回归模型，最大熵原理通常能为似然提供一个容易作出的选择，因此不必依赖信息准则来决定这一点。</p>
+      <p>WAIC/LOO 与各类具体 GLM 之间还有少数细节问题；后续章节逐类处理 GLM 示例时会遇到它们。</p>
     </section>
+  </section>
+
+  <section id="sec-10-3"><h2>10.3 最大熵先验</h2>
+    <p>最大熵原理能帮助我们作出建模选择。当必须选择结果分布——也就是似然——时，最大熵会推举一个与结果变量约束一致、同时信息最少的分布。以这种方式应用该原理，会得到许多与惯常做法相同的分布选择；那些选择通常只被视为方便的假设或有用的惯例。</p>
+    <p>最大熵原理帮助选择分布的另一种方式，出现在选择先验时。GLM 很容易搭配本书至今一直使用的惯用弱信息先验。这类先验很好，因为它们既让数据主导推断，又能约束无约束估计的某些病态行为；第 9 章已经展示过它们“柔性力量”的几个醒目例子。</p>
+    <p>不过，在少数时候，GLM 的某些参数确实指向我们拥有背景信息的事物。此时，最大熵提供了一种生成先验的方法：让先验体现背景信息，同时尽可能少作其他假设。因此，这类先验是很有吸引力的保守选择。</p>
+    <p>本书不会用最大熵来选择先验。但以后遇到这样做的分析时，你可以像解释似然一样解释这个原理：把它理解为一种尝试——纳入与参数有关的背景信息，同时避免意外引入任何其他假设。</p>
+  </section>
+
+  <section id="sec-10-4"><h2>10.4 总结</h2>
+    <p>本章从概念而非实践层面介绍了最大熵与广义线性模型。最大熵原理提供了一种经验上成功的似然函数选择方法。信息熵本质上衡量的是：在给定假设下，一个分布可以通过多少种方式产生。选择信息熵最大的分布，就是选择一个服从结果变量约束、却不额外夹带其他假设的分布。广义线性模型由此自然产生，成为前面各章线性模型的扩展。要把线性模型连接到广义结果，就必须选择 link 函数；这又给模型设定、估计与解释带来了新的复杂性。后续章节会通过实例让你逐渐熟悉这些复杂之处。</p>
   </section>
 
   <section class="endnotes" id="chapter-10-notes" role="doc-endnotes"><h2>尾注</h2><ol start="153"><li id="note-153">Grosberg（1998）。关于拓扑学视角，参见 <span class="url-text">https://doi.org/10.1073/pnas.0611320104</span>。 <a class="backref" href="#note-153-ref" aria-label="返回正文">↩</a></li><li id="note-154">Williams（1980）。另见 Caticha 与 Griffin（2007）和 Griffin（2008）；后两者给出了更清晰的论证与若干完整示例。历史背景可参见 Jaynes（1988）。 <a class="backref" href="#note-154-ref" aria-label="返回正文">↩</a></li><li id="note-155">Jaynes（2003），第 351 页。 <a class="backref" href="#note-155-ref" aria-label="返回正文">↩</a></li><li id="note-156">Williams（1980）。 <a class="backref" href="#note-156-ref" aria-label="返回正文">↩</a></li><li id="note-157">Williams（1980）。另见 Caticha 与 Griffin（2007）和 Griffin（2008）；后两者给出了更清晰的论证与若干完整示例。历史背景可参见 Jaynes（1988）。 <a class="backref" href="#note-157-ref" aria-label="返回正文">↩</a></li><li id="note-158">E. T. Jaynes 把这种现象称为“熵集中”。参见 Jaynes（2003），第 365–370 页。 <a class="backref" href="#note-158-ref" aria-label="返回正文">↩</a></li><li id="note-159">广义正态分布的方差为 <span class="math-inline"><var>α</var><sup>2</sup> Γ(3/<var>β</var>)/Γ(1/<var>β</var>)</span>。给定形状参数 <span class="math-inline"><var>β</var></span>，令 <span class="math-inline"><var>α</var> = <var>σ</var>√[Γ(1/<var>β</var>)/Γ(3/<var>β</var>)]</span>，就能把方差固定为任意指定的 <span class="math-inline"><var>σ</var><sup>2</sup></span>。若想动手试验，<code>rethinking</code> 以 <code>dgnorm</code> 提供了这个密度。 <a class="backref" href="#note-159-ref" aria-label="返回正文">↩</a></li><li id="note-160">这个证明来自 Keith Conrad 的在线讲义“Probability distributions and maximum entropy”。 <a class="backref" href="#note-160-ref" aria-label="返回正文">↩</a></li><li id="note-161"><code>sim.p</code> 的第一行先抽取 3 个均匀随机数，不施加任何联合约束；第二行再利用给定的期望值 <code>G</code>，解出第 4 个数的相对值；其余代码只是把它们归一化为概率分布并计算熵。 <a class="backref" href="#note-161-ref" aria-label="返回正文">↩</a></li><li id="note-162">传统广义线性模型的核心文献是 McCullagh 与 Nelder（1989）。“generalized linear model”一词出自 Nelder 与 Wedderburn（1972）。这个术语容易混淆，因为另有“general linear model”；Nelder 后来对这一命名感到后悔。参见 Senn（2003），第 127 页。 <a class="backref" href="#note-162-ref" aria-label="返回正文">↩</a></li><li id="note-163">Frank（2007）。 <a class="backref" href="#note-163-ref" aria-label="返回正文">↩</a></li><li id="note-164">并不存在这种分布。 <a class="backref" href="#note-164-ref" aria-label="返回正文">↩</a></li><li id="note-165">Nuzzo（2014）。另见 Simmons 等（2011）。 <a class="backref" href="#note-165-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 323–344 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 345 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 10 章 PDF 第 323–346 页已完成整章翻译、逐页核对、结构契约检查与桌面/移动端全章验收，达到整章 verified；第 346 页为空白保留页。</aside>
 </article>

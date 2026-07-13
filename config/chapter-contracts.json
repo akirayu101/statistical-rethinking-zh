@@ -1699,8 +1699,8 @@
     }
   },
   "chapter-10": {
-    "required_status": "in_progress",
-    "source_pages": [323, 344],
+    "required_status": "verified",
+    "source_pages": [323, 346],
     "required_ids": [
       "intro-10",
       "note-153-ref",
@@ -1790,6 +1790,8 @@
       "sec-10-2-3",
       "sec-10-2-4",
       "sec-10-2-5",
+      "sec-10-3",
+      "sec-10-4",
       "chapter-10-notes",
       "note-153",
       "note-154",
@@ -1826,10 +1828,12 @@
       "10.2.3 再谈遗漏变量偏差",
       "10.2.4 绝对差异与相对差异",
       "10.2.5 GLM 与信息准则",
+      "10.3 最大熵先验",
+      "10.4 总结",
       "尾注"
     ],
     "counts": {
-      "section": 10,
+      "section": 12,
       "figure": 21,
       "figure img": 8,
       ".book-figure": 8,
@@ -1842,8 +1846,38 @@
       ".wallis-equation": 29,
       ".source-erratum": 2,
       ".chapter-introduction": 1,
-      ".continuation-note": 1,
+      ".continuation-note": 0,
       ".endnotes li": 13
+    }
+  },
+  "chapter-11": {
+    "required_status": "in_progress",
+    "source_pages": [347, 347],
+    "required_ids": [
+      "intro-11",
+      "note-166-ref",
+      "chapter-11-notes",
+      "note-166"
+    ],
+    "required_headings": [
+      "上帝给整数加了料",
+      "尾注"
+    ],
+    "counts": {
+      "section": 1,
+      "figure": 0,
+      "figure img": 0,
+      ".book-figure": 0,
+      ".code-listing": 0,
+      ".code-output": 0,
+      ".rethinking-box": 0,
+      ".overthinking-box": 0,
+      ".book-quote": 0,
+      ".equation-block": 0,
+      ".source-erratum": 0,
+      ".chapter-introduction": 1,
+      ".continuation-note": 1,
+      ".endnotes li": 1
     }
   }
 }
