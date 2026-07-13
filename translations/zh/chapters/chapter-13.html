@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-13" data-source-pages="429-446">
-  <header class="chapter-header"><p class="eyebrow">第十三章</p><h1>有记忆的模型</h1><p class="source-range">当前译稿对应原书 PDF 第 429–446 页</p></header>
+<article class="book-article" data-chapter="chapter-13" data-source-pages="429-449">
+  <header class="chapter-header"><p class="eyebrow">第十三章</p><h1>有记忆的模型</h1><p class="source-range">当前译稿对应原书 PDF 第 429–449 页</p></header>
 
   <div class="chapter-introduction" id="intro-13">
     <p>1985 年，Clive Wearing 失去了心智，却没有失去音乐。<sup id="note-185-ref"><a href="#note-185">185</a></sup> Wearing 是音乐学家，也是一位出色的音乐家；但引起唇疱疹的单纯疱疹病毒钻进了他的大脑，侵蚀了海马体。结果是慢性<strong>顺行性遗忘</strong>：他无法形成新的长期记忆。他仍记得怎样弹钢琴，却不记得自己五分钟前刚弹过。Wearing 如今活在一个个瞬间里，对几分钟前以外的过去一无所知；每一杯咖啡都是他有生以来的第一杯。</p>
@@ -294,13 +294,78 @@ m13.4 &lt;- ulam(
 1: There were 22 divergent transitions after warmup.</code></pre></figure>
     <p>4 条独立链总共得到 2,000 个样本。仍要检查轨迹图与诊断：一旦开始盲目信任机器，机器就会背叛你的信任。本例出现 22 次预热后发散转移。模型实际仍能抽样，但警告表示探索后验的效率遇到困难；下一节会修复它。现在先继续解释后验。</p>
     <p>这是目前全书最复杂的模型。先查看后验，留意几个重要特征：</p>
-    <figure class="code-listing" id="code-13-22"><figcaption>R 代码 13.22（续）</figcaption><pre><code>precis( m13.4 , depth=2 )
+    <figure class="code-listing" id="code-13-22"><figcaption>R 代码 13.22</figcaption><pre><code>precis( m13.4 , depth=2 )
 plot( precis(m13.4,depth=2) ) # 同时绘图</code></pre><pre class="code-output"><code>           mean   sd  5.5% 94.5% n_eff Rhat
-b[1]      -0.12 0.30 -0.59  0.39   158 1.03</code></pre></figure>
-    <p class="continuation-note">代码 13.22 的其余后验输出、行动者与区组变异的比较，以及图 13.4 将从原书 PDF 第 447 页继续。</p>
+b[1]      -0.12 0.30 -0.59  0.39   158 1.03
+b[2]       0.40 0.30 -0.07  0.88   310 1.02
+b[3]      -0.48 0.30 -0.96  0.00   515 1.01
+b[4]       0.30 0.31 -0.17  0.80   186 1.02
+a[1]      -0.37 0.36 -0.94  0.24   446 1.01
+a[2]       4.61 1.20  2.98  6.83   915 1.01
+a[3]      -0.67 0.36 -1.24 -0.08   709 1.01
+a[4]      -0.68 0.37 -1.26 -0.09   235 1.02
+a[5]      -0.37 0.36 -0.93  0.19   338 1.01
+a[6]       0.57 0.35  0.01  1.12   560 1.01
+a[7]       2.09 0.45  1.41  2.82   721 1.01
+g[1]      -0.17 0.22 -0.57  0.07   426 1.01
+g[2]       0.05 0.18 -0.19  0.36   921 1.01
+g[3]       0.05 0.19 -0.22  0.39  1062 1.01
+g[4]       0.02 0.18 -0.25  0.31   939 1.01
+g[5]      -0.02 0.18 -0.31  0.24   873 1.00
+g[6]       0.12 0.19 -0.11  0.49   533 1.01
+a_bar      0.58 0.74 -0.58  1.79   800 1.00
+sigma_a    2.00 0.66  1.17  3.16  1106 1.00
+sigma_g    0.21 0.17  0.03  0.52   229 1.02</code></pre></figure>
+    <p><code>precis</code> 图显示在图 13.4 左侧。先注意，有效样本数 <code>n_eff</code> 在不同参数之间差异很大。这在复杂模型中很常见。为什么？原因很多，不过在这类模型中，一个常见原因是某个参数长时间停留在边界附近。这里的参数是 <code>sigma_g</code>：它经常靠近最小值零，一些 <code>Rhat</code> 值也略高于 1。所有这些都表明抽样效率不高；下一节会修复它。</p>
+    <p>再比较 <code>sigma_a</code> 与 <code>sigma_g</code>：行动者之间的估计变异远大于区组之间的估计变异。若绘制这两个参数的边际后验分布，就很容易看清这一点，见图 13.4 右侧。虽然行动者之间的变异仍有不确定性，但模型很有把握认为行动者的差异大于区组。变化截距分布也直接呈现了这种差别：<code>a</code> 的分布比 <code>g</code> 的分布分散得多。黑猩猩各不相同，区组却几乎一样。</p>
+    <figure class="book-figure cluster-variation-figure" id="fig-13-4"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的行动者与区组参数后验比较双面板图"><img src="/media/chapter-13-cluster-variation.svg" alt="左图显示模型参数的后验均值与百分之八十九相容区间，右图显示行动者和区组标准差的边际后验密度"></div><p class="scroll-hint">图较宽，可横向滚动比较参数区间与两类集群标准差的后验密度。</p><figcaption><strong>图 13.4：</strong>左：模型 <code>m13.4</code> 的后验均值与 89% 相容区间。从 <code>a</code> 与 <code>g</code> 的分布可立即看出，行动者之间的变异大于区组之间的变异。右：按行动者（黑色）与区组（蓝色）划分的变化截距标准差后验分布。</figcaption></figure>
+    <p>因此，在模型中加入 <code>block</code> 并没有增加多少过拟合风险。下面比较仅对 <code>actor</code> 使用变化截距的模型，以及同时使用两类变化截距的模型。忽略区组的模型是：</p>
+    <figure class="code-listing" id="code-13-23"><figcaption>R 代码 13.23</figcaption><pre><code>set.seed(14)
+m13.5 &lt;- ulam(
+    alist(
+        pulled_left ~ dbinom( 1 , p ) ,
+        logit(p) &lt;- a[actor] + b[treatment] ,
+        b[treatment] ~ dnorm( 0 , 0.5 ),
+        a[actor] ~ dnorm( a_bar , sigma_a ),
+        a_bar ~ dnorm( 0 , 1.5 ),
+        sigma_a ~ dexp(1)
+    ) , data=dat_list , chains=4 , cores=4 , log_lik=TRUE )</code></pre></figure>
+    <p>把它与同时包含两类集群的模型比较：</p>
+    <figure class="code-listing" id="code-13-24"><figcaption>R 代码 13.24</figcaption><pre><code>compare( m13.4 , m13.5 )</code></pre><pre class="code-output"><code>       WAIC    SE dWAIC  dSE pWAIC weight
+m13.5 531.3 19.25     0   NA   8.6   0.63
+m13.4 532.3 19.33     1 1.71  10.7   0.37</code></pre></figure>
+    <p>查看 <code>pWAIC</code> 列，它报告“有效参数个数”。虽然 <code>m13.4</code> 比 <code>m13.5</code> 多 7 个实际参数，但只有大约 2 个额外的有效参数。为什么？因为 <code>sigma_g</code> 的后验分布最终靠近零。这意味着 6 个 <code>g</code> 参数都被强烈收缩向零，因而相对不灵活。相比之下，由于行动者之间的估计变异大得多，<code>a</code> 参数向零收缩得少得多。结果，每个 <code>a</code> 参数对 <code>pWAIC</code> 的贡献都大得多。</p>
+    <p>还可以看到，两模型的 WAIC 差异很小，只有约 1；与差异的标准误相比尤其如此。两模型暗示的预测几乎相同，因此预期样本外准确度也几乎相同。区组参数被强烈收缩向零，在模型里几乎没有发挥作用。</p>
+    <p>如果你产生了把 <code>m13.4</code>“选”为最佳模型的冲动，请先停一下。选择任一模型都得不到任何东西。比较这两个模型讲出了更丰富的故事：是否纳入区组几乎无关紧要，而 <code>g</code> 与 <code>sigma_g</code> 的估计告诉了我们原因。保留并报告两个模型，读者就能对实验了解更多。模型比较很有价值。若要选择模型，我们更希望检验不同因果模型的条件独立性。由于这里是实验，其实没有什么需要选择；实验设计已经告诉我们应该考察哪一个因果模型。</p>
+
+    <h3 id="sec-13-3-2">13.3.2 更多簇</h3>
+    <p>你可能注意到，处理效应，也就是 <code>b</code> 参数，看起来很像 <code>a</code> 和 <code>g</code> 参数。能否也对处理效应使用部分汇聚？当然可以。有些人会对这个建议大喊“不行！”，因为他们被教导说，变化效应只能用于实验未控制的变量。按照这种想法，由于处理已被实验“固定”，就应该采用不汇聚的“固定”效应。</p>
+    <p>这种说法完全错误。之所以使用变化效应，是因为它们能提供更好的推断；集群如何产生并不重要。只要各个单元是<strong>可交换的</strong>——重新分配索引值不会改变模型的含义——部分汇聚就可能有帮助。</p>
+    <p>本例只有 4 种处理，而且每种处理都有大量数据，所以部分汇聚无论如何也不会带来多少差别。下面仍使用 <code>m13.4</code>，但现在也对处理作部分汇聚：</p>
+    <figure class="code-listing" id="code-13-25"><figcaption>R 代码 13.25</figcaption><pre><code>set.seed(15)
+m13.6 &lt;- ulam(
+    alist(
+        pulled_left ~ dbinom( 1 , p ) ,
+        logit(p) &lt;- a[actor] + g[block_id] + b[treatment] ,
+        b[treatment] ~ dnorm( 0 , sigma_b ),
+        a[actor] ~ dnorm( a_bar , sigma_a ),
+        g[block_id] ~ dnorm( 0 , sigma_g ),
+        a_bar ~ dnorm( 0 , 1.5 ),
+        sigma_a ~ dexp(1),
+        sigma_g ~ dexp(1),
+        sigma_b ~ dexp(1)
+    ) , data=dat_list , chains=4 , cores=4 , log_lik=TRUE )
+coeftab( m13.4 , m13.6 )</code></pre><pre class="code-output"><code>       m13.4 m13.6
+b[1]   -0.13 -0.14
+b[2]    0.39  0.35
+b[3]   -0.48 -0.47
+b[4]    0.28  0.24</code></pre></figure>
+    <p>我删去了 <code>coeftab</code> 输出的其余部分，因为现在只关心 <code>b</code> 参数。这些估计并不完全相同，但非常接近。查看 <code>sigma_b</code> 会发现它很小：在 logit 尺度上，各处理之间差异不大，因为它们本来就没有造成多少差别。每种处理又都有大量数据，所以无论如何也不会被汇聚多少。若用 WAIC 或 PSIS 比较 <code>m13.6</code> 与 <code>m13.4</code>，会发现两者在纯预测指标上没有差异。只要每个集群（这里是每种处理）都有大量数据来估计其参数，这就是典型结果。</p>
+    <p>不过，<code>m13.6</code> 确实带来了更多<strong>发散转移</strong>。终于该处理它们了。</p>
+    <p class="continuation-note">13.4“发散转移与非中心化先验”将从原书 PDF 第 450 页继续。</p>
   </section>
 
   <section class="endnotes" id="chapter-13-notes" role="doc-endnotes"><h2>尾注</h2><ol start="185"><li id="note-185">Wearing 的妻子 Deborah 写过一本关于他患病后两人生活的书（Wearing，2005）。他的故事也出现在多部纪录片中；快速搜索互联网还能找到许多新闻报道。 <a class="backref" href="#note-185-ref" aria-label="返回正文">↩</a></li><li id="note-186">Gelman（2005）第 20 页第 6 节列出了一组彼此差异极大的“随机效应”定义，读来颇有趣。 <a class="backref" href="#note-186-ref" aria-label="返回正文">↩</a></li><li id="note-187">Vonesh 与 Bolker（2005）。 <a class="backref" href="#note-187-ref" aria-label="返回正文">↩</a></li><li id="note-188">这里采用 Gelman（2005）的术语。他认为，对大多数人而言，常用的“随机效应”一词几乎无助于理解，反而似乎会助长误解；部分原因是“固定”和“随机”对不同统计学家有不同含义。详见该文第 20–21 页。不过，我完全明白：试图推广 Gelman 的替代术语，基本等同于迎着强风吐口水。 <a class="backref" href="#note-188-ref" aria-label="返回正文">↩</a></li><li id="note-189">“多”也经常指多个线性模型，尤其常见于“层级线性模型”文献。不管怎样，我们谈论的仍是同一种机器人。 <a class="backref" href="#note-189-ref" aria-label="返回正文">↩</a></li><li id="note-190">注意，正则化本身仍有不确定性。所以，这个模型并不完全等同于直接假设一个标准差恒为 1.6 的正则化先验；相反，每个水槽的截距还会对 <span class="math-inline"><var>σ</var></span>（以及 <span class="math-inline"><var>ᾱ</var></span>）的不确定性取平均。 <a class="backref" href="#note-190-ref" aria-label="返回正文">↩</a></li><li id="note-191">这一事实早在人们能够实际使用多层模型之前就已为人所知；可参见 Stein（1955）那篇影响深远的非 Bayes 论文。 <a class="backref" href="#note-191-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 13 章 PDF 第 429–446 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 447 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 13 章 PDF 第 429–449 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 450 页继续。</aside>
 </article>

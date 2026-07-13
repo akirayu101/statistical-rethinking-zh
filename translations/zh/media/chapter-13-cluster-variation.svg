@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760">
+<title>图 13.4：行动者与区组变化截距的后验比较</title>
+<desc>左图显示模型 m13.4 各参数的后验均值与百分之八十九相容区间；行动者截距比区组截距分散得多。右图显示行动者和区组变化截距标准差的边际后验密度。</desc>
+<rect width="1200" height="760" fill="#fff"/>
+<line x1="120.0" y1="620.0" x2="590.0" y2="620.0" stroke="#30332e" stroke-width="2"/>
+<line x1="120.0" y1="58.0" x2="120.0" y2="620.0" stroke="#30332e" stroke-width="2"/>
+<line x1="710.0" y1="620.0" x2="1145.0" y2="620.0" stroke="#30332e" stroke-width="2"/>
+<line x1="710.0" y1="100.0" x2="710.0" y2="620.0" stroke="#30332e" stroke-width="2"/>
+<line x1="120.0" y1="72.0" x2="590.0" y2="72.0" stroke="#d9d5c8" stroke-width="1" stroke-dasharray="4 5"/>
+<text x="106.0" y="78.0" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">b[1]</text>
+<line x1="192.0" y1="72.0" x2="242.1" y2="72.0" stroke="#30332e" stroke-width="3"/>
+<circle cx="216.0" cy="72.0" r="6.5" fill="#fff" stroke="#30332e" stroke-width="2"/>
+<line x1="120.0" y1="100.2" x2="590.0" y2="100.2" stroke="#d9d5c8" stroke-width="1" stroke-dasharray="4 5"/>
+<text x="106.0" y="106.2" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">b[2]</text>
+<line x1="218.6" y1="100.2" x2="267.1" y2="100.2" stroke="#30332e" stroke-width="3"/>
+<circle cx="242.6" cy="100.2" r="6.5" fill="#fff" stroke="#30332e" stroke-width="2"/>
+<line x1="120.0" y1="128.2" x2="590.0" y2="128.2" stroke="#d9d5c8" stroke-width="1" stroke-dasharray="4 5"/>
+<text x="106.0" y="134.2" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">b[3]</text>
+<line x1="173.1" y1="128.2" x2="222.2" y2="128.2" stroke="#30332e" stroke-width="3"/>
+<circle cx="197.7" cy="128.2" r="6.5" fill="#fff" stroke="#30332e" stroke-width="2"/>
+<line x1="120.0" y1="156.4" x2="590.0" y2="156.4" stroke="#d9d5c8" stroke-width="1" stroke-dasharray="4 5"/>
+<text x="106.0" y="162.4" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">b[4]</text>
+<line x1="213.5" y1="156.4" x2="263.0" y2="156.4" stroke="#30332e" stroke-width="3"/>
+<circle cx="237.5" cy="156.4" r="6.5" fill="#fff" stroke="#30332e" stroke-width="2"/>
+<line x1="120.0" y1="184.4" x2="590.0" y2="184.4" stroke="#d9d5c8" stroke-width="1" stroke-dasharray="4 5"/>
+<text x="106.0" y="190.4" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">a[1]</text>
+<line x1="174.2" y1="184.4" x2="234.4" y2="184.4" stroke="#30332e" stroke-width="3"/>
+<circle cx="203.3" cy="184.4" r="6.5" fill="#fff" stroke="#30332e" stroke-width="2"/>
+<line x1="120.0" y1="212.6" x2="590.0" y2="212.6" stroke="#d9d5c8" stroke-width="1" stroke-dasharray="4 5"/>
+<text x="106.0" y="218.6" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">a[2]</text>
+<line x1="374.4" y1="212.6" x2="571.1" y2="212.6" stroke="#30332e" stroke-width="3"/>
+<circle cx="457.7" cy="212.6" r="6.5" fill="#fff" stroke="#30332e" stroke-width="2"/>
+<line x1="120.0" y1="240.7" x2="590.0" y2="240.7" stroke="#d9d5c8" stroke-width="1" stroke-dasharray="4 5"/>
+<text x="106.0" y="246.7" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">a[3]</text>
+<line x1="158.8" y1="240.7" x2="218.1" y2="240.7" stroke="#30332e" stroke-width="3"/>
+<circle cx="187.9" cy="240.7" r="6.5" fill="#fff" stroke="#30332e" stroke-width="2"/>
+<line x1="120.0" y1="268.8" x2="590.0" y2="268.8" stroke="#d9d5c8" stroke-width="1" stroke-dasharray="4 5"/>
+<text x="106.0" y="274.8" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">a[4]</text>
+<line x1="157.8" y1="268.8" x2="217.6" y2="268.8" stroke="#30332e" stroke-width="3"/>
+<circle cx="187.4" cy="268.8" r="6.5" fill="#fff" stroke="#30332e" stroke-width="2"/>
+<line x1="120.0" y1="296.9" x2="590.0" y2="296.9" stroke="#d9d5c8" stroke-width="1" stroke-dasharray="4 5"/>
+<text x="106.0" y="302.9" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">a[5]</text>
+<line x1="174.7" y1="296.9" x2="231.9" y2="296.9" stroke="#30332e" stroke-width="3"/>
+<circle cx="203.3" cy="296.9" r="6.5" fill="#fff" stroke="#30332e" stroke-width="2"/>
+<line x1="120.0" y1="324.9" x2="590.0" y2="324.9" stroke="#d9d5c8" stroke-width="1" stroke-dasharray="4 5"/>
+<text x="106.0" y="330.9" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">a[6]</text>
+<line x1="222.7" y1="324.9" x2="279.4" y2="324.9" stroke="#30332e" stroke-width="3"/>
+<circle cx="251.3" cy="324.9" r="6.5" fill="#fff" stroke="#30332e" stroke-width="2"/>
+<line x1="120.0" y1="353.1" x2="590.0" y2="353.1" stroke="#d9d5c8" stroke-width="1" stroke-dasharray="4 5"/>
+<text x="106.0" y="359.1" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">a[7]</text>
+<line x1="294.2" y1="353.1" x2="366.2" y2="353.1" stroke="#30332e" stroke-width="3"/>
+<circle cx="328.9" cy="353.1" r="6.5" fill="#fff" stroke="#30332e" stroke-width="2"/>
+<line x1="120.0" y1="381.2" x2="590.0" y2="381.2" stroke="#d9d5c8" stroke-width="1" stroke-dasharray="4 5"/>
+<text x="106.0" y="387.2" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">g[1]</text>
+<line x1="193.1" y1="381.2" x2="225.8" y2="381.2" stroke="#30332e" stroke-width="3"/>
+<circle cx="213.5" cy="381.2" r="6.5" fill="#fff" stroke="#30332e" stroke-width="2"/>
+<line x1="120.0" y1="409.2" x2="590.0" y2="409.2" stroke="#d9d5c8" stroke-width="1" stroke-dasharray="4 5"/>
+<text x="106.0" y="415.2" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">g[2]</text>
+<line x1="212.5" y1="409.2" x2="240.6" y2="409.2" stroke="#30332e" stroke-width="3"/>
+<circle cx="224.7" cy="409.2" r="6.5" fill="#fff" stroke="#30332e" stroke-width="2"/>
+<line x1="120.0" y1="437.4" x2="590.0" y2="437.4" stroke="#d9d5c8" stroke-width="1" stroke-dasharray="4 5"/>
+<text x="106.0" y="443.4" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">g[3]</text>
+<line x1="210.9" y1="437.4" x2="242.1" y2="437.4" stroke="#30332e" stroke-width="3"/>
+<circle cx="224.7" cy="437.4" r="6.5" fill="#fff" stroke="#30332e" stroke-width="2"/>
+<line x1="120.0" y1="465.5" x2="590.0" y2="465.5" stroke="#d9d5c8" stroke-width="1" stroke-dasharray="4 5"/>
+<text x="106.0" y="471.5" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">g[4]</text>
+<line x1="209.4" y1="465.5" x2="238.0" y2="465.5" stroke="#30332e" stroke-width="3"/>
+<circle cx="223.2" cy="465.5" r="6.5" fill="#fff" stroke="#30332e" stroke-width="2"/>
+<line x1="120.0" y1="493.6" x2="590.0" y2="493.6" stroke="#d9d5c8" stroke-width="1" stroke-dasharray="4 5"/>
+<text x="106.0" y="499.6" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">g[5]</text>
+<line x1="206.3" y1="493.6" x2="234.4" y2="493.6" stroke="#30332e" stroke-width="3"/>
+<circle cx="221.2" cy="493.6" r="6.5" fill="#fff" stroke="#30332e" stroke-width="2"/>
+<line x1="120.0" y1="521.7" x2="590.0" y2="521.7" stroke="#d9d5c8" stroke-width="1" stroke-dasharray="4 5"/>
+<text x="106.0" y="527.7" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">g[6]</text>
+<line x1="216.6" y1="521.7" x2="247.2" y2="521.7" stroke="#30332e" stroke-width="3"/>
+<circle cx="228.3" cy="521.7" r="6.5" fill="#fff" stroke="#30332e" stroke-width="2"/>
+<line x1="120.0" y1="549.8" x2="590.0" y2="549.8" stroke="#d9d5c8" stroke-width="1" stroke-dasharray="4 5"/>
+<text x="106.0" y="555.8" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">a_bar</text>
+<line x1="192.5" y1="549.8" x2="313.6" y2="549.8" stroke="#30332e" stroke-width="3"/>
+<circle cx="251.8" cy="549.8" r="6.5" fill="#fff" stroke="#30332e" stroke-width="2"/>
+<line x1="120.0" y1="577.9" x2="590.0" y2="577.9" stroke="#d9d5c8" stroke-width="1" stroke-dasharray="4 5"/>
+<text x="106.0" y="583.9" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">sigma_a</text>
+<line x1="281.9" y1="577.9" x2="383.6" y2="577.9" stroke="#30332e" stroke-width="3"/>
+<circle cx="324.3" cy="577.9" r="6.5" fill="#fff" stroke="#30332e" stroke-width="2"/>
+<line x1="120.0" y1="606.0" x2="590.0" y2="606.0" stroke="#d9d5c8" stroke-width="1" stroke-dasharray="4 5"/>
+<text x="106.0" y="612.0" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">sigma_g</text>
+<line x1="223.7" y1="606.0" x2="248.7" y2="606.0" stroke="#30332e" stroke-width="3"/>
+<circle cx="232.9" cy="606.0" r="6.5" fill="#fff" stroke="#30332e" stroke-width="2"/>
+<line x1="222.2" y1="620.0" x2="222.2" y2="627.0" stroke="#30332e"/>
+<text x="222.2" y="650.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">0</text>
+<line x1="324.3" y1="620.0" x2="324.3" y2="627.0" stroke="#30332e"/>
+<text x="324.3" y="650.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">2</text>
+<line x1="426.5" y1="620.0" x2="426.5" y2="627.0" stroke="#30332e"/>
+<text x="426.5" y="650.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">4</text>
+<line x1="528.7" y1="620.0" x2="528.7" y2="627.0" stroke="#30332e"/>
+<text x="528.7" y="650.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">6</text>
+<polyline points="710.0,620.0 712.1,426.3 714.1,297.0 716.2,216.1 718.3,171.0 720.4,152.0 722.4,151.8 724.5,164.6 726.6,186.1 728.6,213.0 730.7,242.9 732.8,274.2 734.9,305.5 736.9,335.9 739.0,364.9 741.1,392.1 743.1,417.3 745.2,440.5 747.3,461.5 749.4,480.5 751.4,497.6 753.5,512.8 755.6,526.4 757.6,538.4 759.7,549.0 761.8,558.4 763.9,566.5 765.9,573.7 768.0,580.0 770.1,585.4 772.1,590.2 774.2,594.3 776.3,597.9 778.4,601.0 780.4,603.7 782.5,606.0 784.6,608.0 786.6,609.7 788.7,611.2 790.8,612.5 792.9,613.5 794.9,614.5 797.0,615.3 799.1,616.0 801.1,616.6 803.2,617.1 805.3,617.5 807.4,617.9 809.4,618.2 811.5,618.5 813.6,618.7 815.6,618.9 817.7,619.1 819.8,619.2 821.9,619.3 823.9,619.4 826.0,619.5 828.1,619.6 830.1,619.6 832.2,619.7 834.3,619.7 836.4,619.8 838.4,619.8 840.5,619.8 842.6,619.9 844.6,619.9 846.7,619.9 848.8,619.9 850.9,619.9 852.9,619.9 855.0,620.0 857.1,620.0 859.1,620.0 861.2,620.0 863.3,620.0 865.4,620.0 867.4,620.0 869.5,620.0 871.6,620.0 873.6,620.0 875.7,620.0 877.8,620.0 879.9,620.0 881.9,620.0 884.0,620.0 886.1,620.0 888.1,620.0 890.2,620.0 892.3,620.0 894.4,620.0 896.4,620.0 898.5,620.0 900.6,620.0 902.6,620.0 904.7,620.0 906.8,620.0 908.9,620.0 910.9,620.0 913.0,620.0 915.1,620.0 917.1,620.0 919.2,620.0 921.3,620.0 923.4,620.0 925.4,620.0 927.5,620.0 929.6,620.0 931.6,620.0 933.7,620.0 935.8,620.0 937.9,620.0 939.9,620.0 942.0,620.0 944.1,620.0 946.1,620.0 948.2,620.0 950.3,620.0 952.4,620.0 954.4,620.0 956.5,620.0 958.6,620.0 960.6,620.0 962.7,620.0 964.8,620.0 966.9,620.0 968.9,620.0 971.0,620.0 973.1,620.0 975.1,620.0 977.2,620.0 979.3,620.0 981.4,620.0 983.4,620.0 985.5,620.0 987.6,620.0 989.6,620.0 991.7,620.0 993.8,620.0 995.9,620.0 997.9,620.0 1000.0,620.0 1002.1,620.0 1004.1,620.0 1006.2,620.0 1008.3,620.0 1010.4,620.0 1012.4,620.0 1014.5,620.0 1016.6,620.0 1018.6,620.0 1020.7,620.0 1022.8,620.0 1024.9,620.0 1026.9,620.0 1029.0,620.0 1031.1,620.0 1033.1,620.0 1035.2,620.0 1037.3,620.0 1039.4,620.0 1041.4,620.0 1043.5,620.0 1045.6,620.0 1047.6,620.0 1049.7,620.0 1051.8,620.0 1053.9,620.0 1055.9,620.0 1058.0,620.0 1060.1,620.0 1062.1,620.0 1064.2,620.0 1066.3,620.0 1068.4,620.0 1070.4,620.0 1072.5,620.0 1074.6,620.0 1076.6,620.0 1078.7,620.0 1080.8,620.0 1082.9,620.0 1084.9,620.0 1087.0,620.0 1089.1,620.0 1091.1,620.0 1093.2,620.0 1095.3,620.0 1097.4,620.0 1099.4,620.0 1101.5,620.0 1103.6,620.0 1105.6,620.0 1107.7,620.0 1109.8,620.0 1111.9,620.0 1113.9,620.0 1116.0,620.0 1118.1,620.0 1120.1,620.0 1122.2,620.0 1124.3,620.0 1126.4,620.0 1128.4,620.0 1130.5,620.0 1132.6,620.0 1134.6,620.0 1136.7,620.0 1138.8,620.0 1140.9,620.0 1142.9,620.0 1145.0,620.0" fill="none" stroke="#6670ee" stroke-width="4"/>
+<polyline points="710.0,618.9 712.1,618.8 714.1,618.7 716.2,618.6 718.3,618.5 720.4,618.3 722.4,618.2 724.5,618.0 726.6,617.8 728.6,617.6 730.7,617.4 732.8,617.1 734.9,616.9 736.9,616.6 739.0,616.3 741.1,616.0 743.1,615.7 745.2,615.3 747.3,615.0 749.4,614.6 751.4,614.1 753.5,613.7 755.6,613.2 757.6,612.7 759.7,612.1 761.8,611.6 763.9,610.9 765.9,610.3 768.0,609.6 770.1,608.9 772.1,608.2 774.2,607.4 776.3,606.5 778.4,605.7 780.4,604.8 782.5,603.8 784.6,602.8 786.6,601.8 788.7,600.7 790.8,599.6 792.9,598.4 794.9,597.2 797.0,596.0 799.1,594.7 801.1,593.4 803.2,592.0 805.3,590.6 807.4,589.2 809.4,587.7 811.5,586.2 813.6,584.7 815.6,583.1 817.7,581.5 819.8,579.8 821.9,578.2 823.9,576.5 826.0,574.8 828.1,573.1 830.1,571.3 832.2,569.6 834.3,567.8 836.4,566.0 838.4,564.3 840.5,562.5 842.6,560.7 844.6,559.0 846.7,557.2 848.8,555.5 850.9,553.8 852.9,552.2 855.0,550.5 857.1,548.9 859.1,547.3 861.2,545.8 863.3,544.3 865.4,542.9 867.4,541.5 869.5,540.2 871.6,538.9 873.6,537.7 875.7,536.6 877.8,535.6 879.9,534.6 881.9,533.7 884.0,532.9 886.1,532.2 888.1,531.5 890.2,531.0 892.3,530.5 894.4,530.1 896.4,529.9 898.5,529.7 900.6,529.6 902.6,529.6 904.7,529.7 906.8,529.9 908.9,530.1 910.9,530.5 913.0,531.0 915.1,531.5 917.1,532.2 919.2,532.9 921.3,533.7 923.4,534.6 925.4,535.6 927.5,536.6 929.6,537.7 931.6,538.9 933.7,540.2 935.8,541.5 937.9,542.9 939.9,544.3 942.0,545.8 944.1,547.3 946.1,548.9 948.2,550.5 950.3,552.2 952.4,553.8 954.4,555.5 956.5,557.2 958.6,559.0 960.6,560.7 962.7,562.5 964.8,564.3 966.9,566.0 968.9,567.8 971.0,569.6 973.1,571.3 975.1,573.1 977.2,574.8 979.3,576.5 981.4,578.2 983.4,579.8 985.5,581.5 987.6,583.1 989.6,584.7 991.7,586.2 993.8,587.7 995.9,589.2 997.9,590.6 1000.0,592.0 1002.1,593.4 1004.1,594.7 1006.2,596.0 1008.3,597.2 1010.4,598.4 1012.4,599.6 1014.5,600.7 1016.6,601.8 1018.6,602.8 1020.7,603.8 1022.8,604.8 1024.9,605.7 1026.9,606.5 1029.0,607.4 1031.1,608.2 1033.1,608.9 1035.2,609.6 1037.3,610.3 1039.4,610.9 1041.4,611.6 1043.5,612.1 1045.6,612.7 1047.6,613.2 1049.7,613.7 1051.8,614.1 1053.9,614.6 1055.9,615.0 1058.0,615.3 1060.1,615.7 1062.1,616.0 1064.2,616.3 1066.3,616.6 1068.4,616.9 1070.4,617.1 1072.5,617.4 1074.6,617.6 1076.6,617.8 1078.7,618.0 1080.8,618.2 1082.9,618.3 1084.9,618.5 1087.0,618.6 1089.1,618.7 1091.1,618.8 1093.2,618.9 1095.3,619.0 1097.4,619.1 1099.4,619.2 1101.5,619.3 1103.6,619.4 1105.6,619.4 1107.7,619.5 1109.8,619.5 1111.9,619.6 1113.9,619.6 1116.0,619.7 1118.1,619.7 1120.1,619.7 1122.2,619.8 1124.3,619.8 1126.4,619.8 1128.4,619.8 1130.5,619.8 1132.6,619.9 1134.6,619.9 1136.7,619.9 1138.8,619.9 1140.9,619.9 1142.9,619.9 1145.0,619.9" fill="none" stroke="#30332e" stroke-width="4"/>
+<line x1="710.0" y1="620.0" x2="710.0" y2="627.0" stroke="#30332e"/>
+<text x="710.0" y="650.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">0</text>
+<line x1="813.6" y1="620.0" x2="813.6" y2="627.0" stroke="#30332e"/>
+<text x="813.6" y="650.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">1</text>
+<line x1="917.1" y1="620.0" x2="917.1" y2="627.0" stroke="#30332e"/>
+<text x="917.1" y="650.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">2</text>
+<line x1="1020.7" y1="620.0" x2="1020.7" y2="627.0" stroke="#30332e"/>
+<text x="1020.7" y="650.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">3</text>
+<line x1="1124.3" y1="620.0" x2="1124.3" y2="627.0" stroke="#30332e"/>
+<text x="1124.3" y="650.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">4</text>
+<line x1="703.0" y1="620.0" x2="710.0" y2="620.0" stroke="#30332e"/>
+<text x="695.0" y="626.0" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">0.0</text>
+<line x1="703.0" y1="479.5" x2="710.0" y2="479.5" stroke="#30332e"/>
+<text x="695.0" y="485.5" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">1.0</text>
+<line x1="703.0" y1="338.9" x2="710.0" y2="338.9" stroke="#30332e"/>
+<text x="695.0" y="344.9" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">2.0</text>
+<line x1="703.0" y1="198.4" x2="710.0" y2="198.4" stroke="#30332e"/>
+<text x="695.0" y="204.4" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">3.0</text>
+<text x="355.0" y="700.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="400" fill="#30332e">参数值</text>
+<text x="927.5" y="700.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="400" fill="#30332e">标准差</text>
+<text x="655.0" y="360.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="400" fill="#30332e" transform="rotate(-90 655 360.0)">密度</text>
+<text x="753.5" y="261.6" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="20" font-weight="400" fill="#6670ee">区组</text>
+<text x="984.5" y="555.4" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="20" font-weight="400" fill="#30332e">行动者</text>
+</svg>

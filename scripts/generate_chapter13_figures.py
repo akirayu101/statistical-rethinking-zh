@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT1 = ROOT / "translations" / "zh" / "media" / "chapter-13-tank-shrinkage.svg"
 OUT2 = ROOT / "translations" / "zh" / "media" / "chapter-13-tank-population.svg"
 OUT3 = ROOT / "translations" / "zh" / "media" / "chapter-13-pond-errors.svg"
+OUT4 = ROOT / "translations" / "zh" / "media" / "chapter-13-cluster-variation.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 BLUE = "#6670ee"
@@ -398,14 +399,109 @@ def figure_13_3() -> None:
     OUT3.write_text("\n".join(svg), encoding="utf-8")
 
 
+def figure_13_4() -> None:
+    """Rebuild the published coefficient summary and cluster-scale densities."""
+    estimates = [
+        ("b[1]", -0.12, -0.59, 0.39),
+        ("b[2]", 0.40, -0.07, 0.88),
+        ("b[3]", -0.48, -0.96, 0.00),
+        ("b[4]", 0.30, -0.17, 0.80),
+        ("a[1]", -0.37, -0.94, 0.24),
+        ("a[2]", 4.61, 2.98, 6.83),
+        ("a[3]", -0.67, -1.24, -0.08),
+        ("a[4]", -0.68, -1.26, -0.09),
+        ("a[5]", -0.37, -0.93, 0.19),
+        ("a[6]", 0.57, 0.01, 1.12),
+        ("a[7]", 2.09, 1.41, 2.82),
+        ("g[1]", -0.17, -0.57, 0.07),
+        ("g[2]", 0.05, -0.19, 0.36),
+        ("g[3]", 0.05, -0.22, 0.39),
+        ("g[4]", 0.02, -0.25, 0.31),
+        ("g[5]", -0.02, -0.31, 0.24),
+        ("g[6]", 0.12, -0.11, 0.49),
+        ("a_bar", 0.58, -0.58, 1.79),
+        ("sigma_a", 2.00, 1.17, 3.16),
+        ("sigma_g", 0.21, 0.03, 0.52),
+    ]
+    width, height = 1200, 760
+    left = (120.0, 58.0, 590.0, 620.0)
+    right = (710.0, 100.0, 1145.0, 620.0)
+    lx0, ly0, lx1, ly1 = left
+    rx0, ry0, rx1, ry1 = right
+
+    def left_x(value: float) -> float:
+        return lx0 + (value + 2.0) / 9.2 * (lx1 - lx0)
+
+    def right_xy(value: float, density: float) -> tuple[float, float]:
+        return rx0 + value / 4.2 * (rx1 - rx0), ry1 - density / 3.7 * (ry1 - ry0)
+
+    svg = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
+        '<title>图 13.4：行动者与区组变化截距的后验比较</title>',
+        '<desc>左图显示模型 m13.4 各参数的后验均值与百分之八十九相容区间；行动者截距比区组截距分散得多。右图显示行动者和区组变化截距标准差的边际后验密度。</desc>',
+        '<rect width="1200" height="760" fill="#fff"/>',
+        f'<line x1="{lx0}" y1="{ly1}" x2="{lx1}" y2="{ly1}" stroke="{INK}" stroke-width="2"/>',
+        f'<line x1="{lx0}" y1="{ly0}" x2="{lx0}" y2="{ly1}" stroke="{INK}" stroke-width="2"/>',
+        f'<line x1="{rx0}" y1="{ry1}" x2="{rx1}" y2="{ry1}" stroke="{INK}" stroke-width="2"/>',
+        f'<line x1="{rx0}" y1="{ry0}" x2="{rx0}" y2="{ry1}" stroke="{INK}" stroke-width="2"/>',
+    ]
+
+    row_step = (ly1 - ly0) / len(estimates)
+    for index, (label, mean, low, high) in enumerate(estimates):
+        y = ly0 + (index + 0.5) * row_step
+        svg.extend([
+            f'<line x1="{lx0}" y1="{y:.1f}" x2="{lx1}" y2="{y:.1f}" stroke="{GRID}" stroke-width="1" stroke-dasharray="4 5"/>',
+            text_el(lx0 - 14, y + 6, label, size=17, anchor="end"),
+            f'<line x1="{left_x(low):.1f}" y1="{y:.1f}" x2="{left_x(high):.1f}" y2="{y:.1f}" stroke="{INK}" stroke-width="3"/>',
+            f'<circle cx="{left_x(mean):.1f}" cy="{y:.1f}" r="6.5" fill="#fff" stroke="{INK}" stroke-width="2"/>',
+        ])
+    for value in [0, 2, 4, 6]:
+        x = left_x(value)
+        svg.extend([
+            f'<line x1="{x:.1f}" y1="{ly1}" x2="{x:.1f}" y2="{ly1 + 7}" stroke="{INK}"/>',
+            text_el(x, ly1 + 30, value, size=17, anchor="middle"),
+        ])
+
+    xs = [index * 4.2 / 210 for index in range(211)]
+    actor_density = [gaussian_density(value, 1.85, 0.62) for value in xs]
+    block_density = [value / 0.11**2 * math.exp(-value / 0.11) for value in xs]
+    svg.extend([
+        polyline([right_xy(x, y) for x, y in zip(xs, block_density)], fill="none", stroke=BLUE, stroke_width="4"),
+        polyline([right_xy(x, y) for x, y in zip(xs, actor_density)], fill="none", stroke=INK, stroke_width="4"),
+    ])
+    for value in [0, 1, 2, 3, 4]:
+        x, _ = right_xy(value, 0)
+        svg.extend([
+            f'<line x1="{x:.1f}" y1="{ry1}" x2="{x:.1f}" y2="{ry1 + 7}" stroke="{INK}"/>',
+            text_el(x, ry1 + 30, value, size=17, anchor="middle"),
+        ])
+    for value in [0, 1, 2, 3]:
+        _, y = right_xy(0, value)
+        svg.extend([
+            f'<line x1="{rx0 - 7}" y1="{y:.1f}" x2="{rx0}" y2="{y:.1f}" stroke="{INK}"/>',
+            text_el(rx0 - 15, y + 6, f"{value:.1f}", size=17, anchor="end"),
+        ])
+    svg.extend([
+        text_el((lx0 + lx1) / 2, 700, "参数值", size=22, anchor="middle"),
+        text_el((rx0 + rx1) / 2, 700, "标准差", size=22, anchor="middle"),
+        text_el(655, (ry0 + ry1) / 2, "密度", size=22, anchor="middle", rotate=-90),
+        text_el(right_xy(0.42, 2.55)[0], right_xy(0.42, 2.55)[1], "区组", size=20, fill=BLUE),
+        text_el(right_xy(2.65, 0.46)[0], right_xy(2.65, 0.46)[1], "行动者", size=20),
+        '</svg>',
+    ])
+    OUT4.write_text("\n".join(svg), encoding="utf-8")
+
+
 def main() -> None:
     posterior_means, hyperparameters = sample_posterior()
     figure_13_1(posterior_means, hyperparameters)
     figure_13_2(hyperparameters)
     figure_13_3()
+    figure_13_4()
     print(OUT1)
     print(OUT2)
     print(OUT3)
+    print(OUT4)
 
 
 if __name__ == "__main__":
