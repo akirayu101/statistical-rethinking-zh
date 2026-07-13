@@ -1155,7 +1155,10 @@
     "The Devil's Funnel": "魔鬼漏斗",
     "centered prior": "中心化先验",
     "non-centered prior": "非中心化先验",
-    "standardized intercept": "标准化截距"
+    "standardized intercept": "标准化截距",
+    "posterior prediction for same clusters": "对相同集群作后验预测",
+    "posterior prediction for new clusters": "对新集群作后验预测",
+    "average actor": "平均行动者"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "blavaan", "AIC", "DIC", "WAIC", "BIC", "PSIS-LOO", "MCMC", "HMC"

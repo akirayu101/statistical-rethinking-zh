@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-13" data-source-pages="429-455">
-  <header class="chapter-header"><p class="eyebrow">第十三章</p><h1>有记忆的模型</h1><p class="source-range">当前译稿对应原书 PDF 第 429–455 页</p></header>
+<article class="book-article" data-chapter="chapter-13" data-source-pages="429-458">
+  <header class="chapter-header"><p class="eyebrow">第十三章</p><h1>有记忆的模型</h1><p class="source-range">当前译稿对应原书 PDF 第 429–458 页</p></header>
 
   <div class="chapter-introduction" id="intro-13">
     <p>1985 年，Clive Wearing 失去了心智，却没有失去音乐。<sup id="note-185-ref"><a href="#note-185">185</a></sup> Wearing 是音乐学家，也是一位出色的音乐家；但引起唇疱疹的单纯疱疹病毒钻进了他的大脑，侵蚀了海马体。结果是慢性<strong>顺行性遗忘</strong>：他无法形成新的长期记忆。他仍记得怎样弹钢琴，却不记得自己五分钟前刚弹过。Wearing 如今活在一个个瞬间里，对几分钟前以外的过去一无所知；每一杯咖啡都是他有生以来的第一杯。</p>
@@ -452,10 +452,77 @@ abline( a=0 , b=1 , lty=2 )</code></pre></figure>
     <p>还可以重新参数化 Gaussian 以外的分布。例如，指数分布只有一个尺度参数，通常记作 <var>λ</var>；可以把它提出并“偷运”进线性模型：</p>
     <div class="equation-block wallis-equation" id="eq-13-exponential-noncentered"><div><var>x</var> = <var>zλ</var></div><div><var>z</var> ∼ Exponential(1)</div></div>
     <p>这与 <span class="math-inline"><var>x</var> ∼ Exponential(<var>λ</var>)</span> 相同。下一章还会展示怎样重新参数化多变量分布，把整张相关矩阵放进线性模型。代数让许多事情成为可能。</p>
-    <p class="continuation-note">13.5“多层后验预测”将从原书 PDF 第 456 页继续。</p>
+  </section>
+
+  <section id="sec-13-5"><h2>13.5 多层后验预测</h2>
+    <p>早在第 3 章（原书第 64 页），我就谈过模型检查的重要性。软件不总会按预期工作；发现错误的一种稳健方法，是把样本与拟合模型的后验预测作比较。同一个步骤——从拟合模型生成其隐含预测——也非常有助于理解模型究竟意味着什么。每个模型都是合理与荒谬的混合物；理解模型，才能找出其中的合理之处并控制其荒谬之处。可随着模型日益复杂，只查看后验均值和区间表格，往往很难甚至不可能理解它们；探索隐含的后验预测会有用得多。</p>
+    <p>一旦相信后验计算正确，还需要隐含预测来考察因果效应。干预一个或多个变量的估计效应是什么？这个问题需要反事实后验预测，第 5 章已经见过例子。</p>
+    <p>构造隐含预测的另一个用途，是计算 AIC、WAIC 等信息准则。这些准则对样本外模型准确度——KL 散度——给出简单估计。实际而言，信息准则粗略衡量模型的灵活性，进而衡量过拟合风险；这正是第 7 章的核心概念任务。</p>
+    <p>所有这些建议同样适用于多层模型。我们仍经常需要模型检查、用于理解的反事实预测和信息准则。不过，引入变化效应也带来了细微差别。</p>
+    <p>第一，不应再期待模型精确回溯预测样本，因为自适应正则化的目标，就是以较差的样本内拟合换取更好的推断，并希望获得更好的样本外拟合。这正是收缩的作用。当然，本来就不应该追求真正回溯预测样本；但现在必须预期，即使模型拟合完全正常，也会以系统方式偏离原始数据。</p>
+    <p>第二，在多层模型语境中，“预测”需要额外选择。若想用拟合时用过的特定集群验证模型，这是一回事；若要为样本中未观测的新集群计算预测，则完全是另一回事。下面继续使用上一节的黑猩猩模型，依次考察两种情况。</p>
+
+    <h3 id="sec-13-5-1">13.5.1 对相同集群作后验预测</h3>
+    <p>处理与拟合模型时相同的集群时，变化截距就是普通参数。唯一的技巧，是确保数据中的每个案例都使用正确截距。若让 <code>link</code> 和 <code>sim</code> 代劳，它们会自动处理；否则只需照模型定义计算。</p>
+    <p>例如，<code>data(chimpanzees)</code> 中有 7 个独特行动者，也就是 7 个集群。变化截距模型 <code>m13.4</code> 为每个行动者估计一个截距，另用两个参数描述行动者总体的均值和标准差。为免混淆，下面既用自动化的 <code>link</code> 方法，也从头手算后验预测（回溯预测）。</p>
+    <p>计算前再次提醒：即使模型工作正常，也不应再期待后验预测分布与原始数据吻合。为什么？部分汇聚的要点就是把估计向总体均值收缩；一旦使用汇聚，估计本来就不必与原始数据一致。</p>
+    <p>后验预测代码和第 11 章完全一样。这里再次给出，为行动者 2 计算并绘制后验预测：</p>
+    <figure class="code-listing" id="code-13-31"><figcaption>R 代码 13.31</figcaption><pre><code>chimp &lt;- 2
+d_pred &lt;- list(
+    actor = rep(chimp,4),
+    treatment = 1:4,
+    block_id = rep(1,4)
+)
+p &lt;- link( m13.4 , data=d_pred )
+p_mu &lt;- apply( p , 2 , mean )
+p_ci &lt;- apply( p , 2 , PI )</code></pre></figure>
+    <aside class="source-erratum" id="erratum-13-plotting-page"><strong>原文说明：</strong>原书紧接代码 13.31 的句子把绘图代码页码写成了尚未替换的“page ??”占位符。译稿不猜测具体页码；该绘图方法与前文相同。</aside>
+    <p>不用 <code>link</code> 也能完成同样计算，只需记住模型。唯一的难点是：处理后验样本时，变化截距会成为一个样本矩阵。先看结构：</p>
+    <figure class="code-listing" id="code-13-32"><figcaption>R 代码 13.32</figcaption><pre><code>post &lt;- extract.samples(m13.4)
+str(post)</code></pre><pre class="code-output"><code>List of 6
+ $ b      : num [1:2000, 1:4] -0.107 -0.491 -0.644 -0.368 0.105 ...
+ $ a      : num [1:2000, 1:7] -0.0166 -0.2078 0.3102 0.1337 -0.191 ...
+ $ g      : num [1:2000, 1:6] -0.7116 -0.1728 -0.5689 -0.0299 0.0133 ...
+ $ a_bar  : num [1:2000(1d)] 1.2031 -0.0998 1.3569 0.6167 -0.0248 ...
+ $ sigma_a: num [1:2000(1d)] 3.1 3.57 2.92 2.15 2.19 ...
+ $ sigma_g: num [1:2000(1d)] 0.393 0.287 0.418 0.119 0.13 ...</code></pre></figure>
+    <p><code>a</code> 矩阵的行是样本，列是行动者。例如，要绘制行动者 5 的密度：</p>
+    <figure class="code-listing" id="code-13-33"><figcaption>R 代码 13.33</figcaption><pre><code>dens( post$a[,5] )</code></pre></figure>
+    <p><code>[,5]</code> 表示“行动者 5 的全部样本”。</p>
+    <p>为了构造后验预测，可以自己写一个 link 函数。这里用 <code>with</code>，免得每个参数名前都反复键入 <code>post$</code>：</p>
+    <figure class="code-listing" id="code-13-34"><figcaption>R 代码 13.34</figcaption><pre><code>p_link &lt;- function( treatment , actor=1 , block_id=1 ) {
+    logodds &lt;- with( post ,
+        a[,actor] + g[,block_id] + b[,treatment] )
+    return( inv_logit(logodds) )
+}</code></pre></figure>
+    <p>线性模型与定义模型时完全相同，只是 <code>a</code> 的方括号里多了一个逗号。现在计算预测：</p>
+    <figure class="code-listing" id="code-13-35"><figcaption>R 代码 13.35</figcaption><pre><code>p_raw &lt;- sapply( 1:4 , function(i) p_link( i , actor=2 , block_id=1 ) )
+p_mu &lt;- apply( p_raw , 2 , mean )
+p_ci &lt;- apply( p_raw , 2 , PI )</code></pre></figure>
+    <p>总有一天，你会遇到一个被 <code>link</code> 搞坏的模型。到那时，可以回到本节，仔细盯着上面的代码，仍能继续前进。无论模型是什么，只要是 Bayes 模型，就具有生成性：把样本沿模型向上推送，得到预测分布，再汇总这些分布来汇总预测。</p>
+
+    <h3 id="sec-13-5-2">13.5.2 对新集群作后验预测</h3>
+    <p>为新集群作预测，本质上是从样本推广的问题。一般而言，把预测推广到样本之外并没有唯一程序；正确做法取决于因果模型、统计模型和你的目标。不过，若有生成模型，往往可以一步步推理。关键是用后验为一个体现目标推广任务的模拟提供参数。</p>
+    <p>先看几个简单例子。假设要预测另一个总体中的黑猩猩会如何响应杠杆实验。样本里的 7 只黑猩猩让我们估计了 7 个独特截距；但这些行动者的个体截距并非关注对象，因为新总体里没有这 7 个个体。</p>
+    <p>理解新集群后验预测任务的一种方法，是想象拟合模型时遗漏一个集群。例如，从黑猩猩模型中留出行动者 7 后，怎样评估模型预测其行为的准确度？不能使用任何 <code>a</code> 参数估计，因为它们属于其他个体；但可以充分利用 <code>a_bar</code> 与 <code>sigma_a</code>。这两个参数描述行动者的统计总体，可以从中模拟新行动者。</p>
+    <p>先为一个新的、此前未观测的<strong>平均行动者</strong>构造后验预测。这里的“平均”是指截距恰好位于总体均值 <code>a_bar</code>（<span class="math-inline"><var>ᾱ</var></span>）的黑猩猩。总体均值有不确定性，所以这个平均个体的截距仍有不确定性；但若要诚实表达对新个体的预期，稍后会看到，这份不确定性其实小得不合理。</p>
+    <p>需要自己写一个稍有变化的 link 函数：</p>
+    <figure class="code-listing" id="code-13-36"><figcaption>R 代码 13.36</figcaption><pre><code>p_link_abar &lt;- function( treatment ) {
+    logodds &lt;- with( post , a_bar + b[,treatment] )
+    return( inv_logit(logodds) )
+}</code></pre></figure>
+    <p>注意，这个函数忽略了 <code>block</code>。因为我们正在外推到新区组，所以假设平均区组效应约为零（样本中确实如此）。和之前一样，调用并汇总这个函数：</p>
+    <figure class="code-listing" id="code-13-37"><figcaption>R 代码 13.37（未完）</figcaption><pre><code>post &lt;- extract.samples(m13.4)
+p_raw &lt;- sapply( 1:4 , function(i) p_link_abar( i ) )
+p_mu &lt;- apply( p_raw , 2 , mean )
+p_ci &lt;- apply( p_raw , 2 , PI )
+
+plot( NULL , xlab="treatment" , ylab="proportion pulled left" ,
+    ylim=c(0,1) , xaxt="n" , xlim=c(1,4) )</code></pre></figure>
+    <p class="continuation-note">代码 13.37 的绘图尾部、新行动者模拟与图 13.7 将从原书 PDF 第 459 页继续。</p>
   </section>
 
   <section class="endnotes" id="chapter-13-notes" role="doc-endnotes"><h2>尾注</h2><ol start="185"><li id="note-185">Wearing 的妻子 Deborah 写过一本关于他患病后两人生活的书（Wearing，2005）。他的故事也出现在多部纪录片中；快速搜索互联网还能找到许多新闻报道。 <a class="backref" href="#note-185-ref" aria-label="返回正文">↩</a></li><li id="note-186">Gelman（2005）第 20 页第 6 节列出了一组彼此差异极大的“随机效应”定义，读来颇有趣。 <a class="backref" href="#note-186-ref" aria-label="返回正文">↩</a></li><li id="note-187">Vonesh 与 Bolker（2005）。 <a class="backref" href="#note-187-ref" aria-label="返回正文">↩</a></li><li id="note-188">这里采用 Gelman（2005）的术语。他认为，对大多数人而言，常用的“随机效应”一词几乎无助于理解，反而似乎会助长误解；部分原因是“固定”和“随机”对不同统计学家有不同含义。详见该文第 20–21 页。不过，我完全明白：试图推广 Gelman 的替代术语，基本等同于迎着强风吐口水。 <a class="backref" href="#note-188-ref" aria-label="返回正文">↩</a></li><li id="note-189">“多”也经常指多个线性模型，尤其常见于“层级线性模型”文献。不管怎样，我们谈论的仍是同一种机器人。 <a class="backref" href="#note-189-ref" aria-label="返回正文">↩</a></li><li id="note-190">注意，正则化本身仍有不确定性。所以，这个模型并不完全等同于直接假设一个标准差恒为 1.6 的正则化先验；相反，每个水槽的截距还会对 <span class="math-inline"><var>σ</var></span>（以及 <span class="math-inline"><var>ᾱ</var></span>）的不确定性取平均。 <a class="backref" href="#note-190-ref" aria-label="返回正文">↩</a></li><li id="note-191">这一事实早在人们能够实际使用多层模型之前就已为人所知；可参见 Stein（1955）那篇影响深远的非 Bayes 论文。 <a class="backref" href="#note-191-ref" aria-label="返回正文">↩</a></li><li id="note-192">这个例子来自 Neal（2003）第 732 页。在那篇论文中，他只称之为“漏斗”，魔鬼从未出现。 <a class="backref" href="#note-192-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 13 章 PDF 第 429–455 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 456 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 13 章 PDF 第 429–458 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 459 页继续。</aside>
 </article>
