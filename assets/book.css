@@ -164,7 +164,8 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .nonidentifiable-chains-figure .figure-scroll img,
 .pebble-entropy-figure .figure-scroll img,
 .gaussian-maxent-figure .figure-scroll img,
-.binomial-candidates-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
+.binomial-candidates-figure .figure-scroll img,
+.binomial-entropy-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
 .wallis-equation { overflow-x: auto; }
 .wallis-equation .math-line { display: inline-block; min-width: max-content; white-space: nowrap; }
 .algorithm-steps, .preparation-steps { margin: 1.5rem 0; padding: 1rem 1rem 1rem 3.2rem; border-left: .25rem solid var(--blue); background: #f3f5fb; }

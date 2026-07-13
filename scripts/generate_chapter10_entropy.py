@@ -2,12 +2,14 @@
 """Generate deterministic Chinese SVGs for Chapter 10 entropy figures."""
 from pathlib import Path
 import math
+import random
 
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT1 = ROOT / "translations/zh/media/chapter-10-pebble-entropy.svg"
 OUT2 = ROOT / "translations/zh/media/chapter-10-gaussian-maxent.svg"
 OUT3 = ROOT / "translations/zh/media/chapter-10-binomial-candidates.svg"
+OUT4 = ROOT / "translations/zh/media/chapter-10-binomial-entropy.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 BLUE = "#263f86"
@@ -203,6 +205,111 @@ def figure_10_3() -> None:
     OUT3.write_text("\n".join(parts) + "\n", encoding="utf-8")
 
 
+def simulated_distribution(rng: random.Random, expected: float = 1.4) -> tuple[list[float], float]:
+    """Replicate sim.p from Code 10.9 with a deterministic random generator."""
+    x123 = [rng.random() for _ in range(3)]
+    x4 = (expected * sum(x123) - x123[1] - x123[2]) / (2 - expected)
+    total = sum(x123) + x4
+    probabilities = [value / total for value in [*x123, x4]]
+    entropy = -sum(value * math.log(value) for value in probabilities)
+    return probabilities, entropy
+
+
+def figure_10_4() -> None:
+    """Draw the simulated entropy distribution and four representative candidates."""
+    width, height = 1200, 700
+    rng = random.Random(104)
+    simulations = [simulated_distribution(rng) for _ in range(100000)]
+    entropies = [entropy for _, entropy in simulations]
+    targets = [max(entropies), 1.0, 0.85, 0.67]
+    labels = list("ABCD")
+    candidates = [
+        min(simulations, key=lambda item, target=target: abs(item[1] - target))
+        for target in targets
+    ]
+
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">',
+        '<title>期望值为 1.4 的模拟分布及其熵</title>',
+        '<desc>左图显示十万次随机模拟所得熵的密度；右侧 A 到 D 展示熵逐渐降低时概率分布越来越不均匀。</desc>',
+        '<rect width="100%" height="100%" fill="#fbfaf6"/>',
+    ]
+
+    x, y, plot_w, plot_h = 75, 70, 480, 500
+    left, right, top, bottom = x + 70, x + plot_w - 25, y + 25, y + plot_h - 60
+    xmin, xmax, bins = 0.62, 1.225, 150
+    counts = [0.0] * bins
+    for value in entropies:
+        index = min(bins - 1, max(0, int((value - xmin) / (xmax - xmin) * bins)))
+        counts[index] += 1
+    smooth = []
+    sigma = 3.0
+    for index in range(bins):
+        numerator = denominator = 0.0
+        for offset in range(-10, 11):
+            other = index + offset
+            if 0 <= other < bins:
+                weight = math.exp(-(offset ** 2) / (2 * sigma ** 2))
+                numerator += counts[other] * weight
+                denominator += weight
+        smooth.append(numerator / denominator)
+    peak = max(smooth)
+    sx = lambda value: left + (value - xmin) / (xmax - xmin) * (right - left)
+    sy = lambda value: bottom - value / peak * (bottom - top)
+    parts.extend([
+        f'<rect x="{x}" y="{y}" width="{plot_w}" height="{plot_h}" rx="8" fill="#fff" stroke="{GRID}"/>',
+        text(x + 20, y + 34, "模拟熵的密度", size=22, weight=700, fill=BLUE),
+    ])
+    for tick in (0.7, 0.8, 0.9, 1.0, 1.1, 1.2):
+        xx = sx(tick)
+        parts.extend([
+            f'<line x1="{xx:.1f}" y1="{bottom}" x2="{xx:.1f}" y2="{bottom + 7}" stroke="{INK}"/>',
+            text(xx, bottom + 29, f"{tick:.1f}", size=15, anchor="middle"),
+        ])
+    parts.extend([
+        f'<line x1="{left}" y1="{bottom}" x2="{right}" y2="{bottom}" stroke="{INK}"/>',
+        f'<line x1="{left}" y1="{bottom}" x2="{left}" y2="{top}" stroke="{INK}"/>',
+        text((left + right) / 2, y + plot_h - 12, "熵", size=18, anchor="middle", fill=BLUE),
+        text(x + 25, (top + bottom) / 2, "密度", size=18, anchor="middle", fill=BLUE, rotate=-90),
+    ])
+    density_points = []
+    for index, value in enumerate(smooth):
+        entropy = xmin + (index + 0.5) / bins * (xmax - xmin)
+        density_points.append(f"{sx(entropy):.1f},{sy(value):.1f}")
+    parts.append(f'<polyline points="{" ".join(density_points)}" fill="none" stroke="#737cff" stroke-width="4"/>')
+    for label, (_, entropy) in zip(labels, candidates):
+        index = min(bins - 1, max(0, int((entropy - xmin) / (xmax - xmin) * bins)))
+        xx, yy = sx(entropy), sy(smooth[index])
+        parts.extend([
+            f'<line x1="{xx:.1f}" y1="{bottom}" x2="{xx:.1f}" y2="{yy:.1f}" stroke="#8c8e88" stroke-width="2" stroke-dasharray="5 5"/>',
+            text(xx, max(top + 22, yy - 12), label, size=22, anchor="middle", weight=700),
+        ])
+
+    outcomes = ["ww", "bw", "wb", "bb"]
+    positions = [(630, 70), (910, 70), (630, 360), (910, 360)]
+    for (label, (probabilities, entropy)), (px, py) in zip(zip(labels, candidates), positions):
+        panel_w, panel_h = 245, 235
+        pleft, pright, ptop, pbottom = px + 40, px + panel_w - 18, py + 50, py + panel_h - 47
+        psx = lambda index: pleft + index * (pright - pleft) / 3
+        psy = lambda value: pbottom - value / 0.82 * (pbottom - ptop)
+        parts.extend([
+            f'<rect x="{px}" y="{py}" width="{panel_w}" height="{panel_h}" rx="8" fill="#fff" stroke="{GRID}"/>',
+            text(px + 15, py + 31, label, size=24, weight=700, fill=BLUE),
+            text(px + panel_w - 15, py + 30, f"H={entropy:.3f}", size=14, anchor="end", fill="#666862"),
+            f'<line x1="{pleft}" y1="{pbottom}" x2="{pright}" y2="{pbottom}" stroke="{INK}"/>',
+        ])
+        points = " ".join(f"{psx(index):.1f},{psy(value):.1f}" for index, value in enumerate(probabilities))
+        parts.append(f'<polyline points="{points}" fill="none" stroke="#737cff" stroke-width="4"/>')
+        for index, (outcome, value) in enumerate(zip(outcomes, probabilities)):
+            xx, yy = psx(index), psy(value)
+            parts.extend([
+                f'<circle cx="{xx:.1f}" cy="{yy:.1f}" r="6" fill="#737cff" stroke="#fff" stroke-width="2"/>',
+                text(xx, pbottom + 27, outcome, size=15, anchor="middle"),
+            ])
+    parts.append('</svg>')
+    OUT4.write_text("\n".join(parts) + "\n", encoding="utf-8")
+
+
 def main() -> int:
     OUT1.parent.mkdir(parents=True, exist_ok=True)
     width, height = 1200, 930
@@ -227,9 +334,11 @@ def main() -> int:
     OUT1.write_text("\n".join(parts) + "\n", encoding="utf-8")
     figure_10_2()
     figure_10_3()
+    figure_10_4()
     print(f"generated {OUT1}")
     print(f"generated {OUT2}")
     print(f"generated {OUT3}")
+    print(f"generated {OUT4}")
     return 0
 
 

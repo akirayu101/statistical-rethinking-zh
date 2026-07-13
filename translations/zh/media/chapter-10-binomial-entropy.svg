@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700" role="img">
+<title>期望值为 1.4 的模拟分布及其熵</title>
+<desc>左图显示十万次随机模拟所得熵的密度；右侧 A 到 D 展示熵逐渐降低时概率分布越来越不均匀。</desc>
+<rect width="100%" height="100%" fill="#fbfaf6"/>
+<rect x="75" y="70" width="480" height="500" rx="8" fill="#fff" stroke="#d9d5c8"/>
+<text x="95.0" y="104.0" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="700" fill="#263f86">模拟熵的密度</text>
+<line x1="195.9" y1="510" x2="195.9" y2="517" stroke="#30332e"/>
+<text x="195.9" y="539.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">0.7</text>
+<line x1="259.5" y1="510" x2="259.5" y2="517" stroke="#30332e"/>
+<text x="259.5" y="539.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">0.8</text>
+<line x1="323.2" y1="510" x2="323.2" y2="517" stroke="#30332e"/>
+<text x="323.2" y="539.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">0.9</text>
+<line x1="386.8" y1="510" x2="386.8" y2="517" stroke="#30332e"/>
+<text x="386.8" y="539.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">1.0</text>
+<line x1="450.5" y1="510" x2="450.5" y2="517" stroke="#30332e"/>
+<text x="450.5" y="539.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">1.1</text>
+<line x1="514.1" y1="510" x2="514.1" y2="517" stroke="#30332e"/>
+<text x="514.1" y="539.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">1.2</text>
+<line x1="145" y1="510" x2="530" y2="510" stroke="#30332e"/>
+<line x1="145" y1="510" x2="145" y2="95" stroke="#30332e"/>
+<text x="337.5" y="558.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="18" font-weight="400" fill="#263f86">熵</text>
+<text x="100.0" y="302.5" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="18" font-weight="400" fill="#263f86" transform="rotate(-90 100 302.5)">密度</text>
+<polyline points="146.3,509.9 148.8,509.9 151.4,509.8 154.0,509.8 156.6,509.8 159.1,509.8 161.7,509.7 164.2,509.7 166.8,509.6 169.4,509.5 171.9,509.4 174.5,509.3 177.1,509.2 179.6,509.2 182.2,509.1 184.8,509.0 187.3,508.9 189.9,508.8 192.5,508.6 195.0,508.4 197.6,508.2 200.2,508.0 202.8,507.9 205.3,507.7 207.9,507.6 210.4,507.4 213.0,507.3 215.6,507.2 218.1,507.0 220.7,506.9 223.3,506.7 225.8,506.4 228.4,506.2 231.0,505.8 233.5,505.5 236.1,505.0 238.7,504.6 241.2,504.1 243.8,503.6 246.4,503.2 248.9,502.9 251.5,502.5 254.1,502.3 256.6,502.0 259.2,501.7 261.8,501.4 264.3,501.0 266.9,500.6 269.5,500.1 272.0,499.7 274.6,499.2 277.2,498.9 279.8,498.5 282.3,498.3 284.9,498.0 287.4,497.7 290.0,497.3 292.6,496.8 295.1,496.1 297.7,495.2 300.3,494.1 302.8,492.9 305.4,491.6 308.0,490.3 310.5,489.0 313.1,487.8 315.7,486.6 318.2,485.4 320.8,484.2 323.4,482.7 325.9,481.1 328.5,479.3 331.1,477.3 333.6,475.2 336.2,473.0 338.8,470.7 341.3,468.2 343.9,465.4 346.5,462.4 349.0,459.0 351.6,455.2 354.2,451.2 356.8,447.0 359.3,442.6 361.9,438.1 364.4,433.5 367.0,429.0 369.6,424.5 372.1,420.1 374.7,415.8 377.3,411.6 379.8,407.4 382.4,403.2 385.0,399.0 387.5,395.0 390.1,391.0 392.7,387.0 395.3,383.2 397.8,379.4 400.4,375.7 402.9,372.1 405.5,368.5 408.1,365.0 410.6,361.5 413.2,357.9 415.8,354.1 418.3,350.2 420.9,346.0 423.5,341.5 426.0,336.8 428.6,331.8 431.2,326.5 433.7,321.1 436.3,315.5 438.9,309.6 441.5,303.5 444.0,297.0 446.6,290.3 449.1,283.4 451.7,276.4 454.3,269.4 456.9,262.5 459.4,255.6 462.0,248.6 464.5,241.4 467.1,233.8 469.7,226.1 472.3,218.1 474.8,209.9 477.4,201.8 479.9,193.5 482.5,185.3 485.1,177.2 487.7,169.3 490.2,161.7 492.8,154.6 495.3,147.8 497.9,141.2 500.5,134.6 503.1,127.9 505.6,121.0 508.2,113.8 510.7,106.8 513.3,100.7 515.9,96.4 518.5,95.0 521.0,97.2 523.6,103.4 526.1,113.3 528.7,126.3" fill="none" stroke="#737cff" stroke-width="4"/>
+<line x1="527.9" y1="510" x2="527.9" y2="126.3" stroke="#8c8e88" stroke-width="2" stroke-dasharray="5 5"/>
+<text x="527.9" y="117.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="700" fill="#30332e">A</text>
+<line x1="386.8" y1="510" x2="386.8" y2="395.0" stroke="#8c8e88" stroke-width="2" stroke-dasharray="5 5"/>
+<text x="386.8" y="383.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="700" fill="#30332e">B</text>
+<line x1="291.4" y1="510" x2="291.4" y2="496.8" stroke="#8c8e88" stroke-width="2" stroke-dasharray="5 5"/>
+<text x="291.4" y="484.8" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="700" fill="#30332e">C</text>
+<line x1="176.9" y1="510" x2="176.9" y2="509.2" stroke="#8c8e88" stroke-width="2" stroke-dasharray="5 5"/>
+<text x="176.9" y="497.2" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="700" fill="#30332e">D</text>
+<rect x="630" y="70" width="245" height="235" rx="8" fill="#fff" stroke="#d9d5c8"/>
+<text x="645.0" y="101.0" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="24" font-weight="700" fill="#263f86">A</text>
+<text x="860.0" y="100.0" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="14" font-weight="400" fill="#666862">H=1.222</text>
+<line x1="670" y1="258" x2="857" y2="258" stroke="#30332e"/>
+<polyline points="670.0,242.8 732.3,222.6 794.7,222.8 857.0,175.5" fill="none" stroke="#737cff" stroke-width="4"/>
+<circle cx="670.0" cy="242.8" r="6" fill="#737cff" stroke="#fff" stroke-width="2"/>
+<text x="670.0" y="285.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">ww</text>
+<circle cx="732.3" cy="222.6" r="6" fill="#737cff" stroke="#fff" stroke-width="2"/>
+<text x="732.3" y="285.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">bw</text>
+<circle cx="794.7" cy="222.8" r="6" fill="#737cff" stroke="#fff" stroke-width="2"/>
+<text x="794.7" y="285.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">wb</text>
+<circle cx="857.0" cy="175.5" r="6" fill="#737cff" stroke="#fff" stroke-width="2"/>
+<text x="857.0" y="285.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">bb</text>
+<rect x="910" y="70" width="245" height="235" rx="8" fill="#fff" stroke="#d9d5c8"/>
+<text x="925.0" y="101.0" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="24" font-weight="700" fill="#263f86">B</text>
+<text x="1140.0" y="100.0" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="14" font-weight="400" fill="#666862">H=1.000</text>
+<line x1="950" y1="258" x2="1137" y2="258" stroke="#30332e"/>
+<polyline points="950.0,241.6 1012.3,255.7 1074.7,192.2 1137.0,174.2" fill="none" stroke="#737cff" stroke-width="4"/>
+<circle cx="950.0" cy="241.6" r="6" fill="#737cff" stroke="#fff" stroke-width="2"/>
+<text x="950.0" y="285.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">ww</text>
+<circle cx="1012.3" cy="255.7" r="6" fill="#737cff" stroke="#fff" stroke-width="2"/>
+<text x="1012.3" y="285.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">bw</text>
+<circle cx="1074.7" cy="192.2" r="6" fill="#737cff" stroke="#fff" stroke-width="2"/>
+<text x="1074.7" y="285.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">wb</text>
+<circle cx="1137.0" cy="174.2" r="6" fill="#737cff" stroke="#fff" stroke-width="2"/>
+<text x="1137.0" y="285.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">bb</text>
+<rect x="630" y="360" width="245" height="235" rx="8" fill="#fff" stroke="#d9d5c8"/>
+<text x="645.0" y="391.0" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="24" font-weight="700" fill="#263f86">C</text>
+<text x="860.0" y="390.0" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="14" font-weight="400" fill="#666862">H=0.850</text>
+<line x1="670" y1="548" x2="857" y2="548" stroke="#30332e"/>
+<polyline points="670.0,540.9 732.3,461.7 794.7,547.7 857.0,473.5" fill="none" stroke="#737cff" stroke-width="4"/>
+<circle cx="670.0" cy="540.9" r="6" fill="#737cff" stroke="#fff" stroke-width="2"/>
+<text x="670.0" y="575.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">ww</text>
+<circle cx="732.3" cy="461.7" r="6" fill="#737cff" stroke="#fff" stroke-width="2"/>
+<text x="732.3" y="575.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">bw</text>
+<circle cx="794.7" cy="547.7" r="6" fill="#737cff" stroke="#fff" stroke-width="2"/>
+<text x="794.7" y="575.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">wb</text>
+<circle cx="857.0" cy="473.5" r="6" fill="#737cff" stroke="#fff" stroke-width="2"/>
+<text x="857.0" y="575.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">bb</text>
+<rect x="910" y="360" width="245" height="235" rx="8" fill="#fff" stroke="#d9d5c8"/>
+<text x="925.0" y="391.0" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="24" font-weight="700" fill="#263f86">D</text>
+<text x="1140.0" y="390.0" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="14" font-weight="400" fill="#666862">H=0.670</text>
+<line x1="950" y1="548" x2="1137" y2="548" stroke="#30332e"/>
+<polyline points="950.0,498.5 1012.3,546.6 1074.7,547.5 1137.0,431.1" fill="none" stroke="#737cff" stroke-width="4"/>
+<circle cx="950.0" cy="498.5" r="6" fill="#737cff" stroke="#fff" stroke-width="2"/>
+<text x="950.0" y="575.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">ww</text>
+<circle cx="1012.3" cy="546.6" r="6" fill="#737cff" stroke="#fff" stroke-width="2"/>
+<text x="1012.3" y="575.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">bw</text>
+<circle cx="1074.7" cy="547.5" r="6" fill="#737cff" stroke="#fff" stroke-width="2"/>
+<text x="1074.7" y="575.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">wb</text>
+<circle cx="1137.0" cy="431.1" r="6" fill="#737cff" stroke="#fff" stroke-width="2"/>
+<text x="1137.0" y="575.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="15" font-weight="400" fill="#30332e">bb</text>
+</svg>
