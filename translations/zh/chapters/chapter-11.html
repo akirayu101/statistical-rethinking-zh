@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-11" data-source-pages="347-350">
-  <header class="chapter-header"><p class="eyebrow">第十一章</p><h1>上帝给整数加了料</h1><p class="source-range">当前译稿对应原书 PDF 第 347–350 页</p></header>
+<article class="book-article" data-chapter="chapter-11" data-source-pages="347-353">
+  <header class="chapter-header"><p class="eyebrow">第十一章</p><h1>上帝给整数加了料</h1><p class="source-range">当前译稿对应原书 PDF 第 347–353 页</p></header>
 
   <div class="chapter-introduction" id="intro-11">
     <p>太空中的寒冷以 Kelvin 命名，约为 3 Kelvin，也就是绝对零度以上约 3 摄氏度。Kelvin 也是苏格兰格拉斯哥附近一条河流的名字；同一条河又把名字给了 William Thomson，也就是 Kelvin 勋爵（1824 年生，1907 年卒）——英国第一位获封贵族头衔的科学家。Thomson 在格拉斯哥的实验室研究热力学，如今太空的寒冷便以一条苏格兰河流为名。</p>
@@ -42,11 +42,69 @@ d &lt;- chimpanzees</code></pre></figure>
       <figure class="code-listing" id="code-11-2"><figcaption>R 代码 11.2</figcaption><pre><code>d$treatment &lt;- 1 + d$prosoc_left + 2*d$condition</code></pre></figure>
       <p>现在，<code>treatment</code> 包含 1 到 4，与上面列表中的编号对应。可以用交叉表验证：</p>
       <figure class="code-listing" id="code-11-3"><figcaption>R 代码 11.3</figcaption><pre><code>xtabs( ~ treatment + prosoc_left + condition , d )</code></pre></figure>
-      <p class="continuation-note">交叉表说明、研究问题所对应的二项模型、Bernoulli 等价写法与先验预测模拟，将从原书 PDF 第 351 页继续。</p>
+      <p>这里不展示输出。构造这种新变量的方法很多，也可以借助各种变体辅助函数；但通常只需要一点算术就够了。</p>
+      <p>现在来写目标模型。由于这是实验，实验结构会告诉我们哪一种模型与推断问题相关。研究问题隐含的数学模型是：</p>
+      <div class="equation-block wallis-equation" id="eq-11-chimpanzee-model"><div><var>L</var><sub>i</sub> ∼ Binomial(1, <var>p</var><sub>i</sub>)</div><div>logit(<var>p</var><sub>i</sub>) = <var>α</var><sub>actor[i]</sub> + <var>β</var><sub>treatment[i]</sub></div><div><var>α</var><sub>j</sub> ∼ 待定</div><div><var>β</var><sub>k</sub> ∼ 待定</div></div>
+      <p>这里的 <span class="math-inline"><var>L</var></span> 表示 0/1 变量 <code>pulled_left</code>。由于结果计数只能是 0 或 1，你也可能看到用 Bernoulli 分布定义的同类模型：</p>
+      <div class="equation-block wallis-equation" id="eq-11-bernoulli-equivalent"><span class="math-line"><var>L</var><sub>i</sub> ∼ Bernoulli(<var>p</var><sub>i</sub>)</span></div>
+      <p>这只是 Binomial(1, <var>p</var><sub>i</sub>) 的另一种说法。无论采用哪种写法，上面的模型都意味着 7 个 <span class="math-inline"><var>α</var></span> 参数——每只黑猩猩一个——以及 4 个处理参数——亲社会选项位置与伙伴是否在场的每一种独特组合各一个。原则上，我们也可以让每只黑猩猩都有自己独特的 4 个处理参数。如果你觉得这听起来很有趣，那有个好消息：后面一章会正是这么做。</p>
+      <p>上面的先验我暂时写成了“待定”。现在来确定它们。本书前面一直在让你为先验预测模拟热身；到了 GLM，这项练习会真正带来回报。先考虑一个小不点逻辑斯蒂回归，线性模型里只有一个 <span class="math-inline"><var>α</var></span> 参数：</p>
+      <div class="equation-block wallis-equation" id="eq-11-logistic-runt"><div><var>L</var><sub>i</sub> ∼ Binomial(1, <var>p</var><sub>i</sub>)</div><div>logit(<var>p</var><sub>i</sub>) = <var>α</var></div><div><var>α</var> ∼ Normal(0, <var>ω</var>)</div></div>
+      <p>我们需要为 <span class="math-inline"><var>ω</var></span> 选一个值。为了凸显传统平坦先验的荒唐之处，先从相当平坦的 <span class="math-inline"><var>ω</var> = 10</span> 开始。</p>
+      <figure class="code-listing" id="code-11-4"><figcaption>R 代码 11.4</figcaption><pre><code>m11.1 &lt;- quap(
+    alist(
+        pulled_left ~ dbinom( 1 , p ) ,
+        logit(p) &lt;- a ,
+        a ~ dnorm( 0 , 10 )
+    ) , data=d )</code></pre></figure>
+      <p>接着从先验中抽样：</p>
+      <figure class="code-listing" id="code-11-5"><figcaption>R 代码 11.5</figcaption><pre><code>set.seed(1999)
+prior &lt;- extract.prior( m11.1 , n=1e4 )</code></pre></figure>
+      <p>还剩一步：需要把参数转换到结果尺度。按上一章的讨论，这意味着使用逆 link 函数。这里的 link 函数是 logit，因此逆 link 是 <code>inv_logit</code>。</p>
+
+      <figure class="book-figure logistic-prior-figure" id="fig-11-3"><div class="figure-scroll"><img src="/media/chapter-11-logistic-priors.svg" alt="两幅先验预测密度图：左图比较截距标准差为 10 与 1.5 时拉左侧杠杆概率的先验，右图比较处理效应标准差为 10 与 0.5 时处理之间绝对差异的先验"></div><figcaption><strong>图 11.3：</strong>最基础逻辑斯蒂回归的先验预测模拟。黑色密度：截距采用平坦的 Normal(0, 10) 先验，会在结果尺度上产生极不平坦的先验分布。蓝色密度：更集中的 Normal(0, 1.5) 先验会产生更合理的结果。</figcaption></figure>
+
+      <figure class="code-listing" id="code-11-6"><figcaption>R 代码 11.6</figcaption><pre><code>p &lt;- inv_logit( prior$a )
+dens( p , adj=0.1 )</code></pre></figure>
+      <p>所得先验分布显示在图 11.3 左图。注意，大部分概率质量都堆积在 0 和 1 附近。模型在看到数据之前，就认为黑猩猩要么从不拉左侧杠杆，要么总是拉左侧杠杆。这显然很荒唐，还会制造不必要的推断误差。logit 空间中的平坦先验，并不是结果概率空间中的平坦先验。同一幅图里的蓝色分布仍是这个模型，只是现在令 <span class="math-inline"><var>ω</var> = 1.5</span>；修改上面的代码即可复现。现在结果尺度上的先验概率相当平坦。由于靠近中间的概率更合理，这大概仍比最佳选择平坦得多；但它已经优于多数人多数时候采用的默认先验。我们就用它。</p>
+      <p>接着要为处理效应，也就是 <span class="math-inline"><var>β</var></span> 参数确定先验。我们可以默认给处理效应使用相同的 Normal(0, 1.5) 先验，理由是这些参数也不过是截距——每种处理一个截距。不过，为了进一步凸显传统平坦先验的古怪，先看看 Normal(0, 10) 会是什么样。</p>
+      <figure class="code-listing" id="code-11-7"><figcaption>R 代码 11.7</figcaption><pre><code>m11.2 &lt;- quap(
+    alist(
+        pulled_left ~ dbinom( 1 , p ) ,
+        logit(p) &lt;- a + b[treatment] ,
+        a ~ dnorm( 0 , 1.5 ),
+        b[treatment] ~ dnorm( 0 , 10 )
+    ) , data=d )
+set.seed(1999)
+prior &lt;- extract.prior( m11.2 , n=1e4 )
+p &lt;- sapply( 1:4 , function(k) inv_logit( prior$a + prior$b[,k] ) )</code></pre></figure>
+      <p>上面的代码计算每种处理下拉左侧杠杆的先验概率。我们关心的是：这些先验对处理之间的先验差异意味着什么。因此，画出前两种处理之间先验绝对差异的分布：</p>
+      <figure class="code-listing" id="code-11-8"><figcaption>R 代码 11.8</figcaption><pre><code>dens( abs( p[,1] - p[,2] ) , adj=0.1 )</code></pre></figure>
+      <p>图 11.3 右图展示了这个分布。与 <span class="math-inline"><var>α</var></span> 一样，logit 尺度上的平坦先验把几乎所有先验概率都堆在 0 和 1 上——模型在看到数据之前，就相信不同处理要么完全相同，要么完全不同。某些情境下，这种先验也许合理，但这里不合理。典型的行为处理对黑猩猩和人类的效应通常都比较温和。</p>
+      <p>同一幅图中的蓝色分布，是把上述代码改用 Normal(0, 0.5) 先验后重复得到的结果。现在先验集中于较小的绝对差异。差异为零时先验概率最高，而平均先验差异为：</p>
+      <figure class="code-listing" id="code-11-9"><figcaption>R 代码 11.9</figcaption><pre><code>m11.3 &lt;- quap(
+    alist(
+        pulled_left ~ dbinom( 1 , p ) ,
+        logit(p) &lt;- a + b[treatment] ,
+        a ~ dnorm( 0 , 1.5 ),
+        b[treatment] ~ dnorm( 0 , 0.5 )
+    ) , data=d )
+set.seed(1999)
+prior &lt;- extract.prior( m11.3 , n=1e4 )
+p &lt;- sapply( 1:4 , function(k) inv_logit( prior$a + prior$b[,k] ) )
+mean( abs( p[,1] - p[,2] ) )</code></pre><pre class="code-output"><code>[1] 0.09838663</code></pre></figure>
+      <p>大约 10%。极端大的差异较不可信，但这并不是强先验。如果数据包含大差异的证据，它仍会清楚地显现出来。还要记住第 7 章的教训：我们希望先验对大差异持怀疑态度，以减少过拟合。好的先验会损害样本拟合，却有望改善预测。</p>
+      <p>终于，我们有了完整模型，可以加入每只黑猩猩各自的参数。接下来用 Hamiltonian Monte Carlo 近似后验，也让你多练习一下。其实 <code>quap</code> 也能很好地处理这个后验，但那只是因为先验有足够强的正则化作用。在章末习题中，你会在正则化更弱的模型上比较这两个引擎。先准备数据列表：</p>
+      <figure class="code-listing" id="code-11-10"><figcaption>R 代码 11.10</figcaption><pre><code># 仅保留先验所需变量的数据列表
+dat_list &lt;- list(
+    pulled_left = d$pulled_left,
+    actor = d$actor,
+    treatment = as.integer(d$treatment) )</code></pre></figure>
+      <p class="continuation-note">Hamiltonian Monte Carlo 拟合、参数摘要与个体杠杆偏好，将从原书 PDF 第 354 页继续。</p>
     </section>
   </section>
 
   <section class="endnotes" id="chapter-11-notes" role="doc-endnotes"><h2>尾注</h2><ol start="166"><li id="note-166">重要数论家 Leopold Kronecker 据称说过：“上帝创造了整数，其余一切皆为人造。”（德文：<span lang="de">Die ganzen Zahlen hat der liebe Gott gemacht, alles andere ist Menschenwerk.</span>） <a class="backref" href="#note-166-ref" aria-label="返回正文">↩</a></li><li id="note-167">Silk 等（2005）。 <a class="backref" href="#note-167-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 11 章 PDF 第 347–350 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 351 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 11 章 PDF 第 347–353 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 354 页继续。</aside>
 </article>
