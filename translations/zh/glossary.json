@@ -947,7 +947,17 @@
     "negative binomial distribution": "负二项分布",
     "gamma-Poisson distribution": "gamma-Poisson 分布",
     "exposure (count model)": "暴露量",
-    "offset": "offset"
+    "offset": "offset",
+    "dummy-data simulation": "虚拟数据模拟",
+    "multinomial distribution": "多项分布",
+    "categorical regression": "分类回归",
+    "maximum entropy classifier": "最大熵分类器",
+    "explicit approach": "显式方法",
+    "multinomial logit": "多项 logit",
+    "softmax function": "softmax 函数",
+    "multinomial logistic regression": "多项逻辑斯蒂回归",
+    "pivot category": "枢轴类别",
+    "quantitative trait": "定量特征"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "blavaan", "AIC", "DIC", "WAIC", "BIC", "PSIS-LOO", "MCMC", "HMC"
