@@ -1507,7 +1507,7 @@
   },
   "chapter-09": {
     "required_status": "in_progress",
-    "source_pages": [285, 308],
+    "source_pages": [285, 311],
     "required_ids": [
       "fig-9-1",
       "rethinking-stan-was-a-man",
@@ -1568,6 +1568,12 @@
       "fig-9-9",
       "overthinking-raw-stan",
       "stan-code-9-ruggedness",
+      "sec-9-5",
+      "sec-9-5-1",
+      "rethinking-warmup-not-burnin",
+      "sec-9-5-2",
+      "rethinking-convergence-diagnostics",
+      "sec-9-5-3",
       "chapter-09-notes",
       "note-137",
       "note-138",
@@ -1580,7 +1586,9 @@
       "note-145",
       "note-146",
       "note-147",
-      "note-148"
+      "note-148",
+      "note-149",
+      "note-150"
     ],
     "required_headings": [
       "马尔可夫链蒙特卡洛",
@@ -1603,16 +1611,22 @@
       "9.4.4 可视化",
       "9.4.5 检查链",
       "过度思考：原始 Stan 模型代码",
+      "9.5 马尔可夫链的照料与养护",
+      "9.5.1 需要多少样本？",
+      "再思考：预热不是老化期",
+      "9.5.2 需要多少条链？",
+      "再思考：收敛诊断",
+      "9.5.3 驯服一条狂野的链",
       "尾注"
     ],
     "counts": {
-      "section": 15,
+      "section": 19,
       "figure": 31,
       "figure img": 9,
       ".book-figure": 9,
       ".code-listing": 22,
       ".code-output": 5,
-      ".rethinking-box": 3,
+      ".rethinking-box": 5,
       ".overthinking-box": 2,
       ".book-quote": 1,
       ".equation-block": 5,
@@ -1624,7 +1638,7 @@
       ".preparation-steps": 1,
       ".preparation-steps > li": 2,
       ".continuation-note": 1,
-      ".endnotes li": 12
+      ".endnotes li": 14
     }
   }
 }
