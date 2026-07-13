@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-11" data-source-pages="347-362">
-  <header class="chapter-header"><p class="eyebrow">第十一章</p><h1>上帝给整数加了料</h1><p class="source-range">当前译稿对应原书 PDF 第 347–362 页</p></header>
+<article class="book-article" data-chapter="chapter-11" data-source-pages="347-365">
+  <header class="chapter-header"><p class="eyebrow">第十一章</p><h1>上帝给整数加了料</h1><p class="source-range">当前译稿对应原书 PDF 第 347–365 页</p></header>
 
   <div class="chapter-introduction" id="intro-11">
     <p>太空中的寒冷以 Kelvin 命名，约为 3 Kelvin，也就是绝对零度以上约 3 摄氏度。Kelvin 也是苏格兰格拉斯哥附近一条河流的名字；同一条河又把名字给了 William Thomson，也就是 Kelvin 勋爵（1824 年生，1907 年卒）——英国第一位获封贵族头衔的科学家。Thomson 在格拉斯哥的实验室研究热力学，如今太空的寒冷便以一条苏格兰河流为名。</p>
@@ -314,11 +314,79 @@ m11.6 28
 m11.4 504</code></pre></figure>
       <p>输出很多，不过可以从上到下慢慢看。首先，PSIS 汇总表给两个模型的分数差异巨大，尽管它们的后验分布相同。为什么？主要原因是数据组织方式让聚合模型 <code>m11.6</code> 的对数概率多出一个因子。比如计算 <code>dbinom(6,9,0.2)</code> 时，<code>dbinom</code> 函数包含一个项，用来计算 6 次成功在 9 次试验中可能出现的所有顺序。这个项前面已经见过：</p>
       <div class="equation-block wallis-equation" id="eq-11-aggregated-binomial-example"><span class="math-line">Pr(6 | 9, <var>p</var>) = <span class="fraction"><span>6!</span><span>6!(9 − 6)!</span></span> <var>p</var><sup>6</sup>(1 − <var>p</var>)<sup>9−6</sup></span></div>
-      <p class="continuation-note">多重度如何改变聚合模型的 PSIS/WAIC 分数、Pareto <var>k</var> 警告及 11.1.4 小节，将从原书 PDF 第 363 页继续。</p>
+      <p>前面那个难看的分数就是上一章前半部分非常重要的多重度。它只是在计算 9 次试验中出现 6 次成功的所有方式。如果像逻辑斯蒂回归那样，把 6 次成功拆成 9 个不同的 0/1 试验，就不需要计算多重度项。此时 9 次试验的联合概率为：</p>
+      <div class="equation-block wallis-equation" id="eq-11-disaggregated-sequence"><span class="math-line">Pr(1,1,1,1,1,1,0,0,0 | <var>p</var>) = <var>p</var><sup>6</sup>(1 − <var>p</var>)<sup>9−6</sup></span></div>
+      <p>因此聚合概率更大——观察到数据的方式更多——PSIS/WAIC 分数也会更小。可以用这个简单例子验证：</p>
+      <figure class="code-listing" id="code-11-27"><figcaption>R 代码 11.27</figcaption><pre><code># 聚合的 9 次中 6 次成功的 deviance
+-2*dbinom(6,9,0.2,log=TRUE)
+# 拆分后的 deviance
+-2*sum(dbern(c(1,1,1,1,1,1,0,0,0),0.2,log=TRUE))</code></pre><pre class="code-output"><code>[1] 11.79048
+[1] 20.65212</code></pre></figure>
+      <p>但这个差异完全没有意义，只是数据组织方式的副作用。无论如何组织，每次试验成功概率的后验分布最终都相同。</p>
+      <p>继续看 <code>compare</code> 输出，其中有两个警告。第一个只是提示两个模型的观测数量不同。绝不要比较在不同观测集合上拟合的模型。另一个是顶部的 Pareto <var>k</var> 信息：<code>Some Pareto k values are high (&gt;0.5).</code> 这就是第 7 章遇到过的 Pareto <var>k</var> 警告。它真正的价值，是提醒我们存在高影响观测：删去这些高 Pareto <var>k</var> 观测后，后验通常会发生很大变化。像第 7 章的例子一样，逐点检查有助于理解模型为何表现成这样；WAIC 的惩罚项也包含各观测相对影响力的类似信息。</p>
+      <p>在查看 Pareto <var>k</var> 之前，你也许已经注意到：同一批数据的拆分逻辑斯蒂模型并没有类似警告。为什么？因为按“个体—处理”聚合数据后，我们迫使 PSIS（以及 WAIC）设想一种交叉验证：每次都把某个个体—处理组合中的全部 18 个观测一起拿掉。它不再像留一交叉验证，而更像“留十八”。于是某些观测影响更大，因为它们实际上代表了 18 个观测。</p>
+      <p>结论是什么？若要计算 WAIC 或 PSIS，应使用逻辑斯蒂回归的数据格式，而不是聚合格式；否则就等于暗中假设只有大块数据才可分离。在多层模型等情境中，这有时合理，但对大多数普通二项回归并不合理。如果深入修改 Stan 中为 WAIC 与 PSIS 计算逐观测对数似然的代码，就可以按任意层级聚合，计算与目标预测层级相符的有效分数——无论目标是新的 0/1 事件，还是拥有许多 0/1 事件的新个体。</p>
+    </section>
+
+    <section id="sec-11-1-4"><h3>11.1.4 聚合二项：研究生院录取</h3>
+      <p>上面的聚合二项例子中，每一行的试验次数始终是 18；现实中往往并非如此。处理方法是在原先写“18”的位置放入一个数据变量。下面完整做一个例子。先载入数据：</p>
+      <figure class="code-listing" id="code-11-28"><figcaption>R 代码 11.28</figcaption><pre><code>library(rethinking)
+data(UCBadmit)
+d &lt;- UCBadmit</code></pre><pre class="code-output"><code>   dept applicant.gender admit reject applications
+1     A             male   512    313          825
+2     A           female    89     19          108
+3     B             male   353    207          560
+4     B           female    17      8           25
+5     C             male   120    205          325
+6     C           female   202    391          593
+7     D             male   138    279          417
+8     D           female   131    244          375
+9     E             male    53    138          191
+10    E           female    94    299          393
+11    F             male    22    351          373
+12    F           female    24    317          341</code></pre></figure>
+      <p>这些是加州大学伯克利分校 6 个不同院系的研究生申请。<sup id="note-168-ref"><a href="#note-168">168</a></sup><code>admit</code> 列是收到录取通知的人数，<code>reject</code> 列是相反决定的人数，<code>applications</code> 列则是二者之和。每份申请的录取结果都是 0 或 1，但由于结果按院系与性别聚合，表中只有 12 行。这 12 行却代表了 4,526 份申请，也就是 <code>applications</code> 列之和。因此这里的数据量很大——此时数数据表行数已不是评估样本量的合理方法。也可以把数据拆成像原始黑猩猩数据那样的 0/1 Bernoulli 试验，那会得到 4,526 行。</p>
+      <p>我们的任务是评估这些数据是否包含录取性别偏差的证据。我们对录取决定建模，以申请者性别为预测变量，也就是拟合一个以申请者性别预测 <code>admit</code> 的二项回归，从而估计性别与录取概率之间的关联。数学模型为：</p>
+      <div class="equation-block wallis-equation" id="eq-11-ucb-gender-model"><div><var>A</var><sub>i</sub> ∼ Binomial(<var>N</var><sub>i</sub>, <var>p</var><sub>i</sub>)</div><div>logit(<var>p</var><sub>i</sub>) = <var>α</var><sub>gid[i]</sub></div><div><var>α</var><sub>j</sub> ∼ Normal(0, 1.5)</div></div>
+      <p>变量 <span class="math-inline"><var>N</var><sub>i</sub></span> 表示 <code>applications[i]</code>，即第 <var>i</var> 行的申请数。索引变量 <code>gid[i]</code> 表示申请者性别：1 为男性，2 为女性。拟合模型前这样构造：</p>
+      <figure class="code-listing" id="code-11-29"><figcaption>R 代码 11.29</figcaption><pre><code>dat_list &lt;- list(
+    admit = d$admit,
+    applications = d$applications,
+    gid = ifelse( d$applicant.gender=="male" , 1 , 2 )
+)
+m11.7 &lt;- ulam(
+    alist(
+        admit ~ dbinom( applications , p ) ,
+        logit(p) &lt;- a[gid] ,
+        a[gid] ~ dnorm( 0 , 1.5 )
+    ) , data=dat_list , chains=4 )
+precis( m11.7 , depth=2 )</code></pre><pre class="code-output"><code>      mean   sd  5.5% 94.5% n_eff Rhat
+a[1] -0.22 0.04 -0.29 -0.16  1232    1
+a[2] -0.83 0.05 -0.91 -0.75  1323    1</code></pre></figure>
+      <p>男性申请者的后验 <code>a[1]</code> 高于女性申请者的后验。高多少？需要计算对比：同时计算 logit 尺度上的对比（鲨鱼）与结果尺度上的对比（企鹅）：</p>
+      <figure class="code-listing" id="code-11-30"><figcaption>R 代码 11.30</figcaption><pre><code>post &lt;- extract.samples(m11.7)
+diff_a &lt;- post$a[,1] - post$a[,2]
+diff_p &lt;- inv_logit(post$a[,1]) - inv_logit(post$a[,2])
+precis( list( diff_a=diff_a , diff_p=diff_p ) )</code></pre><pre class="code-output"><code>       mean   sd 5.5% 94.5%
+diff_a 0.61 0.07 0.50  0.71
+diff_p 0.14 0.01 0.12  0.16</code></pre></figure>
+      <p>log-odds 差异明确为正，对应男性申请者更高的录取概率。在概率尺度上，这个差异介于 12% 与 16% 之间。</p>
+      <p>在推测男性优势的原因之前，先绘制模型的后验预测。我们使用默认后验验证函数 <code>postcheck</code>，再加一些线段，把同一院系的数据点连接起来。</p>
+      <figure class="code-listing" id="code-11-31"><figcaption>R 代码 11.31</figcaption><pre><code>postcheck( m11.7 )
+# 连接同一院系的数据点
+for ( i in 1:6 ) {
+    x &lt;- 1 + 2*(i-1)
+    y1 &lt;- d$admit[x]/d$applications[x]
+    y2 &lt;- d$admit[x+1]/d$applications[x+1]
+    lines( c(x,x+1) , c(y1,y2) , col=rangi2 , lwd=2 )
+    text( x+0.5 , (y1+y2)/2 + 0.05 , d$dept[x] , cex=0.8 , col=rangi2 )
+}</code></pre></figure>
+      <p>结果见图 11.5，预测相当糟糕。女性录取率低于男性的院系其实只有两个（C 与 E），模型却说女性的预期录取机会应低 14%。这种糟糕拟合有时源于编码错误，但这里不是。模型确实正确回答了我们提出的问题：“跨所有院系，男性和女性的平均录取概率分别是多少？”问题在于，男性与女性申请的院系并不相同，而各院系的录取率又不同，因此这个答案会误导。图中可以看到，从院系 A 到 F，录取概率持续下降。</p>
+      <p class="continuation-note">图 11.5、院系内性别差异与加入院系截距的模型，将从原书 PDF 第 366 页继续。</p>
     </section>
   </section>
 
-  <section class="endnotes" id="chapter-11-notes" role="doc-endnotes"><h2>尾注</h2><ol start="166"><li id="note-166">重要数论家 Leopold Kronecker 据称说过：“上帝创造了整数，其余一切皆为人造。”（德文：<span lang="de">Die ganzen Zahlen hat der liebe Gott gemacht, alles andere ist Menschenwerk.</span>） <a class="backref" href="#note-166-ref" aria-label="返回正文">↩</a></li><li id="note-167">Silk 等（2005）。 <a class="backref" href="#note-167-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section class="endnotes" id="chapter-11-notes" role="doc-endnotes"><h2>尾注</h2><ol start="166"><li id="note-166">重要数论家 Leopold Kronecker 据称说过：“上帝创造了整数，其余一切皆为人造。”（德文：<span lang="de">Die ganzen Zahlen hat der liebe Gott gemacht, alles andere ist Menschenwerk.</span>） <a class="backref" href="#note-166-ref" aria-label="返回正文">↩</a></li><li id="note-167">Silk 等（2005）。 <a class="backref" href="#note-167-ref" aria-label="返回正文">↩</a></li><li id="note-168">Bickel 等（1975）。 <a class="backref" href="#note-168-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 11 章 PDF 第 347–362 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 363 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 11 章 PDF 第 347–365 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 366 页继续。</aside>
 </article>
