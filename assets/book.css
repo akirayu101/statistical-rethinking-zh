@@ -153,7 +153,8 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .island-kingdom-figure .figure-scroll img { display: block; width: min(100%, 20rem); height: auto; margin: 0 auto; }
 .metropolis-king-figure .figure-scroll img,
 .correlated-chains-figure .figure-scroll img,
-.concentration-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
+.concentration-figure .figure-scroll img,
+.royal-drive-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
 .algorithm-steps { margin: 1.5rem 0; padding: 1rem 1rem 1rem 3.2rem; border-left: .25rem solid var(--blue); background: #f3f5fb; }
 .algorithm-steps li { margin: .7rem 0; padding-left: .25rem; }
 .metropolis-mapping { margin: 1.5rem 0; padding: 1rem 1rem 1rem 3.2rem; border-left: .25rem solid var(--blue); background: #f3f5fb; }

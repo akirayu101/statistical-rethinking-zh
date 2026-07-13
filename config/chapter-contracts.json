@@ -1507,7 +1507,7 @@
   },
   "chapter-09": {
     "required_status": "in_progress",
-    "source_pages": [285, 293],
+    "source_pages": [285, 296],
     "required_ids": [
       "fig-9-1",
       "rethinking-stan-was-a-man",
@@ -1527,13 +1527,22 @@
       "sec-9-3",
       "quote-9-jaynes-randomized",
       "sec-9-3-1",
+      "fig-9-5",
+      "rethinking-hamiltonians",
+      "sec-9-3-2",
+      "eq-9-hmc-gaussian-model",
+      "eq-9-hmc-log-prob",
+      "overthinking-raw-hmc",
       "chapter-09-notes",
       "note-137",
       "note-138",
       "note-139",
       "note-140",
       "note-141",
-      "note-142"
+      "note-142",
+      "note-143",
+      "note-144",
+      "note-145"
     ],
     "required_headings": [
       "马尔可夫链蒙特卡洛",
@@ -1544,22 +1553,28 @@
       "9.2.2 高维问题",
       "9.3 哈密顿蒙特卡洛",
       "9.3.1 另一个寓言",
+      "再思考：哈密顿量",
+      "9.3.2 空间中的粒子",
+      "过度思考：原始的哈密顿蒙特卡洛",
       "尾注"
     ],
     "counts": {
-      "section": 7,
-      "figure": 8,
-      "figure img": 4,
-      ".book-figure": 4,
+      "section": 8,
+      "figure": 9,
+      "figure img": 5,
+      ".book-figure": 5,
       ".code-listing": 4,
-      ".rethinking-box": 1,
+      ".rethinking-box": 2,
+      ".overthinking-box": 1,
       ".book-quote": 1,
+      ".equation-block": 2,
+      ".model-system-equation": 1,
       ".algorithm-steps": 1,
       ".algorithm-steps > li": 4,
       ".metropolis-mapping": 1,
       ".metropolis-mapping > li": 3,
       ".continuation-note": 1,
-      ".endnotes li": 6
+      ".endnotes li": 9
     }
   }
 }

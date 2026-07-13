@@ -8,6 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT2 = ROOT / "translations/zh/media/chapter-09-metropolis-king.svg"
 OUT3 = ROOT / "translations/zh/media/chapter-09-correlated-chains.svg"
 OUT4 = ROOT / "translations/zh/media/chapter-09-concentration.svg"
+OUT5 = ROOT / "translations/zh/media/chapter-09-royal-drive.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 BLUE = "#6670ee"
 INK = "#30332e"
@@ -153,13 +154,42 @@ def figure_9_4() -> None:
     OUT4.write_text('\n'.join(body), encoding="utf-8")
 
 
+def figure_9_5() -> None:
+    """Reconstruct King Monty's variable-momentum drive through a valley."""
+    w, h = 1200, 560
+    left, right, top, bottom = 100, 45, 55, 90
+    pw, ph = w - left - right, h - top - bottom
+    sx = lambda t: left + t / 380 * pw
+    sy = lambda p: top + (1.65 - p) / 3.3 * ph
+    visits = [(0,0),(20,-.9),(42,0),(62,-.55),(82,-1.25),(102,.35),(122,-.25),(142,.4),(162,.25),(182,-.6),(202,-.3),(222,-.35),(242,.75),(262,0),(282,-.2),(302,1.35),(322,-1.1),(342,-.2),(362,-.25),(380,.15)]
+    body = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" role="img">','<title>蒙蒂国王的王室驾车之旅</title>','<desc>车辆在南北向山谷中随动量上坡减速、下坡加速，并在一系列访问地点停下。</desc>','<rect width="100%" height="100%" fill="#fff"/>']
+    for p in [x/5 for x in range(-8,9)]:
+        body.append(f'<line x1="{left}" y1="{sy(p):.1f}" x2="{w-right}" y2="{sy(p):.1f}" stroke="#b8b9b5" stroke-width="1"/>')
+    body.append(f'<line x1="{left}" y1="{sy(0):.1f}" x2="{w-right}" y2="{sy(0):.1f}" stroke="{INK}" stroke-width="1.6"/>')
+    for i,((t1,p1),(t2,p2)) in enumerate(zip(visits,visits[1:])):
+        mid=(t1+t2)/2
+        amp = (-.35 if i%2==0 else .35) * (1 + (i%4)/5)
+        cy = (p1+p2)/2 + amp
+        d=f'M {sx(t1):.1f},{sy(p1):.1f} Q {sx(mid):.1f},{sy(cy):.1f} {sx(t2):.1f},{sy(p2):.1f}'
+        width=2.5 + abs(cy-(p1+p2)/2)*6
+        body.append(f'<path d="{d}" fill="none" stroke="{INK}" stroke-width="{width:.1f}" stroke-linecap="round"/>')
+    for t,p in visits[1:]:
+        body.append(f'<circle cx="{sx(t):.1f}" cy="{sy(p):.1f}" r="5.5" fill="#fff" stroke="{INK}" stroke-width="2"/>')
+    for t in (0,100,200,300):
+        body += [f'<line x1="{sx(t):.1f}" y1="{top+ph}" x2="{sx(t):.1f}" y2="{top+ph+7}" stroke="{INK}"/>',f'<text x="{sx(t):.1f}" y="{top+ph+31}" text-anchor="middle" font-family="{FONT}" font-size="17">{t}</text>']
+    body += [f'<text x="{left+pw/2}" y="{h-24}" text-anchor="middle" font-family="{FONT}" font-size="21" fill="#263f86">时间</text>',f'<text x="31" y="{top+ph/2}" transform="rotate(-90 31 {top+ph/2})" text-anchor="middle" font-family="{FONT}" font-size="21" fill="#263f86">位置</text>',f'<text x="{left-12}" y="{sy(1.45):.1f}" text-anchor="end" font-family="{FONT}" font-size="18">北</text>',f'<text x="{left-12}" y="{sy(-1.45):.1f}" text-anchor="end" font-family="{FONT}" font-size="18">南</text>','</svg>','']
+    OUT5.write_text('\n'.join(body),encoding='utf-8')
+
+
 def main() -> None:
     figure_9_2()
     figure_9_3()
     figure_9_4()
+    figure_9_5()
     print(OUT2)
     print(OUT3)
     print(OUT4)
+    print(OUT5)
 
 
 if __name__ == "__main__":
