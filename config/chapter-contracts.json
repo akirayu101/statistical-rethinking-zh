@@ -2439,7 +2439,7 @@
   },
   "chapter-14": {
     "required_status": "in_progress",
-    "source_pages": [465, 470],
+    "source_pages": [465, 473],
     "required_ids": [
       "intro-14",
       "eq-14-cafe-varying-slopes",
@@ -2464,7 +2464,22 @@
       "eq-14-covariance-definition",
       "eq-14-correlation-definition",
       "eq-14-covariance-product",
-      "sec-14-1-2"
+      "sec-14-1-2",
+      "code-14-10",
+      "rethinking-14-simulation-misspecification",
+      "sec-14-1-3",
+      "eq-14-varying-slopes-data",
+      "erratum-14-its-covariance",
+      "eq-14-varying-effects-population",
+      "eq-14-varying-slopes-hyperpriors",
+      "eq-14-correlation-matrix",
+      "note-194-ref",
+      "code-14-11",
+      "fig-14-3",
+      "code-14-12",
+      "code-14-13",
+      "chapter-14-notes",
+      "note-194"
     ],
     "required_headings": [
       "协方差历险",
@@ -2472,24 +2487,27 @@
       "再思考：为什么是高斯分布？",
       "14.1.1 模拟总体",
       "过度思考：方差、协方差与相关",
-      "14.1.2 模拟观测"
+      "14.1.2 模拟观测",
+      "再思考：模拟与模型设定偏误",
+      "14.1.3 变化斜率模型",
+      "尾注"
     ],
     "counts": {
-      "section": 1,
-      "figure": 11,
-      "figure img": 2,
-      ".book-figure": 2,
-      ".code-listing": 9,
+      "section": 2,
+      "figure": 16,
+      "figure img": 3,
+      ".book-figure": 3,
+      ".code-listing": 13,
       ".code-output": 1,
-      ".rethinking-box": 1,
+      ".rethinking-box": 2,
       ".overthinking-box": 1,
       ".book-quote": 0,
-      ".equation-block": 6,
-      ".wallis-equation": 6,
-      ".source-erratum": 1,
+      ".equation-block": 10,
+      ".wallis-equation": 10,
+      ".source-erratum": 2,
       ".chapter-introduction": 1,
       ".continuation-note": 1,
-      ".endnotes li": 0
+      ".endnotes li": 1
     }
   }
 }

@@ -10,6 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 OUT1 = ROOT / "translations" / "zh" / "media" / "chapter-14-cafe-waits.svg"
 OUT2 = ROOT / "translations" / "zh" / "media" / "chapter-14-cafe-population.svg"
+OUT3 = ROOT / "translations" / "zh" / "media" / "chapter-14-lkj-priors.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 BLUE = "#6670ee"
@@ -150,11 +151,60 @@ def figure_14_2() -> None:
     OUT2.write_text("\n".join(svg), encoding="utf-8")
 
 
+def figure_14_3() -> None:
+    width, height = 920, 620
+    x0, y0, x1, y1 = 110.0, 65.0, 850.0, 510.0
+
+    def xy(x: float, y: float) -> tuple[float, float]:
+        return x0 + (x + 1.0) / 2.0 * (x1 - x0), y1 - y / 1.15 * (y1 - y0)
+
+    normalizers = {1: 0.5, 2: 0.75, 4: 1.09375}
+    svg = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
+        "<title>图 14.3：三种 LKJcorr 相关先验</title>",
+        "<desc>eta 等于一时相关系数密度平坦；eta 等于二时密度在零附近较高；eta 等于四时更强烈地排斥接近负一或一的极端相关。</desc>",
+        f'<rect width="{width}" height="{height}" fill="#fff"/>',
+        f'<rect x="{x0}" y="{y0}" width="{x1-x0}" height="{y1-y0}" fill="#fff" stroke="{INK}" stroke-width="1.5"/>',
+    ]
+    for tick in [-1.0, -0.5, 0.0, 0.5, 1.0]:
+        x, _ = xy(tick, 0)
+        svg.extend([
+            f'<line x1="{x:.1f}" y1="{y1}" x2="{x:.1f}" y2="{y1+7}" stroke="{INK}" stroke-width="1.4"/>',
+            text(x, y1 + 31, f"{tick:.1f}", size=18, anchor="middle"),
+        ])
+    for tick in [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]:
+        _, y = xy(-1, tick)
+        svg.extend([
+            f'<line x1="{x0-7}" y1="{y:.1f}" x2="{x0}" y2="{y:.1f}" stroke="{INK}" stroke-width="1.4"/>',
+            text(x0 - 15, y + 6, f"{tick:.1f}", size=18, anchor="end"),
+        ])
+    for eta in [1, 2, 4]:
+        points = []
+        for index in range(401):
+            rho = -0.999 + index * 1.998 / 400.0
+            density = normalizers[eta] * (1.0 - rho * rho) ** (eta - 1)
+            points.append(xy(rho, density))
+        coords = " ".join(f"{x:.1f},{y:.1f}" for x, y in points)
+        svg.append(f'<polyline points="{coords}" fill="none" stroke="{INK}" stroke-width="2.5"/>')
+    for eta, rho in [(1, -0.18), (2, -0.08), (4, 0.06)]:
+        density = normalizers[eta] * (1.0 - rho * rho) ** (eta - 1)
+        x, y = xy(rho, density)
+        svg.append(text(x + 12, y - 10, f"η = {eta}", size=18, weight=600))
+    svg.extend([
+        text((x0 + x1) / 2, 585, "相关系数", size=21, anchor="middle", weight=600),
+        text(32, (y0 + y1) / 2, "密度", size=21, anchor="middle", weight=600, rotate=-90),
+        "</svg>",
+    ])
+    OUT3.write_text("\n".join(svg), encoding="utf-8")
+
+
 def main() -> None:
     figure_14_1()
     figure_14_2()
+    figure_14_3()
     print(OUT1)
     print(OUT2)
+    print(OUT3)
 
 
 if __name__ == "__main__":

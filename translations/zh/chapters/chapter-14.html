@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-14" data-source-pages="465-470">
-  <header class="chapter-header"><p class="eyebrow">第十四章</p><h1>协方差历险</h1><p class="source-range">当前译稿对应原书 PDF 第 465–470 页</p></header>
+<article class="book-article" data-chapter="chapter-14" data-source-pages="465-473">
+  <header class="chapter-header"><p class="eyebrow">第十四章</p><h1>协方差历险</h1><p class="source-range">当前译稿对应原书 PDF 第 465–473 页</p></header>
 
   <div class="chapter-introduction" id="intro-14">
     <p>回想上一章导言中的咖啡机器人（原书第 413 页）。这个机器人被设定为在咖啡馆之间移动、点咖啡，并记录等待时间。上一章的重点是：在咖啡馆之间汇聚信息，能让机器人学得更高效；变化截距正是实现这种汇聚的一种机制。</p>
@@ -94,8 +94,62 @@ for ( l in c(0.1,0.3,0.5,0.8,0.99) )
 
     <h3 id="sec-14-1-2">14.1.2 模拟观测</h3>
     <p>模拟快要完成了。上面模拟的是各家咖啡馆及其平均性质；现在只需再模拟机器人访问这些咖啡馆并收集数据。下面将让机器人访问每家咖啡馆 10 次，上午 5 次、下午 5 次；机器人记录每次访问的等待时间，再把全部访问合并成一个共同的数据框。</p>
-    <p class="continuation-note">模拟访问的代码 14.10 与后续变化斜率模型，将从原书 PDF 第 471 页继续。</p>
+    <figure class="code-listing" id="code-14-10"><figcaption>R 代码 14.10</figcaption><pre><code>set.seed(22)
+N_visits &lt;- 10
+afternoon &lt;- rep(0:1,N_visits*N_cafes/2)
+cafe_id &lt;- rep( 1:N_cafes , each=N_visits )
+mu &lt;- a_cafe[cafe_id] + b_cafe[cafe_id]*afternoon
+sigma &lt;- 0.5 # 咖啡馆内部标准差
+wait &lt;- rnorm( N_visits*N_cafes , mu , sigma )
+d &lt;- data.frame( cafe=cafe_id , afternoon=afternoon , wait=wait )</code></pre></figure>
+    <p>现在查看数据框 <code>d</code>。你会看到一种非常适合变化斜率模型的数据：数据中有多个集群，也就是咖啡馆；每个集群又在不同条件下被观测。因此，既能为每个集群估计独立截距，也能估计独立斜率。</p>
+    <p>在本例中，一切都很平衡：每家咖啡馆恰好观测 10 次，时段也始终平衡，每家店上午、下午各 5 次。但一般而言，数据不必平衡。与上一章的蝌蚪示例一样，不平衡实际上会让变化效应分析更占优势，因为部分汇聚能在最需要的地方利用总体信息。</p>
+
+    <aside class="rethinking-box" id="rethinking-14-simulation-misspecification"><h3>再思考：模拟与模型设定偏误</h3><p>在这项练习中，我们从一个生成过程模拟数据，再用结构完全正确地反映该过程的模型分析数据。但现实世界里从没有这么幸运；我们总被迫用存在设定偏误的模型分析数据，也就是模型不同于真实的数据生成过程。不过，模拟可以探索模型设定偏误：先从一个过程模拟数据，再观察若干都不与真实生成过程完全一致的模型表现如何。还要始终记住，Bayesian 推断并不依赖 likelihood 等数据生成假设为真。非 Bayesian 方法的推断可能依赖抽样分布，Bayesian 模型却并非如此；在 Bayesian 模型中，likelihood 是数据的先验，而对参数的推断可能对其细节惊人地不敏感。</p></aside>
+
+    <h3 id="sec-14-1-3">14.1.3 变化斜率模型</h3>
+    <p>现在可以把过程倒着播放了。刚才从 20 家咖啡馆生成数据，而这些咖啡馆本身又来自一个统计总体；现在要通过模型，用数据反过来学习数据生成过程。</p>
+    <p>这个模型很像上一章的变化截距模型，但现在出现的是截距与斜率的联合总体，而不再只是变化截距的分布。这就是变化斜率模型。先写数据的概率与线性模型：</p>
+    <div class="equation-block wallis-equation" id="eq-14-varying-slopes-data"><div><span class="math-line"><var>W</var><sub><var>i</var></sub> ∼ Normal(<var>μ</var><sub><var>i</var></sub>, <var>σ</var>)　　[likelihood]</span></div><div><span class="math-line"><var>μ</var><sub><var>i</var></sub> = <var>α</var><sub>CAFÉ[<var>i</var>]</sub> + <var>β</var><sub>CAFÉ[<var>i</var>]</sub><var>A</var><sub><var>i</var></sub>　　[线性模型]</span></div></div>
+    <p>接着是变化截距与斜率组成的矩阵，以及它的协方差矩阵：</p>
+    <aside class="source-erratum" id="erratum-14-its-covariance"><strong>原文说明：</strong>原文此处把所有格 <em>its</em> 误写成了 <em>it’s</em>；译稿按正确语意处理。</aside>
+    <div class="equation-block wallis-equation" id="eq-14-varying-effects-population"><div class="annotated-equation-line"><span class="equation-expression"><span class="matrix-2x1"><span><var>α</var><sub>CAFÉ</sub></span><span><var>β</var><sub>CAFÉ</sub></span></span> ∼ MVNormal(<span class="matrix-2x1"><span><var>α</var></span><span><var>β</var></span></span>, <strong>S</strong>)</span><span class="equation-label">[变化效应总体]</span></div><div class="annotated-equation-line"><span class="equation-expression"><strong>S</strong> = <span class="matrix-2x2"><span><var>σ</var><sub><var>α</var></sub></span><span>0</span><span>0</span><span><var>σ</var><sub><var>β</var></sub></span></span> <strong>R</strong> <span class="matrix-2x2"><span><var>σ</var><sub><var>α</var></sub></span><span>0</span><span>0</span><span><var>σ</var><sub><var>β</var></sub></span></span></span><span class="equation-label">[构造协方差矩阵]</span></div></div>
+    <p>这些式子表示，每家咖啡馆都有截距 <span class="math-inline"><var>α</var><sub>CAFÉ</sub></span> 与斜率 <span class="math-inline"><var>β</var><sub>CAFÉ</sub></span>，其先验分布由均值为 <var>α</var>、<var>β</var>，协方差矩阵为 <strong>S</strong> 的二维高斯分布定义。这一先验会自适应地正则化各家店的截距、斜率及其相关。第二行说明怎样构造协方差矩阵 <strong>S</strong>：把它分解成独立的标准差 <span class="math-inline"><var>σ</var><sub><var>α</var></sub></span>、<span class="math-inline"><var>σ</var><sub><var>β</var></sub></span> 与相关矩阵 <strong>R</strong>。还有其他构造方式，但把协方差拆成标准差与相关，稍后更容易理解推断出的变化效应结构。</p>
+    <p>接下来是定义自适应变化效应先验的超先验：</p>
+    <div class="equation-block wallis-equation" id="eq-14-varying-slopes-hyperpriors"><div><span class="math-line"><var>α</var> ∼ Normal(5, 2)　　[平均截距的先验]</span></div><div><span class="math-line"><var>β</var> ∼ Normal(−1, 0.5)　　[平均斜率的先验]</span></div><div><span class="math-line"><var>σ</var> ∼ Exponential(1)　　[咖啡馆内部标准差的先验]</span></div><div><span class="math-line"><var>σ</var><sub><var>α</var></sub> ∼ Exponential(1)　　[截距间标准差的先验]</span></div><div><span class="math-line"><var>σ</var><sub><var>β</var></sub> ∼ Exponential(1)　　[斜率间标准差的先验]</span></div><div><span class="math-line"><strong>R</strong> ∼ LKJcorr(2)　　[相关矩阵的先验]</span></div></div>
+    <p>最后一行大概不熟悉。相关矩阵 <strong>R</strong> 需要先验，而“矩阵的分布”不容易形成直觉。不过在这个入门案例中并不太难：相关矩阵只有 2 × 2，因此形如：</p>
+    <div class="equation-block wallis-equation" id="eq-14-correlation-matrix"><div><strong>R</strong> = <span class="matrix-2x2"><span>1</span><span><var>ρ</var></span><span><var>ρ</var></span><span>1</span></span></div></div>
+    <p>其中 <var>ρ</var> 是截距与斜率之间的相关，所以只需要为一个参数定义先验。矩阵更大、包含更多变化斜率时，事情就会更复杂。</p>
+    <p>那么，LKJcorr 到底是什么分布？<span class="math-inline">LKJcorr(2)</span> 会为 <var>ρ</var> 定义一个弱信息先验，对接近 −1 或 1 的极端相关持怀疑态度。<sup id="note-194-ref"><a href="#note-194">194</a></sup>可以把它看作相关矩阵的正则化先验。这个分布只有一个参数 <var>η</var>，控制先验对矩阵中大相关的怀疑程度。使用 <span class="math-inline">LKJcorr(1)</span> 时，先验在所有有效相关矩阵上平坦；参数大于 1——例如这里的 2——时，极端相关的概率更低。为了可视化这族先验，可以从中抽取随机矩阵：</p>
+    <figure class="code-listing" id="code-14-11"><figcaption>R 代码 14.11</figcaption><pre><code>R &lt;- rlkjcorr( 1e4 , K=2 , eta=2 )
+dens( R[,1,2] , xlab="correlation" )</code></pre></figure>
+    <p>图 14.3 同时显示另外两个 <var>η</var> 值。矩阵更大时，内部会有更多相关，但分布的性质仍然相同；帮助页示例 <code>?rlkjcorr</code> 中有一个 3 × 3 矩阵的密度示例。</p>
+    <figure class="book-figure lkj-priors-figure" id="fig-14-3"><div class="figure-scroll" tabindex="0" aria-label="三种 eta 参数下的 LKJ 相关先验密度"><img src="/media/chapter-14-lkj-priors.svg" alt="eta 等于一时相关先验平坦，eta 等于二和四时越来越集中在零附近"></div><figcaption><strong>图 14.3：</strong><span class="math-inline">LKJcorr(<var>η</var>)</span> 的概率密度。图中是在三个 <var>η</var> 值下，从随机 2 × 2 相关矩阵提取出的相关系数分布。<var>η</var> = 1 时，所有相关同样可能；随着 <var>η</var> 增大，极端相关变得更不可信。</figcaption></figure>
+    <p>拟合模型时，使用一组与上面的模型定义紧密对应的公式。注意用 <code>c()</code> 把参数组合成向量：</p>
+    <figure class="code-listing" id="code-14-12"><figcaption>R 代码 14.12</figcaption><pre><code>set.seed(867530)
+m14.1 &lt;- ulam(
+    alist(
+        wait ~ normal( mu , sigma ),
+        mu &lt;- a_cafe[cafe] + b_cafe[cafe]*afternoon,
+        c(a_cafe,b_cafe)[cafe] ~ multi_normal( c(a,b) , Rho , sigma_cafe ),
+        a ~ normal(5,2),
+        b ~ normal(-1,0.5),
+        sigma_cafe ~ exponential(1),
+        sigma ~ exponential(1),
+        Rho ~ lkj_corr(2)
+    ) , data=d , chains=4 , cores=4 )</code></pre></figure>
+    <p><code>multi_normal</code> 是多元高斯记法，接收均值向量 <code>c(a,b)</code>、相关矩阵 <code>Rho</code> 与标准差向量 <code>sigma_cafe</code>，并在内部构造协方差矩阵。若对细节感兴趣，可以用 <code>stancode(m14.1)</code> 查看原始 Stan 代码；<code>multi_normal</code> 正是 Stan 原始代码使用的名称。相近的 R 函数是 <code>dmvnorm</code> 与 <code>dmvnorm2</code>。</p>
+    <p>现在不看 <code>precis</code> 输出中的边际后验分布，直接检查变化效应的后验分布。先考察截距与斜率之间的后验相关：</p>
+    <figure class="code-listing" id="code-14-13"><figcaption>R 代码 14.13</figcaption><pre><code>post &lt;- extract.samples(m14.1)
+dens( post$Rho[,1,2] , xlim=c(-1,1) ) # 后验
+R &lt;- rlkjcorr( 1e4 , K=2 , eta=2 )    # 先验
+dens( R[,1,2] , add=TRUE , lty=2 )</code></pre></figure>
+    <p>结果见图 14.4，其中还增加了一些装饰，并加入先验作比较。蓝色密度是截距与斜率相关的后验分布；后验集中在负值，因为模型学到了图 14.2 中可见的负相关。要记住，模型并没有看到真实截距和斜率，它能使用的只有上午和下午观测到的等待时间。</p>
+    <p>如果好奇先验的影响，就应改变先验并重复分析。建议尝试平坦先验 <span class="math-inline">LKJcorr(1)</span>，再试正则化更强的 <span class="math-inline">LKJcorr(4)</span> 或 <span class="math-inline">LKJcorr(5)</span>。</p>
+    <p class="continuation-note">图 14.4 的先验—后验相关比较与后续收缩分析，将从原书 PDF 第 474 页继续。</p>
   </section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 14 章 PDF 第 465–470 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 471 页继续。</aside>
+  <section class="endnotes" id="chapter-14-notes" role="doc-endnotes"><h2>尾注</h2><ol start="194"><li id="note-194">Lewandowski 等（2009）。“LKJ”来自三位作者姓氏的首字母；作者本人把这种方法称为“洋葱法”。关于它在 Bayesian 模型中的用法，可参见最新版 Stan 参考手册的说明。 <a class="backref" href="#note-194-ref" aria-label="返回正文">↩</a></li></ol></section>
+
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 14 章 PDF 第 465–473 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 474 页继续。</aside>
 </article>
