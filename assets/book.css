@@ -208,6 +208,8 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .matrix-2x2 > span { white-space: nowrap; }
 .matrix-2x1 { display: inline-grid; grid-template-columns: 1fr; gap: .25rem; padding: .35rem .9rem; border-inline: 2px solid currentColor; border-radius: 45%; vertical-align: middle; }
 .matrix-2x1 > span { white-space: nowrap; }
+.matrix-4x1 { display: inline-grid; grid-template-columns: 1fr; gap: .15rem; padding: .35rem .9rem; border-inline: 2px solid currentColor; border-radius: 45%; vertical-align: middle; }
+.matrix-4x1 > span { white-space: nowrap; }
 .annotated-equation-line { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .45rem 1rem; }
 .annotated-equation-line .equation-expression, .annotated-equation-line .equation-label { white-space: nowrap; }
 .annotated-equation-line .equation-label { color: var(--muted); font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; font-size: .78rem; }

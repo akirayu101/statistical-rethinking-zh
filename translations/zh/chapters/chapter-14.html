@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-14" data-source-pages="465-476">
-  <header class="chapter-header"><p class="eyebrow">第十四章</p><h1>协方差历险</h1><p class="source-range">当前译稿对应原书 PDF 第 465–476 页</p></header>
+<article class="book-article" data-chapter="chapter-14" data-source-pages="465-479">
+  <header class="chapter-header"><p class="eyebrow">第十四章</p><h1>协方差历险</h1><p class="source-range">当前译稿对应原书 PDF 第 465–479 页</p></header>
 
   <div class="chapter-introduction" id="intro-14">
     <p>回想上一章导言中的咖啡机器人（原书第 413 页）。这个机器人被设定为在咖啡馆之间移动、点咖啡，并记录等待时间。上一章的重点是：在咖啡馆之间汇聚信息，能让机器人学得更高效；变化截距正是实现这种汇聚的一种机制。</p>
@@ -217,10 +217,82 @@ for ( l in c(0.1,0.3,0.5,0.8,0.99) )
     lines(ellipse(Sigma_est2,centre=Mu_est2,level=l),
         col=col.alpha("black",0.5))</code></pre></figure>
     <p>右图横轴是每家咖啡馆以分钟计的预期上午等待时间，纵轴是预期下午等待时间。蓝色点仍是数据的无汇聚经验估计，空心点是使用汇聚估计的后验预测；对角虚线表示上午与下午等待时间相等。需要体会的是，参数尺度上的收缩会自然地在我们真正关心的结果尺度上产生收缩，同时还蕴含由灰色等高线表示的等待时间总体。这个总体现在呈正相关：上午等待越久的咖啡馆，下午往往也越久——毕竟它们很热门。不过，总体大部分仍位于等待时间相等的虚线下方；平均而言，下午会等得更短。</p>
-    <p class="continuation-note">14.2“高级变化斜率”将从原书 PDF 第 477 页继续。</p>
+  </section>
+
+  <section id="sec-14-2"><h2>14.2 高级变化斜率</h2>
+    <p>为了学习怎样构造含两个以上变化效应——变化截距加不止一条变化斜率——并同时含不止一种集群类型的模型，我们回到第 11 章介绍的黑猩猩实验数据。这里有两类集群：行动者与区组。原书第 429 页已经探索过含两类变化截距的交叉分类；还曾用两条不同斜率建模实验：一条表示亲社会选项（桌上有两块食物的一侧）的效应，另一条表示亲社会选项与另一只黑猩猩是否在场之间的交互作用。现在要同时建模两类集群，并让截距和两条斜率都成为变化效应。并非总需要整套机器，但有时确实需要；这是一个相对简单、足以把各部件铺开的例子。</p>
+    <p>本例还会强调非中心化参数化对某些多层模型的重要性。任何一个多层模型都有若干不同写法，称为不同的“参数化”。在数学上，这些替代参数化彼此等价；但在 MCMC 引擎内部却不等价。请记住，怎样拟合模型也是模型的一部分。选择更好的参数化，是改善 MCMC 抽样的有力方法；对本节这样的复杂变化效应模型，非中心化参数化往往帮助很大。正文会隐藏技术细节，节末的“过度思考”框则会提供更多说明。</p>
+    <p>现在构造交叉分类变化斜率模型。为了在复杂模型中保持一点理智，我们会在公式中使用不止一个线性模型，把截距与每条斜率的子模型分隔开。likelihood 及其线性模型为：</p>
+    <div class="equation-block wallis-equation" id="eq-14-advanced-varying-slopes-likelihood"><div><span class="math-line"><var>L</var><sub><var>i</var></sub> ∼ Binomial(1, <var>p</var><sub><var>i</var></sub>)</span></div><div><span class="math-line">logit(<var>p</var><sub><var>i</var></sub>) = <var>γ</var><sub>TID[<var>i</var>]</sub> + <var>α</var><sub>ACTOR[<var>i</var>],TID[<var>i</var>]</sub> + <var>β</var><sub>BLOCK[<var>i</var>],TID[<var>i</var>]</sub></span></div></div>
+    <p><span class="math-inline">logit(<var>p</var><sub><var>i</var></sub>)</span> 的线性模型包含：每种处理的平均 log-odds <span class="math-inline"><var>γ</var><sub>TID[<var>i</var>]</sub></span>；每位行动者在每种处理下的效应 <span class="math-inline"><var>α</var><sub>ACTOR[<var>i</var>],TID[<var>i</var>]</sub></span>；以及每个区组在每种处理下的效应 <span class="math-inline"><var>β</var><sub>BLOCK[<var>i</var>],TID[<var>i</var>]</sub></span>。本质上，这是一个交互作用模型，允许每种处理的效应随行动者和区组变化。换句话说，平均处理效应能随区组改变，而每只黑猩猩跨区组也能对各处理作出不同响应。由此产生 <span class="math-inline">4 + 7 × 4 + 6 × 4 = 56</span> 个参数；这里确实非常需要汇聚。</p>
+    <aside class="source-erratum" id="erratum-14-advanced-slopes-wording"><strong>原文说明：</strong>本段原文有 “and the each individual chimpanzee”，后文又有 “just let we had matrixes” 两处明显语病；译稿分别按“每只黑猩猩”和“就像先前的随机效应矩阵一样”的语意处理。</aside>
+    <p>那就开始汇聚。模型下一部分是自适应先验。由于集群有行动者与区组两类，便有两个多元高斯先验；本例中两者都是 4 维，因为共有 4 种处理。一般而言，也可以为不同集群类型选择不同的变化效应。本例的两个先验是：</p>
+    <div class="equation-block wallis-equation" id="eq-14-advanced-varying-slopes-priors"><div><span class="matrix-4x1"><span><var>α</var><sub><var>j</var>,1</sub></span><span><var>α</var><sub><var>j</var>,2</sub></span><span><var>α</var><sub><var>j</var>,3</sub></span><span><var>α</var><sub><var>j</var>,4</sub></span></span> ∼ MVNormal(<span class="matrix-4x1"><span>0</span><span>0</span><span>0</span><span>0</span></span>, <strong>S</strong><sub>ACTOR</sub>)</div><div><span class="matrix-4x1"><span><var>β</var><sub><var>j</var>,1</sub></span><span><var>β</var><sub><var>j</var>,2</sub></span><span><var>β</var><sub><var>j</var>,3</sub></span><span><var>β</var><sub><var>j</var>,4</sub></span></span> ∼ MVNormal(<span class="matrix-4x1"><span>0</span><span>0</span><span>0</span><span>0</span></span>, <strong>S</strong><sub>BLOCK</sub>)</div></div>
+    <p>这些先验表示，行动者与区组来自两个不同的统计总体。在每个总体内部，行动者或区组的 4 个特征都通过该总体专属的协方差矩阵 <strong>S</strong> 相互关联。这里的先验没有均值，只因为平均处理效应 <var>γ</var> 已经放进线性模型。</p>
+    <p>按照先前示例，模型的 <code>ulam</code> 代码正如预期。要定义多个线性模型，只需按顺序把每一个写进公式列表。下面加入一些空行和注释，让列表更容易读：</p>
+    <figure class="code-listing" id="code-14-18"><figcaption>R 代码 14.18</figcaption><pre><code>library(rethinking)
+data(chimpanzees)
+d &lt;- chimpanzees
+d$block_id &lt;- d$block
+d$treatment &lt;- 1L + d$prosoc_left + 2L*d$condition
+
+dat &lt;- list(
+    L = d$pulled_left,
+    tid = d$treatment,
+    actor = d$actor,
+    block_id = as.integer(d$block_id) )
+
+set.seed(4387510)
+m14.2 &lt;- ulam(
+    alist(
+        L ~ dbinom(1,p),
+        logit(p) &lt;- g[tid] + alpha[actor,tid] + beta[block_id,tid],
+
+          # 自适应先验
+          vector[4]:alpha[actor] ~ multi_normal(0,Rho_actor,sigma_actor),
+          vector[4]:beta[block_id] ~ multi_normal(0,Rho_block,sigma_block),
+
+          # 固定先验
+          g[tid] ~ dnorm(0,1),
+          sigma_actor ~ dexp(1),
+          Rho_actor ~ dlkjcorr(4),
+          sigma_block ~ dexp(1),
+          Rho_block ~ dlkjcorr(4)
+      ) , data=dat , chains=4 , cores=4 )</code></pre><pre class="code-output"><code>Warning messages:
+1: There were 154 divergent transitions after warmup.</code></pre></figure>
+    <p>从这个模型抽样时，会看到许多“发散转移”。第 9 章首次讨论过它们；查看诊断与 <code>trankplot</code>，会发现链混合得不太正确。上一章看到重新参数化可以帮助模型，现在再次采用它。目标是把所有参数从自适应先验中分解出来，转而放进线性模型。但先验中现在有协方差矩阵，该怎样处理？</p>
+    <p>基本策略相同，只是推广到矩阵：再次为每个随机效应构造 z 分数；不过现在需要 z 分数矩阵，就像先前模型中有随机效应矩阵一样。随后把这些 z 分数乘进协方差矩阵，在线性模型中恢复正确尺度的随机效应。这里有一个专门的矩阵代数技巧，<code>ulam</code> 用函数 <code>compose_noncentered</code> 执行它；本节末的“过度思考”框会给出更多细节。模型的非中心化版本如下：</p>
+    <figure class="code-listing" id="code-14-19"><figcaption>R 代码 14.19</figcaption><pre><code>set.seed(4387510)
+m14.3 &lt;- ulam(
+    alist(
+        L ~ binomial(1,p),
+        logit(p) &lt;- g[tid] + alpha[actor,tid] + beta[block_id,tid],
+
+          # 自适应先验——非中心化
+          transpars&gt; matrix[actor,4]:alpha &lt;-
+                  compose_noncentered( sigma_actor , L_Rho_actor , z_actor ),
+          transpars&gt; matrix[block_id,4]:beta &lt;-
+                  compose_noncentered( sigma_block , L_Rho_block , z_block ),
+          matrix[4,actor]:z_actor ~ normal( 0 , 1 ),
+          matrix[4,block_id]:z_block ~ normal( 0 , 1 ),
+
+          # 固定先验
+          g[tid] ~ normal(0,1),
+          vector[4]:sigma_actor ~ dexp(1),
+          cholesky_factor_corr[4]:L_Rho_actor ~ lkj_corr_cholesky( 2 ),
+          vector[4]:sigma_block ~ dexp(1),
+          cholesky_factor_corr[4]:L_Rho_block ~ lkj_corr_cholesky( 2 ),
+
+          # 从 Cholesky 因子计算普通相关矩阵
+          gq&gt; matrix[4,4]:Rho_actor &lt;&lt;- Chol_to_Corr(L_Rho_actor),
+          gq&gt; matrix[4,4]:Rho_block &lt;&lt;- Chol_to_Corr(L_Rho_block)
+    ) , data=dat , chains=4 , cores=4 , log_lik=TRUE )</code></pre></figure>
+    <p>不再有发散转移！上面的代码展示了 <code>ulam</code> 的多项高级功能。尤其要注意最后两行：它们从 Cholesky 因子计算普通相关矩阵，方便解释相关。每行前面的 <code>gq&gt;</code> 标签告诉 Stan 只在每次转移结束时执行这项计算，效率更高。若仍想了解细节，可看后面的“过度思考”框，其中会给出这个模型的原始 Stan 版本。</p>
+    <p>非中心化参数化在这里有何帮助？比较两个模型的 <code>precis</code> 输出，会看到它们得出的推断大致相同；有效样本数与实际抽样效率的比较将从下一页继续。</p>
+    <p class="continuation-note">中心化与非中心化参数化的有效样本比较，将从原书 PDF 第 480 页继续。</p>
   </section>
 
   <section class="endnotes" id="chapter-14-notes" role="doc-endnotes"><h2>尾注</h2><ol start="194"><li id="note-194">Lewandowski 等（2009）。“LKJ”来自三位作者姓氏的首字母；作者本人把这种方法称为“洋葱法”。关于它在 Bayesian 模型中的用法，可参见最新版 Stan 参考手册的说明。 <a class="backref" href="#note-194-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 14 章 PDF 第 465–476 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 477 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 14 章 PDF 第 465–479 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 480 页继续。</aside>
 </article>

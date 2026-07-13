@@ -1172,7 +1172,9 @@
     "instrumental variable": "工具变量",
     "phylogenetic regression": "系统发育回归",
     "network regression": "网络回归",
-    "LKJ correlation prior": "LKJ 相关先验"
+    "LKJ correlation prior": "LKJ 相关先验",
+    "Cholesky factor": "Cholesky 因子",
+    "cross-classified varying slopes model": "交叉分类变化斜率模型"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "blavaan", "AIC", "DIC", "WAIC", "BIC", "PSIS-LOO", "MCMC", "HMC"
