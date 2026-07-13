@@ -913,7 +913,16 @@
     "conditional association": "条件关联",
     "core tradeoff": "核心权衡",
     "non-identifiability": "不可识别性",
-    "weakly identifiable": "弱可识别"
+    "weakly identifiable": "弱可识别",
+    "within-department comparison": "院系内比较",
+    "department-specific intercept": "院系特定截距",
+    "direct causal influence": "直接因果影响",
+    "indirect causal path": "间接因果路径",
+    "academic ability": "学业能力",
+    "mediation analysis": "中介分析",
+    "over-parameterized model": "过参数化模型",
+    "posterior correlation": "后验相关",
+    "baseline category": "基线类别"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "blavaan", "AIC", "DIC", "WAIC", "BIC", "PSIS-LOO", "MCMC", "HMC"

@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-11" data-source-pages="347-365">
-  <header class="chapter-header"><p class="eyebrow">第十一章</p><h1>上帝给整数加了料</h1><p class="source-range">当前译稿对应原书 PDF 第 347–365 页</p></header>
+<article class="book-article" data-chapter="chapter-11" data-source-pages="347-368">
+  <header class="chapter-header"><p class="eyebrow">第十一章</p><h1>上帝给整数加了料</h1><p class="source-range">当前译稿对应原书 PDF 第 347–368 页</p></header>
 
   <div class="chapter-introduction" id="intro-11">
     <p>太空中的寒冷以 Kelvin 命名，约为 3 Kelvin，也就是绝对零度以上约 3 摄氏度。Kelvin 也是苏格兰格拉斯哥附近一条河流的名字；同一条河又把名字给了 William Thomson，也就是 Kelvin 勋爵（1824 年生，1907 年卒）——英国第一位获封贵族头衔的科学家。Thomson 在格拉斯哥的实验室研究热力学，如今太空的寒冷便以一条苏格兰河流为名。</p>
@@ -381,12 +381,63 @@ for ( i in 1:6 ) {
     lines( c(x,x+1) , c(y1,y2) , col=rangi2 , lwd=2 )
     text( x+0.5 , (y1+y2)/2 + 0.05 , d$dept[x] , cex=0.8 , col=rangi2 )
 }</code></pre></figure>
+      <figure class="book-figure ucb-posterior-figure" id="fig-11-5"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的伯克利研究生录取模型后验验证图"><img src="/media/chapter-11-ucb-posterior.svg" alt="十二行伯克利研究生录取数据的观测录取比例与模型期望；同一院系的男女观测点由蓝线连接"></div><p class="scroll-hint">图较宽，可横向滚动比较各院系的观测值与模型预测。</p><figcaption><strong>图 11.5：</strong>模型 <code>m11.7</code> 的后验验证。蓝点是数据每一行的观测录取比例；同一院系的两个点由蓝线连接。空心点、其中的黑色短竖线以及十字，依次表示期望录取比例、期望值的 89% 区间和模拟样本的 89% 区间。</figcaption></figure>
       <p>结果见图 11.5，预测相当糟糕。女性录取率低于男性的院系其实只有两个（C 与 E），模型却说女性的预期录取机会应低 14%。这种糟糕拟合有时源于编码错误，但这里不是。模型确实正确回答了我们提出的问题：“跨所有院系，男性和女性的平均录取概率分别是多少？”问题在于，男性与女性申请的院系并不相同，而各院系的录取率又不同，因此这个答案会误导。图中可以看到，从院系 A 到 F，录取概率持续下降。</p>
-      <p class="continuation-note">图 11.5、院系内性别差异与加入院系截距的模型，将从原书 PDF 第 366 页继续。</p>
+      <p>这批数据中，女性往往不申请 A、B 这类总体录取率较高的院系，反而大量申请 F 之类录取率很低的院系；F 院系录取的申请者不足 10%。</p>
+      <p>所以，整体而言女性在这批数据中的录取概率确实较低，但在大多数院系内部却显然不是如此。还要注意，只检查后验分布绝不会向我们揭示这一事实；我们必须诉诸拟合模型之外的信息。这里所需的，恰好只是一次简单的后验验证检查。</p>
+      <p>与其问“跨所有院系，女性与男性的平均录取概率分别是多少？”，我们真正想问的是“在院系内部，女性与男性的平均录取概率相差多少？”要回答第二个问题，需要估计每个院系中女性与男性各自的录取率。下面的模型问的正是这个新问题：</p>
+      <div class="equation-block wallis-equation" id="eq-11-ucb-department-model"><div><var>A</var><sub>i</sub> ∼ Binomial(<var>N</var><sub>i</sub>, <var>p</var><sub>i</sub>)</div><div>logit(<var>p</var><sub>i</sub>) = <var>α</var><sub>gid[i]</sub> + <var>δ</var><sub>dept[i]</sub></div><div><var>α</var><sub>j</sub> ∼ Normal(0, 1.5)</div><div><var>δ</var><sub>k</sub> ∼ Normal(0, 1.5)</div></div>
+      <p>这里的 <code>dept</code> 用 <span class="math-inline"><var>k</var> = 1, …, 6</span> 索引院系。因此，每个院系 <var>k</var> 现在都有自己的录取 log-odds <span class="math-inline"><var>δ</var><sub>k</sub></span>；同时，模型仍然为男性与女性申请估计跨院系通用的调整量。</p>
+      <p>拟合这个模型很直接。我们再次用索引记法，为每个院系构造一个截距。不过首先还需要一个把院系编号为 1 到 6 的数值索引；也可以把 <code>dept</code> 因子传给 <code>coerce_index</code> 来完成。下面构造索引并拟合模型：</p>
+      <figure class="code-listing" id="code-11-32"><figcaption>R 代码 11.32</figcaption><pre><code>dat_list$dept_id &lt;- rep(1:6,each=2)
+m11.8 &lt;- ulam(
+    alist(
+        admit ~ dbinom( applications , p ) ,
+        logit(p) &lt;- a[gid] + delta[dept_id] ,
+        a[gid] ~ dnorm( 0 , 1.5 ) ,
+        delta[dept_id] ~ dnorm( 0 , 1.5 )
+    ) , data=dat_list , chains=4 , iter=4000 )
+precis( m11.8 , depth=2 )</code></pre><pre class="code-output"><code>          mean   sd  5.5% 94.5% n_eff Rhat
+a[1]     -0.54 0.52 -1.40  0.27   763    1
+a[2]     -0.44 0.53 -1.29  0.38   768    1
+delta[1]  1.12 0.53  0.31  1.98   772    1
+delta[2]  1.08 0.53  0.25  1.94   782    1
+delta[3] -0.14 0.53 -0.97  0.72   767    1
+delta[4] -0.17 0.53 -0.99  0.69   767    1
+delta[5] -0.62 0.53 -1.44  0.25   789    1
+delta[6] -2.17 0.54 -3.03 -1.30   812    1</code></pre></figure>
+      <p>男性申请者的截距 <code>a[1]</code> 现在平均略小于女性申请者的截距。再在相对尺度（鲨鱼）与绝对尺度（鹿）上计算对比：</p>
+      <figure class="code-listing" id="code-11-33"><figcaption>R 代码 11.33</figcaption><pre><code>post &lt;- extract.samples(m11.8)
+diff_a &lt;- post$a[,1] - post$a[,2]
+diff_p &lt;- inv_logit(post$a[,1]) - inv_logit(post$a[,2])
+precis( list( diff_a=diff_a , diff_p=diff_p ) )</code></pre><pre class="code-output"><code>'data.frame': 10000 obs. of 2 variables:
+        mean   sd  5.5% 94.5%       histogram
+diff_a -0.10 0.08 -0.22  0.03 ▁▁▁▁▂▅▇▇▅▂▁▁▁▁
+diff_p -0.02 0.02 -0.05  0.01       ▁▁▁▂▇▇▂▁▁</code></pre></figure>
+      <p>如果男性申请者确实更不利，幅度也很小，平均约为 2%。</p>
+      <p>为什么把院系加入模型会如此大幅地改变关于性别的推断？前面的图已经给出提示：各院系的录取率差异很大，而且女性与男性往往申请不同的院系。做一个简单列联表即可看清：</p>
+      <figure class="code-listing" id="code-11-34"><figcaption>R 代码 11.34</figcaption><pre><code>pg &lt;- with( dat_list , sapply( 1:6 , function(k)
+    applications[dept_id==k]/sum(applications[dept_id==k]) ) )
+rownames(pg) &lt;- c("male","female")
+colnames(pg) &lt;- unique(d$dept)
+round( pg , 2 )</code></pre><pre class="code-output"><code>          A    B    C    D    E    F
+male   0.88 0.96 0.35 0.53 0.33 0.52
+female 0.12 0.04 0.65 0.47 0.67 0.48</code></pre></figure>
+      <p>这些数值表示每个院系的全部申请中，男性（第一行）与女性（第二行）各占多大比例。A 院系的申请有 88% 来自男性，E 院系则只有 33%。再回头看 <code>m11.8</code> 的 <code>precis</code> 输出中 <code>delta</code> 的后验均值：女性申请比例较高的院系，也正是总体录取率较低的院系。</p>
+      <p>如果说院系误导了我们对直接因果效应的判断，那么它大概是混杂变量；但换个意义说，它又不是混杂变量，因为性别很可能正是通过院系这条真实因果路径影响录取。性别影响院系选择，而院系影响录取机会。控制院系揭示了一个更可信的性别直接因果影响。用 DAG 表示如下：</p>
+      <figure class="book-figure ucb-dag-figure" id="dag-11-ucb-direct"><div class="figure-scroll"><img src="/media/chapter-11-ucb-dag-direct.svg" alt="性别 G 通过院系 D 间接影响录取 A，同时也直接指向录取 A 的有向无环图"></div><figcaption>性别 <span class="math-inline"><var>G</var></span> 通过院系 <span class="math-inline"><var>D</var></span> 间接影响录取 <span class="math-inline"><var>A</var></span>，同时还存在待估计的直接路径 <span class="math-inline"><var>G</var> → <var>A</var></span>。</figcaption></figure>
+      <p>变量 <span class="math-inline"><var>G</var></span> 是性别，<span class="math-inline"><var>D</var></span> 是院系，<span class="math-inline"><var>A</var></span> 是录取。从性别到录取存在一条间接因果路径 <span class="math-inline"><var>G</var> → <var>D</var> → <var>A</var></span>。因此，为了推断直接效应 <span class="math-inline"><var>G</var> → <var>A</var></span>，需要以 <span class="math-inline"><var>D</var></span> 为条件，关闭这条间接路径；模型 <code>m11.8</code> 正是这样做的。检查 <code>postcheck(m11.8)</code> 会发现，模型现在与院系间的变异吻合得好得多。这是又一个中介分析的例子。</p>
+      <p>不过，别急着断定只要以院系为条件，就足以估计性别对录取的直接因果效应。如果还有未观测混杂因素同时影响院系与录取呢？例如：</p>
+      <figure class="book-figure ucb-dag-figure" id="dag-11-ucb-collider"><div class="figure-scroll"><img src="/media/chapter-11-ucb-dag-collider.svg" alt="性别 G 与未观测能力 U 共同影响院系 D，能力 U 与性别 G 又分别影响录取 A 的有向无环图"></div><figcaption>若未观测能力 <span class="math-inline"><var>U</var></span> 同时影响院系选择与录取，以院系 <span class="math-inline"><var>D</var></span> 为条件就会在碰撞点上进行条件化。</figcaption></figure>
+      <p><span class="math-inline"><var>U</var></span> 会是什么？不妨设为学业能力。能力可能同时影响院系选择与录取概率。此时，以院系为条件就是在碰撞点上进行条件化，从而打开性别与录取之间的非因果路径 <span class="math-inline"><var>G</var> → <var>D</var> ← <var>U</var> → <var>A</var></span>。本章末尾的练习会请你探索这类可能性。</p>
+      <p>最后，你也许已经注意到模型 <code>m11.8</code> 是过参数化的。实际上，<code>a[1]</code> 或 <code>a[2]</code> 中有一个并非必需。为什么？因为各个 <code>delta</code> 参数可以表示每个院系中某一性别的录取率，随后只需要再有一个跨院系的平均偏差。若是非贝叶斯模型，这样做无法奏效；但对我们而言，这种模型完全没问题。</p>
+      <p>这些参数的标准差会膨胀，因为 <code>a</code> 与 <code>delta</code> 有许多组合都能与数据吻合。查看 <code>pairs(m11.8)</code> 会看到所有参数之间都存在很高的后验相关。但在结果尺度上，预测要紧致得多；调用 <code>postcheck(m11.8)</code> 就能看到。一切正常。</p>
+      <p>为什么可能想把模型过参数化？因为这样更容易指定先验。若改为把某一性别设为基线，再把另一性别表示成相对于它的偏差，随之而来的先验问题将在下一页说明。</p>
+      <p class="continuation-note">过参数化模型的先验解释、“辛普森悖论”反思框，以及泊松回归，将从原书 PDF 第 369 页继续。</p>
     </section>
   </section>
 
   <section class="endnotes" id="chapter-11-notes" role="doc-endnotes"><h2>尾注</h2><ol start="166"><li id="note-166">重要数论家 Leopold Kronecker 据称说过：“上帝创造了整数，其余一切皆为人造。”（德文：<span lang="de">Die ganzen Zahlen hat der liebe Gott gemacht, alles andere ist Menschenwerk.</span>） <a class="backref" href="#note-166-ref" aria-label="返回正文">↩</a></li><li id="note-167">Silk 等（2005）。 <a class="backref" href="#note-167-ref" aria-label="返回正文">↩</a></li><li id="note-168">Bickel 等（1975）。 <a class="backref" href="#note-168-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 11 章 PDF 第 347–365 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 366 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 11 章 PDF 第 347–368 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 369 页继续。</aside>
 </article>

@@ -11,6 +11,9 @@ OUT2 = ROOT / "translations/zh/media/chapter-11-actor-probabilities.svg"
 OUT3 = ROOT / "translations/zh/media/chapter-11-treatment-effects.svg"
 OUT4 = ROOT / "translations/zh/media/chapter-11-treatment-contrasts.svg"
 OUT5 = ROOT / "translations/zh/media/chapter-11-chimpanzee-posterior.svg"
+OUT6 = ROOT / "translations/zh/media/chapter-11-ucb-posterior.svg"
+OUT7 = ROOT / "translations/zh/media/chapter-11-ucb-dag-direct.svg"
+OUT8 = ROOT / "translations/zh/media/chapter-11-ucb-dag-collider.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 BLUE = "#6670ee"
@@ -312,9 +315,95 @@ def chimpanzee_posterior_plot() -> None:
     OUT5.write_text("\n".join(parts) + "\n", encoding="utf-8")
 
 
+def ucb_posterior_plot() -> None:
+    width, height = 1200, 620
+    admit = [512, 89, 353, 17, 120, 202, 138, 131, 53, 94, 22, 24]
+    applications = [825, 108, 560, 25, 325, 593, 417, 375, 191, 393, 373, 341]
+    observed = [a / n for a, n in zip(admit, applications)]
+    expected = [inv_logit(-.22 if index % 2 == 0 else -.83) for index in range(12)]
+    linear_sd = [.04 if index % 2 == 0 else .05 for index in range(12)]
+    lower = [inv_logit((-0.22 if index % 2 == 0 else -0.83) - 1.6 * linear_sd[index]) for index in range(12)]
+    upper = [inv_logit((-0.22 if index % 2 == 0 else -0.83) + 1.6 * linear_sd[index]) for index in range(12)]
+    predictive = [
+        1.6 * math.sqrt(probability * (1 - probability) / n)
+        for probability, n in zip(expected, applications)
+    ]
+    left, right, top, bottom = 95, 1160, 80, 535
+    sx = lambda index: left + index * (right - left) / 11
+    sy = lambda value: bottom - value * (bottom - top)
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">',
+        '<title>UCB 录取模型的后验验证</title>',
+        '<desc>蓝色点和连线表示六个院系男女申请者的观测录取比例；空心点、短黑线与十字分别表示模型期望、百分之八十九期望区间和模拟样本区间。</desc>',
+        '<rect width="100%" height="100%" fill="#fbfaf6"/>',
+        text((left + right) / 2, 40, "后验验证检查", size=24, anchor="middle", weight=700, fill="#263f86"),
+        f'<rect x="{left}" y="{top}" width="{right - left}" height="{bottom - top}" fill="#fff" stroke="{GRID}"/>',
+        text(28, (top + bottom) / 2, "录取比例", size=20, anchor="middle", rotate=-90),
+    ]
+    for tick in (0, .2, .4, .6, .8, 1):
+        yy = sy(tick)
+        parts.extend([
+            f'<line x1="{left}" y1="{yy:.1f}" x2="{right}" y2="{yy:.1f}" stroke="{GRID}" stroke-dasharray="5 6"/>',
+            text(left - 14, yy + 6, f"{tick:.1f}", size=16, anchor="end"),
+        ])
+    for index in range(12):
+        xx = sx(index)
+        parts.extend([
+            text(xx, bottom + 34, index + 1, size=16, anchor="middle"),
+            f'<line x1="{xx:.1f}" y1="{sy(lower[index]):.1f}" x2="{xx:.1f}" y2="{sy(upper[index]):.1f}" stroke="#111" stroke-width="3"/>',
+            f'<line x1="{xx - 7:.1f}" y1="{sy(expected[index] - predictive[index]):.1f}" x2="{xx + 7:.1f}" y2="{sy(expected[index] + predictive[index]):.1f}" stroke="#111" stroke-width="2"/>',
+            f'<line x1="{xx - 7:.1f}" y1="{sy(expected[index] + predictive[index]):.1f}" x2="{xx + 7:.1f}" y2="{sy(expected[index] - predictive[index]):.1f}" stroke="#111" stroke-width="2"/>',
+            f'<circle cx="{xx:.1f}" cy="{sy(expected[index]):.1f}" r="9" fill="#fff" stroke="#111" stroke-width="2"/>',
+            f'<circle cx="{xx:.1f}" cy="{sy(observed[index]):.1f}" r="7" fill="#6670ee" stroke="#fff" stroke-width="2"/>',
+        ])
+    for dept in range(6):
+        first, second = dept * 2, dept * 2 + 1
+        parts.extend([
+            f'<line x1="{sx(first):.1f}" y1="{sy(observed[first]):.1f}" x2="{sx(second):.1f}" y2="{sy(observed[second]):.1f}" stroke="#6670ee" stroke-width="4"/>',
+            text((sx(first) + sx(second)) / 2, sy((observed[first] + observed[second]) / 2) - 18, chr(65 + dept), size=18, anchor="middle", weight=700, fill="#263f86"),
+        ])
+    parts.extend([text((left + right) / 2, height - 16, "数据行", size=19, anchor="middle"), '</svg>'])
+    OUT6.write_text("\n".join(parts) + "\n", encoding="utf-8")
+
+
+def dag(path: Path, *, collider: bool) -> None:
+    width, height = 800, 360
+    nodes = {"G": (120, 250), "D": (400, 80), "A": (680, 250)}
+    if collider:
+        nodes["U"] = (680, 80)
+    arrows = [("G", "D"), ("D", "A"), ("G", "A")]
+    if collider:
+        arrows.extend([("U", "D"), ("U", "A")])
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">',
+        f'<title>{"存在未观测混杂的院系录取 DAG" if collider else "性别、院系与录取的直接和间接路径"}</title>',
+        f'<desc>{"性别和未观测能力共同影响院系，能力、院系与性别再影响录取。" if collider else "性别直接影响录取，也通过院系间接影响录取。"}</desc>',
+        '<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#30332e"/></marker></defs>',
+        '<rect width="100%" height="100%" fill="#fbfaf6"/>',
+    ]
+    for start, end in arrows:
+        x1, y1 = nodes[start]
+        x2, y2 = nodes[end]
+        dx, dy = x2 - x1, y2 - y1
+        length = math.hypot(dx, dy)
+        ux, uy = dx / length, dy / length
+        parts.append(f'<line x1="{x1 + 40 * ux:.1f}" y1="{y1 + 40 * uy:.1f}" x2="{x2 - 44 * ux:.1f}" y2="{y2 - 44 * uy:.1f}" stroke="#30332e" stroke-width="4" marker-end="url(#arrow)"/>')
+    labels = {"G": "性别 G", "D": "院系 D", "A": "录取 A", "U": "能力 U"}
+    for key, (x, y) in nodes.items():
+        parts.extend([
+            f'<circle cx="{x}" cy="{y}" r="42" fill="#fff" stroke="#263f86" stroke-width="4"/>',
+            text(x, y + 7, labels[key], size=19, anchor="middle", weight=700, fill="#263f86"),
+        ])
+    parts.append('</svg>')
+    path.write_text("\n".join(parts) + "\n", encoding="utf-8")
+
+
 if __name__ == "__main__":
     figure_11_3()
     parameter_plots()
     chimpanzee_posterior_plot()
-    for path in (OUT1, OUT2, OUT3, OUT4, OUT5):
+    ucb_posterior_plot()
+    dag(OUT7, collider=False)
+    dag(OUT8, collider=True)
+    for path in (OUT1, OUT2, OUT3, OUT4, OUT5, OUT6, OUT7, OUT8):
         print(path)
