@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-09" data-source-pages="285-317">
-  <header class="chapter-header"><p class="eyebrow">第九章</p><h1>马尔可夫链蒙特卡洛</h1><p class="source-range">当前译稿对应原书 PDF 第 285–317 页</p></header>
+<article class="book-article" data-chapter="chapter-09" data-source-pages="285-320">
+  <header class="chapter-header"><p class="eyebrow">第九章</p><h1>马尔可夫链蒙特卡洛</h1><p class="source-range">当前译稿对应原书 PDF 第 285–320 页</p></header>
 
   <p>在西方历史的大部分时期，偶然性一直扮演反派。古罗马把偶然性人格化为残酷命运女神福尔图娜，她转动着（厄）运之轮。与她相对而坐的是智慧与理解女神密涅瓦。只有绝望之人才会向福尔图娜祈祷，所有人则都会恳求密涅瓦相助。科学当然属于密涅瓦的领域，那里没有福尔图娜可以发挥的有益作用。</p>
   <p>但到了 20 世纪初，福尔图娜与密涅瓦成了合作者。科学家开始出版随机数表，把偶然性的工具用于认识世界。偶然与智慧从此携手；“理解偶然性能够帮助我们获得智慧”这个观念，已很少让人困惑。从天气预报、金融到演化生物学，各领域都由随机过程研究所主导。<sup id="note-137-ref"><a href="#note-137">137</a></sup></p>
@@ -503,11 +503,91 @@ http://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded</code></pre></f
       <p class="source-erratum" id="erratum-9-12-chain-count"><strong>原文勘误：</strong>正文称图 9.12 展示“两条”马尔可夫链，但代码 9.26 明确设置 <code>chains=3</code>，原图也用三种颜色画出三条链；译稿按实际链数更正。</p>
       <p>弱正则化先验又一次能救场。新的模型拟合代码位于下一页；图 9.12 下半部先展示修复后的结果。</p>
       <figure class="book-figure nonidentifiable-chains-figure" id="fig-9-12"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的不可识别参数病态链与弱信息先验修复对比"><img src="/media/chapter-09-nonidentifiable-chains.svg" alt="上半部显示不可识别参数 a1 和 a2 的游荡轨迹与非均匀秩图，下半部显示弱信息先验修复后的健康链"></div><p class="scroll-hint">图较宽，可横向滚动比较病态链和修复后链的轨迹图与秩图。</p><figcaption><strong>图 9.12：</strong>上半部为模型 <code>m9.4</code>，参数 <code>a1</code> 和 <code>a2</code> 在链中四处游荡；下半部为模型 <code>m9.5</code>，同一个模型加入弱信息先验后恢复健康。</figcaption></figure>
-      <p class="continuation-note">弱信息先验模型 <code>m9.5</code> 的 R 代码 9.27、推断结果及进一步讨论将在原书 PDF 第 318 页继续。</p>
+      <figure class="code-listing" id="code-9-27"><figcaption>R 代码 9.27</figcaption><pre><code>m9.5 &lt;- ulam(
+    alist(
+        y ~ dnorm( mu , sigma ) ,
+        mu &lt;- a1 + a2 ,
+        a1 ~ dnorm( 0 , 10 ) ,
+        a2 ~ dnorm( 0 , 10 ) ,
+        sigma ~ dexp( 1 )
+    ) , data=list(y=y) , chains=3 )
+precis( m9.5 )</code></pre><pre class="code-output"><code>       mean   sd   5.5% 94.5% n_eff Rhat
+a1     0.01 7.16 -11.43 11.54   389    1
+a2     0.18 7.15 -11.41 11.57   389    1
+sigma  1.03 0.08   0.92  1.17   448    1</code></pre></figure>
+      <p>现在 <code>a1</code> 和 <code>a2</code> 的估计识别得更好了。严格说，它们各自仍未识别，但两者之和已经识别。再看图 9.12 中的轨迹图与 trank plot。还要注意，这个模型抽样快了许多：采用平坦先验的 <code>m9.4</code>，抽样耗时可能是 <code>m9.5</code> 的三倍。抽样极慢的模型往往识别不足。这正体现了贝叶斯统计学家 Andrew Gelman 所说的统计计算民间定理：拟合模型遇到麻烦时，往往说明模型本身不好。</p>
+      <p>最终，一些弱信息先验救下了这个模型。你也许以为自己绝不会误拟合一个未识别模型，但事实并非如此。即使没有犯明显错误，复杂模型也很容易变得未识别或接近未识别。预测变量很多时，尤其存在交互作用时，参数之间的相关性可能很大。只要加入少量先验信息，告诉模型“这些参数没有一个会是三千万”，往往就能帮上忙，而且不会影响估计。平坦先验真的一路平坦到无穷远；除非你相信无穷大是合理估计，否则不要使用平坦先验。</p>
+      <p>此外，加入弱先验还可能加快抽样，因为马尔可夫链不会再觉得自己必须跑向那些你明知极不可信、模型却不知道的极端值。</p>
+      <aside class="rethinking-box" id="rethinking-hamiltonian-warnings"><h3>再思考：Hamiltonian 警告与 Gibbs 的过度自信</h3><p>人们刚开始使用 Stan 或其他 Hamiltonian 抽样器时，常会发现，以前用 Metropolis-Hastings 或 BUGS、JAGS、MCMCglmm 等 Gibbs 抽样器拟合的模型，现在不再运行良好：链很慢，警告很多，Stan 简直不停唠叨。难道是 Stan 出了问题？</p><p>不是。这些问题很可能一直存在，其他工具中也一样。只是 Gibbs 不使用梯度，所以察觉不到 Hamiltonian 引擎能够发现的某些问题。应用统计学甚至形成了一种文化：让坏链运行极长时间，达到数百万次迭代，然后激进地稀疏抽样、祈祷，再发表。系统发育分析可能尤其容易如此，因为树空间非常难探索。<sup id="note-152-ref"><a href="#note-152">152</a></sup> Stan 和其他 Hamiltonian 引擎对可靠研究如此重要，恰恰因为它们为蒙特卡洛近似的准确性提供了更多诊断标准。不要怨恨这些唠叨。</p></aside>
     </section>
   </section>
 
-  <section class="endnotes" id="chapter-09-notes" role="doc-endnotes"><h2>尾注</h2><ol start="137"><li id="note-137">关于这段历史的更多内容，可参见 Gigerenzer 等（1990）的导论。另见 Rao（1997），其中展示了一本随机数表的示例页，并对这场文化转变作了类似评论。 <a class="backref" href="#note-137-ref" aria-label="返回正文">↩</a></li><li id="note-138">“旅行者”是两种常见隐喻之一；另一种是登山者通过随机跳跃绘制山脉地图。Kruschke（2011）用一位在不同地点筹款的政治人物讲了一个很相似的故事。Kruschke 的书非常出色，风格与覆盖范围和本书颇为不同，因此能通过不同视角和另一组例子，为读者带来许多额外价值。 <a class="backref" href="#note-138-ref" aria-label="返回正文">↩</a></li><li id="note-139">Metropolis 等（1953）。算法以论文第一作者命名，但尚不清楚每位合著者怎样参与了算法的发现与实现。其他作者包括以“氢弹之父”闻名的 Edward Teller、同样著名的物理学家 Marshall Rosenbluth，以及两人的妻子 Augusta 和 Arianna；两位女士完成了大量计算机编程。Nicholas Metropolis 领导这个研究组，而他们的工作又以此前和 Stanisław Ulam 合作的研究为基础：Metropolis 与 Ulam（1949）。 <a class="backref" href="#note-139-ref" aria-label="返回正文">↩</a></li><li id="note-140">Hastings（1970）。 <a class="backref" href="#note-140-ref" aria-label="返回正文">↩</a></li><li id="note-141">最初的论文是 Geman 与 Geman（1984），另见 Casella 与 George（1992）。注意，Gibbs 抽样以统计物理学奠基人之一、物理学家兼数学家 J. W. Gibbs 命名；但 Gibbs 早在 1903 年就已去世，远早于 Metropolis 算法的发明。这个策略以 Gibbs 命名，既是为了纪念他，也因为算法与统计物理学的联系。 <a class="backref" href="#note-141-ref" aria-label="返回正文">↩</a></li><li id="note-142">Jaynes（2003）第 16 章。 <a class="backref" href="#note-142-ref" aria-label="返回正文">↩</a></li><li id="note-143">参见 Neal（2012）与 Betancourt（2017）。 <a class="backref" href="#note-143-ref" aria-label="返回正文">↩</a></li><li id="note-144">严格说并非总动量，而是动量平方和：<span class="math-inline"><var>K</var> = ∑<sub><var>i</var></sub> <var>p</var><sub><var>i</var></sub><sup>2</sup>/2</span>，其中 <span class="math-inline"><var>p</var></span> 是动量值向量。这个表达式来自能量守恒，后面讨论发散转移时会再谈。 <a class="backref" href="#note-144-ref" aria-label="返回正文">↩</a></li><li id="note-145">参见 Hoffman 与 Gelman（2011），以及 Stan 用户手册中的更多细节。 <a class="backref" href="#note-145-ref" aria-label="返回正文">↩</a></li><li id="note-146">见 Neal（2012）中的代码。 <a class="backref" href="#note-146-ref" aria-label="返回正文">↩</a></li><li id="note-147">关于一段兼顾计算实践与数学基础的简明 MCMC 历史，可参见 Robert 与 Casella（2011）。 <a class="backref" href="#note-147-ref" aria-label="返回正文">↩</a></li><li id="note-148">参见 Vehtari 等（2019a），<span class="url-text">https://arxiv.org/abs/1903.08008</span>。 <a class="backref" href="#note-148-ref" aria-label="返回正文">↩</a></li><li id="note-149">更多细节和背景文献可参见 Brooks 等（2011）第 6 章。 <a class="backref" href="#note-149-ref" aria-label="返回正文">↩</a></li><li id="note-150">Gelman 与 Rubin（1992）。 <a class="backref" href="#note-150-ref" aria-label="返回正文">↩</a></li><li id="note-151">Gelman（2008）：<span class="url-text">https://andrewgelman.com/2008/05/13/the_folk_theore/</span>。 <a class="backref" href="#note-151-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section id="sec-9-6"><h2>9.6 总结</h2>
+    <p>本章对马尔可夫链蒙特卡洛（MCMC）估计作了非正式介绍，目标是说明 MCMC 算法的用途与基本思路。主要介绍了 Metropolis、Gibbs 抽样和哈密顿蒙特卡洛三类算法，每种都有各自的优缺点。本章还介绍了 <code>rethinking</code> 包的 <code>ulam</code> 函数；它使用 Stan（<span class="url-text">mc-stan.org</span>）的哈密顿蒙特卡洛引擎，拟合本书所定义的模型。借助几个病态例子，我们也给出了诊断糟糕 MCMC 拟合的一般建议。后面各章将利用这项新能力学习新的模型类型。</p>
+  </section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 285–317 页已完成翻译、逐页核对、结构契约及桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 318 页继续。</aside>
+  <section id="sec-9-7"><h2>9.7 练习</h2>
+    <h3>简单题</h3>
+    <ol class="practice-list" id="practice-9-easy">
+      <li id="exercise-9e1"><strong>9E1.</strong> 下列哪一项是简单 Metropolis 算法的要求？<ol><li>参数必须是离散的。</li><li>似然函数必须是高斯的。</li><li>提议分布必须是对称的。</li></ol></li>
+      <li id="exercise-9e2"><strong>9E2.</strong> Gibbs 抽样比 Metropolis 算法更高效。它怎样获得这种额外效率？Gibbs 抽样策略是否存在局限？</li>
+      <li id="exercise-9e3"><strong>9E3.</strong> 哈密顿蒙特卡洛无法处理哪类参数？你能解释原因吗？</li>
+      <li id="exercise-9e4"><strong>9E4.</strong> 解释 Stan 计算的有效样本数 <code>n_eff</code> 与实际样本数之间的区别。</li>
+      <li id="exercise-9e5"><strong>9E5.</strong> 一条链正确地从后验分布抽样时，<code>Rhat</code> 应该趋近什么值？</li>
+      <li id="exercise-9e6"><strong>9E6.</strong> 画出一张有效地从后验分布抽样的良好马尔可夫链轨迹图。它的形状好在哪里？然后再画一张失灵马尔可夫链的轨迹图。它的哪些形状特征表明发生了故障？</li>
+    </ol>
+
+    <h3>中等题</h3>
+    <ol class="practice-list" id="practice-9-medium">
+      <li id="exercise-9m1"><strong>9M1.</strong> 重新估计本章的地形崎岖度模型，这次分别为标准差 <code>sigma</code> 使用均匀先验和指数先验。均匀先验应为 <code>dunif(0,10)</code>，指数先验应为 <code>dexp(1)</code>。不同先验是否对后验分布产生了可检测的影响？</li>
+      <li id="exercise-9m2"><strong>9M2.</strong> 地形崎岖度模型中的 Cauchy 先验和指数先验都很弱。减小它们的尺度，就能使其信息更强。逐渐减小尺度参数，比较 <code>dcauchy</code> 与 <code>dexp</code> 先验。随着先验变强，它们各自怎样影响后验分布？</li>
+      <li id="exercise-9m3"><strong>9M3.</strong> 重新估计本章某个 Stan 模型，但分别使用不同数量的预热迭代。确保每次使用相同数量的正式抽样迭代，然后比较 <code>n_eff</code>。多少预热才算足够？</li>
+    </ol>
+
+    <h3>困难题</h3>
+    <ol class="practice-list" id="practice-9-hard">
+      <li id="exercise-9h1"><strong>9H1.</strong> 运行下面的模型，然后检查后验分布，并解释它在做什么。
+        <figure class="code-listing" id="code-9-28"><figcaption>R 代码 9.28</figcaption><pre><code>mp &lt;- map2stan(
+    alist(
+        a ~ dnorm(0,1),
+        b ~ dcauchy(0,1)
+    ),
+    data=list(y=1),
+    start=list(a=0,b=0),
+    iter=1e4, warmup=100 , WAIC=FALSE )</code></pre></figure>
+        <p>比较参数 <code>a</code> 与 <code>b</code> 的样本。利用你对 Cauchy 分布的认识，能否解释两张轨迹图为何不同？</p>
+      </li>
+      <li id="exercise-9h2"><strong>9H2.</strong> 回想第 5 章的离婚率例子。这次使用 <code>ulam()</code> 重复那项分析，拟合模型 <code>m5.1</code>、<code>m5.2</code> 和 <code>m5.3</code>。用 <code>compare</code> 按 WAIC 或 PSIS 比较模型，并解释结果。</li>
+      <li id="exercise-9h3"><strong>9H3.</strong> 改变一个参数的先验，有时会对其他参数产生意料之外的影响。这是因为当某个参数在后验中与另一个参数高度相关时，先验会同时影响两者。下面是一个值得动手和思考的例子。
+        <p>回到第 5 章的腿长例子。下面再次给出模拟 100 个假想个体身高与腿长的代码：</p>
+        <figure class="code-listing" id="code-9-29"><figcaption>R 代码 9.29</figcaption><pre><code>N &lt;- 100                              # number of individuals
+height &lt;- rnorm(N,10,2)               # sim total height of each
+leg_prop &lt;- runif(N,0.4,0.5)          # leg as proportion of height
+leg_left &lt;- leg_prop*height +         # sim left leg as proportion + error
+    rnorm( N , 0 , 0.02 )
+leg_right &lt;- leg_prop*height +        # sim right leg as proportion + error
+    rnorm( N , 0 , 0.02 )
+                                      # combine into data frame
+d &lt;- data.frame(height,leg_left,leg_right)</code></pre></figure>
+        <p>下面是之前拟合过的模型，它会让两个 beta 参数得到高度相关的后验。这次用 <code>ulam()</code> 拟合：</p>
+        <figure class="code-listing" id="code-9-30"><figcaption>R 代码 9.30</figcaption><pre><code>m5.8s &lt;- ulam(
+    alist(
+        height ~ dnorm( mu , sigma ) ,
+        mu &lt;- a + bl*leg_left + br*leg_right ,
+        a ~ dnorm( 10 , 100 ) ,
+        bl ~ dnorm( 2 , 10 ) ,
+        br ~ dnorm( 2 , 10 ) ,
+        sigma ~ dexp( 1 )
+    ) ,
+    data=d, chains=4,
+    start=list(a=10,bl=0,br=0.1,sigma=1) )</code></pre></figure>
+        <p>把上述代码产生的后验分布，与把 <code>br</code> 的先验改成严格为正后得到的后验分布作比较。</p>
+        <p class="continuation-note">严格为正的 <code>br</code> 先验代码、9H3 的后续问题与余下困难题将在原书 PDF 第 321 页继续。</p>
+      </li>
+    </ol>
+  </section>
+
+  <section class="endnotes" id="chapter-09-notes" role="doc-endnotes"><h2>尾注</h2><ol start="137"><li id="note-137">关于这段历史的更多内容，可参见 Gigerenzer 等（1990）的导论。另见 Rao（1997），其中展示了一本随机数表的示例页，并对这场文化转变作了类似评论。 <a class="backref" href="#note-137-ref" aria-label="返回正文">↩</a></li><li id="note-138">“旅行者”是两种常见隐喻之一；另一种是登山者通过随机跳跃绘制山脉地图。Kruschke（2011）用一位在不同地点筹款的政治人物讲了一个很相似的故事。Kruschke 的书非常出色，风格与覆盖范围和本书颇为不同，因此能通过不同视角和另一组例子，为读者带来许多额外价值。 <a class="backref" href="#note-138-ref" aria-label="返回正文">↩</a></li><li id="note-139">Metropolis 等（1953）。算法以论文第一作者命名，但尚不清楚每位合著者怎样参与了算法的发现与实现。其他作者包括以“氢弹之父”闻名的 Edward Teller、同样著名的物理学家 Marshall Rosenbluth，以及两人的妻子 Augusta 和 Arianna；两位女士完成了大量计算机编程。Nicholas Metropolis 领导这个研究组，而他们的工作又以此前和 Stanisław Ulam 合作的研究为基础：Metropolis 与 Ulam（1949）。 <a class="backref" href="#note-139-ref" aria-label="返回正文">↩</a></li><li id="note-140">Hastings（1970）。 <a class="backref" href="#note-140-ref" aria-label="返回正文">↩</a></li><li id="note-141">最初的论文是 Geman 与 Geman（1984），另见 Casella 与 George（1992）。注意，Gibbs 抽样以统计物理学奠基人之一、物理学家兼数学家 J. W. Gibbs 命名；但 Gibbs 早在 1903 年就已去世，远早于 Metropolis 算法的发明。这个策略以 Gibbs 命名，既是为了纪念他，也因为算法与统计物理学的联系。 <a class="backref" href="#note-141-ref" aria-label="返回正文">↩</a></li><li id="note-142">Jaynes（2003）第 16 章。 <a class="backref" href="#note-142-ref" aria-label="返回正文">↩</a></li><li id="note-143">参见 Neal（2012）与 Betancourt（2017）。 <a class="backref" href="#note-143-ref" aria-label="返回正文">↩</a></li><li id="note-144">严格说并非总动量，而是动量平方和：<span class="math-inline"><var>K</var> = ∑<sub><var>i</var></sub> <var>p</var><sub><var>i</var></sub><sup>2</sup>/2</span>，其中 <span class="math-inline"><var>p</var></span> 是动量值向量。这个表达式来自能量守恒，后面讨论发散转移时会再谈。 <a class="backref" href="#note-144-ref" aria-label="返回正文">↩</a></li><li id="note-145">参见 Hoffman 与 Gelman（2011），以及 Stan 用户手册中的更多细节。 <a class="backref" href="#note-145-ref" aria-label="返回正文">↩</a></li><li id="note-146">见 Neal（2012）中的代码。 <a class="backref" href="#note-146-ref" aria-label="返回正文">↩</a></li><li id="note-147">关于一段兼顾计算实践与数学基础的简明 MCMC 历史，可参见 Robert 与 Casella（2011）。 <a class="backref" href="#note-147-ref" aria-label="返回正文">↩</a></li><li id="note-148">参见 Vehtari 等（2019a），<span class="url-text">https://arxiv.org/abs/1903.08008</span>。 <a class="backref" href="#note-148-ref" aria-label="返回正文">↩</a></li><li id="note-149">更多细节和背景文献可参见 Brooks 等（2011）第 6 章。 <a class="backref" href="#note-149-ref" aria-label="返回正文">↩</a></li><li id="note-150">Gelman 与 Rubin（1992）。 <a class="backref" href="#note-150-ref" aria-label="返回正文">↩</a></li><li id="note-151">Gelman（2008）：<span class="url-text">https://andrewgelman.com/2008/05/13/the_folk_theore/</span>。 <a class="backref" href="#note-151-ref" aria-label="返回正文">↩</a></li><li id="note-152">例如，2018 年一篇发表于高影响力期刊的论文，把结论建立在 500 万个样本的链上，但有效样本数（<code>n_eff</code>）只有 66。参见 Muñoz-Rodríguez 等（2018），以及 <span class="url-text">https://github.com/mmatschiner/kumara</span> 上的批判性分析。 <a class="backref" href="#note-152-ref" aria-label="返回正文">↩</a></li></ol></section>
+
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>PDF 第 285–320 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 321 页继续。</aside>
 </article>

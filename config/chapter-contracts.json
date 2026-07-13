@@ -1507,7 +1507,7 @@
   },
   "chapter-09": {
     "required_status": "in_progress",
-    "source_pages": [285, 317],
+    "source_pages": [285, 320],
     "required_ids": [
       "fig-9-1",
       "rethinking-stan-was-a-man",
@@ -1591,6 +1591,28 @@
       "warning-9-treedepth",
       "erratum-9-12-chain-count",
       "fig-9-12",
+      "code-9-27",
+      "rethinking-hamiltonian-warnings",
+      "sec-9-6",
+      "sec-9-7",
+      "practice-9-easy",
+      "exercise-9e1",
+      "exercise-9e2",
+      "exercise-9e3",
+      "exercise-9e4",
+      "exercise-9e5",
+      "exercise-9e6",
+      "practice-9-medium",
+      "exercise-9m1",
+      "exercise-9m2",
+      "exercise-9m3",
+      "practice-9-hard",
+      "exercise-9h1",
+      "code-9-28",
+      "exercise-9h2",
+      "exercise-9h3",
+      "code-9-29",
+      "code-9-30",
       "chapter-09-notes",
       "note-137",
       "note-138",
@@ -1606,7 +1628,8 @@
       "note-148",
       "note-149",
       "note-150",
-      "note-151"
+      "note-151",
+      "note-152"
     ],
     "required_headings": [
       "马尔可夫链蒙特卡洛",
@@ -1638,16 +1661,22 @@
       "再思考：统计计算的民间定理",
       "过度思考：发散转移是你的朋友",
       "9.5.4 不可识别参数",
+      "再思考：Hamiltonian 警告与 Gibbs 的过度自信",
+      "9.6 总结",
+      "9.7 练习",
+      "简单题",
+      "中等题",
+      "困难题",
       "尾注"
     ],
     "counts": {
-      "section": 20,
-      "figure": 42,
+      "section": 22,
+      "figure": 46,
       "figure img": 12,
       ".book-figure": 12,
-      ".code-listing": 30,
-      ".code-output": 11,
-      ".rethinking-box": 6,
+      ".code-listing": 34,
+      ".code-output": 12,
+      ".rethinking-box": 7,
       ".overthinking-box": 3,
       ".book-quote": 1,
       ".equation-block": 7,
@@ -1659,8 +1688,10 @@
       ".preparation-steps": 1,
       ".preparation-steps > li": 2,
       ".source-erratum": 1,
+      ".practice-list": 3,
+      "ol.practice-list > li": 12,
       ".continuation-note": 1,
-      ".endnotes li": 15
+      ".endnotes li": 16
     }
   }
 }
