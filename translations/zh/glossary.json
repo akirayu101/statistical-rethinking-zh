@@ -978,7 +978,19 @@
     "adoption rate": "领养率",
     "waiting time": "等待时间",
     "cumulative probability distribution": "累积概率分布",
-    "complementary cumulative probability distribution": "互补累积概率分布"
+    "complementary cumulative probability distribution": "互补累积概率分布",
+    "censored value": "删失值",
+    "complementary cumulative distribution": "互补累积分布",
+    "numerical instability": "数值不稳定",
+    "custom distribution": "自定义分布",
+    "Stan target": "target",
+    "log probability density function": "对数概率密度函数",
+    "salmon pirating": "鲑鱼抢夺",
+    "pirate (eagle data)": "抢夺者",
+    "victim (eagle data)": "受害者",
+    "Bald Eagle": "白头海雕",
+    "percent ground cover": "地面覆盖率百分比",
+    "forest age": "林龄"
   },
   "protected": [
     "R", "Stan", "rethinking", "quap", "ulam", "map", "map2stan", "extract.prior", "brms", "rstanarm", "blavaan", "AIC", "DIC", "WAIC", "BIC", "PSIS-LOO", "MCMC", "HMC"
