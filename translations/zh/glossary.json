@@ -1256,6 +1256,10 @@
     "hidden Markov model": "隐 Markov 模型",
     "forward algorithm": "前向算法",
     "marginalize": "取边际（边缘化）",
+    "bespoke model": "定制模型",
+    "structural causal model": "结构因果模型",
+    "do-calculus": "do 演算",
+    "spherical cow": "球形奶牛",
     "occupancy model": "占域模型",
     "cross-classified varying slopes model": "交叉分类变化斜率模型"
   },

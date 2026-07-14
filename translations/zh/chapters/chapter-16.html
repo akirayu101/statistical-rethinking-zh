@@ -1,0 +1,44 @@
+<article class="book-article" data-chapter="chapter-16" data-source-pages="553-555">
+  <header class="chapter-header"><p class="eyebrow">第十六章</p><h1>广义线性疯狂</h1><p class="source-range">当前译稿对应原书 PDF 第 553–555 页</p></header>
+
+  <div class="chapter-introduction" id="intro-16">
+    <p>高中时，我问物理老师怎么看统计学，她给我讲了一个笑话。以下是我记得的版本。一位物理学家、一位工程师和一位统计学家结伴去用弓打猎。几个小时后，他们终于在远处发现一只鹿。物理学家快速做了弹道计算，忽略空气阻力；箭飞得很正，却落在目标前几米，鹿毫无察觉。工程师冷笑一声，给空气阻力加入一个修正因子，然后放箭；第二支箭却落在目标后几米，鹿仍然没有察觉。统计学家取了平均值，高喊：“我们射中了！”</p>
+    <p>科学会构造自然过程的理论，这些理论最终以数学模型的正式形式表达。这样的模型高度专门化，能作出精确预测，也能以同样精确的方式失败。精确地犯错很有用，因为失败会从模型内置的因果关系中获得意义。笑话里的物理学家与工程师正是如此：他们错得很精确，因此也留下线索，告诉我们哪些原因出了问题。</p>
+    <p>应用统计学必须适用于所有科学，所以它对模型往往含糊得多，转而关注平均表现，而不管模型是什么。前几章的广义线性模型，并不是多数自然过程可信的科学模型；它们是强大的、地心式的关联描述（第 4 章）。然而只要与因果推断逻辑结合——例如 DAG 与 <em>do</em> 演算——广义线性模型仍会强大得不讲道理。</p>
+    <p>不过，“GLM 加 DAG”也有问题。并非一切都能建模为 GLM——把变量的线性组合映射到非线性结果上；但若你只会这一种方法，就只能硬用它。有时，感兴趣的理论确实可以表达为 GLM，却同时意味着某些参数必须固定在特殊值上；若从 GLM 而不是真实模型出发，我们可能永远注意不到这一点。而当 GLM 失败时，也很难从失败中学习。调试地心体系的本轮游戏，谁也赢不了。若能用真正的结构因果模型取代启发式 DAG，也许可以一次解决所有这些问题。</p>
+    <p>本章将超越<strong>广义线性疯狂</strong>。我会逐一研究一些示例，其中科学情境提供因果模型，为统计模型注入生命。我特意选择彼此不同的例子，用来突出开发因果模型、并把它们转化成定制统计模型时的不同挑战（见下方“再思考”框）。理解这些例子不需要任何专门科学知识。基本策略仍然与全书开头相同：定义现象的生成模型，再用它设计因果推断与统计估计策略。</p>
+    <p>与本书其他章节不同，本章包含一些无法回避的数学；但只需要代数。与其说我们要“做数学”，不如说要用数学表达思想。由于某些示例对 <code>ulam()</code> 来说不够灵活，我们还会直接使用 Stan 模型代码。若对代码不感兴趣，可以跳过；不过一如往常，看到实现细节往往有助于澄清概念。</p>
+    <aside class="rethinking-box" id="rethinking-16-bespoke"><h3>再思考：量身定制</h3><p>批量生产有一些好处，却也让衣服不那么合身。从货架上直接买来的成衣，并不是为你而做；它们不是针对某个特定身体的<strong>定制</strong>产品。除非你幸运地拥有完美的平均体形，否则想要更合身，就得找裁缝。</p><p>统计分析也一样。广义线性模型是货架产品，为目标各异、没有耐心的研究者构成的消费市场批量生产。科学向统计学家索要一种到处都能用的工具，于是统计学家交货了；但衣服并不总合身。</p><p>货架模型的一个问题，是它会截断专业知识。典型研究者对自己的主题知道很多；当另一个专业的人试图为该主题建立理论模型时，科学家会提出细致反驳，这正是证据。但轮到分析自己的数据时，他们却使用禁止运用这些知识的工具；标准 GLM 根本没有地方容纳它们。更糟的是，若研究者学过的模型只有 GLM（或 GLMM），这些模型可能挤掉知情、定制科学模型的形成空间。</p><p>GLM 强大得不讲道理，但应当记住，它们通常只是地心式装置。最终，为了更好的拟合与推断，都需要更好的定制模型。</p></aside>
+  </div>
+
+  <section id="sec-16-1"><h2>16.1 几何人类</h2>
+    <p>回到第 4 章，你曾在用体重建立身高预测模型的情境中接触线性回归，也看过怎样度量两个变量之间的非线性关联。但那个例子在科学上毫不令人满意。身高—体重模型只是一件统计工具，不含任何生物学信息，也没有告诉我们身高与体重之间的关联如何产生。比如，体重显然不会导致身高——至少对人类不是如此；真要说的话，因果关系反而朝另一个方向。</p>
+    <p>所以现在尝试做得更好。为什么？因为模型若由科学启发，而不只是统计上需要，那么模型与数据之间的不一致，就会携带真实因果关系的信息。</p>
+    <p>例如，假设一个人长得像圆柱体。当然，人并不完全像圆柱体：还有手臂和脑袋。但先看看这套圆柱模型能走多远。圆柱的重量来自圆柱体积，圆柱体积又来自圆柱高度和宽度的增长。因此，若能把身高与体积联系起来，就会得到一个用身高预测体重的模型。</p>
+
+    <section id="sec-16-1-1"><h3>16.1.1 科学模型</h3>
+      <p>开始吧。很久以前，你学过、又很明智地忘掉了：人体圆柱的体积公式是：</p>
+      <div class="equation-block wallis-equation" id="eq-16-cylinder-volume"><div><var>V</var> = π<var>r</var><sup>2</sup><var>h</var></div></div>
+      <p>其中 <var>r</var> 是这个人的半径，<var>h</var> 是身高，见图 16.1。<sup id="note-219-ref"><a href="#note-219">219</a></sup> 我们不知道每个人的半径，但先假定每个人的半径都是其身高的某个固定比例 <var>p</var>。</p>
+      <figure class="book-figure vitruvian-can-figure" id="fig-16-1"><svg viewBox="0 0 700 560" role="img" aria-labelledby="fig-16-1-title fig-16-1-desc"><title id="fig-16-1-title">维特鲁威罐头圆柱人体模型</title><desc id="fig-16-1-desc">一个人形位于圆柱体中，圆柱半径标为 r，高度标为 h，体积公式为 V 等于圆周率乘 r 平方再乘 h。</desc><defs><marker id="fig16-dim-arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10z" fill="#263f86"/></marker></defs><g fill="none" stroke="#263f86" stroke-width="4"><ellipse cx="350" cy="105" rx="160" ry="42"/><line x1="190" y1="105" x2="190" y2="435"/><line x1="510" y1="105" x2="510" y2="435"/><path d="M190 435 A160 42 0 0 0 510 435"/><path d="M190 435 A160 42 0 0 1 510 435" stroke-dasharray="8 7"/></g><g fill="none" stroke="#59616b" stroke-width="5" stroke-linecap="round"><circle cx="350" cy="180" r="28"/><line x1="350" y1="208" x2="350" y2="330"/><line x1="350" y1="235" x2="265" y2="280"/><line x1="350" y1="235" x2="435" y2="280"/><line x1="350" y1="330" x2="295" y2="410"/><line x1="350" y1="330" x2="405" y2="410"/><line x1="350" y1="250" x2="245" y2="245"/><line x1="350" y1="250" x2="455" y2="245"/></g><g fill="none" stroke="#263f86" stroke-width="3" stroke-dasharray="7 6" marker-start="url(#fig16-dim-arrow)" marker-end="url(#fig16-dim-arrow)"><line x1="350" y1="105" x2="510" y2="105"/><line x1="555" y1="105" x2="555" y2="435"/></g><g fill="#263f86" font-family="Times New Roman, Songti SC, serif" font-size="34" font-style="italic"><text x="425" y="88">r</text><text x="573" y="280">h</text><text x="255" y="510">V = πr²h</text></g></svg><figcaption><strong>图 16.1：</strong>以身高为基础预测人体体重的“维特鲁威罐头”（Vitruvian Can）模型。若维特鲁威人是圆柱体，就可以把体积 <var>V</var> 写成身高 <var>h</var> 与半径 <var>r</var> 的函数，进而估计体重。</figcaption></figure>
+      <p>也就是说，<span class="math-inline"><var>r</var> = <var>ph</var></span>。把它代入体积公式：</p>
+      <div class="equation-block wallis-equation" id="eq-16-cylinder-proportion-volume"><div><var>V</var> = π(<var>ph</var>)<sup>2</sup><var>h</var> = π<var>p</var><sup>2</sup><var>h</var><sup>3</sup></div></div>
+      <p>最后，体重是体积的某个比例——每立方厘米对应多少千克？因此还需要参数 <var>k</var>，表达从体积到体重的换算：</p>
+      <div class="equation-block wallis-equation" id="eq-16-cylinder-weight"><div><var>W</var> = <var>kV</var> = <var>k</var>π<var>p</var><sup>2</sup><var>h</var><sup>3</sup></div></div>
+      <p>这就是给定一个人的身高 <var>h</var> 时，预期体重的公式。它显然不是普通的广义线性模型，但没关系：它能作出预测，也能拟合到数据。</p>
+      <aside class="rethinking-box" id="rethinking-16-spherical-cows"><h4>再思考：球形奶牛</h4><p>有用的数学建模通常包含荒唐的假设，例如上面假定人类长得像圆柱体。这类假设可称为<strong>球形奶牛</strong>，名称来自《<cite>Consider a Spherical Cow: A Course in Environmental Problem Solving</cite>》。<sup id="note-220-ref"><a href="#note-220">220</a></sup>策略性的简化假设，是所有有用模型的特征。先理解简化模型，随后就更容易在适当位置加入相关细节；简化模型暴露的缺陷，也会帮助我们判断哪些细节真正相关。非数学模型同样会简化，只是通常不把简化明确说出来，因此更难识别其缺陷。<sup id="note-221-ref"><a href="#note-221">221</a></sup></p></aside>
+    </section>
+
+    <section id="sec-16-1-2"><h3>16.1.2 统计模型</h3>
+      <p>可以在统计模型中使用圆柱公式；不过还要再作一些选择。下面先给出模型轮廓，随后逐项解释：</p>
+      <div class="equation-block wallis-equation" id="eq-16-cylinder-statistical-model"><div class="annotated-equation-line"><span class="equation-expression"><var>W</var><sub><var>i</var></sub> ∼ Log-Normal(<var>μ</var><sub><var>i</var></sub>, <var>σ</var>)</span><span class="equation-label">[体重的分布]</span></div><div class="annotated-equation-line"><span class="equation-expression">exp(<var>μ</var><sub><var>i</var></sub>) = <var>k</var>π<var>p</var><sup>2</sup><var>h</var><sub><var>i</var></sub><sup>3</sup></span><span class="equation-label">[体重的预期中位数]</span></div><div class="annotated-equation-line"><span class="equation-expression"><var>k</var> ∼ 某个先验</span><span class="equation-label">[体重与体积之间的先验关系]</span></div><div class="annotated-equation-line"><span class="equation-expression"><var>p</var> ∼ 某个先验</span><span class="equation-label">[半径与身高比例的先验]</span></div><div class="annotated-equation-line"><span class="equation-expression"><var>σ</var> ∼ Exponential(1)</span><span class="equation-label">[老朋友 σ]</span></div></div>
+      <p>从顶部开始，首先要决定观测结果变量——体重 <var>W</var><sub><var>i</var></sub>——的分布。这个变量为正且连续：体重不可能为负。因此我选择了对数正态分布。对数正态分布用对数的均值参数化，这个均值称作 <var>μ</var><sub><var>i</var></sub>；其原尺度中位数为 <span class="math-inline">exp(<var>μ</var><sub><var>i</var></sub>)</span>。</p>
+      <aside class="source-erratum" id="erratum-16-statistically-required"><strong>原文说明：</strong>PDF 第 554 页的 “rather than just statistical required” 应为 “rather than just statistically required”；译稿按上下文处理为“不只是统计上需要”。</aside>
+      <p class="continuation-note">怎样把这个中位数指定为圆柱函数，以及 <var>k</var>、<var>p</var>、<var>σ</var> 的先验与可识别性，将从原书 PDF 第 556 页继续。</p>
+    </section>
+  </section>
+
+  <section class="endnotes" id="chapter-16-notes" role="doc-endnotes"><h2>尾注</h2><ol start="219"><li id="note-219">“Vitruvian Can”（“维特鲁威罐头”）这个双关由 Clint Johns（Twitter：@DrClintonJohns）提供。 <a class="backref" href="#note-219-ref" aria-label="返回正文">↩</a></li><li id="note-220">Harte（1988）。 <a class="backref" href="#note-220-ref" aria-label="返回正文">↩</a></li><li id="note-221">关于模型构建哲学有许多好文章，作者推荐三篇：Levins（1966）、Wimsatt（2002）和 Smaldino（2017）。 <a class="backref" href="#note-221-ref" aria-label="返回正文">↩</a></li></ol></section>
+
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 16 章 PDF 第 553–555 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 556 页继续。</aside>
+</article>
