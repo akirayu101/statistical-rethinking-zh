@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-15" data-source-pages="517-536">
-  <header class="chapter-header"><p class="eyebrow">第十五章</p><h1>缺失数据与其他机会</h1><p class="source-range">当前译稿对应原书 PDF 第 517–536 页</p></header>
+<article class="book-article" data-chapter="chapter-15" data-source-pages="517-539">
+  <header class="chapter-header"><p class="eyebrow">第十五章</p><h1>缺失数据与其他机会</h1><p class="source-range">当前译稿对应原书 PDF 第 517–539 页</p></header>
 
   <div class="chapter-introduction" id="intro-15">
     <p>Bayesian 推断的一大优点，是不必非得聪明才行。例如，有一道经典概率谜题叫作<strong>Bertrand 盒子悖论</strong>。<sup id="note-210-ref"><a href="#note-210">210</a></sup> 我偏爱的版本用煎饼来讲。假设我煎了三张饼：第一张两面都焦了（BB），第二张只焦了一面（BU），第三张两面都没焦（UU）。现在我随机拿一张给你，盘中朝上的一面恰好焦了。另一面也焦了的概率是多少？</p>
@@ -363,16 +363,70 @@ sigma    0.88 0.19  0.64  1.20  1145    1</code></pre></figure>
       <figure class="book-figure coefficient-comparison-figure" id="plot-15-imputation-coefficients"><svg viewBox="0 0 900 470" role="img" aria-labelledby="plot-15-imputation-title plot-15-imputation-desc"><title id="plot-15-imputation-title">插补模型与完整案例模型的系数比较</title><desc id="plot-15-imputation-desc">bB 与 bM 的两组后验均值和百分之八十九相容区间；插补模型 m15.3 的两个区间都更窄。</desc><rect width="900" height="470" fill="#fff"/><line x1="560" y1="45" x2="560" y2="395" stroke="#b8bbb8" stroke-width="2"/><g font-size="21" fill="#263f86" font-weight="700"><text x="75" y="70">bB</text><text x="75" y="265">bM</text></g><g font-size="18" fill="#30332e"><text x="140" y="115">m15.4</text><text x="140" y="160">m15.3</text><text x="140" y="310">m15.4</text><text x="140" y="355">m15.3</text></g><g stroke="#30332e" stroke-width="5" stroke-linecap="round"><line x1="597" y1="108" x2="828" y2="108"/><line x1="585" y1="153" x2="793" y2="153"/><line x1="293" y1="303" x2="504" y2="303"/><line x1="327" y1="348" x2="504" y2="348"/></g><g fill="#fff" stroke="#30332e" stroke-width="2"><circle cx="716" cy="108" r="7"/><circle cx="693" cy="153" r="7"/><circle cx="393" cy="303" r="7"/><circle cx="414" cy="348" r="7"/></g><line x1="270" y1="395" x2="850" y2="395" stroke="#343732" stroke-width="2"/><g font-size="17" fill="#30332e" text-anchor="middle"><text x="295" y="425">−1.0</text><text x="428" y="425">−0.5</text><text x="560" y="425">0.0</text><text x="693" y="425">0.5</text><text x="825" y="425">1.0</text><text x="560" y="458" fill="#263f86" font-weight="700">估计值</text></g></svg><figcaption>代码 15.20 的输出。点是后验均值，水平线是 89% 相容区间；插补缺失值的 <code>m15.3</code> 在两个效应上都有更窄的边际分布。</figcaption></figure>
       <p>插补缺失值的模型 <code>m15.3</code>，对两个效应都有更窄的边际分布。为何会这样？因为我们使用了更多信息：那些没有缺失、却被 <code>m15.4</code> 一并丢弃的体重值。这些值暗示体重效应 <code>bM</code> 略小，而影响又会传递到 <code>bB</code>。</p>
       <p>再画些图，把这里发生的事可视化：</p>
-      <figure class="code-listing" id="code-15-21"><figcaption>R 代码 15.21（续下页）</figcaption><pre><code>post &lt;- extract.samples( m15.3 )
+      <figure class="code-listing" id="code-15-21"><figcaption>R 代码 15.21</figcaption><pre><code>post &lt;- extract.samples( m15.3 )
 B_impute_mu &lt;- apply( post$B_impute , 2 , mean )
 B_impute_ci &lt;- apply( post$B_impute , 2 , PI )
 
-# B vs K</code></pre></figure>
-      <p class="continuation-note">代码 15.21 的两组绘图语句、图 15.5 与插补值解释，将从原书 PDF 第 537 页继续。</p>
+# B vs K
+plot( dat_list$B , dat_list$K , pch=16 , col=rangi2 ,
+    xlab="neocortex percent (std)" , ylab="kcal milk (std)" )
+miss_idx &lt;- which( is.na(dat_list$B) )
+Ki &lt;- dat_list$K[miss_idx]
+points( B_impute_mu , Ki )
+for ( i in 1:12 ) lines( B_impute_ci[,i] , rep(Ki[i],2) )
+
+# M vs B
+plot( dat_list$M , dat_list$B , pch=16 , col=rangi2 ,
+    ylab="neocortex percent (std)" , xlab="log body mass (std)" )
+Mi &lt;- dat_list$M[miss_idx]
+points( Mi , B_impute_mu )
+for ( i in 1:12 ) lines( rep(Mi[i],2) , B_impute_ci[,i] )</code></pre></figure>
+      <figure class="book-figure imputation-comparison-figure" id="fig-15-5"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的乳汁能量、新皮层与体重插补双面板图"><img src="/media/chapter-15-imputation-independent.svg" alt="左图绘制乳汁能量与新皮层值，右图绘制体重对数与新皮层值；蓝色实心点为观测值，黑色空心点和区间线为插补值"></div><p class="scroll-hint">图较宽，可横向滚动比较结果变量与两个预测变量。</p><figcaption><strong>图 15.5：</strong>左：乳汁能量（纵轴）与新皮层比例（横轴）的推断分布，空心点是插补值，线段为 89% 后验相容区间。右：新皮层比例与体重对数两个预测变量之间的推断分布；插补值同样以空心点表示。</figcaption></figure>
+      <p>图 15.5 同时显示了乳汁能量与新皮层之间的推断关系（左），以及两个预测变量之间的关系（右）。两幅图都用空心点显示插补的新皮层值，并以线段表示 89% 相容区间。尽管插补值存在大量不确定性——嘿，Bayesian 推断不是魔法，只是逻辑——它们的确略微朝回归关系倾斜。这是因为观测值提供了信息，引导着缺失值的估计。</p>
+      <p>右图显示两个预测变量之间的推断关系。我们已经知道它们正相关——这正是产生遮蔽问题的原因。但请注意，这里的插补值并未呈现向上斜率。之所以没有，是因为插补模型——以新皮层值（观测值与缺失值）为结果的第一个回归——假定它与体重没有关系。</p>
+      <p>可以改进这个模型，让插补模型估计两个预测变量之间的关系。其实这只是说要使用完整的生成模型。在 DAG 中，<var>B</var> 与 <var>M</var> 因 <var>U</var> 而相关。若能把这个事实纳入模型，便可能得到更好的插补，进而得到更好的推断。技术上只需把插补模型中的简单一行：</p>
+      <div class="equation-block wallis-equation" id="eq-15-imputation-independent"><div><var>B</var><sub><var>i</var></sub> ∼ Normal(<var>ν</var>, <var>σ</var><sub><var>B</var></sub>)</div></div>
+      <p>改成同时包含 <var>M</var> 与 <var>B</var> 的双变量正态分布：</p>
+      <div class="equation-block wallis-equation" id="eq-15-imputation-bivariate"><div>(<var>M</var><sub><var>i</var></sub>, <var>B</var><sub><var>i</var></sub>) ∼ MVNormal((<var>μ</var><sub><var>M</var></sub>, <var>μ</var><sub><var>B</var></sub>), <var>S</var>)</div></div>
+      <p><var>S</var> 矩阵是另一个协方差矩阵。它会用已观测案例度量 <var>M</var> 与 <var>B</var> 的相关，再利用该相关推断缺失的 <var>B</var> 值。请注意，这是我们能为 <var>M</var> 与 <var>B</var> 关联建立的最简单模型：它假定协方差足以描述二者关系。但情况并非总是如此，因为许多不同的双变量关系都能产生相同协方差。若你有更好的想法，就应改用它。</p>
+      <p>下面是 <code>ulam</code> 实现。代码比较复杂，因为必须构造一个变量，同时包含观测到的 <var>M</var> 值，以及由观测与插补 <var>B</var> 值合并而成的列表。这里还会更明确地执行合并。本节末的“过度思考”框会逐步讲解 Stan 代码与若干编码细节。</p>
+      <figure class="code-listing" id="code-15-22"><figcaption>R 代码 15.22</figcaption><pre><code>m15.5 &lt;- ulam(
+    alist(
+        # K as function of B and M
+        K ~ dnorm( mu , sigma ),
+        mu &lt;- a + bB*B_merge + bM*M,
+
+        # M and B correlation
+        MB ~ multi_normal( c(muM,muB) , Rho_BM , Sigma_BM ),
+        matrix[29,2]:MB &lt;&lt;- append_col( M , B_merge ),
+
+        # define B_merge as mix of observed and imputed values
+        vector[29]:B_merge &lt;- merge_missing( B , B_impute ),
+
+        # priors
+        c(a,muB,muM) ~ dnorm( 0 , 0.5 ),
+        c(bB,bM) ~ dnorm( 0, 0.5 ),
+        sigma ~ dexp( 1 ),
+        Rho_BM ~ lkj_corr(2),
+        Sigma_BM ~ dexp(1)
+    ) , data=dat_list , chains=4 , cores=4 )
+precis( m15.5 , depth=3 , pars=c("bM","bB","Rho_BM" ) )</code></pre><pre class="code-output" id="output-15-22"><code>              mean   sd  5.5% 94.5% n_eff Rhat
+bM           -0.65 0.22 -1.00 -0.30  1262    1
+bB            0.58 0.26  0.16  0.99  1048    1
+Rho_BM[1,1]   1.00 0.00  1.00  1.00   NaN  NaN
+Rho_BM[1,2]   0.60 0.13  0.37  0.78  1592    1
+Rho_BM[2,1]   0.60 0.13  0.37  0.78  1592    1
+Rho_BM[2,2]   1.00 0.00  1.00  1.00  1981    1</code></pre></figure>
+      <figure class="book-figure imputation-comparison-figure" id="fig-15-6"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的相关预测变量插补双面板图"><img src="/media/chapter-15-imputation-correlated.svg" alt="左图绘制乳汁能量与新皮层值，右图显示双变量插补保留了体重对数与新皮层值之间的正相关"></div><p class="scroll-hint">图较宽，可横向滚动比较改进插补后的两组关系。</p><figcaption><strong>图 15.6：</strong>关系与图 15.5 相同，但插补模型现在会估计两个预测变量之间的关联。模型利用预测变量关联中的信息，推断出乳汁能量与插补值之间更强的关系。</figcaption></figure>
+      <p>斜率 <code>bM</code> 与 <code>bB</code> 没有太大变化，尽管 <code>bM</code> 现在或许精确了一点。我们感兴趣的是相关及其怎样影响插补值。后验相关相当强，均值为 0.6；这表明 <var>M</var> 与 <var>B</var> 之间存在我们早已知道的强正相关。</p>
+      <p>这个相关会怎样影响插补值？可以使用与之前相同的绘图代码。图 15.6 显示与之前相同种类的图，但对应新的插补模型。右图现在可以看出，模型的插补方式保留了新皮层与体重对数的正相关。尽管本例中这并未对结果变量关系的推断造成很大差别，但显然更好。做得更好就是好事。</p>
+      <aside class="rethinking-box" id="rethinking-15-multiple-imputations"><h4>再思考：多重插补</h4><p>缺失数据插补有一段混乱的历史。插补形式很多，其中大多是缺乏坚实概率论基础的临时办法：热卡插补、冷卡插补、均值替代、随机插补等等。这些程序如今没有一个被视为体面的方法。常见的非 Bayesian 程序是<strong>多重插补</strong>。<sup id="note-216-ref"><a href="#note-216">216</a></sup> 多重插补是在调查无应答的背景下发展出来的，实际上有 Bayesian 理由支撑。但它发明于桌面计算机还无法实际执行 Bayesian 插补的年代，所以试图近似“随机缺失”缺失性模型的完整 Bayesian 解。若你不愿删除不完整案例，那么采用多重插补也应当让你感到放心。</p><p>该程序从缺失值的近似后验分布中进行多次抽取，分别用这些抽取值开展分析，再以近似完整 Bayesian 插补的方式合并各次分析。多重插补比完整 Bayesian 插补更受限制，所以现在我们直接使用真正的完整方案。但许多非 Bayesian 分析仍在使用多重插补。记住，频率主义统计并不是关于如何产生估计的理论，而只是一套关于如何评价估计的理论。</p></aside>
+      <aside class="source-erratum" id="erratum-15-multiple-imputation-either"><strong>原文说明：</strong>PDF 第 539 页的 “then you should be comfortable using multiple imputation either” 中 <em>either</em> 与肯定式谓语不搭配；译稿按上下文将其视为多余词处理。</aside>
+      <p class="continuation-note">原始 Stan 插补算法的“过度思考”框、代码 15.23 与 15.2.3，将从原书 PDF 第 540 页继续。</p>
     </section>
   </section>
 
-  <section class="endnotes" id="chapter-15-notes" role="doc-endnotes"><h2>尾注</h2><ol start="210"><li id="note-210">Joseph Bertrand，1889，<cite>Calcul des probabilités</cite>。 <a class="backref" href="#note-210-ref" aria-label="返回正文">↩</a></li><li id="note-211">这一主题有几篇很好的文章，各有自己的风格与记号变体。参见 Hernán 与 Cole（2009）、Loken 与 Gelman（2017）、Brakenhoff 等（2018）以及 van Smeden 等（2019）。 <a class="backref" href="#note-211-ref" aria-label="返回正文">↩</a></li><li id="note-212">关于这种做法富有建设性的批评，参见 Hernán 与 Cole（2009）。 <a class="backref" href="#note-212-ref" aria-label="返回正文">↩</a></li><li id="note-213">关于当代方法（Bayesian 与其他方法）的综述，参见 Molenberghs 等（2014）。 <a class="backref" href="#note-213-ref" aria-label="返回正文">↩</a></li><li id="note-214">参见 MacKenzie 等（2017）；这是一本意在应用的综合性著作。 <a class="backref" href="#note-214-ref" aria-label="返回正文">↩</a></li><li id="note-215">背景和更多术语见 Rubin（1976）及 Rubin 与 Little（2002）。Rubin 1976 年文章第 4 节对缺失数据成因给出了清晰定义，很有价值。 <a class="backref" href="#note-215-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section class="endnotes" id="chapter-15-notes" role="doc-endnotes"><h2>尾注</h2><ol start="210"><li id="note-210">Joseph Bertrand，1889，<cite>Calcul des probabilités</cite>。 <a class="backref" href="#note-210-ref" aria-label="返回正文">↩</a></li><li id="note-211">这一主题有几篇很好的文章，各有自己的风格与记号变体。参见 Hernán 与 Cole（2009）、Loken 与 Gelman（2017）、Brakenhoff 等（2018）以及 van Smeden 等（2019）。 <a class="backref" href="#note-211-ref" aria-label="返回正文">↩</a></li><li id="note-212">关于这种做法富有建设性的批评，参见 Hernán 与 Cole（2009）。 <a class="backref" href="#note-212-ref" aria-label="返回正文">↩</a></li><li id="note-213">关于当代方法（Bayesian 与其他方法）的综述，参见 Molenberghs 等（2014）。 <a class="backref" href="#note-213-ref" aria-label="返回正文">↩</a></li><li id="note-214">参见 MacKenzie 等（2017）；这是一本意在应用的综合性著作。 <a class="backref" href="#note-214-ref" aria-label="返回正文">↩</a></li><li id="note-215">背景和更多术语见 Rubin（1976）及 Rubin 与 Little（2002）。Rubin 1976 年文章第 4 节对缺失数据成因给出了清晰定义，很有价值。 <a class="backref" href="#note-215-ref" aria-label="返回正文">↩</a></li><li id="note-216">Rubin（1987）。 <a class="backref" href="#note-216-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 15 章 PDF 第 517–536 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 537 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 15 章 PDF 第 517–539 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 540 页继续。</aside>
 </article>

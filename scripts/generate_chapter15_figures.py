@@ -13,6 +13,8 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT1 = ROOT / "translations" / "zh" / "media" / "chapter-15-measurement-error.svg"
 OUT2 = ROOT / "translations" / "zh" / "media" / "chapter-15-divorce-shrinkage.svg"
 OUT3 = ROOT / "translations" / "zh" / "media" / "chapter-15-both-errors-shrinkage.svg"
+OUT4 = ROOT / "translations" / "zh" / "media" / "chapter-15-imputation-independent.svg"
+OUT5 = ROOT / "translations" / "zh" / "media" / "chapter-15-imputation-correlated.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 GRID = "#ddd9ce"
@@ -29,6 +31,21 @@ MARRIAGE_SE = [
     1.02, 0.70, 0.69, 0.77, 1.54, 0.81, 2.31, 1.44, 1.76, 0.59,
     1.90, 0.47, 0.98, 2.93, 0.61, 1.29, 1.10, 0.48, 2.11, 1.18,
     2.64, 0.85, 0.61, 1.77, 2.40, 0.83, 1.00, 1.69, 0.79, 3.92,
+]
+MILK_KCAL = [
+    0.49, 0.51, 0.46, 0.48, 0.60, 0.47, 0.56, 0.89, 0.91, 0.92,
+    0.80, 0.46, 0.71, 0.71, 0.73, 0.68, 0.72, 0.97, 0.79, 0.84,
+    0.48, 0.62, 0.51, 0.54, 0.49, 0.53, 0.48, 0.55, 0.71,
+]
+MILK_MASS = [
+    1.95, 2.09, 2.51, 1.62, 2.19, 5.25, 5.37, 2.51, 0.71, 0.68,
+    0.12, 0.47, 0.32, 0.60, 3.47, 1.55, 7.08, 3.24, 7.94, 12.30,
+    7.59, 5.37, 10.72, 35.48, 79.43, 97.72, 40.74, 33.11, 54.95,
+]
+MILK_BRAIN_PCT: list[float | None] = [
+    55.16, None, None, None, None, 64.54, 64.54, 67.64, None, 68.85,
+    58.85, 61.69, 60.32, None, None, 69.97, None, 70.41, None, 73.40,
+    None, 67.53, None, 71.26, 72.60, None, 70.24, 76.30, 75.49,
 ]
 
 
@@ -330,13 +347,162 @@ def figure_15_3() -> None:
     OUT3.write_text("\n".join(svg), encoding="utf-8")
 
 
+def milk_standardized() -> tuple[list[float], list[float], list[float | None]]:
+    """Return K, log(M), and observed B on the book's standardized scales."""
+    kcal, _ = sample_standardize(MILK_KCAL)
+    log_mass, _ = sample_standardize([math.log(value) for value in MILK_MASS])
+    brain_observed = [value / 100 for value in MILK_BRAIN_PCT if value is not None]
+    brain_mean = sum(brain_observed) / len(brain_observed)
+    _, brain_sd = sample_standardize(brain_observed)
+    brain = [
+        None if value is None else (value / 100 - brain_mean) / brain_sd
+        for value in MILK_BRAIN_PCT
+    ]
+    return kcal, log_mass, brain
+
+
+def imputation_figure(
+    output: Path,
+    number: str,
+    means: list[float],
+    intervals: list[tuple[float, float]],
+    description: str,
+) -> None:
+    """Draw the two-panel milk imputation figures used in Section 15.2.2."""
+    width, height = 1200, 620
+    panels = [(90.0, 55.0, 570.0, 520.0), (665.0, 55.0, 1145.0, 520.0)]
+    kcal, log_mass, brain = milk_standardized()
+    missing = [index for index, value in enumerate(brain) if value is None]
+    x_ranges = [(-2.20, 1.60), (-2.25, 2.15)]
+    y_ranges = [(-1.25, 2.15), (-2.25, 1.65)]
+
+    def map_xy(panel: int, x_value: float, y_value: float) -> tuple[float, float]:
+        x0, y0, x1, y1 = panels[panel]
+        x_low, x_high = x_ranges[panel]
+        y_low, y_high = y_ranges[panel]
+        return (
+            x0 + (x_value - x_low) / (x_high - x_low) * (x1 - x0),
+            y1 - (y_value - y_low) / (y_high - y_low) * (y1 - y0),
+        )
+
+    svg = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
+        f'<title>图 {number}：灵长类乳汁数据的缺失新皮层值插补</title>',
+        f'<desc>{description}</desc>',
+        f'<rect width="{width}" height="{height}" fill="#fff"/>',
+    ]
+    for x0, y0, x1, y1 in panels:
+        svg.append(f'<rect x="{x0}" y="{y0}" width="{x1-x0}" height="{y1-y0}" fill="#fff" stroke="{INK}" stroke-width="1.5"/>')
+
+    for tick in [-2.0, -1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5]:
+        x, _ = map_xy(0, tick, y_ranges[0][0])
+        svg.extend([f'<line x1="{x:.1f}" y1="520" x2="{x:.1f}" y2="527" stroke="{INK}"/>', label(x, 551, f"{tick:g}", size=15, anchor="middle")])
+    for tick in [-1.0, -0.5, 0.0, 0.5, 1.0, 1.5, 2.0]:
+        _, y = map_xy(0, x_ranges[0][0], tick)
+        svg.extend([f'<line x1="83" y1="{y:.1f}" x2="90" y2="{y:.1f}" stroke="{INK}"/>', label(76, y + 5, f"{tick:g}", size=15, anchor="end")])
+    for tick in [-2, -1, 0, 1, 2]:
+        x, _ = map_xy(1, float(tick), y_ranges[1][0])
+        svg.extend([f'<line x1="{x:.1f}" y1="520" x2="{x:.1f}" y2="527" stroke="{INK}"/>', label(x, 551, str(tick), size=15, anchor="middle")])
+    for tick in [-2.0, -1.0, 0.0, 0.5, 1.0, 1.5]:
+        _, y = map_xy(1, x_ranges[1][0], tick)
+        svg.extend([f'<line x1="658" y1="{y:.1f}" x2="665" y2="{y:.1f}" stroke="{INK}"/>', label(651, y + 5, f"{tick:g}", size=15, anchor="end")])
+
+    # Compatibility intervals first so open posterior means remain legible.
+    for position, index in enumerate(missing):
+        mean = means[position]
+        low, high = intervals[position]
+        clipped_x_low = max(x_ranges[0][0], low)
+        clipped_x_high = min(x_ranges[0][1], high)
+        clipped_y_low = max(y_ranges[1][0], low)
+        clipped_y_high = min(y_ranges[1][1], high)
+        x_low, y = map_xy(0, clipped_x_low, kcal[index])
+        x_high, _ = map_xy(0, clipped_x_high, kcal[index])
+        x, y_low = map_xy(1, log_mass[index], clipped_y_low)
+        _, y_high = map_xy(1, log_mass[index], clipped_y_high)
+        svg.extend([
+            f'<line x1="{x_low:.1f}" y1="{y:.1f}" x2="{x_high:.1f}" y2="{y:.1f}" stroke="{INK}" stroke-width="1.5"/>',
+            f'<line x1="{x:.1f}" y1="{y_high:.1f}" x2="{x:.1f}" y2="{y_low:.1f}" stroke="{INK}" stroke-width="1.5"/>',
+        ])
+
+    for index, brain_value in enumerate(brain):
+        if brain_value is None:
+            continue
+        x, y = map_xy(0, brain_value, kcal[index])
+        x2, y2 = map_xy(1, log_mass[index], brain_value)
+        svg.extend([
+            f'<circle cx="{x:.1f}" cy="{y:.1f}" r="5" fill="#6670ee" fill-opacity="0.86"/>',
+            f'<circle cx="{x2:.1f}" cy="{y2:.1f}" r="5" fill="#6670ee" fill-opacity="0.86"/>',
+        ])
+    for position, index in enumerate(missing):
+        x, y = map_xy(0, means[position], kcal[index])
+        x2, y2 = map_xy(1, log_mass[index], means[position])
+        svg.extend([
+            f'<circle cx="{x:.1f}" cy="{y:.1f}" r="5.5" fill="#fff" stroke="{INK}" stroke-width="1.7"/>',
+            f'<circle cx="{x2:.1f}" cy="{y2:.1f}" r="5.5" fill="#fff" stroke="{INK}" stroke-width="1.7"/>',
+        ])
+
+    svg.extend([
+        label(330, 598, "新皮层百分比（标准化）", size=19, anchor="middle", weight=600),
+        label(905, 598, "体重对数（标准化）", size=19, anchor="middle", weight=600),
+        label(28, 287, "乳汁能量（标准化）", size=19, anchor="middle", weight=600, rotate=-90),
+        label(603, 287, "新皮层百分比（标准化）", size=19, anchor="middle", weight=600, rotate=-90),
+        '</svg>',
+    ])
+    output.write_text("\n".join(svg), encoding="utf-8")
+
+
+def figure_15_5() -> None:
+    """Use the exact m15.3 summaries printed by code 15.18."""
+    means = [-0.56, -0.69, -0.68, -0.25, 0.48, -0.16, 0.19, 0.28, 0.52, -0.46, -0.27, 0.17]
+    lows = [-1.95, -2.10, -2.10, -1.61, -0.93, -1.50, -1.08, -1.06, -0.93, -1.87, -1.61, -1.21]
+    highs = [0.95, 0.79, 0.84, 1.15, 1.82, 1.16, 1.58, 1.62, 1.84, 0.93, 1.09, 1.49]
+    imputation_figure(
+        OUT4,
+        "15.5",
+        means,
+        list(zip(lows, highs)),
+        "左图是乳汁能量与新皮层比例，右图是体重对数与新皮层比例；蓝色实心点为观测值，黑色空心点与线段为插补均值及百分之八十九相容区间。",
+    )
+
+
+def figure_15_6() -> None:
+    """Approximate m15.5 with its printed means and conditional Gaussian update."""
+    kcal, log_mass, brain = milk_standardized()
+    missing = [index for index, value in enumerate(brain) if value is None]
+    a, b_mass, b_brain, sigma, rho = 0.03, -0.65, 0.58, 0.84, 0.60
+    prior_sd = math.sqrt(1 - rho**2)
+    means: list[float] = []
+    intervals: list[tuple[float, float]] = []
+    for index in missing:
+        prior_mean = rho * log_mass[index]
+        variance = 1 / (1 / prior_sd**2 + b_brain**2 / sigma**2)
+        mean = variance * (
+            prior_mean / prior_sd**2
+            + b_brain * (kcal[index] - a - b_mass * log_mass[index]) / sigma**2
+        )
+        half_width = 1.598 * math.sqrt(variance)
+        means.append(mean)
+        intervals.append((mean - half_width, mean + half_width))
+    imputation_figure(
+        OUT5,
+        "15.6",
+        means,
+        intervals,
+        "左图是乳汁能量与新皮层比例，右图是体重对数与新皮层比例；双变量模型使插补值保留两个预测变量之间的正相关。",
+    )
+
+
 def main() -> None:
     figure_15_1()
     figure_15_2()
     figure_15_3()
+    figure_15_5()
+    figure_15_6()
     print(OUT1)
     print(OUT2)
     print(OUT3)
+    print(OUT4)
+    print(OUT5)
 
 
 if __name__ == "__main__":

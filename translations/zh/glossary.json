@@ -1241,6 +1241,11 @@
     "missing not at random": "非随机缺失",
     "impute": "插补",
     "imputation": "插补",
+    "multiple imputation": "多重插补",
+    "hot-deck imputation": "热卡插补",
+    "cold-deck imputation": "冷卡插补",
+    "mean substitution": "均值替代",
+    "stochastic imputation": "随机插补",
     "occupancy model": "占域模型",
     "cross-classified varying slopes model": "交叉分类变化斜率模型"
   },

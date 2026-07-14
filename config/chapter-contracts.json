@@ -2684,7 +2684,7 @@
   },
   "chapter-15": {
     "required_status": "in_progress",
-    "source_pages": [517, 536],
+    "source_pages": [517, 539],
     "required_ids": [
       "intro-15",
       "note-210-ref",
@@ -2758,13 +2758,23 @@
       "code-15-20",
       "plot-15-imputation-coefficients",
       "code-15-21",
+      "fig-15-5",
+      "eq-15-imputation-independent",
+      "eq-15-imputation-bivariate",
+      "code-15-22",
+      "output-15-22",
+      "fig-15-6",
+      "rethinking-15-multiple-imputations",
+      "note-216-ref",
+      "erratum-15-multiple-imputation-either",
       "chapter-15-notes",
       "note-210",
       "note-211",
       "note-212",
       "note-213",
       "note-214",
-      "note-215"
+      "note-215",
+      "note-216"
     ],
     "required_headings": [
       "缺失数据与其他机会",
@@ -2778,24 +2788,25 @@
       "15.2.1 DAG 吃掉了我的作业",
       "再思考：给“完全随机”命名",
       "15.2.2 插补灵长类",
+      "再思考：多重插补",
       "尾注"
     ],
     "counts": {
       "section": 8,
-      "figure": 34,
-      "figure img": 3,
-      ".book-figure": 6,
-      ".code-listing": 21,
-      ".code-output": 6,
-      ".rethinking-box": 3,
+      "figure": 37,
+      "figure img": 5,
+      ".book-figure": 8,
+      ".code-listing": 22,
+      ".code-output": 7,
+      ".rethinking-box": 4,
       ".overthinking-box": 0,
       ".book-quote": 0,
-      ".equation-block": 10,
-      ".wallis-equation": 10,
-      ".source-erratum": 5,
+      ".equation-block": 12,
+      ".wallis-equation": 12,
+      ".source-erratum": 6,
       ".chapter-introduction": 1,
       ".continuation-note": 1,
-      ".endnotes li": 6
+      ".endnotes li": 7
     }
   }
 }
