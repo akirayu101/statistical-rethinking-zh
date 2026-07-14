@@ -3131,8 +3131,8 @@
     }
   },
   "endnotes": {
-    "required_status": "in_progress",
-    "source_pages": [585, 596],
+    "required_status": "verified",
+    "source_pages": [585, 598],
     "required_ids": [
       "endnotes-chapter-01",
       "endnote-1",
@@ -3177,7 +3177,13 @@
       "endnote-194",
       "endnote-209",
       "endnotes-chapter-15",
-      "endnote-210"
+      "endnote-218",
+      "endnotes-chapter-16",
+      "endnote-219",
+      "endnote-229",
+      "endnotes-chapter-17",
+      "endnote-230",
+      "endnote-245"
     ],
     "required_headings": [
       "尾注",
@@ -3195,10 +3201,12 @@
       "第 12 章",
       "第 13 章",
       "第 14 章",
-      "第 15 章"
+      "第 15 章",
+      "第 16 章",
+      "第 17 章"
     ],
     "counts": {
-      "section": 15,
+      "section": 17,
       "figure": 0,
       "figure img": 0,
       ".book-figure": 0,
@@ -3212,7 +3220,7 @@
       ".source-erratum": 0,
       ".chapter-introduction": 0,
       ".continuation-note": 0,
-      ".endnotes li": 210
+      ".endnotes li": 245
     }
   }
 }
