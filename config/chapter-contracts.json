@@ -3225,7 +3225,7 @@
   },
   "bibliography": {
     "required_status": "in_progress",
-    "source_pages": [599, 604],
+    "source_pages": [599, 607],
     "minimum_chinese_ratio": 0.005,
     "required_ids": [
       "bibliography-reading-note",
@@ -3246,7 +3246,16 @@
       "reference-130",
       "bibliography-pdf-604",
       "reference-131",
-      "reference-156"
+      "reference-156",
+      "bibliography-pdf-605",
+      "reference-157",
+      "reference-182",
+      "bibliography-pdf-606",
+      "reference-183",
+      "reference-209",
+      "bibliography-pdf-607",
+      "reference-210",
+      "reference-235"
     ],
     "required_headings": [
       "参考文献",
@@ -3255,12 +3264,15 @@
       "F–G",
       "G–H",
       "H–K",
-      "K–M"
+      "K–M",
+      "M–P",
+      "P–S",
+      "S–V"
     ],
     "counts": {
-      "section": 6,
-      ".bibliography-list": 6,
-      ".bibliography-list li": 156,
+      "section": 9,
+      ".bibliography-list": 9,
+      ".bibliography-list li": 235,
       "figure": 0,
       ".code-listing": 0,
       ".equation-block": 0,
