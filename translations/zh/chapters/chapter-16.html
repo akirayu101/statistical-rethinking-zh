@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-16" data-source-pages="553-564">
-  <header class="chapter-header"><p class="eyebrow">第十六章</p><h1>广义线性疯狂</h1><p class="source-range">当前译稿对应原书 PDF 第 553–564 页</p></header>
+<article class="book-article" data-chapter="chapter-16" data-source-pages="553-567">
+  <header class="chapter-header"><p class="eyebrow">第十六章</p><h1>广义线性疯狂</h1><p class="source-range">当前译稿对应原书 PDF 第 553–567 页</p></header>
 
   <div class="chapter-introduction" id="intro-16">
     <p>高中时，我问物理老师怎么看统计学，她给我讲了一个笑话。以下是我记得的版本。一位物理学家、一位工程师和一位统计学家结伴去用弓打猎。几个小时后，他们终于在远处发现一只鹿。物理学家快速做了弹道计算，忽略空气阻力；箭飞得很正，却落在目标前几米，鹿毫无察觉。工程师冷笑一声，给空气阻力加入一个修正因子，然后放箭；第二支箭却落在目标后几米，鹿仍然没有察觉。统计学家取了平均值，高喊：“我们射中了！”</p>
@@ -220,10 +220,80 @@ plot( precis(m16.2,2) , labels=p_labels )</code></pre></figure>
     <section id="sec-16-2-4"><h3>16.2.4 状态空间模型</h3>
       <p>上面的 Boxes 模型类似于更宽泛的一类模型，称为<strong>状态空间模型</strong>。这类模型假设有多个隐藏状态产生观测。状态通常是动态的，会随时间改变。当状态是离散类别时，模型可称为<strong>隐 Markov 模型</strong>（HMM）。许多时间序列模型都是状态空间模型，因为真正的时间序列状态并不可观测，能看到的只有带噪声的测量。本章稍后会给出一个例子。</p>
     </section>
-    <p class="continuation-note">16.3“常微分坚果破解”及黑猩猩开坚果技能的生成模型，将从原书 PDF 第 565 页继续。</p>
   </section>
 
-  <section class="endnotes" id="chapter-16-notes" role="doc-endnotes"><h2>尾注</h2><ol start="219"><li id="note-219">“Vitruvian Can”（“维特鲁威罐头”）这个双关由 Clint Johns（Twitter：@DrClintonJohns）提供。 <a class="backref" href="#note-219-ref" aria-label="返回正文">↩</a></li><li id="note-220">Harte（1988）。 <a class="backref" href="#note-220-ref" aria-label="返回正文">↩</a></li><li id="note-221">关于模型构建哲学有许多好文章，作者推荐三篇：Levins（1966）、Wimsatt（2002）和 Smaldino（2017）。 <a class="backref" href="#note-221-ref" aria-label="返回正文">↩</a></li><li id="note-222">资料来自 van Leeuwen 等（2018）。 <a class="backref" href="#note-222-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section id="sec-16-3"><h2>16.3 常微分坚果破解</h2>
+    <p>Panda 坚果与熊猫毫无关系。它是常绿乔木 <em>Panda oleosa</em> 结出的一种又大又硬的坚果。几千年来，人们一直享用美味的 Panda 坚果，用石器和钢制工具把它们敲开。其他动物要打开这种坚果困难得多；但科特迪瓦的黑猩猩与人类一样会使用工具。它们用石锤和木锤敲开 Panda 坚果，而且效率很高。</p>
+    <p>本节要为这些黑猩猩开坚果技能的发展建立模型。先载入数据，勾勒项目：</p>
+    <figure class="code-listing" id="code-16-9"><figcaption>R 代码 16.9</figcaption><pre><code>library(rethinking)
+data(Panda_nuts)</code></pre></figure>
+    <p>这些数据记录了一次次独立的开坚果活动<sup id="note-223-ref"><a href="#note-223">223</a></sup>，每一行对应“个体—活动”组合。眼下最关心的变量是结果 <code>nuts_opened</code>、以秒计的活动持续时间，以及个体年龄。研究问题是：开坚果技能怎样发展，又有哪些因素促成它？这个问题之所以值得关心，部分原因是工具使用在灵长类中非常罕见，而人类却离不开工具。我们是怎样走到这一步的？要理解人类技术的演化，需要跨物种比较，拆分认知、灵巧性、社会学习与力量各自的贡献。本节当然解决不了这一切，但会开个头，而且不用 GLM。</p>
+    <aside class="source-erratum" id="erratum-16-nut-cracking-typos"><strong>原文说明：</strong>PDF 第 565 页的 “duration pf the bout” 应为 “duration <em>of</em> the bout”；PDF 第 566 页两处 “it let’s the animal” 应为 “it <em>lets</em> the animal”，而 “An adult male chimpanzees” 应为单数 <em>chimpanzee</em>。译稿均按上下文订正。</aside>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 16 章 PDF 第 553–564 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 565 页继续。</aside>
+    <section id="sec-16-3-1"><h3>16.3.1 科学模型</h3>
+      <p>我们需要一个随年龄变化的开坚果速率生成模型。先考虑最笨、却仍然比 GLM 聪明的模型：假设唯一重要因素是个体力量。个体随年龄增长而变强，开坚果速率也随之上升。黑猩猩显然还需要一些知识，但先假设知识来得容易，身体力量才是限制因素。若模型表现很差，就有充分理由重新考虑这个假设。</p>
+      <p>对于终止生长的动物——即最终达到稳定成年体重——体型增加量与距离最大体型的差距成正比。这意味着，质量随年龄 <var>t</var> 的瞬时变化率为：</p>
+      <div class="equation-block wallis-equation" id="eq-16-growth-ode"><div><span class="fraction"><span>d<var>M</var></span><span>d<var>t</var></span></span> = <var>k</var>(<var>M</var><sub>max</sub> − <var>M</var><sub><var>t</var></sub>)</div></div>
+      <p>参数 <var>k</var> 衡量技能随年龄增长的速率。上式告诉我们质量在任意年龄变化得多快，但还需要给定年龄时的质量公式。求解微分方程超出了本书的层次，不过其实不必会解——任何计算机代数系统都能完成。这条微分方程本身是生物学经典<sup id="note-224-ref"><a href="#note-224">224</a></sup>，其解为：</p>
+      <div class="equation-block wallis-equation" id="eq-16-growth-solution"><div><var>M</var><sub><var>t</var></sub> = <var>M</var><sub>max</sub>(1 − exp(−<var>k</var><var>t</var>))</div></div>
+      <p>稍后进行先验预测模拟时会绘制这个函数。它产生逐渐减速、最终在 <var>M</var><sub>max</sub> 处趋平的曲线；若想提前看，图 16.4 左侧就是示例。</p>
+      <p>真正关心的是力量，而质量不等于力量。于是再假设力量与质量成正比：<span class="math-inline"><var>S</var><sub><var>t</var></sub> = <var>βM</var><sub><var>t</var></sub></span>。参数 <var>β</var> 只衡量这个比例。接下来还要把力量与开坚果速率关联起来。可以假设它们也简单成正比；但力量至少通过三种方式提供帮助。第一，力量让动物举起更重的锤子，而重锤动量更大；第二，力量让动物以超过重力加速度的速度加速锤子；第三，更强壮的动物肢体也更长，形成效率更高的杠杆。因此，假设力量带来递增报酬很合理。用数学表示，开坚果速率函数为：</p>
+      <div class="equation-block wallis-equation" id="eq-16-nut-rate-full"><div><var>λ</var> = <var>αS</var><sub><var>t</var></sub><sup><var>θ</var></sup> = <var>α</var>(<var>βM</var><sub>max</sub>(1 − exp(−<var>k</var><var>t</var>)))<sup><var>θ</var></sup></div></div>
+      <p>其中 <var>θ</var> 是大于 1 的指数。假设力量具有递增报酬，一个现实含义是：低于某个阈值时，个体无法在合理时间内打开哪怕一颗坚果。新参数 <var>α</var> 表示力量与开坚果之间的比例，把以牛顿计的力转换为每秒打开的坚果数。</p>
+      <p>现在有了打开坚果速率 <var>λ</var> 的函数，却是一锅参数汤。可以先把体重 <var>M</var><sub>max</sub> 重新缩放成 1。这样看似作弊，但测量尺度本来就是任意的；令 <span class="math-inline"><var>M</var><sub>max</sub> = 1</span> 只是在设定度量尺度，于是：</p>
+      <div class="equation-block wallis-equation" id="eq-16-nut-rate-rescaled"><div><var>λ</var> = <var>αβ</var><sup><var>θ</var></sup>(1 − exp(−<var>k</var><var>t</var>))<sup><var>θ</var></sup></div></div>
+      <p>前面的乘积 <span class="math-inline"><var>αβ</var><sup><var>θ</var></sup></span> 只是把力量重新缩放为每秒打开的坚果数，所以可以用单个参数替代：</p>
+      <div class="equation-block wallis-equation" id="eq-16-nut-rate-phi"><div><var>λ</var> = <var>ϕ</var>(1 − exp(−<var>k</var><var>t</var>))<sup><var>θ</var></sup></div></div>
+      <p>这样好多了。简化也有代价：它隐藏了一些有用事实。例如，成年雄性与雌性的平均体重不同；成年雄性黑猩猩可能比成年雌性重 10 千克。章末练习会要求你表达这个事实。</p>
+    </section>
+
+    <section id="sec-16-3-2"><h3>16.3.2 统计模型</h3>
+      <p>要用上面的模型作估计，需要 likelihood 与先验。Likelihood 很直接：只要打开的坚果数远少于可用坚果总数，Poisson 分布就具有正确约束。因此：</p>
+      <div class="equation-block wallis-equation" id="eq-16-nut-statistical-model"><div><var>n</var><sub><var>i</var></sub> ∼ Poisson(<var>λ</var><sub><var>i</var></sub>)</div><div><var>λ</var><sub><var>i</var></sub> = <var>d</var><sub><var>i</var></sub><var>ϕ</var>(1 − exp(−<var>kt</var><sub><var>i</var></sub>))<sup><var>θ</var></sup></div></div>
+      <p>其中 <var>n</var><sub><var>i</var></sub> 是打开的坚果数，<var>d</var><sub><var>i</var></sub> 是开坚果所用时间，<var>t</var><sub><var>i</var></sub> 是观测 <var>i</var> 中个体的年龄。唯一新增的是暴露量 <var>d</var><sub><var>i</var></sub>。第 11 章曾通过在线性模型中加入持续时间的对数，给 Poisson 模型添加暴露量；这里不用对数，因为模型并非线性，也没有对数链接函数。我们直接编写速率 <var>λ</var>，所以持续时间 <var>d</var><sub><var>i</var></sub> 只需乘上速率，得到期望打开数。比如我说自己每秒能打开 <span class="math-inline"><var>λ</var> = 0.4</span> 颗坚果；要算 10 秒能打开多少，只需用 0.4 乘 10，得到每 10 秒 4 颗。</p>
+      <p>先验怎么办？要在这里取得合理先验，需要同时考虑相关生物学事实，并借助模拟把事实转化为分布假设。最相关的事实是，黑猩猩大约在 12 岁达到成年体重，所以先验生长曲线应当在 12 岁左右趋平。需要为 <var>k</var> 和 <var>θ</var> 选择能做到这一点的分布；而 <var>ϕ</var> 的先验均值应当接近开坚果的最大速率。我并不是开坚果专家，不过不妨假定一只专业黑猩猩每秒能打开一颗——毕竟可以同时捶打好几颗。</p>
+      <p>建议使用以下先验：</p>
+      <div class="equation-block wallis-equation" id="eq-16-nut-priors"><div><var>ϕ</var> ∼ Log-Normal(log(1), 0.1)</div><div><var>k</var> ∼ Log-Normal(log(2), 0.25)</div><div><var>θ</var> ∼ Log-Normal(log(5), 0.25)</div></div>
+      <p>三者都是 Log-Normal，因为三个参数都必须为正且连续。可以从这些先验模拟，绘制它们所蕴含的先验生长曲线与速率曲线：</p>
+      <figure class="code-listing" id="code-16-10"><figcaption>R 代码 16.10</figcaption><pre><code>N &lt;- 1e4
+phi &lt;- rlnorm( N , log(1) , 0.1 )
+k &lt;- rlnorm( N , log(2), 0.25 )
+theta &lt;- rlnorm( N , log(5) , 0.25 )
+
+# relative grow curve
+plot( NULL , xlim=c(0,1.5) , ylim=c(0,1) , xaxt="n" , xlab="age" ,
+    ylab="body mass" )
+at &lt;- c(0,0.25,0.5,0.75,1,1.25,1.5)
+axis( 1 , at=at , labels=round(at*max(Panda_nuts$age)) )
+for ( i in 1:20 ) curve( (1-exp(-k[i]*x)) , add=TRUE , col=grau() , lwd=1.5 )
+
+# implied rate of nut opening curve
+plot( NULL , xlim=c(0,1.5) , ylim=c(0,1.2) , xaxt="n" , xlab="age" ,
+    ylab="nuts per second" )
+at &lt;- c(0,0.25,0.5,0.75,1,1.25,1.5)
+axis( 1 , at=at , labels=round(at*max(Panda_nuts$age)) )
+for ( i in 1:20 ) curve( phi[i]*(1-exp(-k[i]*x))^theta[i] , add=TRUE ,
+    col=grau() , lwd=1.5 )</code></pre></figure>
+      <p>这些图会显示在图 16.4 中。用 <code>dens()</code> 检查每个参数各自的分布当然有帮助，但这种把所有参数结合起来的图，对于理解先验含义必不可少。</p>
+      <p>编写模型不会带来新问题，只需构造惯常的数据列表，再用 <code>ulam()</code> 表达 likelihood 与先验：</p>
+      <figure class="code-listing" id="code-16-11"><figcaption>R 代码 16.11</figcaption><pre><code>dat_list &lt;- list(
+    n = as.integer( Panda_nuts$nuts_opened ),
+    age = Panda_nuts$age / max(Panda_nuts$age),
+    seconds = Panda_nuts$seconds )
+
+m16.4 &lt;- ulam(
+    alist(
+        n ~ poisson( lambda ),
+        lambda &lt;- seconds*phi*(1-exp(-k*age))^theta,
+        phi ~ lognormal( log(1) , 0.1 ),
+        k ~ lognormal( log(2) , 0.25 ),
+        theta ~ lognormal( log(5) , 0.25 )
+    ), data=dat_list , chains=4 )</code></pre></figure>
+      <p class="continuation-note">图 16.4、链诊断之后的后验技能曲线，以及代码 16.12，将从原书 PDF 第 568 页继续。</p>
+    </section>
+  </section>
+
+  <section class="endnotes" id="chapter-16-notes" role="doc-endnotes"><h2>尾注</h2><ol start="219"><li id="note-219">“Vitruvian Can”（“维特鲁威罐头”）这个双关由 Clint Johns（Twitter：@DrClintonJohns）提供。 <a class="backref" href="#note-219-ref" aria-label="返回正文">↩</a></li><li id="note-220">Harte（1988）。 <a class="backref" href="#note-220-ref" aria-label="返回正文">↩</a></li><li id="note-221">关于模型构建哲学有许多好文章，作者推荐三篇：Levins（1966）、Wimsatt（2002）和 Smaldino（2017）。 <a class="backref" href="#note-221-ref" aria-label="返回正文">↩</a></li><li id="note-222">资料来自 van Leeuwen 等（2018）。 <a class="backref" href="#note-222-ref" aria-label="返回正文">↩</a></li><li id="note-223">资料来自 Boesch 等（2019）。数据由 Roger Mundry 慷慨提供；论文中巧妙的分析也是由他设计的。 <a class="backref" href="#note-223-ref" aria-label="返回正文">↩</a></li><li id="note-224">von Bertalanffy（1934）。 <a class="backref" href="#note-224-ref" aria-label="返回正文">↩</a></li></ol></section>
+
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 16 章 PDF 第 553–567 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 568 页继续。</aside>
 </article>

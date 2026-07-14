@@ -2879,7 +2879,7 @@
   },
   "chapter-16": {
     "required_status": "in_progress",
-    "source_pages": [553, 564],
+    "source_pages": [553, 567],
     "required_ids": [
       "intro-16",
       "rethinking-16-bespoke",
@@ -2931,11 +2931,29 @@
       "plot-16-boxes-strategy-posterior",
       "overthinking-16-boxes-stan",
       "sec-16-2-4",
+      "sec-16-3",
+      "code-16-9",
+      "note-223-ref",
+      "erratum-16-nut-cracking-typos",
+      "sec-16-3-1",
+      "eq-16-growth-ode",
+      "note-224-ref",
+      "eq-16-growth-solution",
+      "eq-16-nut-rate-full",
+      "eq-16-nut-rate-rescaled",
+      "eq-16-nut-rate-phi",
+      "sec-16-3-2",
+      "eq-16-nut-statistical-model",
+      "eq-16-nut-priors",
+      "code-16-10",
+      "code-16-11",
       "chapter-16-notes",
       "note-219",
       "note-220",
       "note-221",
-      "note-222"
+      "note-222",
+      "note-223",
+      "note-224"
     ],
     "required_headings": [
       "广义线性疯狂",
@@ -2952,24 +2970,27 @@
       "16.2.3 编写统计模型",
       "过度思考：Boxes 模型的 Stan 代码",
       "16.2.4 状态空间模型",
+      "16.3 常微分坚果破解",
+      "16.3.1 科学模型",
+      "16.3.2 统计模型",
       "尾注"
     ],
     "counts": {
-      "section": 10,
-      "figure": 12,
+      "section": 13,
+      "figure": 15,
       "figure img": 2,
       ".book-figure": 4,
-      ".code-listing": 8,
+      ".code-listing": 11,
       ".code-output": 3,
       ".rethinking-box": 3,
       ".overthinking-box": 1,
       ".book-quote": 0,
-      ".equation-block": 13,
-      ".wallis-equation": 13,
-      ".source-erratum": 3,
+      ".equation-block": 20,
+      ".wallis-equation": 20,
+      ".source-erratum": 4,
       ".chapter-introduction": 1,
       ".continuation-note": 1,
-      ".endnotes li": 4
+      ".endnotes li": 6
     }
   }
 }
