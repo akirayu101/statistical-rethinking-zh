@@ -17,6 +17,7 @@ NUT_POSTERIOR_OUT = ROOT / "translations" / "zh" / "media" / "chapter-16-nut-pos
 LYNX_HARE_OUT = ROOT / "translations" / "zh" / "media" / "chapter-16-lynx-hare-series.svg"
 LOTKA_OUT = ROOT / "translations" / "zh" / "media" / "chapter-16-lotka-volterra-simulation.svg"
 OBSERVATION_OUT = ROOT / "translations" / "zh" / "media" / "chapter-16-observation-model-density.svg"
+POSTERIOR_PREDICTIONS_OUT = ROOT / "translations" / "zh" / "media" / "chapter-16-lynx-hare-posterior-predictions.svg"
 DATA_URL = "https://raw.githubusercontent.com/rmcelreath/rethinking/master/data/Howell1.csv"
 BOXES_DATA_URL = "https://raw.githubusercontent.com/rmcelreath/rethinking/master/data/Boxes.csv"
 PANDA_DATA_URL = "https://raw.githubusercontent.com/rmcelreath/rethinking/master/data/Panda_nuts.csv"
@@ -453,6 +454,80 @@ def write_observation_density_figure() -> None:
     print(f"wrote {OBSERVATION_OUT}")
 
 
+def write_lynx_hare_posterior_predictions(data: list[tuple[int, float, float]]) -> None:
+    rng = random.Random(1620)
+    population_draws: list[tuple[list[float], list[float]]] = []
+    pelt_draws: list[tuple[list[float], list[float]]] = []
+    for _ in range(21):
+        lynx = max(8, rng.gauss(25, 3))
+        hare = max(60, rng.gauss(150, 18))
+        birth_hare = rng.gauss(0.55, 0.025)
+        mortality_hare = math.exp(rng.gauss(math.log(0.006), 0.08))
+        birth_lynx = math.exp(rng.gauss(math.log(0.0035), 0.08))
+        mortality_lynx = rng.gauss(0.5, 0.02)
+        lynx_years = [lynx]
+        hare_years = [hare]
+        dt = 0.005
+        for step in range(1, 4001):
+            hare_next = hare + dt * hare * (birth_hare - mortality_hare * lynx)
+            lynx_next = lynx + dt * lynx * (birth_lynx * hare - mortality_lynx)
+            hare, lynx = hare_next, lynx_next
+            if step % 200 == 0:
+                lynx_years.append(lynx)
+                hare_years.append(hare)
+        population_draws.append((lynx_years, hare_years))
+        lynx_pelts = [value * 0.18 * math.exp(rng.gauss(-0.5 * 0.25**2, 0.25)) for value in lynx_years]
+        hare_pelts = [value * 0.20 * math.exp(rng.gauss(-0.5 * 0.25**2, 0.25)) for value in hare_years]
+        pelt_draws.append((lynx_pelts, hare_pelts))
+
+    width, height = 1200, 1020
+    left, panel_w, panel_h = 110, 1010, 345
+    top_pelts, top_population = 70, 570
+
+    def px(index: int) -> float:
+        return left + panel_w * index / 20
+
+    def py(top: float, value: float, maximum: float) -> float:
+        return top + panel_h - panel_h * value / maximum
+
+    parts = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-labelledby="title desc">',
+        '<title id="title">猞猁—雪兔模型的后验预测</title>',
+        '<desc id="desc">上图将实际毛皮数据与二十一条带独立测量误差的后验预测叠加，轨迹呈锯齿；下图是相应的隐藏种群轨迹，没有测量误差，因而平滑连续。</desc>',
+        '<rect width="100%" height="100%" fill="#fff"/>',
+        f'<style>.axis{{font:16px {FONT};fill:#30332e}}.label{{font:20px {FONT};fill:#30332e}}.title{{font:700 23px {FONT};fill:#263f86}}.panel{{fill:#fff;stroke:#3c403b;stroke-width:1.4}}.hare{{fill:none;stroke:#202420;stroke-width:2;opacity:.22}}.lynx{{fill:none;stroke:#6874ef;stroke-width:2;opacity:.28}}.hare-point{{fill:#202420}}.lynx-point{{fill:#6874ef}}</style>',
+        '<text class="title" x="615" y="31" text-anchor="middle">毛皮观测与隐藏种群的后验预测</text>',
+        f'<rect class="panel" x="{left}" y="{top_pelts}" width="{panel_w}" height="{panel_h}"/>',
+        f'<rect class="panel" x="{left}" y="{top_population}" width="{panel_w}" height="{panel_h}"/>',
+    ]
+    for lynx_pelts, hare_pelts in pelt_draws:
+        parts.append(f'<path class="hare" d="{path([(px(i), py(top_pelts, min(120, value), 120)) for i, value in enumerate(hare_pelts)])}"/>')
+        parts.append(f'<path class="lynx" d="{path([(px(i), py(top_pelts, min(120, value), 120)) for i, value in enumerate(lynx_pelts)])}"/>')
+    for lynx, hare in population_draws:
+        parts.append(f'<path class="hare" d="{path([(px(i), py(top_population, min(500, value), 500)) for i, value in enumerate(hare)])}"/>')
+        parts.append(f'<path class="lynx" d="{path([(px(i), py(top_population, min(500, value), 500)) for i, value in enumerate(lynx)])}"/>')
+    for index, (_, lynx, hare) in enumerate(data):
+        parts.append(f'<circle class="hare-point" cx="{fmt(px(index))}" cy="{fmt(py(top_pelts, hare, 120))}" r="5"/>')
+        parts.append(f'<circle class="lynx-point" cx="{fmt(px(index))}" cy="{fmt(py(top_pelts, lynx, 120))}" r="5"/>')
+    for top, maximum, step in ((top_pelts, 120, 20), (top_population, 500, 100)):
+        for tick in range(0, maximum + 1, step):
+            ypos = py(top, tick, maximum)
+            parts.append(f'<text class="axis" x="{left - 12}" y="{fmt(ypos + 5)}" text-anchor="end">{tick}</text>')
+        for index, year in ((0, 1900), (10, 1910), (20, 1920)):
+            parts.append(f'<text class="axis" x="{fmt(px(index))}" y="{top + panel_h + 27}" text-anchor="middle">{year}</text>')
+        parts.append(f'<text class="label" x="{left + panel_w / 2}" y="{top + panel_h + 58}" text-anchor="middle">年份</text>')
+    parts.append(f'<text class="label" x="31" y="{top_pelts + panel_h / 2}" text-anchor="middle" transform="rotate(-90 31 {top_pelts + panel_h / 2})">毛皮数量（千张）</text>')
+    parts.append(f'<text class="label" x="31" y="{top_population + panel_h / 2}" text-anchor="middle" transform="rotate(-90 31 {top_population + panel_h / 2})">动物数量（千只）</text>')
+    parts.append(f'<text class="label" x="{fmt(px(14))}" y="{fmt(py(top_pelts, 96, 120))}" fill="#202420">雪兔</text>')
+    parts.append(f'<text class="label" x="{fmt(px(16))}" y="{fmt(py(top_pelts, 50, 120))}" fill="#6874ef">猞猁</text>')
+    parts.append(f'<text class="label" x="{fmt(px(14))}" y="{fmt(py(top_population, 410, 500))}" fill="#202420">雪兔</text>')
+    parts.append(f'<text class="label" x="{fmt(px(16))}" y="{fmt(py(top_population, 210, 500))}" fill="#6874ef">猞猁</text>')
+    parts.append('</svg>')
+    POSTERIOR_PREDICTIONS_OUT.write_text("".join(parts), encoding="utf-8")
+    print(f"wrote {POSTERIOR_PREDICTIONS_OUT}")
+
+
 def main() -> int:
     raw = load_data()
     mean_h = sum(height for height, _ in raw) / len(raw)
@@ -575,6 +650,7 @@ def main() -> int:
     write_lynx_hare_figure(lynx_hare)
     write_lotka_volterra_figure(lynx_hare)
     write_observation_density_figure()
+    write_lynx_hare_posterior_predictions(lynx_hare)
     return 0
 
 

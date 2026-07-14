@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-16" data-source-pages="553-576">
-  <header class="chapter-header"><p class="eyebrow">第十六章</p><h1>广义线性疯狂</h1><p class="source-range">当前译稿对应原书 PDF 第 553–576 页</p></header>
+<article class="book-article" data-chapter="chapter-16" data-source-pages="553-580">
+  <header class="chapter-header"><p class="eyebrow">第十六章</p><h1>广义线性疯狂</h1><p class="source-range">完整译稿对应原书 PDF 第 553–580 页</p></header>
 
   <div class="chapter-introduction" id="intro-16">
     <p>高中时，我问物理老师怎么看统计学，她给我讲了一个笑话。以下是我记得的版本。一位物理学家、一位工程师和一位统计学家结伴去用弓打猎。几个小时后，他们终于在远处发现一只鹿。物理学家快速做了弹道计算，忽略空气阻力；箭飞得很正，却落在目标前几米，鹿毫无察觉。工程师冷笑一声，给空气阻力加入一个修正因子，然后放箭；第二支箭却落在目标后几米，鹿仍然没有察觉。统计学家取了平均值，高喊：“我们射中了！”</p>
@@ -443,12 +443,55 @@ for ( s in 1:21 ) {
 text( 17 , 90 , "Lepus" , pos=2 )
 text( 19 , 50 , "Lynx" , pos=2 , col=rangi2 )</code></pre></figure>
       <p>结果见图 16.9 上图。黑点与黑色轨迹是雪兔毛皮，蓝点与蓝色轨迹是猞猁毛皮。注意预测轨迹的锯齿；这是模型假定各时点测量误差互不相关的结果。</p>
-      <aside class="source-erratum" id="erratum-16-population-dynamics-typos"><strong>原文说明：</strong>PDF 第 571 页的 “if you care about is forecasting” 漏排 <em>all</em>，“depends upon have” 应为 <em>having</em>；PDF 第 573 页的 “underly model” 应为 <em>underlying model</em>，而观测过程步骤从 “First” 直接跳到 “Third”。PDF 第 573 页叙述说毛皮数取整到最近的 100，而第 574 页代码 <code>round(h/1000, 2)</code> 实际取整到最近的 10；PDF 第 575 页 “sampler need” 应为 <em>sampler needs</em>，第 576 页 “overly 21 simulated” 应为 <em>overlay 21 simulated</em>。译稿按上下文修正，代码保持原样。</aside>
-      <p class="continuation-note">图 16.9、测量误差与隐藏状态的因果解释，以及代码 16.20，将从原书 PDF 第 577 页继续。</p>
+      <figure class="book-figure posterior-predictions-figure" id="fig-16-9"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的猞猁雪兔毛皮观测与隐藏种群后验预测双面板图"><img src="/media/chapter-16-lynx-hare-posterior-predictions.svg" alt="上图的毛皮后验预测带有独立测量误差而呈锯齿，下图的隐藏雪兔和猞猁种群轨迹平滑连续"></div><p class="scroll-hint">图较宽，可横向滚动比较观测毛皮与隐藏种群轨迹。</p><figcaption><strong>图 16.9：</strong>猞猁—雪兔模型的后验预测。上：毛皮后验预测。点是数据，黑色为雪兔，蓝色为猞猁；每条轨迹都是从后验分布预测的一条时间序列，锯齿路径来自互不相关的测量误差。下：种群后验预测。与毛皮预测不同，这些轨迹不含测量误差，因而平滑连续。</figcaption></figure>
+      <p>底层种群或许是平滑的，测量却不会平滑。这说明，把时间序列建模成“本轮观测数据导致下一时步的观测数据”，几乎总是错误；自回归模型却常常正是这样做的。只要存在测量误差——而测量误差总会存在——数据就只是某个不可见状态的发射。隐藏状态才是原因，测量本身什么也不导致。</p>
+      <p>把毛皮预测与种群预测放在一起比较很有帮助。下面从后验中模拟 21 条种群动力学轨迹：</p>
+      <figure class="code-listing" id="code-16-20"><figcaption>R 代码 16.20</figcaption><pre><code>plot( NULL , pch=16 , xlim=c(1,21) , ylim=c(0,500) , xlab="year" ,
+    ylab="thousands of animals" , xaxt="n" )
+at &lt;- c(1,11,21)
+axis( 1 , at=at , labels=Lynx_Hare$Year[at] )
+for ( s in 1:21 ) {
+    lines( 1:21 , post$pop[s,,2] , col=col.alpha("black",0.2) , lwd=2 )
+    lines( 1:21 , post$pop[s,,1] , col=col.alpha(rangi2,0.4) , lwd=2 )
+}</code></pre></figure>
+      <p>结果见图 16.9 下图。与毛皮时间序列相比，这些种群动力学轨迹十分平滑。种群规模当然仍有大量不确定性，但每条轨迹都平滑连接，因为这个层次没有测量误差。微分方程模型是确定性的，所以自身不表现随机性。</p>
     </section>
+
+    <section id="sec-16-4-3"><h3>16.4.3 猞猁带来的教训</h3>
+      <p>我们有充分理由怀疑，这个模型并不能完美解释雪兔与猞猁的种群动力学。猞猁在某些时期确实几乎完全依赖雪兔，但雪兔会被很多捕食者吃掉，所以雪兔周期很可能并不是猞猁造成的。换句话说，这里潜伏着一个混杂因素。真实生态系统十分复杂。章末练习会要求你把这个模型用于一个没有这些复杂因素的实验捕食者—猎物系统；还会要求你与自回归模型比较，看看后者需要多少个本轮，才能接近这个简单捕食者—猎物模型的预测质量。</p>
+    </section>
+    <aside class="source-erratum" id="erratum-16-population-dynamics-typos"><strong>原文说明：</strong>PDF 第 571 页的 “if you care about is forecasting” 漏排 <em>all</em>，“depends upon have” 应为 <em>having</em>；PDF 第 573 页的 “underly model” 应为 <em>underlying model</em>，而观测过程步骤从 “First” 直接跳到 “Third”。PDF 第 573 页叙述说毛皮数取整到最近的 100，而第 574 页代码 <code>round(h/1000, 2)</code> 实际取整到最近的 10；PDF 第 575 页 “sampler need” 应为 <em>sampler needs</em>，第 576 页 “overly 21 simulated” 应为 <em>overlay 21 simulated</em>。译稿按上下文修正，代码保持原样。</aside>
   </section>
 
-  <section class="endnotes" id="chapter-16-notes" role="doc-endnotes"><h2>尾注</h2><ol start="219"><li id="note-219">“Vitruvian Can”（“维特鲁威罐头”）这个双关由 Clint Johns（Twitter：@DrClintonJohns）提供。 <a class="backref" href="#note-219-ref" aria-label="返回正文">↩</a></li><li id="note-220">Harte（1988）。 <a class="backref" href="#note-220-ref" aria-label="返回正文">↩</a></li><li id="note-221">关于模型构建哲学有许多好文章，作者推荐三篇：Levins（1966）、Wimsatt（2002）和 Smaldino（2017）。 <a class="backref" href="#note-221-ref" aria-label="返回正文">↩</a></li><li id="note-222">资料来自 van Leeuwen 等（2018）。 <a class="backref" href="#note-222-ref" aria-label="返回正文">↩</a></li><li id="note-223">资料来自 Boesch 等（2019）。数据由 Roger Mundry 慷慨提供；论文中巧妙的分析也是由他设计的。 <a class="backref" href="#note-223-ref" aria-label="返回正文">↩</a></li><li id="note-224">von Bertalanffy（1934）。 <a class="backref" href="#note-224-ref" aria-label="返回正文">↩</a></li><li id="note-225">见 Walker 等（2006）以及 Leigh 和 Shea（1996）。 <a class="backref" href="#note-225-ref" aria-label="返回正文">↩</a></li><li id="note-226">本例依据 Bob Carpenter 的 Stan 案例研究改编：<a href="https://mc-stan.org/users/documentation/case-studies/lotka-volterra-predator-prey.html">Lotka–Volterra 捕食者—猎物模型</a>。 <a class="backref" href="#note-226-ref" aria-label="返回正文">↩</a></li><li id="note-227">Hewitt（1921）。注意，猞猁与雪兔数据大多来自不同地区。尽管这些数据常被用来说明种群动力学，但大量文献认为它们并不是很好的示例；简单搜索即可找到许多讨论。 <a class="backref" href="#note-227-ref" aria-label="返回正文">↩</a></li><li id="note-228">Volterra（1926）；Lotka（1925）。 <a class="backref" href="#note-228-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section id="sec-16-5"><h2>16.5 总结</h2>
+    <p>本章展示了四项分析，其中统计模型都直接由科学模型驱动。这个做法不同于惯常路径：从含糊的科学模型——无论是一张 DAG，还是一碗变量——直接跳进广义线性模型。本章旨在同时说明，把带科学信息的结构因果模型翻译成统计机器有哪些优势与挑战；目的并不是劝你永远不要使用广义线性模型。但愿它能启发你：使用 GLM 本身是一项决策，而不是一项义务。</p>
+    <aside class="source-erratum" id="erratum-16-summary-practice-typos"><strong>原文说明：</strong>PDF 第 578 页 “a statistical model is motived directly” 应为 <em>is motivated directly</em>；PDF 第 579 页 “compare it to ODE model” 漏排 <em>the</em>。译稿按上下文订正。</aside>
+  </section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 16 章 PDF 第 553–576 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 577 页继续。</aside>
+  <section id="sec-16-6"><h2>16.6 练习</h2>
+    <div class="practice-group" id="practice-16-easy"><h3>简单题</h3>
+      <article class="exercise" id="exercise-16E1"><h4>16E1</h4><p>原书仅给出占位符 <code>x</code>，没有实际题目。</p></article>
+    </div>
+    <div class="practice-group" id="practice-16-medium"><h3>中等题</h3>
+      <article class="exercise" id="exercise-16M1"><h4>16M1</h4><p>修改圆柱身高模型 <code>m16.1</code>，把身高上的指数 3 改成自由参数。你能恢复出数值 3 吗？绘制新模型的后验预测；它们与 <code>m16.1</code> 的预测有何不同？</p></article>
+      <article class="exercise" id="exercise-16M2"><h4>16M2</h4><p>对圆柱身高模型进行先验预测模拟。先从本章使用的先验开始；它们会产生合理的先验身高分布吗？若不会，你建议怎样修改？</p></article>
+      <article class="exercise" id="exercise-16M3"><h4>16M3</h4><p>用先验预测模拟研究猞猁—雪兔模型。先从本章的先验开始；它们会产生怎样的种群动力学？根据模拟结果，你能否提出改进先验的建议？</p></article>
+    </div>
+    <div class="practice-group" id="practice-16-hard"><h3>困难题</h3>
+      <article class="exercise" id="exercise-16H1"><h4>16H1</h4><p>修改 Panda 开坚果模型，让雄性和雌性黑猩猩拥有不同的最大成年体重。<code>data(Panda_nuts)</code> 中的 <code>sex</code> 变量提供所需信息。务必纳入这样一个事实：在看到数据之前，你就知道雄性成熟时平均比雌性更大。</p></article>
+      <article class="exercise" id="exercise-16H2"><h4>16H2</h4><p>现在回到 Panda 坚果模型，尝试纳入个体差异。参数 <var>ϕ</var> 和 <var>k</var> 都可能因个体而异。任选一个，让它随个体变化，并用部分汇聚避免过拟合。<code>data(Panda_nuts)</code> 中的 <code>chimpanzee</code> 变量说明每条观测属于哪个个体。</p></article>
+      <article class="exercise" id="exercise-16H3"><h4>16H3</h4><p>本章断言，一种典型的地心式时间序列模型可能会使用滞后变量。这里要拟合这样的模型，并与本章的 ODE 模型比较。自回归时间序列用状态变量较早的值预测同一变量的新值；这些较早的值叫作滞后变量。可以这样构造：</p><figure class="code-listing" id="code-16-21"><figcaption>R 代码 16.21</figcaption><pre><code>data(Lynx_Hare)
+dat_ar1 &lt;- list(
+    L = Lynx_Hare$Lynx[2:21],
+    L_lag1 = Lynx_Hare$Lynx[1:20],
+    H = Lynx_Hare$Hare[2:21],
+    H_lag1 = Lynx_Hare$Hare[1:20] )</code></pre></figure><p>现在可以用 <code>L_lag1</code> 和 <code>H_lag1</code> 预测结果 <code>L</code> 与 <code>H</code>：</p><div class="equation-block wallis-equation" id="eq-16H3-ar-model"><div><var>L</var><sub><var>t</var></sub> ∼ Log-Normal(log <var>μ</var><sub><var>L</var>,<var>t</var></sub>, <var>σ</var><sub><var>L</var></sub>)</div><div><var>μ</var><sub><var>L</var>,<var>t</var></sub> = <var>α</var><sub><var>L</var></sub> + <var>β</var><sub><var>LL</var></sub><var>L</var><sub><var>t</var>−1</sub> + <var>β</var><sub><var>LH</var></sub><var>H</var><sub><var>t</var>−1</sub></div><div><var>H</var><sub><var>t</var></sub> ∼ Log-Normal(log <var>μ</var><sub><var>H</var>,<var>t</var></sub>, <var>σ</var><sub><var>H</var></sub>)</div><div><var>μ</var><sub><var>H</var>,<var>t</var></sub> = <var>α</var><sub><var>H</var></sub> + <var>β</var><sub><var>HH</var></sub><var>H</var><sub><var>t</var>−1</sub> + <var>β</var><sub><var>HL</var></sub><var>L</var><sub><var>t</var>−1</sub></div></div><p>其中 <var>L</var><sub><var>t</var>−1</sub> 与 <var>H</var><sub><var>t</var>−1</sub> 是滞后变量。用 <code>ulam()</code> 拟合这个模型；谨慎设置 <var>α</var> 与 <var>β</var> 参数的先验。比较自回归模型与本章 ODE 模型的后验预测：预测有何不同？你能用模型结构解释原因吗？</p></article>
+      <article class="exercise" id="exercise-16H4"><h4>16H4</h4><p>调整自回归模型，使它使用两步滞后变量。这意味着除了 <var>L</var><sub><var>t</var>−1</sub> 和 <var>H</var><sub><var>t</var>−1</sub>，<var>L</var><sub><var>t</var>−2</sub> 与 <var>H</var><sub><var>t</var>−2</sub> 也会出现在 <var>μ</var> 的方程中；也就是说，预测不仅依赖刚刚发生的事，还依赖两个时步之前发生的事。与 ODE 模型相比，这个模型表现如何？</p></article>
+      <article class="exercise" id="exercise-16H5"><h4>16H5</h4><p>种群动力学模型通常很难拟合到经验数据。猞猁—雪兔例子相对容易，一部分因为数据异常简单，另一部分因为本章已经替你完成了困难的先验选择。下面这组数据会让你体会任务能有多难，以及 Lotka–Volterra 一般而言对经验数据拟合得多差。<code>data(Mites)</code> 中的数据，是生活在水果上的捕食性螨与猎物螨数量<sup id="note-229-ref"><a href="#note-229">229</a></sup>。使用本章相同的 Lotka–Volterra ODE 系统为这些数据建模。这里的数据是实际个体计数，而不只是毛皮数，因此需要调整 <code>data(Lynx_Hare_model)</code> 中的 Stan 代码。由于结果变量的尺度不同，先验也要重新缩放；先验预测模拟会有帮助。还要记住，时间变量与出生、死亡参数相互配套：若重新缩放时间维度，就意味着也必须重新缩放参数。</p></article>
+    </div>
+  </section>
+
+  <section class="endnotes" id="chapter-16-notes" role="doc-endnotes"><h2>尾注</h2><ol start="219"><li id="note-219">“Vitruvian Can”（“维特鲁威罐头”）这个双关由 Clint Johns（Twitter：@DrClintonJohns）提供。 <a class="backref" href="#note-219-ref" aria-label="返回正文">↩</a></li><li id="note-220">Harte（1988）。 <a class="backref" href="#note-220-ref" aria-label="返回正文">↩</a></li><li id="note-221">关于模型构建哲学有许多好文章，作者推荐三篇：Levins（1966）、Wimsatt（2002）和 Smaldino（2017）。 <a class="backref" href="#note-221-ref" aria-label="返回正文">↩</a></li><li id="note-222">资料来自 van Leeuwen 等（2018）。 <a class="backref" href="#note-222-ref" aria-label="返回正文">↩</a></li><li id="note-223">资料来自 Boesch 等（2019）。数据由 Roger Mundry 慷慨提供；论文中巧妙的分析也是由他设计的。 <a class="backref" href="#note-223-ref" aria-label="返回正文">↩</a></li><li id="note-224">von Bertalanffy（1934）。 <a class="backref" href="#note-224-ref" aria-label="返回正文">↩</a></li><li id="note-225">见 Walker 等（2006）以及 Leigh 和 Shea（1996）。 <a class="backref" href="#note-225-ref" aria-label="返回正文">↩</a></li><li id="note-226">本例依据 Bob Carpenter 的 Stan 案例研究改编：<a href="https://mc-stan.org/users/documentation/case-studies/lotka-volterra-predator-prey.html">Lotka–Volterra 捕食者—猎物模型</a>。 <a class="backref" href="#note-226-ref" aria-label="返回正文">↩</a></li><li id="note-227">Hewitt（1921）。注意，猞猁与雪兔数据大多来自不同地区。尽管这些数据常被用来说明种群动力学，但大量文献认为它们并不是很好的示例；简单搜索即可找到许多讨论。 <a class="backref" href="#note-227-ref" aria-label="返回正文">↩</a></li><li id="note-228">Volterra（1926）；Lotka（1925）。 <a class="backref" href="#note-228-ref" aria-label="返回正文">↩</a></li><li id="note-229">数据来自 Huffaker（1958）。 <a class="backref" href="#note-229-ref" aria-label="返回正文">↩</a></li></ol></section>
+
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 16 章 PDF 第 553–580 页已完成整章翻译、逐页核对、结构契约检查与桌面/移动端全章验收，达到章节级 verified；PDF 第 580 页为空白保留页。</aside>
 </article>
