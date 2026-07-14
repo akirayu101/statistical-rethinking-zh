@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-14" data-source-pages="465-500">
-  <header class="chapter-header"><p class="eyebrow">第十四章</p><h1>协方差历险</h1><p class="source-range">当前译稿对应原书 PDF 第 465–500 页</p></header>
+<article class="book-article" data-chapter="chapter-14" data-source-pages="465-503">
+  <header class="chapter-header"><p class="eyebrow">第十四章</p><h1>协方差历险</h1><p class="source-range">当前译稿对应原书 PDF 第 465–503 页</p></header>
 
   <div class="chapter-introduction" id="intro-14">
     <p>回想上一章导言中的咖啡机器人（原书第 413 页）。这个机器人被设定为在咖啡馆之间移动、点咖啡，并记录等待时间。上一章的重点是：在咖啡馆之间汇聚信息，能让机器人学得更高效；变化截距正是实现这种汇聚的一种机制。</p>
@@ -710,11 +710,89 @@ curve( exp(-1*x^2) , add=TRUE )</code></pre></figure>
       <p>图 14.10 的纵轴只是整个协方差函数的一部分，可理解为两社会最大相关的比例。虚线的线性距离函数给出精确的指数形状；实线的平方距离函数给出半 Gaussian 下降：起初比指数下降慢，随后迅速加速，最终下降得比指数更快。</p>
       <p><var>K</var><sub><var>ij</var></sub> 的最后两部分更简单。<var>η</var><sup>2</sup> 是任意两个社会 <var>i</var> 与 <var>j</var> 之间的最大协方差。末尾的 <var>δ</var><sub><var>ij</var></sub><var>σ</var><sup>2</sup> 在 <var>i</var> = <var>j</var> 时提供超出 <var>η</var><sup>2</sup> 的额外协方差，因为 <var>δ</var><sub><var>ij</var></sub> 在 <var>i</var> = <var>j</var> 时等于 1，其他时候为 0。在大洋洲社会数据里，每个社会只有一个观测，这一项不起作用；若每个社会有多个观测，<var>σ</var> 就描述同一社会内这些观测怎样协变。</p>
       <p>模型会计算 <var>ρ</var>、<var>η</var> 与 <var>σ</var> 的后验分布，也需要为它们指定先验。为便于计算，我们会直接给各参数的平方定义先验，并在同一尺度上估计。这个模型不需要 <var>σ</var>，所以只把它固定在一个无关紧要的常数上。</p>
-      <p class="continuation-note">完整 Gaussian 过程模型、代码 14.39 与后验结果，将从原书 PDF 第 501 页继续。</p>
+      <p>现在给出完整模型，并在底部加入各参数的固定先验：</p>
+      <div class="equation-block wallis-equation" id="eq-14-gp-full-model"><div><var>T</var><sub><var>i</var></sub> ∼ Poisson(<var>λ</var><sub><var>i</var></sub>)</div><div><var>λ</var><sub><var>i</var></sub> = exp(<var>k</var><sub>society[<var>i</var>]</sub>) <var>α</var><var>P</var><sub><var>i</var></sub><sup><var>β</var></sup> / <var>γ</var></div><div><strong><var>k</var></strong> ∼ MVNormal((0, …, 0)<sup>T</sup>, <strong>K</strong>)</div><div><var>K</var><sub><var>ij</var></sub> = <var>η</var><sup>2</sup> exp(−<var>ρ</var><sup>2</sup><var>D</var><sub><var>ij</var></sub><sup>2</sup>) + <var>δ</var><sub><var>ij</var></sub>(0.01)</div><div><var>α</var> ∼ Exponential(1)</div><div><var>β</var> ∼ Exponential(1)</div><div><var>η</var><sup>2</sup> ∼ Exponential(2)</div><div><var>ρ</var><sup>2</sup> ∼ Exponential(0.5)</div></div>
+      <p><var>ρ</var><sup>2</sup> 与 <var>η</var><sup>2</sup> 必须为正，所以给它们放置指数先验。若具备一些太平洋航海知识，至少应能为 <var>ρ</var><sup>2</sup> 指定更聪明、更有信息的先验。</p>
+      <p>终于可以拟合模型了。若要告诉 <code>ulam</code> 使用平方距离 Gaussian 过程先验，应选用 <code>GPL2</code>；其余代码应该都很熟悉：</p>
+      <figure class="code-listing" id="code-14-39"><figcaption>R 代码 14.39</figcaption><pre><code>data(Kline2) # 载入普通数据，现在含坐标
+d &lt;- Kline2
+d$society &lt;- 1:10 # 为观测建立索引
+
+dat_list &lt;- list(
+    T = d$total_tools,
+    P = d$population,
+    society = d$society,
+    Dmat=islandsDistMatrix )
+
+m14.8 &lt;- ulam(
+    alist(
+        T ~ dpois(lambda),
+        lambda &lt;- (a*P^b/g)*exp(k[society]),
+        vector[10]:k ~ multi_normal( 0 , SIGMA ),
+        matrix[10,10]:SIGMA &lt;- cov_GPL2( Dmat , etasq , rhosq , 0.01 ),
+        c(a,b,g) ~ dexp( 1 ),
+        etasq ~ dexp( 2 ),
+        rhosq ~ dexp( 0.5 )
+    ), data=dat_list , chains=4 , cores=4 , iter=2000 )</code></pre></figure>
+      <p>务必检查链。它们应该抽样良好，不过也可把 <var>k</var> 的先验非中心化来提高抽样效率，后面的侧栏会这样做。先查看后验：</p>
+      <figure class="code-listing" id="code-14-40"><figcaption>R 代码 14.40</figcaption><pre><code>precis( m14.8 , depth=3 )</code></pre><pre class="code-output"><code>        mean   sd 5.5% 94.5% n_eff Rhat
+k[1]   -0.17 0.30 -0.65 0.29   714 1.00
+k[2]   -0.03 0.29 -0.48 0.43   538 1.01
+k[3]   -0.08 0.28 -0.51 0.35   527 1.01
+k[4]    0.34 0.26 -0.04 0.74   593 1.01
+k[5]    0.07 0.25 -0.32 0.46   590 1.01
+k[6]   -0.39 0.27 -0.84 0.00   789 1.00
+k[7]    0.13 0.25 -0.26 0.53   606 1.01
+k[8]   -0.22 0.26 -0.64 0.16   726 1.01
+k[9]    0.26 0.25 -0.11 0.64   668 1.01
+k[10]  -0.18 0.35 -0.75 0.35   868 1.01
+g       0.60 0.56  0.08 1.68  1536 1.00
+b       0.28 0.08  0.15 0.41  1107 1.00
+a       1.41 1.08  0.24 3.39  1811 1.00
+etasq   0.20 0.20  0.03 0.56   863 1.00
+rhosq   1.31 1.60  0.08 4.41  1931 1.00</code></pre></figure>
+      <p>首先，log 人口的系数 <code>b</code> 与加入 Gaussian 过程之前很接近，说明很难把工具数与人口之间的全部关联都解释成地理接触的副作用。其次，<code>k</code> 参数是每个社会的 Gaussian 过程变化截距；它们和 <code>a</code>、<code>b</code> 一样位于 log 计数尺度，直接解释并不容易。</p>
+      <p>为了理解描述协方差如何随距离变化的 <code>rhosq</code> 与 <code>etasq</code>，需要把它们隐含的函数画出来。事实上，这两个参数的联合后验定义的是一整个协方差函数的后验分布。画出许多函数样本，再叠加后验中心曲线，就能感受这个“函数的分布”。由于 <code>rhosq</code> 与 <code>etasq</code> 的密度偏斜，单一均值或中位数都不足以概括它；真正重要的始终是完整分布，分布内没有哪个点天然特殊。</p>
+      <aside class="source-erratum" id="erratum-14-gp-sample-count"><strong>原文说明：</strong>PDF 第 502–503 页把 Gaussian 过程变化截距 <code>k</code> 误称为 <code>g</code>，并在正文、代码注释、循环与图注之间分别写成抽取 100、60、50、50 条曲线；正文还称粗线为“后验中位数”，实际代码与图注计算的是后验均值。译稿按代码和图注呈现 50 条曲线与后验均值。</aside>
+      <figure class="code-listing" id="code-14-41"><figcaption>R 代码 14.41</figcaption><pre><code>post &lt;- extract.samples(m14.8)
+
+# 绘制后验均值协方差函数
+plot( NULL , xlab="distance (thousand km)" , ylab="covariance" ,
+    xlim=c(0,10) , ylim=c(0,2) )
+
+# 计算后验均值协方差
+x_seq &lt;- seq( from=0 , to=10 , length.out=100 )
+pmcov &lt;- sapply( x_seq , function(x) post$etasq*exp(-post$rhosq*x^2) )
+pmcov_mu &lt;- apply( pmcov , 2 , mean )
+lines( x_seq , pmcov_mu , lwd=2 )
+
+# 绘制 50 条从后验抽取的函数
+for ( i in 1:50 )
+    curve( post$etasq[i]*exp(-post$rhosq[i]*x^2) , add=TRUE ,
+        col=col.alpha("black",0.3) )</code></pre></figure>
+      <p>每组 <var>ρ</var><sup>2</sup> 与 <var>η</var><sup>2</sup> 取值都会产生一种协方差—距离关系。图 14.11 右侧的粗线是后验均值函数，表示相容函数的一个中心；其他曲线则显示空间协方差有很大不确定性。峰值约为后验中心两倍（约 0.2）的曲线并不少见，峰值只有中心一半的曲线也很常见。空间效应有多强仍很不确定，但多数后验曲线在 4000 公里之前就衰减到零协方差。</p>
+      <figure class="book-figure gp-functions-figure" id="fig-14-11"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的空间协方差函数先验与后验双面板图"><img src="/media/chapter-14-gp-functions.svg" alt="左图先验曲线分散，右图后验曲线较低且多数在四千公里内衰减至零"></div><p class="scroll-hint">图较宽，可横向滚动比较 Gaussian 过程先验与后验。</p><figcaption><strong>图 14.11：</strong>左：空间协方差函数的先验分布，每条曲线是从 <var>ρ</var><sup>2</sup> 与 <var>η</var><sup>2</sup> 的联合先验抽取的一组样本。右：空间协方差的后验分布；粗线是在每个距离上的后验均值协方差，细线是从 <var>ρ</var><sup>2</sup> 与 <var>η</var><sup>2</sup> 联合后验抽取的 50 条函数。</figcaption></figure>
+      <p>这些协方差与 Poisson GLM 中的其他量一样位于 log 计数尺度，很难直接解释。因此改看后验中位数隐含的社会间相关。第一步，把参数重新送入协方差矩阵 <strong>K</strong> 的函数：</p>
+      <figure class="code-listing" id="code-14-42"><figcaption>R 代码 14.42</figcaption><pre><code># 计算社会间的后验中位数协方差
+K &lt;- matrix(0,nrow=10,ncol=10)
+for ( i in 1:10 )
+    for ( j in 1:10 )
+        K[i,j] &lt;- median(post$etasq) *
+                  exp( -median(post$rhosq) * islandsDistMatrix[i,j]^2 )
+diag(K) &lt;- median(post$etasq) + 0.01</code></pre></figure>
+      <p>第二步，把 <strong>K</strong> 转换为相关矩阵：</p>
+      <figure class="code-listing" id="code-14-43"><figcaption>R 代码 14.43</figcaption><pre><code># 转换为相关矩阵
+Rho &lt;- round( cov2cor(K) , 2 )
+# 添加行列名称，便于阅读
+colnames(Rho) &lt;- c("Ml","Ti","SC","Ya","Fi","Tr","Ch","Mn","To","Ha")
+rownames(Rho) &lt;- colnames(Rho)
+Rho</code></pre><pre class="code-output"><code>     Ml   Ti   SC   Ya   Fi   Tr   Ch   Mn   To Ha
+Ml 1.00 0.79 0.70 0.00 0.31 0.05 0.00 0.00 0.08 0</code></pre></figure>
+      <p class="continuation-note">相关矩阵的其余九行、社会间相关的解释与太平洋地图，将从原书 PDF 第 504 页继续。</p>
     </section>
   </section>
 
   <section class="endnotes" id="chapter-14-notes" role="doc-endnotes"><h2>尾注</h2><ol start="194"><li id="note-194">Lewandowski 等（2009）。“LKJ”来自三位作者姓氏的首字母；作者本人把这种方法称为“洋葱法”。关于它在 Bayesian 模型中的用法，可参见最新版 Stan 参考手册的说明。 <a class="backref" href="#note-194-ref" aria-label="返回正文">↩</a></li><li id="note-195">参见 Gelfand 等（1995）以及 Roberts 和 Sahu（1997）。较新的综述可参见 Papaspiliopoulos 等（2007）；以 Hamiltonian Monte Carlo 为重点的讨论可参见 Betancourt 和 Girolami（2013）。 <a class="backref" href="#note-195-ref" aria-label="返回正文">↩</a></li><li id="note-196">参见 Pearl（2011）。 <a class="backref" href="#note-196-ref" aria-label="返回正文">↩</a></li><li id="note-197">参见 Angrist 和 Krueger（1991）。 <a class="backref" href="#note-197-ref" aria-label="返回正文">↩</a></li><li id="note-198">Feyrer 和 Sacerdote（2009）。 <a class="backref" href="#note-198-ref" aria-label="返回正文">↩</a></li><li id="note-199">参见 Caniglia 等（2019）。 <a class="backref" href="#note-199-ref" aria-label="返回正文">↩</a></li><li id="note-200">参见 Angrist 和 Krueger（1995）以及 Kleibergen 和 Zivot（2003）。据作者所知，对参数化工具变量估计量——Bayesian 或其他形式——仍没有系统且有理论依据的理解；这很奇怪，因为 DAG 已提供正式的非参数理论。真实情况可能是：即使 DAG 表明存在工具，估计在实践中也常不可行。 <a class="backref" href="#note-200-ref" aria-label="返回正文">↩</a></li><li id="note-201">参见 Cohen 和 Malloy（2014）。作者从 Alex Chinco 的博客学到这个例子，参见其 2011 年文章。 <a class="backref" href="#note-201-ref" aria-label="返回正文">↩</a></li><li id="note-202">Thistlethwaite 和 Campbell（1960）。 <a class="backref" href="#note-202-ref" aria-label="返回正文">↩</a></li><li id="note-203">参见 Gelman 和 Imbens（2019）给出的尖锐示例与建议。 <a class="backref" href="#note-203-ref" aria-label="返回正文">↩</a></li><li id="note-204">Koster 和 Leckie（2014）。 <a class="backref" href="#note-204-ref" aria-label="返回正文">↩</a></li><li id="note-205">参见 Neal（1998）这篇高被引综述，其中也有实现说明。 <a class="backref" href="#note-205-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 14 章 PDF 第 465–500 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 501 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 14 章 PDF 第 465–503 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 504 页继续。</aside>
 </article>

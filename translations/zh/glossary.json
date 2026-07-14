@@ -1201,6 +1201,10 @@
     "distance matrix": "距离矩阵",
     "covariance function": "协方差函数",
     "geographic similarity": "地理相似性",
+    "spatial covariance": "空间协方差",
+    "spatial effect": "空间效应",
+    "squared-distance Gaussian process prior": "平方距离 Gaussian 过程先验",
+    "log-count scale": "log 计数尺度",
     "cross-classified varying slopes model": "交叉分类变化斜率模型"
   },
   "protected": [

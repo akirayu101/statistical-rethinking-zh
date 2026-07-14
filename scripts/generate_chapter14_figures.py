@@ -19,6 +19,7 @@ OUT7 = ROOT / "translations" / "zh" / "media" / "chapter-14-chimp-predictions.sv
 OUT8 = ROOT / "translations" / "zh" / "media" / "chapter-14-dyadic-gifts.svg"
 OUT9 = ROOT / "translations" / "zh" / "media" / "chapter-14-social-relations.svg"
 OUT10 = ROOT / "translations" / "zh" / "media" / "chapter-14-gp-distance.svg"
+OUT11 = ROOT / "translations" / "zh" / "media" / "chapter-14-gp-functions.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 BLUE = "#6670ee"
@@ -662,6 +663,85 @@ def figure_14_10() -> None:
     OUT10.write_text("\n".join(svg), encoding="utf-8")
 
 
+def figure_14_11() -> None:
+    """Rebuild prior and posterior spatial covariance functions."""
+    width, height = 1200, 600
+    panels = [(80.0, 70.0, 560.0, 500.0), (700.0, 70.0, 1180.0, 500.0)]
+
+    def xy(panel: int, distance: float, covariance: float) -> tuple[float, float]:
+        x0, y0, x1, y1 = panels[panel]
+        return (
+            x0 + distance / 10.0 * (x1 - x0),
+            y1 - min(2.0, covariance) / 2.0 * (y1 - y0),
+        )
+
+    def curve_points(panel: int, amplitude: float, decay: float) -> str:
+        points = []
+        for index in range(121):
+            distance = index / 12.0
+            covariance = amplitude * math.exp(-decay * distance ** 2)
+            points.append(xy(panel, distance, covariance))
+        return " ".join(f"{x:.1f},{y:.1f}" for x, y in points)
+
+    svg = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
+        '<title>图 14.11：空间协方差函数的先验与后验</title>',
+        '<desc>左图是空间协方差函数的先验样本，右图是后验样本与较粗的后验均值曲线。</desc>',
+        f'<rect width="{width}" height="{height}" fill="#fff"/>',
+    ]
+    for panel, title_value in enumerate(["Gaussian 过程先验", "Gaussian 过程后验"]):
+        x0, y0, x1, y1 = panels[panel]
+        svg.extend([
+            f'<rect x="{x0}" y="{y0}" width="{x1-x0}" height="{y1-y0}" fill="#fff" stroke="{INK}" stroke-width="1.5"/>',
+            text((x0 + x1) / 2, 42, title_value, size=20, anchor="middle", weight=700),
+        ])
+        for value in [0, 2, 4, 6, 8, 10]:
+            x, _ = xy(panel, float(value), 0.0)
+            svg.extend([
+                f'<line x1="{x:.1f}" y1="{y1}" x2="{x:.1f}" y2="{y1+6}" stroke="{INK}"/>',
+                text(x, y1 + 27, str(value), size=15, anchor="middle"),
+            ])
+        for value in [0.0, 0.5, 1.0, 1.5, 2.0]:
+            _, y = xy(panel, 0.0, value)
+            svg.extend([
+                f'<line x1="{x0-6}" y1="{y:.1f}" x2="{x0}" y2="{y:.1f}" stroke="{INK}"/>',
+                text(x0 - 12, y + 5, f"{value:.1f}", size=15, anchor="end"),
+            ])
+        svg.extend([
+            text((x0 + x1) / 2, 565, "距离（千公里）", size=18, anchor="middle", weight=600),
+            text(x0 - 48, (y0 + y1) / 2, "协方差", size=18, anchor="middle", weight=600, rotate=-90),
+        ])
+
+    prior_rng = random.Random(14110)
+    for _ in range(50):
+        amplitude = min(2.1, prior_rng.expovariate(1.7))
+        decay = max(0.015, prior_rng.expovariate(0.65))
+        svg.append(f'<polyline points="{curve_points(0, amplitude, decay)}" fill="none" stroke="{INK}" stroke-width="1.2" opacity="0.28"/>')
+
+    posterior_rng = random.Random(14111)
+    posterior_parameters = []
+    for _ in range(50):
+        amplitude = min(0.9, posterior_rng.expovariate(5.0))
+        decay = max(0.015, posterior_rng.lognormvariate(-0.25, 1.0))
+        posterior_parameters.append((amplitude, decay))
+        svg.append(f'<polyline points="{curve_points(1, amplitude, decay)}" fill="none" stroke="{INK}" stroke-width="1.2" opacity="0.30"/>')
+
+    mean_points = []
+    for index in range(121):
+        distance = index / 12.0
+        covariance = sum(
+            amplitude * math.exp(-decay * distance ** 2)
+            for amplitude, decay in posterior_parameters
+        ) / len(posterior_parameters)
+        mean_points.append(xy(1, distance, covariance))
+    mean_coords = " ".join(f"{x:.1f},{y:.1f}" for x, y in mean_points)
+    svg.extend([
+        f'<polyline points="{mean_coords}" fill="none" stroke="{INK}" stroke-width="4"/>',
+        '</svg>',
+    ])
+    OUT11.write_text("\n".join(svg), encoding="utf-8")
+
+
 def main() -> None:
     figure_14_1()
     figure_14_2()
@@ -673,6 +753,7 @@ def main() -> None:
     figure_14_8()
     figure_14_9()
     figure_14_10()
+    figure_14_11()
     print(OUT1)
     print(OUT2)
     print(OUT3)
@@ -683,6 +764,7 @@ def main() -> None:
     print(OUT8)
     print(OUT9)
     print(OUT10)
+    print(OUT11)
 
 
 if __name__ == "__main__":
