@@ -2439,7 +2439,7 @@
   },
   "chapter-14": {
     "required_status": "in_progress",
-    "source_pages": [465, 506],
+    "source_pages": [465, 509],
     "required_ids": [
       "intro-14",
       "eq-14-cafe-varying-slopes",
@@ -2571,6 +2571,15 @@
       "rethinking-14-dispersion-other-names",
       "overthinking-14-noncentered-islands",
       "code-14-46",
+      "sec-14-5-2",
+      "note-206-ref",
+      "dag-14-phylogeny-time-series",
+      "erratum-14-phylogeny-wording",
+      "dag-14-phylogeny-confounding",
+      "note-207-ref",
+      "code-14-47",
+      "fig-14-13",
+      "eq-14-primate-mvnormal-model",
       "chapter-14-notes",
       "note-194",
       "note-195",
@@ -2583,7 +2592,9 @@
       "note-202",
       "note-203",
       "note-204",
-      "note-205"
+      "note-205",
+      "note-206",
+      "note-207"
     ],
     "required_headings": [
       "协方差历险",
@@ -2606,24 +2617,25 @@
       "14.5.1 示例：大洋洲工具的空间自相关",
       "再思考：换个名字的离散程度",
       "过度思考：非中心化岛屿",
+      "14.5.2 示例：系统发育距离",
       "尾注"
     ],
     "counts": {
-      "section": 9,
-      "figure": 61,
-      "figure img": 12,
-      ".book-figure": 12,
-      ".code-listing": 46,
+      "section": 10,
+      "figure": 65,
+      "figure img": 13,
+      ".book-figure": 13,
+      ".code-listing": 47,
       ".code-output": 12,
       ".rethinking-box": 5,
       ".overthinking-box": 3,
       ".book-quote": 0,
-      ".equation-block": 25,
-      ".wallis-equation": 25,
-      ".source-erratum": 12,
+      ".equation-block": 26,
+      ".wallis-equation": 26,
+      ".source-erratum": 13,
       ".chapter-introduction": 1,
       ".continuation-note": 1,
-      ".endnotes li": 12
+      ".endnotes li": 14
     }
   }
 }

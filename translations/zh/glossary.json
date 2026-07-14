@@ -1208,6 +1208,13 @@
     "geographic space": "地理空间",
     "descriptive model": "描述模型",
     "non-centered Gaussian process": "非中心化 Gaussian 过程",
+    "phylogenetic distance": "系统发育距离",
+    "phylogenetic relationship": "系统发育关系",
+    "trait correlation": "性状相关",
+    "neutral drift": "中性漂变",
+    "life history": "生活史",
+    "consensus phylogeny": "共识系统发育",
+    "phylogenetic tree": "系统发育树",
     "cross-classified varying slopes model": "交叉分类变化斜率模型"
   },
   "protected": [
