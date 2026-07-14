@@ -1233,6 +1233,10 @@
     "proxy variable": "代理变量",
     "outcome measurement error": "结果变量测量误差",
     "predictor measurement error": "预测变量测量误差",
+    "complete case analysis": "完整案例分析",
+    "missingness": "缺失性",
+    "impute": "插补",
+    "occupancy model": "占域模型",
     "cross-classified varying slopes model": "交叉分类变化斜率模型"
   },
   "protected": [

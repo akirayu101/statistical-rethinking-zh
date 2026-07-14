@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-15" data-source-pages="517-524">
-  <header class="chapter-header"><p class="eyebrow">第十五章</p><h1>缺失数据与其他机会</h1><p class="source-range">当前译稿对应原书 PDF 第 517–524 页</p></header>
+<article class="book-article" data-chapter="chapter-15" data-source-pages="517-527">
+  <header class="chapter-header"><p class="eyebrow">第十五章</p><h1>缺失数据与其他机会</h1><p class="source-range">当前译稿对应原书 PDF 第 517–527 页</p></header>
 
   <div class="chapter-introduction" id="intro-15">
     <p>Bayesian 推断的一大优点，是不必非得聪明才行。例如，有一道经典概率谜题叫作<strong>Bertrand 盒子悖论</strong>。<sup id="note-210-ref"><a href="#note-210">210</a></sup> 我偏爱的版本用煎饼来讲。假设我煎了三张饼：第一张两面都焦了（BB），第二张只焦了一面（BU），第三张两面都没焦（UU）。现在我随机拿一张给你，盘中朝上的一面恰好焦了。另一面也焦了的概率是多少？</p>
@@ -145,11 +145,53 @@ m15.2 &lt;- ulam(
         bM ~ dnorm(0,0.5),
         sigma ~ dexp( 1 )
     ) , data=dlist , chains=4 , cores=4 )</code></pre></figure>
-      <p class="continuation-note">图 15.3、代码 15.6、结果解释与 15.1.3“测量恐怖故事”，将从原书 PDF 第 525 页继续。</p>
+      <p>查看 <code>precis</code> 输出会发现，结婚年龄和结婚率的系数与前一个模型几乎没有变化。因此，给预测变量加入误差并未改变主要推断；但它确实更新了对结婚率本身的估计。可以通过离婚率与结婚率的共同收缩把这一点可视化：</p>
+      <figure class="code-listing" id="code-15-6"><figcaption>R 代码 15.6</figcaption><pre><code>post &lt;- extract.samples( m15.2 )
+D_true &lt;- apply( post$D_true , 2 , mean )
+M_true &lt;- apply( post$M_true , 2 , mean )
+plot( dlist$M_obs , dlist$D_obs , pch=16 , col=rangi2 ,
+    xlab="marriage rate (std)" , ylab="divorce rate (std)" )
+points( M_true , D_true )
+for ( i in 1:nrow(d) )
+    lines( c( dlist$M_obs[i] , M_true[i] ) , c( dlist$D_obs[i] , D_true[i] ) )</code></pre></figure>
+      <figure class="book-figure both-errors-shrinkage-figure" id="fig-15-3"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的离婚率与结婚率共同收缩图"><img src="/media/chapter-15-both-errors-shrinkage.svg" alt="蓝色实心点表示观测到的各州结婚率和离婚率，黑色空心圆表示后验真实值均值，线段连接同一州的两组值"></div><figcaption><strong>图 15.3：</strong>离婚率与结婚率同时收缩。实心点是观测值，空心圆是后验均值；线段连接同一州的一对点。两个变量都向推断出的回归关系收缩。</figcaption></figure>
+      <p>结果见图 15.3。结婚率高度不确定的州往往是结婚率很高的小州，因此，汇聚使这些州的结婚率估计变小了。</p>
+      <p>本节最重要的结论是：如果掌握的是一个数值分布，就不要把它压缩成单个值再放进回归；应当使用整个分布。每当使用平均值却丢弃平均值周围的不确定性，就有过度自信与虚假推断的风险。这不仅适用于测量误差，也适用于分析前先对数据取平均的情形。</p>
+      <p>在刚才同时考虑结果与一个预测变量误差的模型中，我们给 <var>M</var> 值使用了标准化的 Normal(0, 1) 先验。这么做可以，但忽略了一些信息。再考虑这个系统的 DAG：<span class="math-inline"><var>A</var> → <var>M</var> → <var>D</var>，<var>A</var> → <var>D</var></span>。它意味着，更好的 <var>M</var> 值先验应当包含 <var>A</var> 作为预测变量。换句话说，整个生成模型都应该纳入。章末练习会尝试这样做。</p>
+    </section>
+
+    <section id="sec-15-1-3"><h3>15.1.3 测量恐怖故事</h3>
+      <p>在上面的模型中，测量误差相当温和。误差彼此不相关，也不与模型中的其他变量相关。这意味着误差不会引入新的混杂，即非因果路径。但误差有时会更棘手。</p>
+      <p>例如，考虑一个 <var>D</var> 与 <var>M</var> 的误差相互关联的 DAG，因为二者都受变量 <var>P</var> 影响：</p>
+      <figure class="dag-figure" id="dag-15-correlated-errors"><svg viewBox="0 0 1100 430" role="img" aria-labelledby="dag-15-correlated-title dag-15-correlated-desc"><title id="dag-15-correlated-title">共同原因 P 造成相关测量误差的 DAG</title><desc id="dag-15-correlated-desc">A 指向 M 与 D，M 指向 D；M 和 eM 产生 Mobs，D 和 eD 产生 Dobs，而 P 同时指向 eM 和 eD。</desc><defs><marker id="dag15-correlated-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#3f4752"/></marker></defs><g stroke="#3f4752" stroke-width="4" marker-end="url(#dag15-correlated-arrow)"><line x1="190" y1="215" x2="405" y2="105"/><line x1="190" y1="225" x2="405" y2="325"/><line x1="445" y1="120" x2="445" y2="300"/><line x1="485" y1="95" x2="640" y2="95"/><line x1="845" y1="95" x2="710" y2="95"/><line x1="485" y1="335" x2="640" y2="335"/><line x1="845" y1="335" x2="710" y2="335"/><line x1="980" y1="195" x2="895" y2="120"/><line x1="980" y1="235" x2="895" y2="310"/></g><g fill="#f0f1fa" stroke="#263f86" stroke-width="3"><circle cx="165" cy="220" r="38"/><circle cx="445" cy="95" r="38"/><circle cx="445" cy="335" r="38"/><circle cx="675" cy="95" r="42"/><circle cx="675" cy="335" r="42"/><circle cx="875" cy="95" r="38"/><circle cx="875" cy="335" r="38"/><circle cx="1010" cy="215" r="38"/></g><g fill="#263f86" font-size="29" font-weight="700" text-anchor="middle"><text x="165" y="231">A</text><text x="445" y="106">M</text><text x="445" y="346">D</text><text x="675" y="106">Mₒᵦₛ</text><text x="675" y="346">Dₒᵦₛ</text><text x="875" y="106">eᴹ</text><text x="875" y="346">eᴰ</text><text x="1010" y="226">P</text></g></svg><figcaption>变量 <var>P</var> 同时影响 <var>M</var> 与 <var>D</var> 的测量误差，使两种误差相关。</figcaption></figure>
+      <p>这种情况下，若天真地用 <var>M</var><sub>obs</sub> 回归 <var>D</var><sub>obs</sub>，就会存在一条经过 <var>P</var> 的开放非因果路径。若掌握测量过程的信息，能够为真实变量 <var>D</var> 与 <var>M</var> 建模，仍有希望；但必须考虑误差之间的协方差。在计算上，这与上一章的工具变量回归相似。章末有一道题会要求尝试这种做法。</p>
+      <p>另一个变量影响误差并制造新非因果路径，也会产生不幸的局面。例如，假设真实结婚率 <var>M</var> 会影响离婚率 <var>D</var> 的误差：</p>
+      <figure class="dag-figure" id="dag-15-divorce-error-cause"><svg viewBox="0 0 1050 430" role="img" aria-labelledby="dag-15-divorce-cause-title dag-15-divorce-cause-desc"><title id="dag-15-divorce-cause-title">真实结婚率影响离婚率测量误差的 DAG</title><desc id="dag-15-divorce-cause-desc">A 指向 M 与 D，M 指向 D、Mobs 和离婚率误差 eD；eM 指向 Mobs，D 与 eD 指向 Dobs。</desc><defs><marker id="dag15-divorce-cause-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#3f4752"/></marker></defs><g stroke="#3f4752" stroke-width="4" marker-end="url(#dag15-divorce-cause-arrow)"><line x1="190" y1="215" x2="405" y2="105"/><line x1="190" y1="225" x2="405" y2="325"/><line x1="445" y1="120" x2="445" y2="300"/><line x1="485" y1="95" x2="640" y2="95"/><line x1="845" y1="95" x2="710" y2="95"/><line x1="485" y1="335" x2="640" y2="335"/><line x1="845" y1="335" x2="710" y2="335"/><line x1="480" y1="120" x2="835" y2="310"/></g><g fill="#f0f1fa" stroke="#263f86" stroke-width="3"><circle cx="165" cy="220" r="38"/><circle cx="445" cy="95" r="38"/><circle cx="445" cy="335" r="38"/><circle cx="675" cy="95" r="42"/><circle cx="675" cy="335" r="42"/><circle cx="875" cy="95" r="38"/><circle cx="875" cy="335" r="38"/></g><g fill="#263f86" font-size="29" font-weight="700" text-anchor="middle"><text x="165" y="231">A</text><text x="445" y="106">M</text><text x="445" y="346">D</text><text x="675" y="106">Mₒᵦₛ</text><text x="675" y="346">Dₒᵦₛ</text><text x="875" y="106">eᴹ</text><text x="875" y="346">eᴰ</text></g></svg><figcaption>真实结婚率 <var>M</var> 影响离婚率的测量误差 <var>e</var><sup><var>D</var></sup>，于是误差会制造新的非因果路径。</figcaption></figure>
+      <p>为什么会这样？若结婚罕见，可能离婚的夫妻就不多；这意味着测量离婚率的样本量更小。因此，更小的 <var>M</var> 会引起更大的误差 <var>e</var><sup><var>D</var></sup>。这便产生一条从 <var>M</var><sub>obs</sub> 到 <var>D</var><sub>obs</sub>、经过 <var>e</var><sup><var>D</var></sup> 的非因果路径。仍然，如果利用测量过程的信息，对真实 <var>M</var> 与 <var>D</var> 的不确定性取平均，也许能做得不错；但忽略测量误差绝对不行，而几乎每个人几乎每次都这么做。<sup id="note-212-ref"><a href="#note-212">212</a></sup></p>
+      <p>还要警惕另一种测量误差模式：一个因果变量的测量精度低于某个非因果变量。例如，假设我们能很精确地知道 <var>D</var> 与 <var>M</var>，但现在 <var>A</var> 带有测量误差；还假设 <var>M</var> 对 <var>D</var> 的因果效应为零，如下：</p>
+      <figure class="dag-figure" id="dag-15-proxy-age-error"><svg viewBox="0 0 900 330" role="img" aria-labelledby="dag-15-proxy-title dag-15-proxy-desc"><title id="dag-15-proxy-title">精确代理变量造成虚假关联的 DAG</title><desc id="dag-15-proxy-desc">年龄误差 eA 与真实 A 共同指向观测年龄 Aobs，真实 A 又分别指向精确测量的 M 与 D。</desc><defs><marker id="dag15-proxy-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#3f4752"/></marker></defs><g stroke="#3f4752" stroke-width="4" marker-end="url(#dag15-proxy-arrow)"><line x1="130" y1="165" x2="310" y2="165"/><line x1="560" y1="165" x2="380" y2="165"/><line x1="600" y1="145" x2="735" y2="75"/><line x1="600" y1="185" x2="735" y2="255"/></g><g fill="#f0f1fa" stroke="#263f86" stroke-width="3"><circle cx="100" cy="165" r="38"/><circle cx="345" cy="165" r="42"/><circle cx="590" cy="165" r="38"/><circle cx="770" cy="60" r="38"/><circle cx="770" cy="270" r="38"/></g><g fill="#263f86" font-size="29" font-weight="700" text-anchor="middle"><text x="100" y="176">eᴬ</text><text x="345" y="176">Aₒᵦₛ</text><text x="590" y="176">A</text><text x="770" y="71">M</text><text x="770" y="281">D</text></g></svg><figcaption><var>M</var> 对 <var>D</var> 没有因果效应，却能比带误差的 <var>A</var><sub>obs</sub> 更精确地代理真实 <var>A</var>。</figcaption></figure>
+      <p>此时，天真地用 <var>A</var><sub>obs</sub> 与 <var>M</var> 回归 <var>D</var>，可能会强烈暗示 <var>M</var> 影响 <var>D</var>。原因在于 <var>M</var> 含有关于真实 <var>A</var> 的信息，并且 <var>M</var> 比 <var>A</var> 测得更精确；它就像 <var>A</var> 的代理。下面这个小模拟可以把玩一番，它会制造这种挫败：</p>
+      <figure class="code-listing" id="code-15-7"><figcaption>R 代码 15.7</figcaption><pre><code>N &lt;- 500
+A &lt;- rnorm(N)
+M &lt;- rnorm(N,-A)
+D &lt;- rnorm(N,A)
+A_obs &lt;- rnorm(N,A)</code></pre></figure>
+      <p>章末练习会要求进一步研究它。</p>
+      <p>面对自己的数据和特定测量顾虑，这一切可能令人不知所措；但前进方式一如既往：运用背景知识写出一个或多个生成模型，从模型模拟数据以理解推断风险，再设计一种至少在理论上可行的统计方法。</p>
+      <aside class="source-erratum" id="erratum-15-measurement-terrors-typos"><strong>原文说明：</strong>PDF 第 526 页把 “average over the uncertainty” 误排为 “average other the uncertainty”，第 527 页的 “the way to proceed is the same” 漏排 <em>the</em>；译稿均按上下文订正。</aside>
     </section>
   </section>
 
-  <section class="endnotes" id="chapter-15-notes" role="doc-endnotes"><h2>尾注</h2><ol start="210"><li id="note-210">Joseph Bertrand，1889，<cite>Calcul des probabilités</cite>。 <a class="backref" href="#note-210-ref" aria-label="返回正文">↩</a></li><li id="note-211">这一主题有几篇很好的文章，各有自己的风格与记号变体。参见 Hernán 与 Cole（2009）、Loken 与 Gelman（2017）、Brakenhoff 等（2018）以及 van Smeden 等（2019）。 <a class="backref" href="#note-211-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section id="sec-15-2"><h2>15.2 缺失数据</h2>
+    <p>对于测量误差，关键洞见是：任何不确定的数据项，都能用反映其不确定性的分布来替代。但有时数据就是缺失了——根本没有任何测量。乍看之下，这似乎无计可施：连带误差的测量都不存在时，还能做什么？</p>
+    <p>处理缺失值最常见的方式，是删除所有含任意缺失值的案例；这称为<strong>完整案例分析</strong>，也是大多数统计软件默认而无声的行为。另一种常见做法，是用某个假定值替换缺失值，例如变量均值或零这样的参考值。这两种处理都不安全。完整案例分析最好也只是低效，因为它丢弃数据；而且是否产生偏差取决于因果细节。用固定值替换缺失值永远没有正当理由——我们并不知道那些值；一旦把它们固定，模型就会以为自己确定无疑地知道它们。</p>
+    <p>那还能怎么做？我们可以从因果角度思考缺失性，并用模型<strong>插补</strong>缺失值。生成模型会告诉你，产生缺失值的过程是否也会妨碍识别因果效应；有时会，有时不会。幸好，可以把缺失性加入 DAG，再用已经学过的同一套准则判断它是否造成混杂。生成模型还会提供关于尚未看见之数值的信息。<sup id="note-213-ref"><a href="#note-213">213</a></sup> 这些信息可用来对不确定性取平均，充分利用非缺失值，而不必丢掉任何东西。</p>
+    <p>画几张图后，这一切会更清楚。我们先从简单的虚构示例开始，再转向真实示例。</p>
+    <aside class="rethinking-box" id="rethinking-15-missing-meaningful"><h3>再思考：缺失数据是有意义的数据</h3><p>一个变量的值未被观测到，这件事实本身仍是一项观测。它也是数据，只不过取了一个非常特殊的值；这个值的含义取决于情境。以个人收入问卷为例：若有人拒绝填写收入，拒答可能与低收入或高收入有关，因此，试图预测缺失值的模型可能很有启发。在生态学中，没有观察到某个物种也是一种微妙的观测：它可能表示该物种不在那里，也可能表示它在那里，只是你没有看到。为处理这种双重性，已有完整一类模型称为<strong>占域模型</strong>。<sup id="note-214-ref"><a href="#note-214">214</a></sup> 缺失值总是由某个过程产生，思考这个过程有时能解决大问题。</p></aside>
+    <p class="continuation-note">图 15.4 与 15.2.1“DAG 吃掉了我的作业”，将从原书 PDF 第 528 页继续。</p>
+  </section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 15 章 PDF 第 517–524 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 525 页继续。</aside>
+  <section class="endnotes" id="chapter-15-notes" role="doc-endnotes"><h2>尾注</h2><ol start="210"><li id="note-210">Joseph Bertrand，1889，<cite>Calcul des probabilités</cite>。 <a class="backref" href="#note-210-ref" aria-label="返回正文">↩</a></li><li id="note-211">这一主题有几篇很好的文章，各有自己的风格与记号变体。参见 Hernán 与 Cole（2009）、Loken 与 Gelman（2017）、Brakenhoff 等（2018）以及 van Smeden 等（2019）。 <a class="backref" href="#note-211-ref" aria-label="返回正文">↩</a></li><li id="note-212">关于这种做法富有建设性的批评，参见 Hernán 与 Cole（2009）。 <a class="backref" href="#note-212-ref" aria-label="返回正文">↩</a></li><li id="note-213">关于当代方法（Bayesian 与其他方法）的综述，参见 Molenberghs 等（2014）。 <a class="backref" href="#note-213-ref" aria-label="返回正文">↩</a></li><li id="note-214">参见 MacKenzie 等（2017）；这是一本意在应用的综合性著作。 <a class="backref" href="#note-214-ref" aria-label="返回正文">↩</a></li></ol></section>
+
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 15 章 PDF 第 517–527 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 528 页继续。</aside>
 </article>

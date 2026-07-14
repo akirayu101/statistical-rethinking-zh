@@ -2684,7 +2684,7 @@
   },
   "chapter-15": {
     "required_status": "in_progress",
-    "source_pages": [517, 524],
+    "source_pages": [517, 527],
     "required_ids": [
       "intro-15",
       "note-210-ref",
@@ -2714,9 +2714,25 @@
       "dag-15-both-measurement-error",
       "eq-15-both-measurement-model",
       "code-15-5",
+      "code-15-6",
+      "fig-15-3",
+      "sec-15-1-3",
+      "dag-15-correlated-errors",
+      "dag-15-divorce-error-cause",
+      "note-212-ref",
+      "dag-15-proxy-age-error",
+      "code-15-7",
+      "erratum-15-measurement-terrors-typos",
+      "sec-15-2",
+      "note-213-ref",
+      "rethinking-15-missing-meaningful",
+      "note-214-ref",
       "chapter-15-notes",
       "note-210",
-      "note-211"
+      "note-211",
+      "note-212",
+      "note-213",
+      "note-214"
     ],
     "required_headings": [
       "缺失数据与其他机会",
@@ -2724,24 +2740,27 @@
       "再思考：生成式思考，Bayesian 推断",
       "15.1.1 结果变量的误差",
       "15.1.2 结果与预测变量同时有误差",
+      "15.1.3 测量恐怖故事",
+      "15.2 缺失数据",
+      "再思考：缺失数据是有意义的数据",
       "尾注"
     ],
     "counts": {
-      "section": 4,
-      "figure": 9,
-      "figure img": 2,
-      ".book-figure": 2,
-      ".code-listing": 5,
+      "section": 6,
+      "figure": 15,
+      "figure img": 3,
+      ".book-figure": 3,
+      ".code-listing": 7,
       ".code-output": 2,
-      ".rethinking-box": 1,
+      ".rethinking-box": 2,
       ".overthinking-box": 0,
       ".book-quote": 0,
       ".equation-block": 8,
       ".wallis-equation": 8,
-      ".source-erratum": 2,
+      ".source-erratum": 3,
       ".chapter-introduction": 1,
       ".continuation-note": 1,
-      ".endnotes li": 2
+      ".endnotes li": 5
     }
   }
 }

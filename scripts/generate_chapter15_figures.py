@@ -12,6 +12,7 @@ from generate_chapter5_waffle_divorce import rows
 ROOT = Path(__file__).resolve().parents[1]
 OUT1 = ROOT / "translations" / "zh" / "media" / "chapter-15-measurement-error.svg"
 OUT2 = ROOT / "translations" / "zh" / "media" / "chapter-15-divorce-shrinkage.svg"
+OUT3 = ROOT / "translations" / "zh" / "media" / "chapter-15-both-errors-shrinkage.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 GRID = "#ddd9ce"
@@ -21,6 +22,13 @@ DIVORCE_SE = [
     0.69, 0.52, 0.53, 0.60, 1.01, 0.67, 1.71, 0.94, 1.61, 0.46,
     1.11, 0.31, 0.48, 1.44, 0.45, 1.01, 0.80, 0.43, 1.79, 0.70,
     2.50, 0.75, 0.35, 0.93, 1.87, 0.52, 0.65, 1.34, 0.57, 1.90,
+]
+MARRIAGE_SE = [
+    1.27, 2.93, 0.98, 1.70, 0.39, 1.24, 1.06, 2.89, 2.53, 0.58,
+    0.81, 2.54, 1.84, 0.58, 0.81, 1.46, 1.48, 1.11, 1.19, 1.40,
+    1.02, 0.70, 0.69, 0.77, 1.54, 0.81, 2.31, 1.44, 1.76, 0.59,
+    1.90, 0.47, 0.98, 2.93, 0.61, 1.29, 1.10, 0.48, 2.11, 1.18,
+    2.64, 0.85, 0.61, 1.77, 2.40, 0.83, 1.00, 1.69, 0.79, 3.92,
 ]
 
 
@@ -245,11 +253,90 @@ def figure_15_2() -> None:
     OUT2.write_text("\n".join(svg), encoding="utf-8")
 
 
+def figure_15_3() -> None:
+    """Reconstruct shrinkage when both marriage and divorce rates have error."""
+    width, height = 840, 650
+    plot = (105.0, 45.0, 795.0, 555.0)
+    data = rows()
+    divorce = [float(row["divorce"]) for row in data]
+    marriage = [float(row["marriage"]) for row in data]
+    age = [float(row["age"]) for row in data]
+    d_obs, d_raw_sd = sample_standardize(divorce)
+    m_obs, m_raw_sd = sample_standardize(marriage)
+    age_std, _ = sample_standardize(age)
+    d_sd = [error / d_raw_sd for error in DIVORCE_SE]
+    m_sd = [error / m_raw_sd for error in MARRIAGE_SE]
+
+    # A deterministic conditional-Gaussian approximation to m15.2, using the
+    # posterior mean regression parameters printed for m15.1. Iterate the two
+    # latent true-value updates because D_true and M_true inform one another.
+    a, b_age, b_marriage, sigma = -0.06, -0.61, 0.05, 0.60
+    m_true = [obs / (1.0 + err**2) for obs, err in zip(m_obs, m_sd)]
+    d_true = d_obs[:]
+    for _ in range(8):
+        d_var = [1.0 / (1.0 / err**2 + 1.0 / sigma**2) for err in d_sd]
+        d_mu = [a + b_age * av + b_marriage * mv for av, mv in zip(age_std, m_true)]
+        d_true = [
+            var * (obs / err**2 + mu / sigma**2)
+            for var, obs, err, mu in zip(d_var, d_obs, d_sd, d_mu)
+        ]
+        next_m: list[float] = []
+        for obs, err, dv, av in zip(m_obs, m_sd, d_true, age_std):
+            precision = 1.0 / err**2 + 1.0 + b_marriage**2 / sigma**2
+            numerator = obs / err**2 + b_marriage * (dv - a - b_age * av) / sigma**2
+            next_m.append(numerator / precision)
+        m_true = next_m
+
+    x_range, y_range = (-1.80, 3.20), (-2.20, 2.20)
+    x0, y0, x1, y1 = plot
+
+    def xy(x_value: float, y_value: float) -> tuple[float, float]:
+        return (
+            x0 + (x_value - x_range[0]) / (x_range[1] - x_range[0]) * (x1 - x0),
+            y1 - (y_value - y_range[0]) / (y_range[1] - y_range[0]) * (y1 - y0),
+        )
+
+    svg = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
+        '<title>图 15.3：离婚率与结婚率同时收缩</title>',
+        '<desc>蓝色实心点是各州观测到的标准化结婚率与离婚率，黑色空心圆是后验真实值均值；每条线连接同一州的观测与后验估计，二者都向推断出的回归关系收缩。</desc>',
+        f'<rect width="{width}" height="{height}" fill="#fff"/>',
+        f'<rect x="{x0}" y="{y0}" width="{x1-x0}" height="{y1-y0}" fill="#fff" stroke="{INK}" stroke-width="1.5"/>',
+    ]
+    for tick in [-1, 0, 1, 2, 3]:
+        x, _ = xy(float(tick), y_range[0])
+        svg.extend([f'<line x1="{x:.1f}" y1="{y1}" x2="{x:.1f}" y2="{y1+7}" stroke="{INK}"/>', label(x, y1 + 33, str(tick), size=17, anchor="middle")])
+    for tick in [-2, -1, 0, 1, 2]:
+        _, y = xy(x_range[0], float(tick))
+        svg.extend([f'<line x1="{x0-7}" y1="{y:.1f}" x2="{x0}" y2="{y:.1f}" stroke="{INK}"/>', label(x0 - 14, y + 6, str(tick), size=17, anchor="end")])
+
+    # Connections first, then observed and posterior points.
+    for ox, oy, tx, ty in zip(m_obs, d_obs, m_true, d_true):
+        px0, py0 = xy(ox, oy)
+        px1, py1 = xy(tx, ty)
+        svg.append(f'<line x1="{px0:.1f}" y1="{py0:.1f}" x2="{px1:.1f}" y2="{py1:.1f}" stroke="#3f4752" stroke-width="1.5"/>')
+    for ox, oy in zip(m_obs, d_obs):
+        x, y = xy(ox, oy)
+        svg.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="5" fill="#6670ee" fill-opacity="0.82"/>')
+    for tx, ty in zip(m_true, d_true):
+        x, y = xy(tx, ty)
+        svg.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="5.5" fill="#fff" stroke="{INK}" stroke-width="1.6"/>')
+
+    svg.extend([
+        label((x0 + x1) / 2, 625, "结婚率（标准化）", size=20, anchor="middle", weight=600),
+        label(28, (y0 + y1) / 2, "离婚率（标准化）", size=20, anchor="middle", weight=600, rotate=-90),
+        '</svg>',
+    ])
+    OUT3.write_text("\n".join(svg), encoding="utf-8")
+
+
 def main() -> None:
     figure_15_1()
     figure_15_2()
+    figure_15_3()
     print(OUT1)
     print(OUT2)
+    print(OUT3)
 
 
 if __name__ == "__main__":
