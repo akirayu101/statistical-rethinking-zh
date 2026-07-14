@@ -2879,7 +2879,7 @@
   },
   "chapter-16": {
     "required_status": "in_progress",
-    "source_pages": [553, 570],
+    "source_pages": [553, 573],
     "required_ids": [
       "intro-16",
       "rethinking-16-bespoke",
@@ -2960,6 +2960,18 @@
       "eq-16-hare-ar-one",
       "eq-16-hare-ar-lynx",
       "eq-16-hare-ar-deep",
+      "sec-16-4-1",
+      "eq-16-hare-change-general",
+      "eq-16-hare-no-predator",
+      "eq-16-hare-lotka-volterra",
+      "eq-16-lynx-lotka-volterra",
+      "note-228-ref",
+      "eq-16-hare-euler-update",
+      "code-16-14",
+      "code-16-15",
+      "fig-16-7",
+      "sec-16-4-2",
+      "erratum-16-population-dynamics-typos",
       "chapter-16-notes",
       "note-219",
       "note-220",
@@ -2969,7 +2981,8 @@
       "note-224",
       "note-225",
       "note-226",
-      "note-227"
+      "note-227",
+      "note-228"
     ],
     "required_headings": [
       "广义线性疯狂",
@@ -2991,24 +3004,26 @@
       "16.3.2 统计模型",
       "16.3.3 协变量与个体差异",
       "16.4 种群动力学",
+      "16.4.1 科学模型",
+      "16.4.2 统计模型",
       "尾注"
     ],
     "counts": {
-      "section": 15,
-      "figure": 20,
-      "figure img": 5,
-      ".book-figure": 7,
-      ".code-listing": 13,
+      "section": 17,
+      "figure": 23,
+      "figure img": 6,
+      ".book-figure": 8,
+      ".code-listing": 15,
       ".code-output": 3,
       ".rethinking-box": 3,
       ".overthinking-box": 1,
       ".book-quote": 0,
-      ".equation-block": 23,
-      ".wallis-equation": 23,
-      ".source-erratum": 4,
+      ".equation-block": 28,
+      ".wallis-equation": 28,
+      ".source-erratum": 5,
       ".chapter-introduction": 1,
       ".continuation-note": 1,
-      ".endnotes li": 9
+      ".endnotes li": 10
     }
   }
 }

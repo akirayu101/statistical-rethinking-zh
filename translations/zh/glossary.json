@@ -1274,6 +1274,12 @@
     "time series": "时间序列",
     "autoregressive model": "自回归模型",
     "lag variable": "滞后变量",
+    "per capita growth rate": "个体平均增长率",
+    "Lotka-Volterra model": "Lotka–Volterra 模型",
+    "predator-prey interaction": "捕食者—猎物互动",
+    "coupled ordinary differential equations": "耦合常微分方程",
+    "observation process": "观测过程",
+    "trapping rate": "捕获率",
     "occupancy model": "占域模型",
     "cross-classified varying slopes model": "交叉分类变化斜率模型"
   },

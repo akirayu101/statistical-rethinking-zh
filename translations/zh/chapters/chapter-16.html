@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-16" data-source-pages="553-570">
-  <header class="chapter-header"><p class="eyebrow">第十六章</p><h1>广义线性疯狂</h1><p class="source-range">当前译稿对应原书 PDF 第 553–570 页</p></header>
+<article class="book-article" data-chapter="chapter-16" data-source-pages="553-573">
+  <header class="chapter-header"><p class="eyebrow">第十六章</p><h1>广义线性疯狂</h1><p class="source-range">当前译稿对应原书 PDF 第 553–573 页</p></header>
 
   <div class="chapter-introduction" id="intro-16">
     <p>高中时，我问物理老师怎么看统计学，她给我讲了一个笑话。以下是我记得的版本。一位物理学家、一位工程师和一位统计学家结伴去用弓打猎。几个小时后，他们终于在远处发现一只鹿。物理学家快速做了弹道计算，忽略空气阻力；箭飞得很正，却落在目标前几米，鹿毫无察觉。工程师冷笑一声，给空气阻力加入一个修正因子，然后放箭；第二支箭却落在目标后几米，鹿仍然没有察觉。统计学家取了平均值，高喊：“我们射中了！”</p>
@@ -233,7 +233,7 @@ data(Panda_nuts)</code></pre></figure>
     <section id="sec-16-3-1"><h3>16.3.1 科学模型</h3>
       <p>我们需要一个随年龄变化的开坚果速率生成模型。先考虑最笨、却仍然比 GLM 聪明的模型：假设唯一重要因素是个体力量。个体随年龄增长而变强，开坚果速率也随之上升。黑猩猩显然还需要一些知识，但先假设知识来得容易，身体力量才是限制因素。若模型表现很差，就有充分理由重新考虑这个假设。</p>
       <p>对于终止生长的动物——即最终达到稳定成年体重——体型增加量与距离最大体型的差距成正比。这意味着，质量随年龄 <var>t</var> 的瞬时变化率为：</p>
-      <div class="equation-block wallis-equation" id="eq-16-growth-ode"><div><span class="fraction"><span>d<var>M</var></span><span>d<var>t</var></span></span> = <var>k</var>(<var>M</var><sub>max</sub> − <var>M</var><sub><var>t</var></sub>)</div></div>
+      <div class="equation-block wallis-equation derivative-equation" id="eq-16-growth-ode"><div><span class="fraction"><span>d<var>M</var></span><span>d<var>t</var></span></span> = <var>k</var>(<var>M</var><sub>max</sub> − <var>M</var><sub><var>t</var></sub>)</div></div>
       <p>参数 <var>k</var> 衡量技能随年龄增长的速率。上式告诉我们质量在任意年龄变化得多快，但还需要给定年龄时的质量公式。求解微分方程超出了本书的层次，不过其实不必会解——任何计算机代数系统都能完成。这条微分方程本身是生物学经典<sup id="note-224-ref"><a href="#note-224">224</a></sup>，其解为：</p>
       <div class="equation-block wallis-equation" id="eq-16-growth-solution"><div><var>M</var><sub><var>t</var></sub> = <var>M</var><sub>max</sub>(1 − exp(−<var>k</var><var>t</var>))</div></div>
       <p>稍后进行先验预测模拟时会绘制这个函数。它产生逐渐减速、最终在 <var>M</var><sub>max</sub> 处趋平的曲线；若想提前看，图 16.4 左侧就是示例。</p>
@@ -339,10 +339,62 @@ text( 19 , 50 , "Lynx" , pos=2 , col=rangi2 )</code></pre></figure>
     <div class="equation-block wallis-equation" id="eq-16-hare-ar-lynx"><div>E(<var>H</var><sub><var>t</var></sub>) = <var>α</var> + <var>β</var><sub>1</sub><var>H</var><sub><var>t</var>−1</sub> + <var>β</var><sub>2</sub><var>L</var><sub><var>t</var>−1</sub></div></div>
     <p>其中 <var>L</var><sub><var>t</var>−1</sub> 是上一时期的猞猁数。有时还会加入更深的滞后：</p>
     <div class="equation-block wallis-equation" id="eq-16-hare-ar-deep"><div>E(<var>H</var><sub><var>t</var></sub>) = <var>α</var> + <var>β</var><sub>1</sub><var>H</var><sub><var>t</var>−1</sub> + <var>β</var><sub>2</sub><var>L</var><sub><var>t</var>−1</sub> + <var>β</var><sub>3</sub><var>H</var><sub><var>t</var>−2</sub></div></div>
-    <p class="continuation-note">自回归模型的因果问题、状态空间模型需求，以及 16.4.1 的耦合常微分方程，将从原书 PDF 第 571 页继续。</p>
+    <p>这样一来，不只最近一期的种群规模 <var>H</var><sub><var>t</var>−1</sub> 预测当前规模，两期之前的 <var>H</var><sub><var>t</var>−2</sub> 也会预测。价格、气温乃至战争，都曾被这样建模。</p>
+    <p>尽管自回归模型极为常用，却有几个著名问题；它们无疑是广义线性疯狂。第一，两期之前发生的事，只有通过影响一期之前的系统状态，才能导致现在。因此，超过一期的滞后都没有因果意义，只是纯预测本轮。某些因果影响当然比另一些慢，但这意味着需要另一个变量，而不是说“过去得更远”本身可以影响现在。第二，如果系统状态——本例中的 <var>H</var><sub><var>t</var></sub> 与 <var>L</var><sub><var>t</var></sub>——带测量误差，模型就会传播误差。影响 <var>H</var><sub><var>t</var></sub> 的不是观测到的 <var>H</var><sub><var>t</var>−1</sub>，而是真实、未观测的 <var>H</var><sub><var>t</var>−1</sub>；换句话说，真正需要的是状态空间模型。第三，多数情况下，参数没有生物学、经济学或物理学解释。例如上式的截距 <var>α</var> 暗示：即使没有雪兔，即 <span class="math-inline"><var>H</var><sub><var>t</var>−1</sub> = 0</span>，下一期仍可能凭空出现 <var>α</var> 只雪兔。若唯一关心的是预测，有时这些荒唐设定还可以接受；可它们往往连预测也做不好，因为准确把握未来通常依赖一个像样的因果模型。</p>
+    <p>只要用一点科学，就能轻松做得更好。本节将用一个极其基础的生态学模型描述雪兔和猞猁；在此过程中，你会看到怎样把常微分方程组（ODE）拟合到数据。</p>
+
+    <section id="sec-16-4-1"><h3>16.4.1 科学模型</h3>
+      <p>雪兔种群以取决于植物的速率繁殖，又以取决于捕食者的速率缩减。令 <var>H</var><sub><var>t</var></sub> 表示时刻 <var>t</var> 的雪兔数，那么雪兔种群的变化率可以写成：</p>
+      <div class="equation-block wallis-equation derivative-equation" id="eq-16-hare-change-general"><div><span class="fraction"><span>d<var>H</var></span><span>d<var>t</var></span></span> = <var>H</var><sub><var>t</var></sub>（出生率）− <var>H</var><sub><var>t</var></sub>（死亡率）</div></div>
+      <p>每一项都乘以 <var>H</var><sub><var>t</var></sub>，因为若没有雪兔，就不会有出生或死亡。繁殖与死亡都是个体平均过程。最简单的生态模型把出生率与死亡率都视为常数。把出生率记为 <var>b</var><sub><var>H</var></sub>，死亡率记为 <var>m</var><sub><var>H</var></sub>，便有：</p>
+      <div class="equation-block wallis-equation derivative-equation" id="eq-16-hare-no-predator"><div><span class="fraction"><span>d<var>H</var></span><span>d<var>t</var></span></span> = <var>H</var><sub><var>t</var></sub><var>b</var><sub><var>H</var></sub> − <var>H</var><sub><var>t</var></sub><var>m</var><sub><var>H</var></sub> = <var>H</var><sub><var>t</var></sub>(<var>b</var><sub><var>H</var></sub> − <var>m</var><sub><var>H</var></sub>)</div></div>
+      <p>个体平均增长率就是出生率与死亡率之差。作者把它看作生态学第一定律：每个模型都必须以某种形式包含它。</p>
+      <p>这里需要的形式，会修改死亡率，让它还取决于捕食者——聪明的猞猁——是否存在。令 <var>L</var><sub><var>t</var></sub> 表示时刻 <var>t</var> 的猞猁数，则：</p>
+      <div class="equation-block wallis-equation derivative-equation" id="eq-16-hare-lotka-volterra"><div><span class="fraction"><span>d<var>H</var></span><span>d<var>t</var></span></span> = <var>H</var><sub><var>t</var></sub>(<var>b</var><sub><var>H</var></sub> − <var>L</var><sub><var>t</var></sub><var>m</var><sub><var>H</var></sub>)</div></div>
+      <p>同样的逻辑给出猞猁种群的变化率：</p>
+      <div class="equation-block wallis-equation derivative-equation" id="eq-16-lynx-lotka-volterra"><div><span class="fraction"><span>d<var>L</var></span><span>d<var>t</var></span></span> = <var>L</var><sub><var>t</var></sub>(<var>H</var><sub><var>t</var></sub><var>b</var><sub><var>L</var></sub> − <var>m</var><sub><var>L</var></sub>)</div></div>
+      <p>此时，是出生率取决于另一物种，而死亡率保持常数。现在，两种物种的种群动力学由两条耦合常微分方程共同决定。这并不现实：雪兔吃的植物并非始终充足，猞猁也不只吃雪兔。不过先看看这个参数有明确含义的生物学模型能走多远；失败会教给我们东西。</p>
+      <p>这就是著名的 <strong>Lotka–Volterra 模型</strong><sup id="note-228-ref"><a href="#note-228">228</a></sup>。它描述简单的捕食者—猎物互动，并展示生态动力学中的若干要点。甚至完全不用数据，就能证明它的许多性质。例如，种群往往不稳定，像图 16.6 那样上下循环。这很有意思：尽管自然界复杂得多，但要看到周期性种群动力学，简单得发傻的模型似乎已经抓住全部必要条件。</p>
+      <p>上一节也用了微分方程模型；在那里可以显式求解，得到任意时刻 <var>t</var> 的变量值。这里做不到：这些方程没有显式解，无法直接告诉我们任意 <var>t</var> 时应预期怎样的 <var>H</var><sub><var>t</var></sub> 与 <var>L</var><sub><var>t</var></sub>。怎样使用它们？通过模拟进行数值求解。先看看做法，再把它变成统计模型。</p>
+      <p>微分方程不过是一种更新变量的方法。方程 <span class="math-inline">d<var>H</var>/d<var>t</var></span> 告诉我们，每经过一个微小时间单位 d<var>t</var>，怎样更新 <var>H</var>。因此，一旦有了 <var>H</var> 的当前值，只需反复应用 <span class="math-inline">d<var>H</var>/d<var>t</var></span> 就能更新。具体来说：</p>
+      <div class="equation-block wallis-equation derivative-equation" id="eq-16-hare-euler-update"><div><var>H</var><sub><var>t</var>+d<var>t</var></sub> = <var>H</var><sub><var>t</var></sub> + d<var>t</var> <span class="fraction"><span>d<var>H</var></span><span>d<var>t</var></span></span> = <var>H</var><sub><var>t</var></sub> + d<var>t H</var><sub><var>t</var></sub>(<var>b</var><sub><var>H</var></sub> − <var>L</var><sub><var>t</var></sub><var>m</var><sub><var>H</var></sub>)</div></div>
+      <p>计算机里的数学很棘手，因此操作时必须小心。特别是，d<var>t</var> 要足够小，才能很好地近似连续时间。但这个策略确实可行，而且让我们在拟合数据之前就能看到模型意味着什么。</p>
+      <p>下面编写一个模拟猞猁—雪兔动力学的函数，只需把上述策略同时应用到 <var>H</var> 与 <var>L</var>：</p>
+      <figure class="code-listing" id="code-16-14"><figcaption>R 代码 16.14</figcaption><pre><code>sim_lynx_hare &lt;- function( n_steps , init , theta , dt=0.002 ) {
+    L &lt;- rep(NA,n_steps)
+    H &lt;- rep(NA,n_steps)
+    L[1] &lt;- init[1]
+    H[1] &lt;- init[2]
+    for ( i in 2:n_steps ) {
+        H[i] &lt;- H[i-1] + dt*H[i-1]*( theta[1] - theta[2]*L[i-1] )
+        L[i] &lt;- L[i-1] + dt*L[i-1]*( theta[3]*H[i-1] - theta[4] )
+    }
+    return( cbind(L,H) )
+}</code></pre></figure>
+      <p>用 <code>n_steps</code> 告诉函数模拟多久，用 <code>init</code> 指定初始种群规模，用 <code>theta</code> 指定参数值；时间间隔是 <code>dt</code>。这里把默认值设为 0.002，对本例有效，但通常正确取值取决于模型与参数。</p>
+      <p>现在用这个函数模拟：</p>
+      <figure class="code-listing" id="code-16-15"><figcaption>R 代码 16.15</figcaption><pre><code>theta &lt;- c( 0.5 , 0.05 , 0.025 , 0.5 )
+z &lt;- sim_lynx_hare( 1e4 , as.numeric(Lynx_Hare[1,2:3]) , theta )
+
+plot( z[,2] , type="l" , ylim=c(0,max(z[,2])) , lwd=2 , xaxt="n" ,
+    ylab="number (thousands)" , xlab="" )
+lines( z[,1] , col=rangi2 , lwd=2 )
+mtext( "time" , 1 )</code></pre></figure>
+      <figure class="book-figure lotka-volterra-figure" id="fig-16-7"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的 Lotka–Volterra 雪兔与猞猁模拟种群循环"><img src="/media/chapter-16-lotka-volterra-simulation.svg" alt="黑色雪兔种群先达到峰值，蓝色猞猁种群随后达到峰值，两者形成反复捕食者猎物循环"></div><p class="scroll-hint">图较宽，可横向滚动查看完整捕食者—猎物循环。</p><figcaption><strong>图 16.7：</strong>猞猁—雪兔模型模拟出的种群动力学。黑线：雪兔种群；蓝线：猞猁种群。模型产生反复的捕食者—猎物循环。</figcaption></figure>
+      <p>黑线是雪兔种群，蓝线是猞猁种群。模型产生了与数据相似的循环。之所以如此，是因为猞猁吃雪兔；雪兔被吃掉后，猞猁开始死亡，然后循环重来。</p>
+    </section>
+
+    <section id="sec-16-4-2"><h3>16.4.2 统计模型</h3>
+      <p>要把猞猁—雪兔模型变成统计分析，需要把确定性的种群动力学与观测数据连接起来。观测数据有很多理由不会精确匹配确定性期望；最明显的是，我们永远无法数完每一只雪兔和猞猁，手上只有局部样本。因此，需要同时为底层种群动力学与观测过程建模。</p>
+      <p>仍用 <var>H</var><sub><var>t</var></sub> 与 <var>L</var><sub><var>t</var></sub> 表示时刻 <var>t</var> 的雪兔和猞猁真实数量，再用 <var>h</var><sub><var>t</var></sub> 与 <var>ℓ</var><sub><var>t</var></sub> 表示观测数量。<var>H</var><sub><var>t</var></sub> 会导致 <var>H</var><sub><var>t</var>+d<var>t</var></sub>，但观测值 <var>h</var><sub><var>t</var></sub> 什么也不导致；它只是时刻 <var>t</var> 未观测系统状态的一抹苍白倒影。必须用统计模型把它投射回底层的 <var>H</var><sub><var>t</var></sub> 与 <var>L</var><sub><var>t</var></sub>，再预测 <var>h</var><sub><var>t</var>+d<var>t</var></sub> 与 <var>ℓ</var><sub><var>t</var>+d<var>t</var></sub>。</p>
+      <p>为此，需要给观测过程指定误差分布。原则性的做法，是勾勒从自然界真实状态 <var>H</var><sub><var>t</var></sub> 到测量 <var>h</var><sub><var>t</var></sub> 的生成过程。雪兔先被捕获；假设每只雪兔以概率 <var>p</var><sub><var>t</var></sub> 被捕，这个概率会因各种原因逐年变化。实际毛皮数又被四舍五入到最接近的 100，然后除以 1000，因此已不再是严格计数。听起来一团糟——测量就是这样。</p>
+      <p>不过仍能建模。例如，假设真实雪兔种群为 <span class="math-inline"><var>H</var><sub><var>t</var></sub> = 10<sup>4</sup></span>，年度捕获率服从 <span class="math-inline"><var>p</var><sub><var>t</var></sub> ∼ Beta(2, 18)</span>。这表示平均捕获率为 10%，但几乎不会高到两倍。先从雪兔种群得到毛皮的二项计数，再四舍五入到最近的 100 并除以 1000。下一页将查看这种分布的形状。</p>
+      <aside class="source-erratum" id="erratum-16-population-dynamics-typos"><strong>原文说明：</strong>PDF 第 571 页的 “if you care about is forecasting” 漏排 <em>all</em>，“depends upon have” 应为 <em>having</em>；PDF 第 573 页的 “underly model” 应为 <em>underlying model</em>，而观测过程的步骤从 “First” 直接跳到 “Third”。译稿按上下文补齐并顺排。</aside>
+      <p class="continuation-note">图 16.8、代码 16.16、观测误差近似与完整状态空间统计模型，将从原书 PDF 第 574 页继续。</p>
+    </section>
   </section>
 
-  <section class="endnotes" id="chapter-16-notes" role="doc-endnotes"><h2>尾注</h2><ol start="219"><li id="note-219">“Vitruvian Can”（“维特鲁威罐头”）这个双关由 Clint Johns（Twitter：@DrClintonJohns）提供。 <a class="backref" href="#note-219-ref" aria-label="返回正文">↩</a></li><li id="note-220">Harte（1988）。 <a class="backref" href="#note-220-ref" aria-label="返回正文">↩</a></li><li id="note-221">关于模型构建哲学有许多好文章，作者推荐三篇：Levins（1966）、Wimsatt（2002）和 Smaldino（2017）。 <a class="backref" href="#note-221-ref" aria-label="返回正文">↩</a></li><li id="note-222">资料来自 van Leeuwen 等（2018）。 <a class="backref" href="#note-222-ref" aria-label="返回正文">↩</a></li><li id="note-223">资料来自 Boesch 等（2019）。数据由 Roger Mundry 慷慨提供；论文中巧妙的分析也是由他设计的。 <a class="backref" href="#note-223-ref" aria-label="返回正文">↩</a></li><li id="note-224">von Bertalanffy（1934）。 <a class="backref" href="#note-224-ref" aria-label="返回正文">↩</a></li><li id="note-225">见 Walker 等（2006）以及 Leigh 和 Shea（1996）。 <a class="backref" href="#note-225-ref" aria-label="返回正文">↩</a></li><li id="note-226">本例依据 Bob Carpenter 的 Stan 案例研究改编：<a href="https://mc-stan.org/users/documentation/case-studies/lotka-volterra-predator-prey.html">Lotka–Volterra 捕食者—猎物模型</a>。 <a class="backref" href="#note-226-ref" aria-label="返回正文">↩</a></li><li id="note-227">Hewitt（1921）。注意，猞猁与雪兔数据大多来自不同地区。尽管这些数据常被用来说明种群动力学，但大量文献认为它们并不是很好的示例；简单搜索即可找到许多讨论。 <a class="backref" href="#note-227-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section class="endnotes" id="chapter-16-notes" role="doc-endnotes"><h2>尾注</h2><ol start="219"><li id="note-219">“Vitruvian Can”（“维特鲁威罐头”）这个双关由 Clint Johns（Twitter：@DrClintonJohns）提供。 <a class="backref" href="#note-219-ref" aria-label="返回正文">↩</a></li><li id="note-220">Harte（1988）。 <a class="backref" href="#note-220-ref" aria-label="返回正文">↩</a></li><li id="note-221">关于模型构建哲学有许多好文章，作者推荐三篇：Levins（1966）、Wimsatt（2002）和 Smaldino（2017）。 <a class="backref" href="#note-221-ref" aria-label="返回正文">↩</a></li><li id="note-222">资料来自 van Leeuwen 等（2018）。 <a class="backref" href="#note-222-ref" aria-label="返回正文">↩</a></li><li id="note-223">资料来自 Boesch 等（2019）。数据由 Roger Mundry 慷慨提供；论文中巧妙的分析也是由他设计的。 <a class="backref" href="#note-223-ref" aria-label="返回正文">↩</a></li><li id="note-224">von Bertalanffy（1934）。 <a class="backref" href="#note-224-ref" aria-label="返回正文">↩</a></li><li id="note-225">见 Walker 等（2006）以及 Leigh 和 Shea（1996）。 <a class="backref" href="#note-225-ref" aria-label="返回正文">↩</a></li><li id="note-226">本例依据 Bob Carpenter 的 Stan 案例研究改编：<a href="https://mc-stan.org/users/documentation/case-studies/lotka-volterra-predator-prey.html">Lotka–Volterra 捕食者—猎物模型</a>。 <a class="backref" href="#note-226-ref" aria-label="返回正文">↩</a></li><li id="note-227">Hewitt（1921）。注意，猞猁与雪兔数据大多来自不同地区。尽管这些数据常被用来说明种群动力学，但大量文献认为它们并不是很好的示例；简单搜索即可找到许多讨论。 <a class="backref" href="#note-227-ref" aria-label="返回正文">↩</a></li><li id="note-228">Volterra（1926）；Lotka（1925）。 <a class="backref" href="#note-228-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 16 章 PDF 第 553–570 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 571 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 16 章 PDF 第 553–573 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 574 页继续。</aside>
 </article>

@@ -15,6 +15,7 @@ BOXES_OUT = ROOT / "translations" / "zh" / "media" / "chapter-16-boxes-strategy-
 NUT_PRIOR_OUT = ROOT / "translations" / "zh" / "media" / "chapter-16-nut-prior-predictive.svg"
 NUT_POSTERIOR_OUT = ROOT / "translations" / "zh" / "media" / "chapter-16-nut-posterior-curves.svg"
 LYNX_HARE_OUT = ROOT / "translations" / "zh" / "media" / "chapter-16-lynx-hare-series.svg"
+LOTKA_OUT = ROOT / "translations" / "zh" / "media" / "chapter-16-lotka-volterra-simulation.svg"
 DATA_URL = "https://raw.githubusercontent.com/rmcelreath/rethinking/master/data/Howell1.csv"
 BOXES_DATA_URL = "https://raw.githubusercontent.com/rmcelreath/rethinking/master/data/Boxes.csv"
 PANDA_DATA_URL = "https://raw.githubusercontent.com/rmcelreath/rethinking/master/data/Panda_nuts.csv"
@@ -355,6 +356,51 @@ def write_lynx_hare_figure(data: list[tuple[int, float, float]]) -> None:
     print(f"wrote {LYNX_HARE_OUT}")
 
 
+def write_lotka_volterra_figure(data: list[tuple[int, float, float]]) -> None:
+    lynx = [data[0][1]]
+    hare = [data[0][2]]
+    birth_hare, mortality_hare, birth_lynx, mortality_lynx = 0.5, 0.05, 0.025, 0.5
+    dt = 0.002
+    for _ in range(1, 10_000):
+        hare.append(hare[-1] + dt * hare[-1] * (birth_hare - mortality_hare * lynx[-1]))
+        lynx.append(lynx[-1] + dt * lynx[-1] * (birth_lynx * hare[-2] - mortality_lynx))
+
+    width, height = 900, 550
+    left, top, panel_w, panel_h = 95, 60, 740, 390
+    maximum = 46
+
+    def px(index: int) -> float:
+        return left + panel_w * index / 9_999
+
+    def py(value: float) -> float:
+        return top + panel_h - panel_h * value / maximum
+
+    hare_path = [(px(index), py(hare[index])) for index in range(0, 10_000, 5)]
+    lynx_path = [(px(index), py(lynx[index])) for index in range(0, 10_000, 5)]
+    parts = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-labelledby="title desc">',
+        '<title id="title">Lotka–Volterra 雪兔—猞猁种群模拟</title>',
+        '<desc id="desc">黑色雪兔曲线先达到峰值，蓝色猞猁曲线随后达到峰值；捕食者与猎物种群形成反复循环。</desc>',
+        '<rect width="100%" height="100%" fill="#fff"/>',
+        f'<style>.axis{{font:16px {FONT};fill:#30332e}}.label{{font:20px {FONT};fill:#30332e}}.title{{font:700 23px {FONT};fill:#263f86}}.panel{{fill:#fff;stroke:#3c403b;stroke-width:1.4}}.hare{{fill:none;stroke:#202420;stroke-width:3}}.lynx{{fill:none;stroke:#6874ef;stroke-width:3}}</style>',
+        '<text class="title" x="450" y="31" text-anchor="middle">Lotka–Volterra 捕食者—猎物循环</text>',
+        f'<rect class="panel" x="{left}" y="{top}" width="{panel_w}" height="{panel_h}"/>',
+        f'<path class="hare" d="{path(hare_path)}"/>',
+        f'<path class="lynx" d="{path(lynx_path)}"/>',
+    ]
+    for tick in (0, 10, 20, 30, 40):
+        ypos = py(tick)
+        parts.append(f'<text class="axis" x="{left - 12}" y="{fmt(ypos + 5)}" text-anchor="end">{tick}</text>')
+    parts.append(f'<text class="label" x="{left + panel_w / 2}" y="{height - 38}" text-anchor="middle">时间</text>')
+    parts.append(f'<text class="label" x="30" y="{top + panel_h / 2}" text-anchor="middle" transform="rotate(-90 30 {top + panel_h / 2})">数量（千）</text>')
+    parts.append('<line x1="650" y1="88" x2="698" y2="88" class="hare"/><text class="axis" x="710" y="94">雪兔</text>')
+    parts.append('<line x1="650" y1="120" x2="698" y2="120" class="lynx"/><text class="axis" x="710" y="126">猞猁</text>')
+    parts.append('</svg>')
+    LOTKA_OUT.write_text("".join(parts), encoding="utf-8")
+    print(f"wrote {LOTKA_OUT}")
+
+
 def main() -> int:
     raw = load_data()
     mean_h = sum(height for height, _ in raw) / len(raw)
@@ -473,7 +519,9 @@ def main() -> int:
     panda_nuts = load_panda_nuts()
     write_nut_prior_figure()
     write_nut_posterior_figure(panda_nuts)
-    write_lynx_hare_figure(load_lynx_hare())
+    lynx_hare = load_lynx_hare()
+    write_lynx_hare_figure(lynx_hare)
+    write_lotka_volterra_figure(lynx_hare)
     return 0
 
 
