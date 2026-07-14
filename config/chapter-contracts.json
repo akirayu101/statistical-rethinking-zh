@@ -3286,5 +3286,64 @@
       ".equation-block": 0,
       ".endnotes li": 0
     }
+  },
+  "citation-index": {
+    "required_status": "verified",
+    "source_pages": [611, 617],
+    "minimum_chinese_ratio": 0.1,
+    "required_ids": [
+      "citation-index-reading-note",
+      "citation-authors-pdf-611",
+      "citation-entry-001",
+      "citation-entry-084",
+      "citation-authors-pdf-612",
+      "citation-entry-085",
+      "citation-entry-194",
+      "citation-authors-pdf-613",
+      "citation-entry-195",
+      "citation-entry-263",
+      "subject-index-pdf-613",
+      "subject-index-entry-001",
+      "subject-index-entry-039",
+      "subject-index-pdf-614",
+      "subject-index-entry-040",
+      "subject-index-entry-144",
+      "subject-index-pdf-615",
+      "subject-index-entry-145",
+      "subject-index-entry-250",
+      "subject-index-pdf-616",
+      "subject-index-entry-251",
+      "subject-index-entry-356",
+      "subject-index-pdf-617",
+      "subject-index-entry-357",
+      "subject-index-entry-380"
+    ],
+    "required_headings": [
+      "引文索引",
+      "作者—年份索引",
+      "主题索引",
+      "A–G",
+      "G–R",
+      "R–Z",
+      "A–C",
+      "C–H",
+      "H–M",
+      "M–S",
+      "T–Z"
+    ],
+    "counts": {
+      "section": 8,
+      ".index-columns": 8,
+      ".index-list": 14,
+      ".citation-index-list": 6,
+      ".citation-index-list li": 263,
+      "a.citation-author": 263,
+      ".subject-index-list": 8,
+      ".subject-index-list li": 380,
+      "figure": 0,
+      ".code-listing": 0,
+      ".equation-block": 0,
+      ".endnotes li": 0
+    }
   }
 }
