@@ -1228,6 +1228,9 @@
     "missing data": "缺失数据",
     "Bayesian imputation": "Bayesian 插补",
     "Bertrand's box paradox": "Bertrand 盒子悖论",
+    "observation model": "观测模型",
+    "true value": "真实值",
+    "proxy variable": "代理变量",
     "cross-classified varying slopes model": "交叉分类变化斜率模型"
   },
   "protected": [

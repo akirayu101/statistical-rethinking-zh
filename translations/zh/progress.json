@@ -99,9 +99,9 @@
   },
   "chapter-15": {
     "status": "in_progress",
-    "translated_pages": [517, 518],
-    "reviewed_pages": [517, 518],
-    "verified_pages": [517, 518],
-    "notes": "第 15 章 PDF 第 517–518 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。15.1 测量误差及代码 15.2 从 PDF 第 519 页继续。"
+    "translated_pages": [517, 518, 519, 520, 521],
+    "reviewed_pages": [517, 518, 519, 520, 521],
+    "verified_pages": [517, 518, 519, 520, 521],
+    "notes": "第 15 章 PDF 第 517–521 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。代码 15.3 的其余数据列表、模型拟合与代码 15.4 从 PDF 第 522 页继续。"
   }
 }

@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-15" data-source-pages="517-518">
-  <header class="chapter-header"><p class="eyebrow">第十五章</p><h1>缺失数据与其他机会</h1><p class="source-range">当前译稿对应原书 PDF 第 517–518 页</p></header>
+<article class="book-article" data-chapter="chapter-15" data-source-pages="517-521">
+  <header class="chapter-header"><p class="eyebrow">第十五章</p><h1>缺失数据与其他机会</h1><p class="source-range">当前译稿对应原书 PDF 第 517–521 页</p></header>
 
   <div class="chapter-introduction" id="intro-15">
     <p>Bayesian 推断的一大优点，是不必非得聪明才行。例如，有一道经典概率谜题叫作<strong>Bertrand 盒子悖论</strong>。<sup id="note-210-ref"><a href="#note-210">210</a></sup> 我偏爱的版本用煎饼来讲。假设我煎了三张饼：第一张两面都焦了（BB），第二张只焦了一面（BU），第三张两面都没焦（UU）。现在我随机拿一张给你，盘中朝上的一面恰好焦了。另一面也焦了的概率是多少？</p>
@@ -34,10 +34,57 @@ num_11/num_11_10</code></pre><pre class="code-output" id="output-15-1"><code>[1]
     <p>概率论在数学上并不难，无非是计数；难的是解释和应用。这样做往往显得需要几分机巧，作者也有动机用巧妙方法解题来炫技。但只要无情地应用条件概率，我们不需要那种聪明。Bayesian 方法真正的诀窍，正是对所有地方——数据和参数——都应用条件概率。好处是，一旦定义了信息状态，也就是我们的假设，就能让概率规则完成其余工作；真正完成的工作，是揭示假设所蕴含的后果。一直以来练习的模型拟合，也是同一种不聪明的方法：定义模型、放入数据，随后条件概率完成其余工作，依据证据揭示假设的含义。</p>
     <p>本章会介绍这种“先假设、再演绎”策略的两个常见应用。第一，把<strong>测量误差</strong>纳入模型；第二，通过<strong>Bayesian 插补</strong>估计<strong>缺失数据</strong>。两者都会给出完整的入门示例。</p>
     <p>在这两种应用中，设计模型时都无需凭直觉猜测测量误差的后果，也无需猜测缺失值意味着什么。只要陈述自己掌握的误差信息，或带缺失值变量的信息，逻辑便会完成其余工作。好吧，是计算机完成其余工作；但它只是用复杂算法执行 Bayesian 更新，谈不上聪明。它揭示的含义却既反直觉，又很有价值。</p>
-    <p class="continuation-note">15.1“测量误差”及代码 15.2，将从原书 PDF 第 519 页继续。</p>
   </div>
+
+  <section id="sec-15-1"><h2>15.1 测量误差</h2>
+    <p>第 5 章曾介绍美国各州的离婚与结婚数据。它们展示了预测变量之间一种简单的虚假关联，也展示了多元回归怎样把它理清。当时忽略的是：离婚率和结婚率变量都带有相当大的测量误差，而且这些误差以标准误的形式报告。重要的是，各州的误差大小相差很大。下面会用一种简单而实用的方法把这些信息放进模型，再让逻辑揭示其含义。</p>
+    <p>先把结果变量的测量误差画成误差棒：</p>
+    <figure class="code-listing" id="code-15-2"><figcaption>R 代码 15.2</figcaption><pre><code>library(rethinking)
+data(WaffleDivorce)
+d &lt;- WaffleDivorce
+
+# 数据点
+plot( d$Divorce ~ d$MedianAgeMarriage , ylim=c(4,15) ,
+    xlab="Median age marriage" , ylab="Divorce rate" )
+
+# 标准误
+for ( i in 1:nrow(d) ) {
+    ci &lt;- d$Divorce[i] + c(-1,1)*d$Divorce.SE[i]
+    x &lt;- d$MedianAgeMarriage[i]
+    lines( c(x,x) , ci )
+}</code></pre></figure>
+    <p>这张图位于图 15.1 左侧。竖线长度各不相同，说明观测离婚率的不确定性差异很大。误差为何差这么多？大州能提供更好的样本，因此测量误差更小。图 15.1 右侧改以人口对数为横轴，展示每个州的人口规模与测量误差之间的关联。</p>
+    <figure class="book-figure measurement-error-figure" id="fig-15-1"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的各州离婚率测量误差双面板图"><img src="/media/chapter-15-measurement-error.svg" alt="左图按结婚年龄中位数绘制离婚率和竖直误差棒，右图按人口对数绘制同样数据，小州误差棒更长"></div><p class="scroll-hint">图较宽，可横向滚动比较结婚年龄与人口规模两个面板。</p><figcaption><strong>图 15.1：</strong>左：美国各州离婚率与结婚年龄中位数。竖直误差棒表示离婚率 Gaussian 测量不确定性的正负一个标准差。右：离婚率及其标准差对各州人口对数。较小的州会产生更不确定的估计。</figcaption></figure>
+    <aside class="source-erratum" id="erratum-15-some-states"><strong>原文说明：</strong>PDF 第 519 页把 “values in some States” 误写为 “values in same States”；译稿按语意处理为“有些州”。</aside>
+    <p>既然有些州的数值比另一些州更确定，让更确定的估计对回归产生更大影响是合理的。为不同数据点赋予不同权重，有各种临时程序可用，也可能有所帮助；但它们会浪费表中许多信息，还会阻止完全 Bayesian 方法自动产生的一种有益现象：信息在各项测量之间流动，从而改进对数据本身的估计。下面看看怎样把这些信息写成模型。</p>
+    <aside class="rethinking-box" id="rethinking-15-generative-thinking"><h3>再思考：生成式思考，Bayesian 推断</h3><p>Bayesian 模型是生成式的：既能估计参数，也能模拟观测。这样做的一个好处，是可以通过认真思考数据可能怎样产生来构造统计模型。这不仅包括所研究过程本身的性质，也包括抽样与测量；随后让 Bayesian 更新发现其含义。这些含义也可能包括：无法从数据推断生成过程。Bayes 是诚实的伙伴，不怕伤害你的感情。</p></aside>
+
+    <section id="sec-15-1-1"><h3>15.1.1 结果变量的误差</h3>
+      <p>要纳入测量误差，先从生成角度思考。若要模拟测量误差，它会是什么样？第一步是生成变量的真实值，随后模拟产生测量误差的观测过程本身。观测过程只是统计模型的一部分，也和因果模型一样。</p>
+      <p>回想第 5 章离婚示例的因果模型。沿用那个模型，再给结果变量加入观测误差：</p>
+      <figure class="dag-figure" id="dag-15-divorce-measurement-error"><svg viewBox="0 0 900 360" role="img" aria-labelledby="dag-15-measurement-title dag-15-measurement-desc"><title id="dag-15-measurement-title">离婚率结果变量带测量误差的 DAG</title><desc id="dag-15-measurement-desc">结婚年龄 A 直接并通过结婚率 M 间接影响真实离婚率 D，真实离婚率与未观测测量误差共同产生观测离婚率 Dobs。</desc><defs><marker id="dag15-measurement-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#3f4752"/></marker></defs><g stroke="#3f4752" stroke-width="4" marker-end="url(#dag15-measurement-arrow)"><line x1="185" y1="175" x2="395" y2="95"/><line x1="185" y1="190" x2="395" y2="260"/><line x1="435" y1="115" x2="435" y2="235"/><line x1="475" y1="270" x2="625" y2="270"/><line x1="805" y1="270" x2="675" y2="270"/></g><g fill="#f0f1fa" stroke="#263f86" stroke-width="3"><circle cx="435" cy="270" r="38" fill="#fff" stroke-dasharray="7 5"/><circle cx="825" cy="270" r="38" fill="#fff" stroke-dasharray="7 5"/></g><g fill="#263f86" font-size="30" font-weight="700" text-anchor="middle"><text x="155" y="190">A</text><text x="435" y="95">M</text><text x="435" y="281">D</text><text x="650" y="281">Dₒᵦₛ</text><text x="825" y="281">eᴰ</text></g></svg><figcaption>真实离婚率 <var>D</var> 不可观测；观测到的 <var>D</var><sub>obs</sub> 同时由真实值与未观测测量误差 <var>e</var><sub><var>D</var></sub> 决定。</figcaption></figure>
+      <p>这个 DAG 看起来内容很多，但可以逐步处理。左侧三角形仍是第 5 章研究的系统：结婚年龄 <var>A</var> 会直接影响离婚率 <var>D</var>，也会通过结婚率 <var>M</var> 间接影响它。右侧是观测模型。真实离婚率 <var>D</var> 无法观测，因此被画成未观测节点；我们得到的是观测离婚率 <var>D</var><sub>obs</sub>，它同时是实际离婚率 <var>D</var> 与某个未观测误差 <var>e</var><sub><var>D</var></sub> 的函数。</p>
+      <p>接下来该怎么办？注意 <var>D</var><sub>obs</sub> 是 <var>D</var> 的后代。用前者代替后者不一定会引入混杂。实际上，大多数回归很可能都在使用 <var>D</var><sub>obs</sub> 这类代理，因为大多数变量都带有一定测量误差。不过，即使它不一定打开非因果路径，使用代理也可能引入系统偏差，扭曲估计。本例中，各州测量误差的大小还会以某种方式和目标变量关联。</p>
+      <p>若能使用 <var>D</var> 而不是 <var>D</var><sub>obs</sub>，当然会更好，但我们没有 <var>D</var>。不过，可以尝试重建它，同时尊重不确定性、避免虚假自信。在这些数据中，报告的标准误 <code>Divorce.SE</code> 是根据产生误差 <var>e</var><sub><var>D</var></sub> 的过程计算出来的。怎样在统计模型中使用这条信息？这就像把模拟倒过来。</p>
+      <p>若要模拟测量误差，会给每次观测指定一个分布并从中抽样。例如，假设某次测量的真实值为 10 米，以标准差 2 米的 Gaussian 误差测量，那么任意实现的测量值 <var>y</var> 都服从：</p>
+      <div class="equation-block wallis-equation" id="eq-15-measurement-example"><div><var>y</var> ∼ Normal(10, 2)</div></div>
+      <p>这里的测量误差越小，概率越集中在 10 上；存在误差时，10 以上和以下的许多测量值都变得合理。这就是所谓“普通数据是分布的特例”。关键洞见是：若不知道真实值 <var>y</var>（本例中的 10），就把参数放在那里，让 Bayes 完成其余工作。</p>
+      <p>下面为每个离婚率定义误差分布。每个观测值 <var>D</var><sub>obs,<var>i</var></sub> 都对应一个参数 <var>D</var><sub>true,<var>i</var></sub>：</p>
+      <div class="equation-block wallis-equation" id="eq-15-observation-error"><div><var>D</var><sub>obs,<var>i</var></sub> ∼ Normal(<var>D</var><sub>true,<var>i</var></sub>, <var>D</var><sub>SE,<var>i</var></sub>)</div></div>
+      <p>这只是把测量值 <var>D</var><sub>obs,<var>i</var></sub> 定义为一个指定的 Gaussian 分布，以未知参数 <var>D</var><sub>true,<var>i</var></sub> 为中心。因此，上式为每个州的观测离婚率指定了一个概率，同时使用已知测量误差。若从已知真实离婚率模拟观测离婚率，会写成：</p>
+      <pre class="stan-snippet" id="snippet-15-observation-simulation"><code>D_obs &lt;- rnorm( N_states , D_true , D_se )</code></pre>
+      <p>这样的模拟从分布走向数据；改为估计 <code>D_true</code> 时，我们让它反向运行，借助 Bayesian 更新从数据走向分布。这正是从一开始就在做的事。</p>
+      <p>信息很多，但仍然一步一步来。目标是把离婚率 <var>D</var> 建模成结婚年龄 <var>A</var> 与结婚率 <var>M</var> 的线性函数。把测量误差突出显示后，模型为：</p>
+      <div class="equation-block wallis-equation" id="eq-15-divorce-measurement-model"><div class="annotated-equation-line"><span class="equation-expression"><var>D</var><sub>obs,<var>i</var></sub> ∼ Normal(<var>D</var><sub>true,<var>i</var></sub>, <var>D</var><sub>SE,<var>i</var></sub>)</span><span class="equation-label">[观测值的分布]</span></div><div class="annotated-equation-line"><span class="equation-expression"><var>D</var><sub>true,<var>i</var></sub> ∼ Normal(<var>μ</var><sub><var>i</var></sub>, <var>σ</var>)</span><span class="equation-label">[真实值的分布]</span></div><div class="annotated-equation-line"><span class="equation-expression"><var>μ</var><sub><var>i</var></sub> = <var>α</var> + <var>β</var><sub><var>A</var></sub><var>A</var><sub><var>i</var></sub> + <var>β</var><sub><var>M</var></sub><var>M</var><sub><var>i</var></sub></span><span class="equation-label">[评估 <var>A</var> → <var>D</var> 的线性模型]</span></div><div><var>α</var> ∼ Normal(0, 0.2)</div><div><var>β</var><sub><var>A</var></sub> ∼ Normal(0, 0.5)</div><div><var>β</var><sub><var>M</var></sub> ∼ Normal(0, 0.5)</div><div><var>σ</var> ∼ Exponential(1)</div></div>
+      <p>它很像线性回归，只在最上方多了一行，把观测连接到真实值。每个 <var>D</var><sub>true</sub> 参数还承担第二个角色：它既是真实值分布中的结果，也作为另一个分布的均值来预测观测测量。这样会产生一个很酷的复杂性：信息双向流动。测量不确定性会影响线性模型中的回归参数，线性模型中的回归参数也会影响测量的不确定性；这里会发生收缩。</p>
+      <p>下面是 <code>ulam</code> 版本；所有变量都已标准化：</p>
+      <figure class="code-listing" id="code-15-3"><figcaption>R 代码 15.3（续下页）</figcaption><pre><code>dlist &lt;- list(
+    D_obs = standardize( d$Divorce ),</code></pre></figure>
+      <p class="continuation-note">代码 15.3 的其余数据列表、模型拟合与代码 15.4，将从原书 PDF 第 522 页继续。</p>
+    </section>
+  </section>
 
   <section class="endnotes" id="chapter-15-notes" role="doc-endnotes"><h2>尾注</h2><ol start="210"><li id="note-210">Joseph Bertrand，1889，<cite>Calcul des probabilités</cite>。 <a class="backref" href="#note-210-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 15 章 PDF 第 517–518 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 519 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 15 章 PDF 第 517–521 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 522 页继续。</aside>
 </article>
