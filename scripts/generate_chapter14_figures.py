@@ -20,6 +20,7 @@ OUT8 = ROOT / "translations" / "zh" / "media" / "chapter-14-dyadic-gifts.svg"
 OUT9 = ROOT / "translations" / "zh" / "media" / "chapter-14-social-relations.svg"
 OUT10 = ROOT / "translations" / "zh" / "media" / "chapter-14-gp-distance.svg"
 OUT11 = ROOT / "translations" / "zh" / "media" / "chapter-14-gp-functions.svg"
+OUT12 = ROOT / "translations" / "zh" / "media" / "chapter-14-oceania-correlations.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 BLUE = "#6670ee"
@@ -742,6 +743,110 @@ def figure_14_11() -> None:
     OUT11.write_text("\n".join(svg), encoding="utf-8")
 
 
+def figure_14_12() -> None:
+    """Rebuild geographic and tool-population correlation panels."""
+    width, height = 1200, 650
+    panels = [(75.0, 60.0, 560.0, 530.0), (700.0, 60.0, 1180.0, 530.0)]
+    names = ["Malekula", "Tikopia", "Santa Cruz", "Yap", "Lau Fiji",
+             "Trobriand", "Chuuk", "Manus", "Tonga", "Hawaii"]
+    longitude = [-21.0, -12.0, -15.0, -42.0, -1.5, -28.0, -28.0, -32.0, 5.0, 24.0]
+    latitude = [-13.0, -15.0, -11.0, 9.0, -18.0, -9.0, 7.0, -3.0, -21.0, 20.0]
+    log_population = [7.35, 7.75, 8.95, 8.45, 8.85, 8.7, 9.2, 9.65, 9.55, 12.45]
+    tools = [13.0, 23.0, 24.0, 43.0, 33.0, 18.0, 40.0, 28.0, 55.0, 70.0]
+    rho = [
+        [1.00, .79, .70, .00, .31, .05, .00, .00, .08, .00],
+        [.79, 1.00, .87, .00, .31, .05, .00, .01, .06, .00],
+        [.70, .87, 1.00, .00, .17, .11, .01, .02, .02, .00],
+        [.00, .00, .00, 1.00, .00, .01, .16, .14, .00, .00],
+        [.31, .31, .17, .00, 1.00, .00, .00, .00, .61, .00],
+        [.05, .05, .11, .01, .00, 1.00, .09, .56, .00, .00],
+        [.00, .00, .01, .16, .00, .09, 1.00, .32, .00, .00],
+        [.00, .01, .02, .14, .00, .56, .32, 1.00, .00, .00],
+        [.08, .06, .02, .00, .61, .00, .00, .00, 1.00, .00],
+        [.00, .00, .00, .00, .00, .00, .00, .00, .00, 1.00],
+    ]
+    label_offsets_map = [(-8, 22), (8, -10), (8, -8), (0, -16), (8, -8),
+                         (-8, 22), (8, -12), (-8, 6), (8, 6), (-8, 8)]
+    label_offsets_tools = [(8, 15), (-8, -14), (8, 6), (-8, -12), (-8, -12),
+                           (8, 18), (8, -10), (8, 15), (8, -8), (-8, 8)]
+
+    def map_xy(lon: float, lat: float) -> tuple[float, float]:
+        x0, y0, x1, y1 = panels[0]
+        return x0 + (lon + 50.0) / 80.0 * (x1 - x0), y1 - (lat + 22.0) / 44.0 * (y1 - y0)
+
+    def tools_xy(logpop: float, tool_count: float) -> tuple[float, float]:
+        x0, y0, x1, y1 = panels[1]
+        return x0 + (logpop - 7.0) / 6.0 * (x1 - x0), y1 - (tool_count - 10.0) / 62.0 * (y1 - y0)
+
+    svg = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
+        '<title>图 14.12：大洋洲社会的后验相关</title>',
+        '<desc>左图在地理空间中显示社会间后验相关，右图把同一相关叠加到工具总数与人口对数的关系上。</desc>',
+        f'<rect width="{width}" height="{height}" fill="#fff"/>',
+        '<defs><clipPath id="oceania-map-clip"><rect x="75" y="60" width="485" height="470"/></clipPath><clipPath id="oceania-tools-clip"><rect x="700" y="60" width="480" height="470"/></clipPath></defs>',
+    ]
+    for x0, y0, x1, y1 in panels:
+        svg.append(f'<rect x="{x0}" y="{y0}" width="{x1-x0}" height="{y1-y0}" fill="#fff" stroke="{INK}" stroke-width="1.5"/>')
+
+    for panel, mapper, clip_id in [(0, map_xy, "oceania-map-clip"), (1, tools_xy, "oceania-tools-clip")]:
+        first_values = longitude if panel == 0 else log_population
+        second_values = latitude if panel == 0 else tools
+        svg.append(f'<g clip-path="url(#{clip_id})">')
+        for i in range(10):
+            for j in range(i + 1, 10):
+                opacity = rho[i][j] ** 2
+                if opacity < 0.002:
+                    continue
+                x_a, y_a = mapper(first_values[i], second_values[i])
+                x_b, y_b = mapper(first_values[j], second_values[j])
+                svg.append(f'<line x1="{x_a:.1f}" y1="{y_a:.1f}" x2="{x_b:.1f}" y2="{y_b:.1f}" stroke="{INK}" stroke-width="3" opacity="{opacity:.3f}"/>')
+        svg.append('</g>')
+
+    prediction_curves = [(10.0, .25), (12.0, .35), (19.0, .30)]
+    for base, slope in prediction_curves:
+        points = []
+        for index in range(121):
+            logpop = 7.0 + index / 20.0
+            tool_count = base * math.exp(slope * (logpop - 7.0))
+            points.append(tools_xy(logpop, tool_count))
+        coords = " ".join(f"{x:.1f},{y:.1f}" for x, y in points)
+        svg.append(f'<polyline points="{coords}" clip-path="url(#oceania-tools-clip)" fill="none" stroke="{INK}" stroke-width="2" stroke-dasharray="10 8"/>')
+
+    for panel, mapper, first_values, second_values, offsets in [
+        (0, map_xy, longitude, latitude, label_offsets_map),
+        (1, tools_xy, log_population, tools, label_offsets_tools),
+    ]:
+        for index, name in enumerate(names):
+            x, y = mapper(first_values[index], second_values[index])
+            radius = 4.5 + max(0.0, log_population[index] - 7.0) * 1.25
+            dx, dy = offsets[index]
+            svg.extend([
+                f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{radius:.1f}" fill="{BLUE}" opacity="0.88"/>',
+                text(x + dx, y + dy, name, size=15, anchor="end" if dx < 0 else "start"),
+            ])
+
+    for value in [-40, -20, 0, 20]:
+        x, _ = map_xy(float(value), 0.0)
+        svg.extend([f'<line x1="{x:.1f}" y1="530" x2="{x:.1f}" y2="536" stroke="{INK}"/>', text(x, 557, str(value), size=15, anchor="middle")])
+    for value in [-20, -10, 0, 10, 20]:
+        _, y = map_xy(0.0, float(value))
+        svg.extend([f'<line x1="69" y1="{y:.1f}" x2="75" y2="{y:.1f}" stroke="{INK}"/>', text(63, y + 5, str(value), size=15, anchor="end")])
+    for value in [7, 8, 9, 10, 11, 12, 13]:
+        x, _ = tools_xy(float(value), 10.0)
+        svg.extend([f'<line x1="{x:.1f}" y1="530" x2="{x:.1f}" y2="536" stroke="{INK}"/>', text(x, 557, str(value), size=15, anchor="middle")])
+    for value in [10, 20, 30, 40, 50, 60, 70]:
+        _, y = tools_xy(7.0, float(value))
+        svg.extend([f'<line x1="694" y1="{y:.1f}" x2="700" y2="{y:.1f}" stroke="{INK}"/>', text(688, y + 5, str(value), size=15, anchor="end")])
+    svg.extend([
+        text(317.5, 610, "经度", size=19, anchor="middle", weight=600),
+        text(28, 295, "纬度", size=19, anchor="middle", weight=600, rotate=-90),
+        text(940, 610, "人口对数", size=19, anchor="middle", weight=600),
+        text(650, 295, "工具总数", size=19, anchor="middle", weight=600, rotate=-90),
+        '</svg>',
+    ])
+    OUT12.write_text("\n".join(svg), encoding="utf-8")
+
+
 def main() -> None:
     figure_14_1()
     figure_14_2()
@@ -754,6 +859,7 @@ def main() -> None:
     figure_14_9()
     figure_14_10()
     figure_14_11()
+    figure_14_12()
     print(OUT1)
     print(OUT2)
     print(OUT3)
@@ -765,6 +871,7 @@ def main() -> None:
     print(OUT9)
     print(OUT10)
     print(OUT11)
+    print(OUT12)
 
 
 if __name__ == "__main__":

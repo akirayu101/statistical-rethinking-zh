@@ -208,6 +208,7 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .social-relations-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
 .gp-distance-figure .figure-scroll img { display: block; width: min(100%, 45rem); height: auto; margin: 0 auto; }
 .gp-functions-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
+.oceania-correlations-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
 .matrix-2x2 { display: inline-grid; grid-template-columns: repeat(2, minmax(0, auto)); gap: .4rem 1.7rem; padding: .4rem 1.1rem; border-inline: 2px solid currentColor; border-radius: 45%; }
 .matrix-2x2 > span { white-space: nowrap; }
 .matrix-2x1 { display: inline-grid; grid-template-columns: 1fr; gap: .25rem; padding: .35rem .9rem; border-inline: 2px solid currentColor; border-radius: 45%; vertical-align: middle; }

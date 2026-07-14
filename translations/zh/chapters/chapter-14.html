@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-14" data-source-pages="465-503">
-  <header class="chapter-header"><p class="eyebrow">第十四章</p><h1>协方差历险</h1><p class="source-range">当前译稿对应原书 PDF 第 465–503 页</p></header>
+<article class="book-article" data-chapter="chapter-14" data-source-pages="465-506">
+  <header class="chapter-header"><p class="eyebrow">第十四章</p><h1>协方差历险</h1><p class="source-range">当前译稿对应原书 PDF 第 465–506 页</p></header>
 
   <div class="chapter-introduction" id="intro-14">
     <p>回想上一章导言中的咖啡机器人（原书第 413 页）。这个机器人被设定为在咖啡馆之间移动、点咖啡，并记录等待时间。上一章的重点是：在咖啡馆之间汇聚信息，能让机器人学得更高效；变化截距正是实现这种汇聚的一种机制。</p>
@@ -787,12 +787,85 @@ Rho &lt;- round( cov2cor(K) , 2 )
 colnames(Rho) &lt;- c("Ml","Ti","SC","Ya","Fi","Tr","Ch","Mn","To","Ha")
 rownames(Rho) &lt;- colnames(Rho)
 Rho</code></pre><pre class="code-output"><code>     Ml   Ti   SC   Ya   Fi   Tr   Ch   Mn   To Ha
-Ml 1.00 0.79 0.70 0.00 0.31 0.05 0.00 0.00 0.08 0</code></pre></figure>
-      <p class="continuation-note">相关矩阵的其余九行、社会间相关的解释与太平洋地图，将从原书 PDF 第 504 页继续。</p>
+Ml 1.00 0.79 0.70 0.00 0.31 0.05 0.00 0.00 0.08 0
+Ti 0.79 1.00 0.87 0.00 0.31 0.05 0.00 0.01 0.06 0
+SC 0.70 0.87 1.00 0.00 0.17 0.11 0.01 0.02 0.02 0
+Ya 0.00 0.00 0.00 1.00 0.00 0.01 0.16 0.14 0.00 0
+Fi 0.31 0.31 0.17 0.00 1.00 0.00 0.00 0.00 0.61 0
+Tr 0.05 0.05 0.11 0.01 0.00 1.00 0.09 0.56 0.00 0
+Ch 0.00 0.00 0.01 0.16 0.00 0.09 1.00 0.32 0.00 0
+Mn 0.00 0.01 0.02 0.14 0.00 0.56 0.32 1.00 0.00 0
+To 0.08 0.06 0.02 0.00 0.61 0.00 0.00 0.00 1.00 0
+Ha 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 1</code></pre></figure>
+      <p>矩阵左上角的三个小型社会——Malekula（Ml）、Tikopia（Ti）与 Santa Cruz（SC）——彼此高度相关，相关都在 0.7 以上，其中 Tikopia 与 Santa Cruz 为 0.87。稍后会看到，它们地理上非常接近，工具总数也相似。别忘了，这些相关是在模型已经包含 log 人口的条件下估计的，因此即使计入人口与工具的平均关联，仍显示额外的相似性。光谱另一端是 Hawaii（Ha）：它离其他社会如此遥远，以至相关处处衰减到零；其余社会则展现一系列中间相关。</p>
+      <p>为理解这些相关为何不同，把它们画在一张粗略的太平洋地图上。<code>Kline2</code> 数据框提供各社会的经纬度；同时按 log 人口成比例缩放地图上的点：</p>
+      <figure class="code-listing" id="code-14-44"><figcaption>R 代码 14.44</figcaption><pre><code># 按 logpop 缩放点大小
+psize &lt;- d$logpop / max(d$logpop)
+psize &lt;- exp(psize*1.5)-2
+
+# 绘制原始数据与标签
+plot( d$lon2 , d$lat , xlab="longitude" , ylab="latitude" ,
+    col=rangi2 , cex=psize , pch=16 , xlim=c(-50,30) )
+labels &lt;- as.character(d$culture)
+text( d$lon2 , d$lat , labels=labels , cex=0.7 , pos=c(2,4,3,3,4,1,3,2,4,2) )
+
+# 叠加按 Rho 深浅着色的连线
+for( i in 1:10 )
+    for ( j in 1:10 )
+        if ( i &lt; j )
+            lines( c( d$lon2[i],d$lon2[j] ) , c( d$lat[i],d$lat[j] ) ,
+                lwd=2 , col=col.alpha("black",Rho[i,j]^2) )</code></pre></figure>
+      <p>结果是图 14.12 左侧。连线越深，相关越强；纯白表示零相关，纯黑表示 100% 相关。Malekula、Tikopia 与 Santa Cruz 这三个相近社会构成的集群非常醒目：社会越接近，相关越强。不过地图上看不到工具总数，因此仍不容易理解这些相关究竟意味着什么。</p>
+      <p>若同时对照工具与 log 人口的关系，相关会更容易理解。下面把 log 人口与工具总数的平均后验预测关系，和每对社会按相关深浅着色的连线组合在一张图上：</p>
+      <figure class="code-listing" id="code-14-45"><figcaption>R 代码 14.45</figcaption><pre><code># 计算忽略距离的后验中位数关系
+logpop.seq &lt;- seq( from=6 , to=14 , length.out=30 )
+lambda &lt;- sapply( logpop.seq , function(lp) post$a*exp(lp)^post$b/post$g )
+lambda.median &lt;- apply( lambda , 2 , median )
+lambda.PI80 &lt;- apply( lambda , 2 , PI , prob=0.8 )
+
+# 绘制原始数据与标签
+plot( d$logpop , d$total_tools , col=rangi2 , cex=psize , pch=16 ,
+    xlab="log population" , ylab="total tools" )
+text( d$logpop , d$total_tools , labels=labels , cex=0.7 ,
+    pos=c(4,3,4,2,2,1,4,4,4,2) )
+
+# 显示后验预测
+lines( logpop.seq , lambda.median , lty=2 )
+lines( logpop.seq , lambda.PI80[1,] , lty=2 )
+lines( logpop.seq , lambda.PI80[2,] , lty=2 )
+
+# 叠加相关
+for( i in 1:10 )
+    for ( j in 1:10 )
+        if ( i &lt; j )
+            lines( c( d$logpop[i],d$logpop[j] ) ,
+                   c( d$total_tools[i],d$total_tools[j] ) ,
+                   lwd=2 , col=col.alpha("black",Rho[i,j]^2) )</code></pre></figure>
+      <aside class="source-erratum" id="erratum-14-gp-map-wording"><strong>原文说明：</strong>PDF 第 504 页把 “were estimated” 误写为 “were estimating”，并称三个小型社会的成对相关都高于 0.8，但矩阵实际为 0.79、0.70 与 0.87。代码 14.45 还引用模型中不存在的 <code>post$bp</code>，并遗漏 <code>g</code>；译稿按代码 14.39 的 <code>a*P^b/g</code> 关系改成可执行表达式。</aside>
+      <figure class="book-figure oceania-correlations-figure" id="fig-14-12"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的大洋洲社会空间相关与工具人口关系双面板图"><img src="/media/chapter-14-oceania-correlations.svg" alt="左图按地理空间连接十个大洋洲社会，右图把同一相关连线叠加到工具总数与人口对数关系上"></div><p class="scroll-hint">图较宽，可横向滚动比较地理空间与工具—人口空间中的后验相关。</p><figcaption><strong>图 14.12：</strong>左：地理空间中社会之间的后验相关。右：相同的后验相关，改画在工具总数与人口对数的关系上。</figcaption></figure>
+      <p>图 14.12 右侧更容易看出：Malekula、Tikopia 与 Santa Cruz 之间的相关，描述的是它们的工具数都低于各自人口对应的期望。三个社会既都低于期望，又彼此接近，这与空间协方差相容；后验相关只是描述了数据的这一特征。Manus 与 Trobriand 同样在地理上接近、后验相关显著，而且工具数都少于其人口规模对应的预期。Tonga 的工具数高于人口对应的预期；它接近 Fiji，抵消了 Fiji 的较小邻居——Malekula、Tikopia 与 Santa Cruz——对 Fiji 施加的部分牵引。因此模型似乎认为：若不是 Tonga，Fiji 的工具会更少。</p>
+      <p>当然，模型用地理距离描述的相关，可能源于地理上相近社会之间其他未测量的共同点。例如 Manus 与 Trobriand 在地质和生态上与 Fiji、Tonga 很不相同，也许工具石料等资源的可得性解释了部分相关。Gaussian 过程回归是一种宏大而强力的描述模型，因此其输出总是与许多不同的因果解释相容。</p>
+      <aside class="rethinking-box" id="rethinking-14-dispersion-other-names"><h3>再思考：换个名字的离散程度</h3><p>本节模型使用 Poisson likelihood，它常对 Hawaii 这种离群数据敏感。也可改用第 12 章介绍的 gamma-Poisson likelihood。但请注意，本例的变化效应已经在 Poisson 均值周围引入额外离散。给每个 Poisson 观测加入 Gaussian 噪声，是处理 Poisson 模型过度离散的另一种传统方法。不过仍值得亲自用 gamma-Poisson 拟合并比较。</p></aside>
+      <aside class="overthinking-box" id="overthinking-14-noncentered-islands"><h3>过度思考：非中心化岛屿</h3><p>构造非中心化 Gaussian 过程，可沿用同一个通用技巧：把协方差矩阵转换成 Cholesky 因子，再将该因子乘以各变化效应的 z 分数。协方差矩阵的定义不变，只会多出几个中间步骤。下面是大洋洲社会 Gaussian 过程模型的非中心化形式：</p><figure class="code-listing" id="code-14-46"><figcaption>R 代码 14.46</figcaption><pre><code>m14.8nc &lt;- ulam(
+    alist(
+        T ~ dpois(lambda),
+        lambda &lt;- (a*P^b/g)*exp(k[society]),
+
+        # 非中心化 Gaussian 过程先验
+        transpars&gt; vector[10]: k &lt;&lt;- L_SIGMA * z,
+        vector[10]: z ~ normal( 0 , 1 ),
+        transpars&gt; matrix[10,10]: L_SIGMA &lt;&lt;- cholesky_decompose( SIGMA ),
+        transpars&gt; matrix[10,10]: SIGMA &lt;- cov_GPL2( Dmat , etasq , rhosq , 0.01 ),
+
+        c(a,b,g) ~ dexp( 1 ),
+        etasq ~ dexp( 2 ),
+        rhosq ~ dexp( 0.5 )
+    ), data=dat_list , chains=4 , cores=4 , iter=2000 )</code></pre></figure><p>新增元素是 Stan 函数 <code>cholesky_decompose</code>：它接收协方差矩阵（或相关矩阵）并返回 Cholesky 因子。随后像前面一样把这个因子与 z 分数混合，就能在正确尺度上产生变化效应。检查后验会发现这一版本抽样效率更高，代价仍是模型更难读。当 <code>SIGMA</code> 矩阵很大时，往往别无选择，只能采用 Cholesky（非中心化）参数化；下一个例子就是这样。</p></aside>
+      <p class="continuation-note">14.5.2“系统发育距离”将从原书 PDF 第 507 页继续。</p>
     </section>
   </section>
 
   <section class="endnotes" id="chapter-14-notes" role="doc-endnotes"><h2>尾注</h2><ol start="194"><li id="note-194">Lewandowski 等（2009）。“LKJ”来自三位作者姓氏的首字母；作者本人把这种方法称为“洋葱法”。关于它在 Bayesian 模型中的用法，可参见最新版 Stan 参考手册的说明。 <a class="backref" href="#note-194-ref" aria-label="返回正文">↩</a></li><li id="note-195">参见 Gelfand 等（1995）以及 Roberts 和 Sahu（1997）。较新的综述可参见 Papaspiliopoulos 等（2007）；以 Hamiltonian Monte Carlo 为重点的讨论可参见 Betancourt 和 Girolami（2013）。 <a class="backref" href="#note-195-ref" aria-label="返回正文">↩</a></li><li id="note-196">参见 Pearl（2011）。 <a class="backref" href="#note-196-ref" aria-label="返回正文">↩</a></li><li id="note-197">参见 Angrist 和 Krueger（1991）。 <a class="backref" href="#note-197-ref" aria-label="返回正文">↩</a></li><li id="note-198">Feyrer 和 Sacerdote（2009）。 <a class="backref" href="#note-198-ref" aria-label="返回正文">↩</a></li><li id="note-199">参见 Caniglia 等（2019）。 <a class="backref" href="#note-199-ref" aria-label="返回正文">↩</a></li><li id="note-200">参见 Angrist 和 Krueger（1995）以及 Kleibergen 和 Zivot（2003）。据作者所知，对参数化工具变量估计量——Bayesian 或其他形式——仍没有系统且有理论依据的理解；这很奇怪，因为 DAG 已提供正式的非参数理论。真实情况可能是：即使 DAG 表明存在工具，估计在实践中也常不可行。 <a class="backref" href="#note-200-ref" aria-label="返回正文">↩</a></li><li id="note-201">参见 Cohen 和 Malloy（2014）。作者从 Alex Chinco 的博客学到这个例子，参见其 2011 年文章。 <a class="backref" href="#note-201-ref" aria-label="返回正文">↩</a></li><li id="note-202">Thistlethwaite 和 Campbell（1960）。 <a class="backref" href="#note-202-ref" aria-label="返回正文">↩</a></li><li id="note-203">参见 Gelman 和 Imbens（2019）给出的尖锐示例与建议。 <a class="backref" href="#note-203-ref" aria-label="返回正文">↩</a></li><li id="note-204">Koster 和 Leckie（2014）。 <a class="backref" href="#note-204-ref" aria-label="返回正文">↩</a></li><li id="note-205">参见 Neal（1998）这篇高被引综述，其中也有实现说明。 <a class="backref" href="#note-205-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 14 章 PDF 第 465–503 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 504 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 14 章 PDF 第 465–506 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 507 页继续。</aside>
 </article>

@@ -1205,6 +1205,9 @@
     "spatial effect": "空间效应",
     "squared-distance Gaussian process prior": "平方距离 Gaussian 过程先验",
     "log-count scale": "log 计数尺度",
+    "geographic space": "地理空间",
+    "descriptive model": "描述模型",
+    "non-centered Gaussian process": "非中心化 Gaussian 过程",
     "cross-classified varying slopes model": "交叉分类变化斜率模型"
   },
   "protected": [
