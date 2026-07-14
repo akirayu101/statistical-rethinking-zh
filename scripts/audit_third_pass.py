@@ -5,6 +5,7 @@ import argparse
 import json
 import re
 import sys
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from bs4 import BeautifulSoup
@@ -113,9 +114,11 @@ def main() -> int:
                 failures.append(f"{path.name}: inconsistent Chinese term spacing: {value[:100]}")
 
     for path in sorted(MEDIA.glob("*.svg")):
-        soup = BeautifulSoup(path.read_text(encoding="utf-8"), "xml")
-        for node in soup.find_all("text"):
-            label = " ".join(node.get_text(" ", strip=True).split())
+        root = ET.fromstring(path.read_text(encoding="utf-8"))
+        for node in root.iter():
+            if node.tag.rsplit("}", 1)[-1] != "text":
+                continue
+            label = " ".join("".join(node.itertext()).split())
             if label in {"密度", "负对数密度"}:
                 failures.append(f"{path.name}: standalone figure label must say 概率密度: {label}")
 
