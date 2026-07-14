@@ -1252,6 +1252,10 @@
     "categorical error": "类别误差",
     "discrete missing data": "离散缺失数据",
     "weighted average": "加权平均",
+    "state space model": "状态空间模型",
+    "hidden Markov model": "隐 Markov 模型",
+    "forward algorithm": "前向算法",
+    "marginalize": "取边际（边缘化）",
     "occupancy model": "占域模型",
     "cross-classified varying slopes model": "交叉分类变化斜率模型"
   },
