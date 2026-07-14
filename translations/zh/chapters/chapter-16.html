@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-16" data-source-pages="553-561">
-  <header class="chapter-header"><p class="eyebrow">第十六章</p><h1>广义线性疯狂</h1><p class="source-range">当前译稿对应原书 PDF 第 553–561 页</p></header>
+<article class="book-article" data-chapter="chapter-16" data-source-pages="553-564">
+  <header class="chapter-header"><p class="eyebrow">第十六章</p><h1>广义线性疯狂</h1><p class="source-range">当前译稿对应原书 PDF 第 553–564 页</p></header>
 
   <div class="chapter-introduction" id="intro-16">
     <p>高中时，我问物理老师怎么看统计学，她给我讲了一个笑话。以下是我记得的版本。一位物理学家、一位工程师和一位统计学家结伴去用弓打猎。几个小时后，他们终于在远处发现一只鹿。物理学家快速做了弹道计算，忽略空气阻力；箭飞得很正，却落在目标前几米，鹿毫无察觉。工程师冷笑一声，给空气阻力加入一个修正因子，然后放箭；第二支箭却落在目标后几米，鹿仍然没有察觉。统计学家取了平均值，高喊：“我们射中了！”</p>
@@ -143,12 +143,87 @@ sum(y==2)/N</code></pre><pre class="code-output" id="output-16-6"><code>[1] 0.63
       <p>未观测变量，是儿童采用五种策略各自的概率。这意味着五个数；但由于它们必须和为 1，只需四个参数。有一种叫作<strong>单纯形</strong>的变量类型能替我们处理：单纯形是一个数值向量，各值之和必须等于某个常数，通常为 1。Stan 允许把参数向量声明成单纯形，并自动管理“和固定”这项记账工作。可以给单纯形指定 Dirichlet 先验，也就是概率分布的先验。第 12 章构造有序类别预测变量时，已经用过 Dirichlet 与单纯形。这里对策略概率的单纯形使用弱均匀先验，并将其记作 <var>p</var>：</p>
       <div class="equation-block wallis-equation" id="eq-16-strategy-dirichlet-prior"><div><strong>p</strong> ∼ Dirichlet([4, 4, 4, 4, 4])</div></div>
       <p>正如第 12 章所见，这个先验并不表示我们预期各策略等概率；它表示任何一种策略都可能比任何另一种更常见或更少见。若把这些 4 调得更大，先验才会开始表达“预期它们实际相等”。</p>
-      <p>现在怎样表达数据的概率，也就是 likelihood？对于每个观测选择 <var>y</var><sub><var>i</var></sub>，每种策略 <var>s</var> 都意味着看到 <var>y</var><sub><var>i</var></sub> 的某个概率。把它记作 <span class="math-inline">Pr(<var>y</var><sub><var>i</var></sub> | <var>s</var>)</span>；其余定义与对未知策略取平均的 mixture likelihood 从下一页继续。</p>
-      <p class="continuation-note">策略 mixture likelihood、完整统计模型和 16.2.3 的 Stan 实现，将从原书 PDF 第 562 页继续。</p>
+      <p>现在怎样表达数据的概率，也就是 likelihood？对于每个观测选择 <var>y</var><sub><var>i</var></sub>，每种策略 <var>s</var> 都意味着看到 <var>y</var><sub><var>i</var></sub> 的某个概率。把它记作 <span class="math-inline">Pr(<var>y</var><sub><var>i</var></sub> | <var>s</var>)</span>，即在假定某个具体策略 <var>s</var> 时数据的概率。例如，若假定 <span class="math-inline"><var>s</var> = 1</span>，也就是“跟随多数”，那么 <span class="math-inline">Pr(<var>y</var><sub><var>i</var></sub> = 2 | <var>s</var> = 1) = 1</span>。这只是用数学说：采用“跟随多数”策略的儿童，总会选择多数颜色。</p>
+      <p>可是我们不知道 <var>s</var>，也不能直接观测它。不过，模型确实给出了每种 <var>s</var> 的概率，也就是单纯形 <var>p</var> 的各个元素。因此，要得到数据的无条件概率 <span class="math-inline">Pr(<var>y</var><sub><var>i</var></sub>)</span>，只需用 <var>p</var> 对未知策略 <var>s</var> 取平均：</p>
+      <div class="equation-block wallis-equation" id="eq-16-strategy-mixture-likelihood"><div>Pr(<var>y</var><sub><var>i</var></sub>) = Σ<sub><var>s</var>=1</sub><sup>5</sup> <var>p</var><sub><var>s</var></sub> Pr(<var>y</var><sub><var>i</var></sub> | <var>s</var>)</div></div>
+      <p>这句话读作：“<var>y</var><sub><var>i</var></sub> 的概率，是在每种策略 <var>s</var> 下 <var>y</var><sub><var>i</var></sub> 的条件概率的加权平均。”这个表达式与前面章节一样，是一个混合。有时你会看到“把未知策略取边际”这种说法；它只是指对各策略取平均，并用每种策略的某个概率作为权重。上式中，<var>p</var> 的各个值正提供这些权重。</p>
+      <p>至此统计模型已经齐备。把它写成更常见的形式：</p>
+      <div class="equation-block wallis-equation" id="eq-16-strategy-complete-model"><div><var>y</var><sub><var>i</var></sub> ∼ Categorical(<strong>θ</strong>)</div><div><var>θ</var><sub><var>j</var></sub> = Σ<sub><var>s</var>=1</sub><sup>5</sup> <var>p</var><sub><var>s</var></sub> Pr(<var>j</var> | <var>s</var>)　　对于 <var>j</var> = 1…3</div><div><strong>p</strong> ∼ Dirichlet([4, 4, 4, 4, 4])</div></div>
+      <p>向量 <strong>θ</strong> 保存以 <var>p</var> 为条件时每种行为的平均概率。作为生成模型，上式意味着所有儿童都完全相同：每名儿童在每轮试验中都以概率 <var>p</var><sub><var>s</var></sub> 使用策略 <var>s</var>。儿童之间当然存在个体差异；但这些数据没有每名儿童的重复观测，所以我们很难做得更好。如果真有重复观测，就可以给每名儿童分配一个独有的单纯形 <var>p</var>，启动部分汇聚，然后欣赏烟花。</p>
     </section>
+
+    <section id="sec-16-2-3"><h3>16.2.3 编写统计模型</h3>
+      <p>编写这个模型，意味着把每种策略的逻辑——也就是上面的 <span class="math-inline">Pr(<var>j</var> | <var>s</var>)</span> 项——明确写成代码。我们直接用 Stan 编写，因为这样反而更容易实现，也更容易扩展。前面章节有些 Stan 模型属于选读；现在不再是选读。模型代码已经包含在 <code>rethinking</code> 包中，可以这样载入并显示：</p>
+      <figure class="code-listing" id="code-16-7"><figcaption>R 代码 16.7</figcaption><pre><code>data(Boxes_model)
+cat(Boxes_model)</code></pre></figure>
+      <p>Stan 代码的解释放在稍后的“过度思考”框中，这样暂时可以先专注于建模细节。</p>
+      <p>运行采样器只剩两步：准备数据列表，再调用 <code>stan()</code>。数据列表只需要样本量 <code>N</code>、选择向量 <code>y</code> 和呈现顺序向量 <code>majority_first</code>：</p>
+      <figure class="code-listing" id="code-16-8"><figcaption>R 代码 16.8</figcaption><pre><code># prep data
+dat_list &lt;- list(
+    N = nrow(Boxes),
+    y = Boxes$y,
+    majority_first = Boxes$majority_first )
+
+# run the sampler
+m16.2 &lt;- stan( model_code=Boxes_model , data=dat_list , chains=3 , cores=3 )
+
+# show marginal posterior for p
+p_labels &lt;- c("1 Majority","2 Minority","3 Maverick","4 Random","5 Follow First")
+plot( precis(m16.2,2) , labels=p_labels )</code></pre></figure>
+      <figure class="book-figure boxes-strategy-figure" id="plot-16-boxes-strategy-posterior"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的五种儿童选择策略后验图"><img src="/media/chapter-16-boxes-strategy-posterior.svg" alt="五种儿童选择策略概率的后验均值和百分之八十九相容区间；跟随多数与跟随第一的均值都约为零点二六"></div><p class="scroll-hint">图较宽，可横向滚动比较五种隐藏策略。</p><figcaption>代码 16.8 的输出。空心圆是各策略概率的后验均值，水平线是 89% 相容区间；“跟随多数”与“跟随第一”都约占四分之一。</figcaption></figure>
+      <p>回想一下，样本中 45% 的儿童选择了多数颜色；但后验分布支持真正采用“跟随多数”复制策略的儿童只有 20% 到 30%。在这个模型下，差不多同样多的儿童只是复制了最先示范的颜色。隐藏状态模型正能做到这一点：防止我们把行为误当成策略。</p>
+      <p>还可以扩展模型，让每种策略的概率随年龄、性别或其他变量变化。原则上很容易，只需让 <var>p</var><sub><var>s</var></sub> 以预测变量为条件；实践中则必须作出具体编码选择。下方“过度思考”框会再说一些。</p>
+
+      <aside class="overthinking-box" id="overthinking-16-boxes-stan"><h3>过度思考：Boxes 模型的 Stan 代码</h3>
+        <p>Stan 模型需要三个代码“块”。依次来看。第一块是<strong>数据块</strong>，只为观测变量命名并声明类型。本模型如下：</p>
+        <pre><code>data{
+    int N;
+    int y[N];
+    int majority_first[N];
+}</code></pre>
+        <p>整数 <code>N</code> 只是观测案例数，即 <code>data(Boxes)</code> 的行数。随后把结果 <code>y</code> 与预测变量 <code>majority_first</code> 声明为长度 <code>N</code> 的整数向量。也可以把长度硬编码为 629，但那样案例数每次变化，都得修改模型代码。</p>
+        <p>Stan 模型所需的第二块是<strong>参数块</strong>。它类似数据块，但声明未观测变量，也就是我们要取得后验样本的变量。本模型只有单纯形 <code>p</code>：</p>
+        <pre><code>parameters{
+    simplex[5] p;
+}</code></pre>
+        <p>第三块是核心——<strong>模型块</strong>。它计算观测变量（数据）与未观测变量（参数）的对数概率，也就是 Bayes 定理的分子；Stan 用它运行 Hamiltonian 模拟（见第 9 章）。下面分段来看。首先，在顶部声明一个向量，保存每种策略的概率计算；处理数据的每一行时都会复用它，算出不同概率：</p>
+        <pre><code>model{
+    vector[5] phi;</code></pre>
+        <p>然后指定先验：</p>
+        <pre><code>    // prior
+    p ~ dirichlet( rep_vector(4,5) );</code></pre>
+        <p>接下来进入核心。循环遍历每一行；对于第 <code>i</code> 行，计算观测值 <code>y[i]</code> 的对数概率。每种策略都有自己的 <code>if...then</code>，用于指定以该策略为条件时数据的概率：</p>
+        <pre><code>    // probability of data
+    for ( i in 1:N ) {
+        if ( y[i]==2 ) phi[1]=1; else phi[1]=0; // majority
+        if ( y[i]==3 ) phi[2]=1; else phi[2]=0; // minority
+        if ( y[i]==1 ) phi[3]=1; else phi[3]=0; // maverick
+        phi[4]=1.0/3.0;                         // random
+        if ( majority_first[i]==1 )             // follow first
+            if ( y[i]==2 ) phi[5]=1; else phi[5]=0;
+        else
+            if ( y[i]==3 ) phi[5]=1; else phi[5]=0;</code></pre>
+        <p>现在要纳入参数 <var>p</var>。把每个 <span class="math-inline">log(<var>p</var><sub><var>s</var></sub>)</span> 加到上面算出的对数概率中，再把平均概率加到 <code>target</code>；<code>target</code> 只是 Stan 对“总对数概率”的称呼：</p>
+        <pre><code>        // compute log( p_s * Pr(y_i|s) )
+        for ( s in 1:5 ) phi[s] = log(p[s]) + log(phi[s]);
+        // compute average log-probability of y_i
+        target += log_sum_exp( phi );</code></pre>
+        <p><code>log_sum_exp</code> 按正文定义，计算数据的边际对数概率 <span class="math-inline">log Pr(<var>y</var><sub><var>i</var></sub>)</span>。它接收向量 <code>phi</code>——其中保存每种策略各自的对数概率——并返回这些概率在概率尺度上求和后再取对数的结果。在这种带离散参数的 Stan 模型中，它十分常见。</p>
+        <p>要加入预测变量，选择很多，因此再次依靠真实理论有助于聚焦。最简单的修改，是让单纯形 <var>p</var> 随性别之类的离散类别变化。此时在数据块中加入变量 <code>gender</code>，并在参数块中给 <code>p</code> 增加一个维度：</p>
+        <pre><code>    simplex[5] p[2];</code></pre>
+        <p>然后在模型块中，用 <code>p[gender[i],s]</code> 同时按策略和性别索引 <code>p</code>：</p>
+        <pre><code>    for ( s in 1:5 ) phi[s] = log(p[gender[i],s]) + log(phi[s]);</code></pre>
+        <p>这个模型作为 <code>data(Boxes_model_gender)</code> 收录在 <code>rethinking</code> 包中。年龄这样的连续协变量会带来更多选择：Gaussian process、样条、多项式都能处理，却各要用不同方式编码。Stan 模型 <code>data(Boxes_model_age)</code> 展示了一个简单的线性年龄趋势：先给每个 <var>p</var> 在 logit 尺度上指定线性模型，再用多元逆 logit 变换到单纯形尺度。这完全是地心式做法；如果有更强的理论，它会有所帮助。</p>
+      </aside>
+    </section>
+
+    <section id="sec-16-2-4"><h3>16.2.4 状态空间模型</h3>
+      <p>上面的 Boxes 模型类似于更宽泛的一类模型，称为<strong>状态空间模型</strong>。这类模型假设有多个隐藏状态产生观测。状态通常是动态的，会随时间改变。当状态是离散类别时，模型可称为<strong>隐 Markov 模型</strong>（HMM）。许多时间序列模型都是状态空间模型，因为真正的时间序列状态并不可观测，能看到的只有带噪声的测量。本章稍后会给出一个例子。</p>
+    </section>
+    <p class="continuation-note">16.3“常微分坚果破解”及黑猩猩开坚果技能的生成模型，将从原书 PDF 第 565 页继续。</p>
   </section>
 
   <section class="endnotes" id="chapter-16-notes" role="doc-endnotes"><h2>尾注</h2><ol start="219"><li id="note-219">“Vitruvian Can”（“维特鲁威罐头”）这个双关由 Clint Johns（Twitter：@DrClintonJohns）提供。 <a class="backref" href="#note-219-ref" aria-label="返回正文">↩</a></li><li id="note-220">Harte（1988）。 <a class="backref" href="#note-220-ref" aria-label="返回正文">↩</a></li><li id="note-221">关于模型构建哲学有许多好文章，作者推荐三篇：Levins（1966）、Wimsatt（2002）和 Smaldino（2017）。 <a class="backref" href="#note-221-ref" aria-label="返回正文">↩</a></li><li id="note-222">资料来自 van Leeuwen 等（2018）。 <a class="backref" href="#note-222-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 16 章 PDF 第 553–561 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 562 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 16 章 PDF 第 553–564 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 565 页继续。</aside>
 </article>

@@ -11,7 +11,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "translations" / "zh" / "media" / "chapter-16-cylinder-posterior-fit.svg"
+BOXES_OUT = ROOT / "translations" / "zh" / "media" / "chapter-16-boxes-strategy-posterior.svg"
 DATA_URL = "https://raw.githubusercontent.com/rmcelreath/rethinking/master/data/Howell1.csv"
+BOXES_DATA_URL = "https://raw.githubusercontent.com/rmcelreath/rethinking/master/data/Boxes.csv"
 FONT = '-apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif'
 
 
@@ -69,6 +71,100 @@ def density_curve(values: list[float], xmin: float, xmax: float, steps: int = 12
         y = sum(math.exp(-0.5 * ((x - value) / bandwidth) ** 2) for value in values)
         curve.append((x, y))
     return curve
+
+
+def load_boxes() -> dict[tuple[int, int], int]:
+    raw = urllib.request.urlopen(BOXES_DATA_URL, timeout=30).read().decode("utf-8")
+    rows = csv.DictReader(io.StringIO(raw), delimiter=";")
+    counts = {(choice, order): 0 for choice in (1, 2, 3) for order in (0, 1)}
+    for row in rows:
+        counts[(int(row["y"]), int(row["majority_first"]))] += 1
+    return counts
+
+
+def boxes_posterior(counts: dict[tuple[int, int], int]) -> list[list[float]]:
+    def simplex(z: list[float]) -> list[float]:
+        logits = z + [0.0]
+        peak = max(logits)
+        weights = [math.exp(value - peak) for value in logits]
+        total = sum(weights)
+        return [value / total for value in weights]
+
+    def log_target(z: list[float]) -> float:
+        majority, minority, maverick, random_choice, follow_first = simplex(z)
+        probabilities = {
+            (1, 0): maverick + random_choice / 3,
+            (1, 1): maverick + random_choice / 3,
+            (2, 0): majority + random_choice / 3,
+            (2, 1): majority + random_choice / 3 + follow_first,
+            (3, 0): minority + random_choice / 3 + follow_first,
+            (3, 1): minority + random_choice / 3,
+        }
+        likelihood = sum(count * math.log(probabilities[key]) for key, count in counts.items())
+        # Dirichlet([4,4,4,4,4]) plus the additive-log-ratio Jacobian.
+        return likelihood + 4 * sum(math.log(value) for value in simplex(z))
+
+    start = [0.259, 0.139, 0.148, 0.194, 0.259]
+    z = [math.log(start[index] / start[4]) for index in range(4)]
+    rng = random.Random(1602)
+    current = log_target(z)
+    draws: list[list[float]] = []
+    for iteration in range(250_000):
+        proposal = [value + rng.gauss(0, 0.16) for value in z]
+        proposed = log_target(proposal)
+        if math.log(rng.random()) < proposed - current:
+            z, current = proposal, proposed
+        if iteration >= 50_000 and iteration % 20 == 0:
+            draws.append(simplex(z))
+    return draws
+
+
+def quantile(values: list[float], probability: float) -> float:
+    ordered = sorted(values)
+    return ordered[min(len(ordered) - 1, int(probability * len(ordered)))]
+
+
+def write_boxes_figure() -> None:
+    draws = boxes_posterior(load_boxes())
+    labels = ["1 跟随多数", "2 跟随少数", "3 特立独行", "4 随机", "5 跟随第一"]
+    summaries = []
+    for index in range(5):
+        values = [draw[index] for draw in draws]
+        summaries.append((sum(values) / len(values), quantile(values, 0.055), quantile(values, 0.945)))
+
+    width, height = 900, 430
+    left, right, top, bottom = 245, 835, 55, 340
+    xmin, xmax = 0.075, 0.34
+
+    def x(value: float) -> float:
+        return left + (right - left) * (value - xmin) / (xmax - xmin)
+
+    parts = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-labelledby="title desc">',
+        '<title id="title">五种儿童选择策略的边际后验</title>',
+        '<desc id="desc">五条水平线表示五种策略概率的百分之八十九相容区间，空心圆表示后验均值；跟随多数和跟随第一约各占四分之一。</desc>',
+        '<rect width="100%" height="100%" fill="#fff"/>',
+        f'<style>.axis{{font:16px {FONT};fill:#30332e}}.label{{font:19px {FONT};fill:#30332e}}.title{{font:700 22px {FONT};fill:#263f86}}.grid{{stroke:#c8c9c8;stroke-width:1;stroke-dasharray:3 5}}.interval{{stroke:#242824;stroke-width:4;stroke-linecap:round}}.mean{{fill:#fff;stroke:#242824;stroke-width:2.2}}</style>',
+        '<text class="title" x="450" y="30" text-anchor="middle">隐藏策略概率的后验分布</text>',
+    ]
+    row_gap = (bottom - top) / 4
+    for index, (label, summary) in enumerate(zip(labels, summaries)):
+        y = top + index * row_gap
+        mean, low, high = summary
+        parts.append(f'<line class="grid" x1="{left}" y1="{fmt(y)}" x2="{right}" y2="{fmt(y)}"/>')
+        parts.append(f'<text class="label" x="{left - 18}" y="{fmt(y + 6)}" text-anchor="end">{label}</text>')
+        parts.append(f'<line class="interval" x1="{fmt(x(low))}" y1="{fmt(y)}" x2="{fmt(x(high))}" y2="{fmt(y)}"/>')
+        parts.append(f'<circle class="mean" cx="{fmt(x(mean))}" cy="{fmt(y)}" r="6"/>')
+    parts.append(f'<line x1="{left}" y1="{bottom + 30}" x2="{right}" y2="{bottom + 30}" stroke="#343732" stroke-width="2"/>')
+    for value in (0.10, 0.15, 0.20, 0.25, 0.30):
+        xpos = x(value)
+        parts.append(f'<line x1="{fmt(xpos)}" y1="{bottom + 30}" x2="{fmt(xpos)}" y2="{bottom + 37}" stroke="#343732"/>')
+        parts.append(f'<text class="axis" x="{fmt(xpos)}" y="{bottom + 58}" text-anchor="middle">{value:.2f}</text>')
+    parts.append(f'<text class="label" x="{(left + right) / 2}" y="{height - 8}" text-anchor="middle">策略概率</text>')
+    parts.append('</svg>')
+    BOXES_OUT.write_text("".join(parts), encoding="utf-8")
+    print(f"wrote {BOXES_OUT}")
 
 
 def main() -> int:
@@ -185,6 +281,7 @@ def main() -> int:
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text("".join(parts), encoding="utf-8")
     print(f"wrote {OUT}")
+    write_boxes_figure()
     return 0
 
 
