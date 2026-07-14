@@ -21,6 +21,7 @@ OUT9 = ROOT / "translations" / "zh" / "media" / "chapter-14-social-relations.svg
 OUT10 = ROOT / "translations" / "zh" / "media" / "chapter-14-gp-distance.svg"
 OUT11 = ROOT / "translations" / "zh" / "media" / "chapter-14-gp-functions.svg"
 OUT12 = ROOT / "translations" / "zh" / "media" / "chapter-14-oceania-correlations.svg"
+OUT13 = ROOT / "translations" / "zh" / "media" / "chapter-14-phylogenetic-covariance.svg"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 BLUE = "#6670ee"
@@ -847,6 +848,67 @@ def figure_14_12() -> None:
     OUT12.write_text("\n".join(svg), encoding="utf-8")
 
 
+def figure_14_14() -> None:
+    width, height = 920, 650
+    left, top, right, bottom = 105.0, 55.0, 875.0, 555.0
+
+    def xy(distance: float, covariance: float) -> tuple[float, float]:
+        x = left + distance * (right - left)
+        y = bottom - covariance / 1.5 * (bottom - top)
+        return x, y
+
+    distances = [index / 80.0 for index in range(81)]
+    upper = [min(1.5, 1.40 * math.exp(-2.4 * value)) for value in distances]
+    lower = [0.60 * math.exp(-3.8 * value) for value in distances]
+    band = [xy(value, cov) for value, cov in zip(distances, upper)]
+    band.extend(xy(value, cov) for value, cov in zip(reversed(distances), reversed(lower)))
+    band_points = " ".join(f"{x:.1f},{y:.1f}" for x, y in band)
+
+    svg = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
+        '<title>图 14.14：系统发育 Gaussian 过程的后验协方差函数</title>',
+        '<desc>灰色带和黑线表示先验区间与均值，靠近横轴的蓝色曲线表示三十条后验抽样；后验支持所有系统发育距离上都很小的协方差。</desc>',
+        f'<rect width="{width}" height="{height}" fill="#fff"/>',
+        '<defs><clipPath id="phylo-cov-clip"><rect x="105" y="55" width="770" height="500"/></clipPath></defs>',
+    ]
+    for covariance in [0.0, 0.5, 1.0, 1.5]:
+        _, y = xy(0.0, covariance)
+        svg.extend([
+            f'<line x1="{left}" y1="{y:.1f}" x2="{right}" y2="{y:.1f}" stroke="{GRID}" stroke-width="1"/>',
+            f'<line x1="{left-7}" y1="{y:.1f}" x2="{left}" y2="{y:.1f}" stroke="{INK}" stroke-width="1.5"/>',
+            text(left - 16, y + 6, f"{covariance:.1f}", size=17, anchor="end"),
+        ])
+    for distance in [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]:
+        x, _ = xy(distance, 0.0)
+        svg.extend([
+            f'<line x1="{x:.1f}" y1="{bottom}" x2="{x:.1f}" y2="{bottom+7}" stroke="{INK}" stroke-width="1.5"/>',
+            text(x, bottom + 31, f"{distance:.1f}", size=17, anchor="middle"),
+        ])
+    svg.extend([
+        f'<polygon points="{band_points}" fill="#d4d5d7" opacity="0.85" clip-path="url(#phylo-cov-clip)"/>',
+    ])
+    prior = " ".join(f"{x:.1f},{y:.1f}" for x, y in (xy(value, math.exp(-3.0 * value)) for value in distances))
+    svg.append(f'<polyline points="{prior}" fill="none" stroke="{INK}" stroke-width="4" clip-path="url(#phylo-cov-clip)"/>')
+    for draw in range(30):
+        eta = 0.020 + 0.0011 * draw
+        rho = 2.25 + 0.04 * draw
+        coords = " ".join(
+            f"{x:.1f},{y:.1f}" for x, y in
+            (xy(value, eta * math.exp(-rho * value)) for value in distances)
+        )
+        svg.append(f'<polyline points="{coords}" fill="none" stroke="{BLUE}" stroke-width="2" opacity="0.34" clip-path="url(#phylo-cov-clip)"/>')
+    svg.extend([
+        f'<line x1="{left}" y1="{top}" x2="{left}" y2="{bottom}" stroke="{INK}" stroke-width="1.8"/>',
+        f'<line x1="{left}" y1="{bottom}" x2="{right}" y2="{bottom}" stroke="{INK}" stroke-width="1.8"/>',
+        text((left + right) / 2, 625, "标准化系统发育距离", size=21, anchor="middle", weight=600),
+        text(34, (top + bottom) / 2, "协方差", size=21, anchor="middle", weight=600, rotate=-90),
+        text(*xy(0.46, 0.45), "先验", size=20, weight=600),
+        text(*xy(0.10, 0.10), "后验", size=20, weight=600, fill=BLUE),
+        '</svg>',
+    ])
+    OUT13.write_text("\n".join(svg), encoding="utf-8")
+
+
 def main() -> None:
     figure_14_1()
     figure_14_2()
@@ -860,6 +922,7 @@ def main() -> None:
     figure_14_10()
     figure_14_11()
     figure_14_12()
+    figure_14_14()
     print(OUT1)
     print(OUT2)
     print(OUT3)
@@ -872,6 +935,7 @@ def main() -> None:
     print(OUT10)
     print(OUT11)
     print(OUT12)
+    print(OUT13)
 
 
 if __name__ == "__main__":

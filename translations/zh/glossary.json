@@ -1222,6 +1222,8 @@
     "Ornstein-Uhlenbeck process": "Ornstein–Uhlenbeck 过程",
     "exponential distance kernel": "指数距离核",
     "L1 norm": "L1 范数",
+    "custom kernel": "自定义核",
+    "functions block": "functions 块",
     "cross-classified varying slopes model": "交叉分类变化斜率模型"
   },
   "protected": [

@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-14" data-source-pages="465-512">
-  <header class="chapter-header"><p class="eyebrow">第十四章</p><h1>协方差历险</h1><p class="source-range">当前译稿对应原书 PDF 第 465–512 页</p></header>
+<article class="book-article" data-chapter="chapter-14" data-source-pages="465-515">
+  <header class="chapter-header"><p class="eyebrow">第十四章</p><h1>协方差历险</h1><p class="source-range">当前译稿对应原书 PDF 第 465–515 页</p></header>
 
   <div class="chapter-introduction" id="intro-14">
     <p>回想上一章导言中的咖啡机器人（原书第 413 页）。这个机器人被设定为在咖啡馆之间移动、点咖啡，并记录等待时间。上一章的重点是：在咖啡馆之间汇聚信息，能让机器人学得更高效；变化截距正是实现这种汇聚的一种机制。</p>
@@ -957,17 +957,84 @@ sigma_sq   0.16 0.02  0.13  0.19  2251    1</code></pre></figure>
       <p>这是指数距离核，不同于上一例中的二次核。指数核表示点（物种）之间的协方差会快速下降，生成的函数因此远不如二次核平滑。它通常也更难拟合，因为函数粗糙得多；实践中需要格外谨慎地指定先验，可能还要把先验收窄。</p>
       <p>OU 过程仍是 Gaussian 过程，所以拟合方式与上一节的二次核相同。系统发育回归文献尚未充分强调这一点；把模型写成 Gaussian 过程，便能按具体问题定制函数空间。<sup id="note-209-ref"><a href="#note-209">209</a></sup> 这种框架目前仍不常见。生物学家往往笼罩在迷信与惧怕按错按钮的阴云下使用系统发育；Gaussian 过程框架既统一了既有方法，又允许模型描述协变随系统发育距离变化的模式。它也应当说明：纳入系统发育距离并不存在唯一正确的方法。若目标是估计因果效应，只拒绝某个零模型远远不够；我们必须有效重建未测混杂之间的模式，而不同的演化历史会需要不同模型。</p>
       <p>构造这次 Gaussian 过程回归需要距离矩阵，而前面已经算好了。接着只需写出 Gaussian 过程构造语句。本例使用 OU 过程核；更一般地说，它称为 <var>L</var>1 范数，<code>ulam</code> 以 <code>cov_GPL1</code> 提供。后面的“过度思考”框还会展示怎样自行编写 Gaussian 过程核。</p>
-      <figure class="code-listing" id="code-14-52"><figcaption>R 代码 14.52（续下页）</figcaption><pre><code># 加入缩放并重排后的距离矩阵
+      <figure class="code-listing" id="code-14-52"><figcaption>R 代码 14.52</figcaption><pre><code># 加入缩放并重排后的距离矩阵
 dat_list$Dmat &lt;- Dmat[ spp_obs , spp_obs ] / max(Dmat)
 
 m14.11 &lt;- ulam(
     alist(
-        B ~ multi_normal( mu , SIGMA ),</code></pre></figure>
-      <p class="continuation-note">OU Gaussian 过程模型代码 14.52 的其余部分、参数后验与结果解释，将从原书 PDF 第 513 页继续。</p>
+        B ~ multi_normal( mu , SIGMA ),
+        mu &lt;- a + bM*M + bG*G,
+        matrix[N_spp,N_spp]: SIGMA &lt;- cov_GPL1( Dmat , etasq , rhosq , 0.01 ),
+        a ~ normal(0,1),
+        c(bM,bG) ~ normal(0,0.5),
+        etasq ~ half_normal(1,0.25),
+        rhosq ~ half_normal(3,0.25)
+    ), data=dat_list , chains=4 , cores=4 )
+precis( m14.11 )</code></pre><pre class="code-output" id="output-14-52"><code>      mean   sd  5.5% 94.5% n_eff Rhat
+a    -0.07 0.08 -0.19  0.06  2168    1
+bG    0.05 0.02  0.01  0.09  2634    1
+bM    0.83 0.03  0.79  0.88  2280    1
+etasq 0.03 0.01  0.03  0.05  2060    1
+rhosq 2.79 0.26  2.36  3.20  2192    1</code></pre></figure>
+      <p>现在，群体大小似乎又与脑大小相关了。关联不强，但大多数后验概率质量都在零以上。结果为何不同？答案必然是：推断得到的协方差函数与 Brownian 运动模型颇不相同。因此，接下来查看 <code>etasq</code> 与 <code>rhosq</code> 隐含的后验协方差函数。这两个参数共同产生协方差函数，而且在后验中几乎总是强相关；分别观察它们并不能真正看清发生了什么。需要把它们提取出来，再送回 Gaussian 过程协方差函数：</p>
+      <figure class="code-listing" id="code-14-53"><figcaption>R 代码 14.53</figcaption><pre><code>post &lt;- extract.samples(m14.11)
+plot( NULL , xlim=c(0,max(dat_list$Dmat)) , ylim=c(0,1.5) ,
+    xlab="phylogenetic distance" , ylab="covariance" )
+
+# 后验
+for ( i in 1:30 )
+    curve( post$etasq[i]*exp(-post$rhosq[i]*x) , add=TRUE , col=rangi2 )
+
+# 先验均值与 89% 区间
+eta &lt;- abs(rnorm(1e3,1,0.25))
+rho &lt;- abs(rnorm(1e3,3,0.25))
+d_seq &lt;- seq(from=0,to=1,length.out=50)
+K &lt;- sapply( d_seq , function(x) eta*exp(-rho*x) )
+lines( d_seq , colMeans(K) , lwd=2 )
+shade( apply(K,2,PI) , d_seq )
+text( 0.5 , 0.5 , "prior" )
+text( 0.2 , 0.1 , "posterior" , col=rangi2 )</code></pre></figure>
+      <aside class="source-erratum" id="erratum-14-phylogeny-kernel-wording"><strong>原文说明：</strong>PDF 第 513 页把 “The result is shown” 误写成 “The result is show”；第 514 页的 “takes as input as distance matrix” 多出一个 <em>as</em>，而 “All that remain” 又有主谓不一致。译稿均按上下文订正。</aside>
+      <p>结果见图 14.14。横轴是标准化系统发育距离，取值 1 只表示样本中的最长距离；纵轴是协方差。蓝线是后验分布的 30 次抽样，黑线是先验均值。后验被压在横轴附近，表示无论物种相距多远，协方差都非常低。至少按照这个模型与这些数据，脑大小并没有太多系统发育协方差。</p>
+      <figure class="book-figure phylogenetic-covariance-figure" id="fig-14-14"><div class="figure-scroll" tabindex="0" aria-label="系统发育 Gaussian 过程的先验与后验协方差函数"><img src="/media/chapter-14-phylogenetic-covariance.svg" alt="灰色先验带与黑色先验均值随系统发育距离下降，三十条蓝色后验曲线紧贴零协方差横轴"></div><figcaption><strong>图 14.14：</strong>系统发育 Gaussian 过程回归的后验协方差函数（蓝色），与先验（灰色）比较。Brownian 运动模型让协方差从高值开始、随距离线性衰减；这个模型却偏好在所有距离上都只有很小的协变。</figcaption></figure>
+      <p>因此，系统发育距离并没有像 Brownian 运动模型那样，完全消除群体大小与脑大小之间的关联。</p>
+      <aside class="overthinking-box" id="overthinking-14-custom-kernels"><h3>过度思考：构造自定义核</h3><p><code>rethinking</code> 包提供 <code>cov_GPL1</code>（OU 核）和 <code>cov_GPL2</code>（二次核），用来构造 Gaussian 过程协方差矩阵。不过，若直接使用 Stan，自行构造核也很容易。查看 <code>stancode(m14.11)</code>，顶部是一个自定义 <code>functions</code> 块，其中包含 <code>cov_GPL1</code> 函数：</p><pre class="stan-snippet" id="stan-14-gpl1-kernel"><code>functions{
+    matrix cov_GPL1(matrix x, real sq_alpha, real sq_rho, real delta) {
+        int N = dims(x)[1];
+        matrix[N, N] K;
+        for (i in 1:(N-1)) {
+          K[i, i] = sq_alpha + delta;
+          for (j in (i + 1):N) {
+            K[i, j] = sq_alpha * exp(-sq_rho * x[i,j] );
+            K[j, i] = K[i, j];
+          }
+        }
+        K[N, N] = sq_alpha + delta;
+        return K;
+    }
+}</code></pre><p>这个函数接收距离矩阵 <code>x</code> 和 Gaussian 过程参数，随后遍历协方差矩阵 <code>K</code> 的全部单元格，逐一计算其值。若要修改核，只需改动计算每个协方差的语句：</p><pre class="stan-snippet" id="stan-14-gpl1-covariance-line"><code>K[i, j] = sq_alpha * exp(-sq_rho * x[i,j] );</code></pre><p>例如，二次核只需把 <code>x[i,j]</code> 平方。最后，在 <code>model</code> 块中调用这个函数即可。</p></aside>
     </section>
+  </section>
+
+  <section id="sec-14-6"><h2>14.6 总结</h2>
+    <p>本章把多层模型中部分汇聚的基础策略，从截距扩展到了斜率。为此，需要对参数的统计总体中的协变建模。本章引入了 <code>LKJcorr</code> 先验，作为相关矩阵的一族便捷先验；还展示了怎样借助工具变量和前门准则，把协方差模型用于因果推断。Gaussian 过程则提供了一种实用方法，把变化效应策略扩展到相似性的连续维度，例如空间、网络、系统发育距离，以及数据实体之间任何其他抽象距离。下一章会继续发展这一更广义的多层方法，把它应用到统计推断中的常见问题：测量误差与缺失数据。</p>
+  </section>
+
+  <section id="sec-14-7"><h2>14.7 练习</h2>
+    <div class="practice-group" id="practice-14-easy"><h3>简单题</h3>
+      <article class="exercise" id="exercise-14E1"><h4>14E1</h4><p>为下列模型加入预测变量 <var>x</var> 的变化斜率。</p><div class="equation-block wallis-equation" id="eq-14E1"><div><var>y</var><sub><var>i</var></sub> ∼ Normal(<var>μ</var><sub><var>i</var></sub>, <var>σ</var>)</div><div><var>μ</var><sub><var>i</var></sub> = <var>α</var><sub>GROUP[<var>i</var>]</sub> + <var>βx</var><sub><var>i</var></sub></div><div><var>α</var><sub>GROUP</sub> ∼ Normal(<var>α</var>, <var>σ</var><sub><var>α</var></sub>)</div><div><var>α</var> ∼ Normal(0, 10)</div><div><var>β</var> ∼ Normal(0, 1)</div><div><var>σ</var> ∼ HalfCauchy(0, 2)</div><div><var>σ</var><sub><var>α</var></sub> ∼ HalfCauchy(0, 2)</div></div></article>
+      <article class="exercise" id="exercise-14E2"><h4>14E2</h4><p>设想一种变化截距与变化斜率呈正相关的情境，并为这种相关给出机制解释。</p></article>
+      <article class="exercise" id="exercise-14E3"><h4>14E3</h4><p>在什么情况下，变化斜率模型的有效参数数目（由 WAIC 或 DIC 估计）会少于相应的固定、无汇聚斜率模型？请解释。</p></article>
+    </div>
+    <div class="practice-group" id="practice-14-medium"><h3>中等题</h3>
+      <article class="exercise" id="exercise-14M1"><h4>14M1</h4><p>重复本章开头的咖啡机器人模拟。这次把 <code>rho</code> 设为零，让截距与斜率不相关。相关的后验分布怎样反映底层模拟中的这一变化？</p></article>
+      <article class="exercise" id="exercise-14M2"><h4>14M2</h4><p>把下面的多层模型拟合到模拟的咖啡数据：</p><div class="equation-block wallis-equation" id="eq-14M2"><div><var>W</var><sub><var>i</var></sub> ∼ Normal(<var>μ</var><sub><var>i</var></sub>, <var>σ</var>)</div><div><var>μ</var><sub><var>i</var></sub> = <var>α</var><sub>CAFÉ[<var>i</var>]</sub> + <var>β</var><sub>CAFÉ[<var>i</var>]</sub><var>A</var><sub><var>i</var></sub></div><div><var>α</var><sub>CAFÉ</sub> ∼ Normal(<var>α</var>, <var>σ</var><sub><var>α</var></sub>)</div><div><var>β</var><sub>CAFÉ</sub> ∼ Normal(<var>β</var>, <var>σ</var><sub><var>β</var></sub>)</div><div><var>α</var> ∼ Normal(0, 10)</div><div><var>β</var> ∼ Normal(0, 10)</div><div><var>σ</var> ∼ HalfCauchy(0, 1)</div><div><var>σ</var><sub><var>α</var></sub> ∼ HalfCauchy(0, 1)</div><div><var>σ</var><sub><var>β</var></sub> ∼ HalfCauchy(0, 1)</div></div><p>用 WAIC 把这个模型与本章使用多元 Gaussian 先验的模型比较，并解释结果。</p></article>
+      <article class="exercise" id="exercise-14M3"><h4>14M3</h4><p>重新估计 <code>UCBadmit</code> 数据的变化斜率模型，这次使用非中心化参数化。用 <code>n_eff</code> 比较两种模型形式的效率。哪一种更好？哪条链抽样更快？</p></article>
+    </div>
+    <p class="continuation-note">中等题 14M4–14M5 与困难题，将从原书 PDF 第 516 页继续。</p>
   </section>
 
   <section class="endnotes" id="chapter-14-notes" role="doc-endnotes"><h2>尾注</h2><ol start="194"><li id="note-194">Lewandowski 等（2009）。“LKJ”来自三位作者姓氏的首字母；作者本人把这种方法称为“洋葱法”。关于它在 Bayesian 模型中的用法，可参见最新版 Stan 参考手册的说明。 <a class="backref" href="#note-194-ref" aria-label="返回正文">↩</a></li><li id="note-195">参见 Gelfand 等（1995）以及 Roberts 和 Sahu（1997）。较新的综述可参见 Papaspiliopoulos 等（2007）；以 Hamiltonian Monte Carlo 为重点的讨论可参见 Betancourt 和 Girolami（2013）。 <a class="backref" href="#note-195-ref" aria-label="返回正文">↩</a></li><li id="note-196">参见 Pearl（2011）。 <a class="backref" href="#note-196-ref" aria-label="返回正文">↩</a></li><li id="note-197">参见 Angrist 和 Krueger（1991）。 <a class="backref" href="#note-197-ref" aria-label="返回正文">↩</a></li><li id="note-198">Feyrer 和 Sacerdote（2009）。 <a class="backref" href="#note-198-ref" aria-label="返回正文">↩</a></li><li id="note-199">参见 Caniglia 等（2019）。 <a class="backref" href="#note-199-ref" aria-label="返回正文">↩</a></li><li id="note-200">参见 Angrist 和 Krueger（1995）以及 Kleibergen 和 Zivot（2003）。据作者所知，对参数化工具变量估计量——Bayesian 或其他形式——仍没有系统且有理论依据的理解；这很奇怪，因为 DAG 已提供正式的非参数理论。真实情况可能是：即使 DAG 表明存在工具，估计在实践中也常不可行。 <a class="backref" href="#note-200-ref" aria-label="返回正文">↩</a></li><li id="note-201">参见 Cohen 和 Malloy（2014）。作者从 Alex Chinco 的博客学到这个例子，参见其 2011 年文章。 <a class="backref" href="#note-201-ref" aria-label="返回正文">↩</a></li><li id="note-202">Thistlethwaite 和 Campbell（1960）。 <a class="backref" href="#note-202-ref" aria-label="返回正文">↩</a></li><li id="note-203">参见 Gelman 和 Imbens（2019）给出的尖锐示例与建议。 <a class="backref" href="#note-203-ref" aria-label="返回正文">↩</a></li><li id="note-204">Koster 和 Leckie（2014）。 <a class="backref" href="#note-204-ref" aria-label="返回正文">↩</a></li><li id="note-205">参见 Neal（1998）这篇高被引综述，其中也有实现说明。 <a class="backref" href="#note-205-ref" aria-label="返回正文">↩</a></li><li id="note-206">参见 Uyeda 等（2018）关于传统方法问题以及乳汁等强力二元性状影响的讨论。 <a class="backref" href="#note-206-ref" aria-label="返回正文">↩</a></li><li id="note-207">参见 Felsenstein（1985）与 Grafen（1989）。 <a class="backref" href="#note-207-ref" aria-label="返回正文">↩</a></li><li id="note-208">Uhlenbeck 和 Ornstein（1930）。关于拟合这类模型时的问题，另见 Cooper 等（2016）。 <a class="backref" href="#note-208-ref" aria-label="返回正文">↩</a></li><li id="note-209">参见 Jones 和 Moriarty（2013）、Landis 等（2013）以及 Meagher 等（2018）。 <a class="backref" href="#note-209-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 14 章 PDF 第 465–512 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 513 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 14 章 PDF 第 465–515 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 516 页继续。</aside>
 </article>
