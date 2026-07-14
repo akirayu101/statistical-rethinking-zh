@@ -2879,7 +2879,7 @@
   },
   "chapter-16": {
     "required_status": "in_progress",
-    "source_pages": [553, 567],
+    "source_pages": [553, 570],
     "required_ids": [
       "intro-16",
       "rethinking-16-bespoke",
@@ -2947,13 +2947,29 @@
       "eq-16-nut-priors",
       "code-16-10",
       "code-16-11",
+      "fig-16-4",
+      "code-16-12",
+      "fig-16-5",
+      "sec-16-3-3",
+      "note-225-ref",
+      "sec-16-4",
+      "note-226-ref",
+      "fig-16-6",
+      "code-16-13",
+      "note-227-ref",
+      "eq-16-hare-ar-one",
+      "eq-16-hare-ar-lynx",
+      "eq-16-hare-ar-deep",
       "chapter-16-notes",
       "note-219",
       "note-220",
       "note-221",
       "note-222",
       "note-223",
-      "note-224"
+      "note-224",
+      "note-225",
+      "note-226",
+      "note-227"
     ],
     "required_headings": [
       "广义线性疯狂",
@@ -2973,24 +2989,26 @@
       "16.3 常微分坚果破解",
       "16.3.1 科学模型",
       "16.3.2 统计模型",
+      "16.3.3 协变量与个体差异",
+      "16.4 种群动力学",
       "尾注"
     ],
     "counts": {
-      "section": 13,
-      "figure": 15,
-      "figure img": 2,
-      ".book-figure": 4,
-      ".code-listing": 11,
+      "section": 15,
+      "figure": 20,
+      "figure img": 5,
+      ".book-figure": 7,
+      ".code-listing": 13,
       ".code-output": 3,
       ".rethinking-box": 3,
       ".overthinking-box": 1,
       ".book-quote": 0,
-      ".equation-block": 20,
-      ".wallis-equation": 20,
+      ".equation-block": 23,
+      ".wallis-equation": 23,
       ".source-erratum": 4,
       ".chapter-introduction": 1,
       ".continuation-note": 1,
-      ".endnotes li": 6
+      ".endnotes li": 9
     }
   }
 }

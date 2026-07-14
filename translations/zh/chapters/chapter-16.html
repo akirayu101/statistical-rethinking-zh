@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-16" data-source-pages="553-567">
-  <header class="chapter-header"><p class="eyebrow">第十六章</p><h1>广义线性疯狂</h1><p class="source-range">当前译稿对应原书 PDF 第 553–567 页</p></header>
+<article class="book-article" data-chapter="chapter-16" data-source-pages="553-570">
+  <header class="chapter-header"><p class="eyebrow">第十六章</p><h1>广义线性疯狂</h1><p class="source-range">当前译稿对应原书 PDF 第 553–570 页</p></header>
 
   <div class="chapter-introduction" id="intro-16">
     <p>高中时，我问物理老师怎么看统计学，她给我讲了一个笑话。以下是我记得的版本。一位物理学家、一位工程师和一位统计学家结伴去用弓打猎。几个小时后，他们终于在远处发现一只鹿。物理学家快速做了弹道计算，忽略空气阻力；箭飞得很正，却落在目标前几米，鹿毫无察觉。工程师冷笑一声，给空气阻力加入一个修正因子，然后放箭；第二支箭却落在目标后几米，鹿仍然没有察觉。统计学家取了平均值，高喊：“我们射中了！”</p>
@@ -289,11 +289,60 @@ m16.4 &lt;- ulam(
         k ~ lognormal( log(2) , 0.25 ),
         theta ~ lognormal( log(5) , 0.25 )
     ), data=dat_list , chains=4 )</code></pre></figure>
-      <p class="continuation-note">图 16.4、链诊断之后的后验技能曲线，以及代码 16.12，将从原书 PDF 第 568 页继续。</p>
+      <figure class="book-figure nut-prior-figure" id="fig-16-4"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的体重生长与开坚果速率先验预测双面板图"><img src="/media/chapter-16-nut-prior-predictive.svg" alt="左图是逐渐趋近成年体重的二十条先验生长曲线，右图是多种随年龄增加的开坚果速率先验曲线"></div><p class="scroll-hint">图较宽，可横向滚动比较体重生长与开坚果速率。</p><figcaption><strong>图 16.4：</strong>开坚果模型的先验预测模拟。左：把平均成年体重归一化为 1 的先验生长曲线；这组先验力图像真实黑猩猩一样，在 12 岁左右开始趋平。右：开坚果速率的先验；它允许多种不同发育模式，但都随年龄上升，并假定幼年黑猩猩无法打开坚果。</figcaption></figure>
+      <p>现在尽职检查链诊断。这里各参数的边际分布不如后验发育曲线有趣，所以直接生成后者：</p>
+      <figure class="code-listing" id="code-16-12"><figcaption>R 代码 16.12</figcaption><pre><code>post &lt;- extract.samples(m16.4)
+plot( NULL , xlim=c(0,1) , ylim=c(0,1.5) , xlab="age" ,
+    ylab="nuts per second" , xaxt="n" )
+at &lt;- c(0,0.25,0.5,0.75,1,1.25,1.5)
+axis( 1 , at=at , labels=round(at*max(Panda_nuts$age)) )
+
+# raw data
+pts &lt;- dat_list$n / dat_list$seconds
+point_size &lt;- normalize( dat_list$seconds )
+points( jitter(dat_list$age) , pts , col=rangi2 , lwd=2 , cex=point_size*3 )
+
+# 30 posterior curves
+for ( i in 1:30 ) with( post ,
+    curve( phi[i]*(1-exp(-k[i]*x))^theta[i] , add=TRUE , col=grau() ) )</code></pre></figure>
+      <p>结果见图 16.5。蓝点是原始数据，点大小按每次观测的持续时间缩放；曲线是从后验分布抽出的 30 条技能曲线。这些曲线大约在达到最大体型的年龄趋平，与“力量是主要限制因素”的想法一致。这并不表示知识不重要，仍有大量变异有待解释。</p>
+      <figure class="book-figure nut-posterior-figure" id="fig-16-5"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的开坚果技能后验发育曲线图"><img src="/media/chapter-16-nut-posterior-curves.svg" alt="蓝色空心点表示原始每秒开坚果数，点越大观测持续越久，三十条黑色后验曲线随年龄增加并逐渐趋平"></div><p class="scroll-hint">图较宽，可横向滚动查看原始活动记录与后验技能曲线。</p><figcaption><strong>图 16.5：</strong>开坚果模型的后验预测分布。蓝点是打开数除以秒数的原始数据，点大小与该次观测的持续时间成正比；曲线是后验分布的 30 次抽样。</figcaption></figure>
+    </section>
+
+    <section id="sec-16-3-3"><h3>16.3.3 协变量与个体差异</h3>
+      <p>这里的模型简单得发傻，却是科学上合理的起点。可以扩展它，纳入性别等协变量与力量的个体差异。数据中有对同一个体的重复观测，甚至有跨年份的重复观测，可以用来估计个体变化效应；章末练习会探索这些应用。</p>
+      <p>暂且注意：某些参数适合随个体变化，另一些则不适合。例如缩放参数 <var>θ</var> 是物理学性质，而不是个体性质。允许哪些参数随个体变化，应由对参数的科学知识决定。这又是避免 GLM 的一个理由：让参数具有更坚实的科学含义。</p>
+      <p>另一项改进，是采用更真实的黑猩猩生长模型。已有详细发表的黑猩猩生长曲线<sup id="note-225-ref"><a href="#note-225">225</a></sup>。雄性黑猩猩确实会在约 10 岁时经历生长突增，因此生长速率会在达到最大体型前不久反而上升。把它纳入模型，至少可能改善对雄性的预测。</p>
     </section>
   </section>
 
-  <section class="endnotes" id="chapter-16-notes" role="doc-endnotes"><h2>尾注</h2><ol start="219"><li id="note-219">“Vitruvian Can”（“维特鲁威罐头”）这个双关由 Clint Johns（Twitter：@DrClintonJohns）提供。 <a class="backref" href="#note-219-ref" aria-label="返回正文">↩</a></li><li id="note-220">Harte（1988）。 <a class="backref" href="#note-220-ref" aria-label="返回正文">↩</a></li><li id="note-221">关于模型构建哲学有许多好文章，作者推荐三篇：Levins（1966）、Wimsatt（2002）和 Smaldino（2017）。 <a class="backref" href="#note-221-ref" aria-label="返回正文">↩</a></li><li id="note-222">资料来自 van Leeuwen 等（2018）。 <a class="backref" href="#note-222-ref" aria-label="返回正文">↩</a></li><li id="note-223">资料来自 Boesch 等（2019）。数据由 Roger Mundry 慷慨提供；论文中巧妙的分析也是由他设计的。 <a class="backref" href="#note-223-ref" aria-label="返回正文">↩</a></li><li id="note-224">von Bertalanffy（1934）。 <a class="backref" href="#note-224-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section id="sec-16-4"><h2>16.4 种群动力学</h2>
+    <p>一切始于一颗矮星内部的核聚变反应所释放的辐射；这颗矮星位于某个无足轻重的螺旋星系的一条次要旋臂上。以光子速度航行八分钟，在第三颗行星上，这些辐射让聪明的植物制造糖。雪兔吃掉聪明的植物，偷走它们的糖；聪明的猞猁再吃掉雪兔。大家不过都在吃星光。</p>
+    <p>雪兔与猞猁的种群会随时间波动，要理解自然，就必须理解这种波动。任意时刻的雪兔和猞猁数量，会影响不久后的数量。甚至可以说，雪兔最重要的原因就是雪兔；但猞猁这样的捕食者也是原因。要为这类现象建模，一个时刻的变量必须影响下一时刻同一变量的值。</p>
+    <p>本节将为雪兔与猞猁种群的时间序列建模<sup id="note-226-ref"><a href="#note-226">226</a></sup>。先载入并显示数据：</p>
+    <figure class="book-figure lynx-hare-figure" id="fig-16-6"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的二十年雪兔与猞猁毛皮数量时间序列"><img src="/media/chapter-16-lynx-hare-series.svg" alt="一九零零至一九二零年雪兔与猞猁毛皮数量的两条波动曲线，猞猁峰值通常晚于雪兔"></div><p class="scroll-hint">图较宽，可横向滚动查看完整二十年时间序列。</p><figcaption><strong>图 16.6：</strong>Hudson Bay Company 记录的 20 年猞猁（<em>Lynx canadensis</em>）与雪兔（<em>Lepus americanus</em>）毛皮数量。</figcaption></figure>
+    <figure class="code-listing" id="code-16-13"><figcaption>R 代码 16.13</figcaption><pre><code>library(rethinking)
+data(Lynx_Hare)
+plot( 1:21 , Lynx_Hare[,3] , ylim=c(0,90) , xlab="year" ,
+    ylab="thousands of pelts" , xaxt="n" , type="l" , lwd=1.5 )
+at &lt;- c(1,11,21)
+axis( 1 , at=at , labels=Lynx_Hare$Year[at] )
+lines( 1:21 , Lynx_Hare[,2] , lwd=1.5 , col=rangi2 )
+points( 1:21 , Lynx_Hare[,3] , bg="black" , col="white" , pch=21 , cex=1.4 )
+points( 1:21 , Lynx_Hare[,2] , bg=rangi2 , col="white" , pch=21 , cex=1.4 )
+text( 17 , 80 , "Lepus" , pos=2 )
+text( 19 , 50 , "Lynx" , pos=2 , col=rangi2 )</code></pre></figure>
+    <p>图 16.6 展示了这条时间序列。这些数据有点古怪：记录的是毛皮，而不是活体动物<sup id="note-227-ref"><a href="#note-227">227</a></sup>。雪兔毛皮数与猞猁毛皮数似乎以某种方式相关；二者都在波动，而且看起来一起波动。</p>
+    <p>建模这类时间序列的一种常见地心式方法，是使用所谓的<strong>自回归模型</strong>。自回归模型把前一个时间步的结果值称作<strong>滞后变量</strong>，并将其作为预测变量加在线性模型右侧。例如，可以把时刻 <var>t</var> 的平均雪兔数量建模为：</p>
+    <div class="equation-block wallis-equation" id="eq-16-hare-ar-one"><div>E(<var>H</var><sub><var>t</var></sub>) = <var>α</var> + <var>β</var><sub>1</sub><var>H</var><sub><var>t</var>−1</sub></div></div>
+    <p>其中 <var>H</var><sub><var>t</var></sub> 是时刻 <var>t</var> 的雪兔数。若 <span class="math-inline"><var>β</var><sub>1</sub> &lt; 1</span>，雪兔数量就倾向于回归某个平均种群规模 <var>α</var>。还可以继续为捕食者添加一个本轮：</p>
+    <div class="equation-block wallis-equation" id="eq-16-hare-ar-lynx"><div>E(<var>H</var><sub><var>t</var></sub>) = <var>α</var> + <var>β</var><sub>1</sub><var>H</var><sub><var>t</var>−1</sub> + <var>β</var><sub>2</sub><var>L</var><sub><var>t</var>−1</sub></div></div>
+    <p>其中 <var>L</var><sub><var>t</var>−1</sub> 是上一时期的猞猁数。有时还会加入更深的滞后：</p>
+    <div class="equation-block wallis-equation" id="eq-16-hare-ar-deep"><div>E(<var>H</var><sub><var>t</var></sub>) = <var>α</var> + <var>β</var><sub>1</sub><var>H</var><sub><var>t</var>−1</sub> + <var>β</var><sub>2</sub><var>L</var><sub><var>t</var>−1</sub> + <var>β</var><sub>3</sub><var>H</var><sub><var>t</var>−2</sub></div></div>
+    <p class="continuation-note">自回归模型的因果问题、状态空间模型需求，以及 16.4.1 的耦合常微分方程，将从原书 PDF 第 571 页继续。</p>
+  </section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 16 章 PDF 第 553–567 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 568 页继续。</aside>
+  <section class="endnotes" id="chapter-16-notes" role="doc-endnotes"><h2>尾注</h2><ol start="219"><li id="note-219">“Vitruvian Can”（“维特鲁威罐头”）这个双关由 Clint Johns（Twitter：@DrClintonJohns）提供。 <a class="backref" href="#note-219-ref" aria-label="返回正文">↩</a></li><li id="note-220">Harte（1988）。 <a class="backref" href="#note-220-ref" aria-label="返回正文">↩</a></li><li id="note-221">关于模型构建哲学有许多好文章，作者推荐三篇：Levins（1966）、Wimsatt（2002）和 Smaldino（2017）。 <a class="backref" href="#note-221-ref" aria-label="返回正文">↩</a></li><li id="note-222">资料来自 van Leeuwen 等（2018）。 <a class="backref" href="#note-222-ref" aria-label="返回正文">↩</a></li><li id="note-223">资料来自 Boesch 等（2019）。数据由 Roger Mundry 慷慨提供；论文中巧妙的分析也是由他设计的。 <a class="backref" href="#note-223-ref" aria-label="返回正文">↩</a></li><li id="note-224">von Bertalanffy（1934）。 <a class="backref" href="#note-224-ref" aria-label="返回正文">↩</a></li><li id="note-225">见 Walker 等（2006）以及 Leigh 和 Shea（1996）。 <a class="backref" href="#note-225-ref" aria-label="返回正文">↩</a></li><li id="note-226">本例依据 Bob Carpenter 的 Stan 案例研究改编：<a href="https://mc-stan.org/users/documentation/case-studies/lotka-volterra-predator-prey.html">Lotka–Volterra 捕食者—猎物模型</a>。 <a class="backref" href="#note-226-ref" aria-label="返回正文">↩</a></li><li id="note-227">Hewitt（1921）。注意，猞猁与雪兔数据大多来自不同地区。尽管这些数据常被用来说明种群动力学，但大量文献认为它们并不是很好的示例；简单搜索即可找到许多讨论。 <a class="backref" href="#note-227-ref" aria-label="返回正文">↩</a></li></ol></section>
+
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 16 章 PDF 第 553–570 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 571 页继续。</aside>
 </article>
