@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-16" data-source-pages="553-555">
-  <header class="chapter-header"><p class="eyebrow">第十六章</p><h1>广义线性疯狂</h1><p class="source-range">当前译稿对应原书 PDF 第 553–555 页</p></header>
+<article class="book-article" data-chapter="chapter-16" data-source-pages="553-558">
+  <header class="chapter-header"><p class="eyebrow">第十六章</p><h1>广义线性疯狂</h1><p class="source-range">当前译稿对应原书 PDF 第 553–558 页</p></header>
 
   <div class="chapter-introduction" id="intro-16">
     <p>高中时，我问物理老师怎么看统计学，她给我讲了一个笑话。以下是我记得的版本。一位物理学家、一位工程师和一位统计学家结伴去用弓打猎。几个小时后，他们终于在远处发现一只鹿。物理学家快速做了弹道计算，忽略空气阻力；箭飞得很正，却落在目标前几米，鹿毫无察觉。工程师冷笑一声，给空气阻力加入一个修正因子，然后放箭；第二支箭却落在目标后几米，鹿仍然没有察觉。统计学家取了平均值，高喊：“我们射中了！”</p>
@@ -34,11 +34,62 @@
       <div class="equation-block wallis-equation" id="eq-16-cylinder-statistical-model"><div class="annotated-equation-line"><span class="equation-expression"><var>W</var><sub><var>i</var></sub> ∼ Log-Normal(<var>μ</var><sub><var>i</var></sub>, <var>σ</var>)</span><span class="equation-label">[体重的分布]</span></div><div class="annotated-equation-line"><span class="equation-expression">exp(<var>μ</var><sub><var>i</var></sub>) = <var>k</var>π<var>p</var><sup>2</sup><var>h</var><sub><var>i</var></sub><sup>3</sup></span><span class="equation-label">[体重的预期中位数]</span></div><div class="annotated-equation-line"><span class="equation-expression"><var>k</var> ∼ 某个先验</span><span class="equation-label">[体重与体积之间的先验关系]</span></div><div class="annotated-equation-line"><span class="equation-expression"><var>p</var> ∼ 某个先验</span><span class="equation-label">[半径与身高比例的先验]</span></div><div class="annotated-equation-line"><span class="equation-expression"><var>σ</var> ∼ Exponential(1)</span><span class="equation-label">[老朋友 σ]</span></div></div>
       <p>从顶部开始，首先要决定观测结果变量——体重 <var>W</var><sub><var>i</var></sub>——的分布。这个变量为正且连续：体重不可能为负。因此我选择了对数正态分布。对数正态分布用对数的均值参数化，这个均值称作 <var>μ</var><sub><var>i</var></sub>；其原尺度中位数为 <span class="math-inline">exp(<var>μ</var><sub><var>i</var></sub>)</span>。</p>
       <aside class="source-erratum" id="erratum-16-statistically-required"><strong>原文说明：</strong>PDF 第 554 页的 “rather than just statistical required” 应为 “rather than just statistically required”；译稿按上下文处理为“不只是统计上需要”。</aside>
-      <p class="continuation-note">怎样把这个中位数指定为圆柱函数，以及 <var>k</var>、<var>p</var>、<var>σ</var> 的先验与可识别性，将从原书 PDF 第 556 页继续。</p>
+      <p>在上面的模型中，我把这个中位数指定为圆柱函数。最后，还需要为 <var>k</var>、<var>p</var> 与 <var>σ</var> 三个参数指定先验。</p>
+      <p>科学启发模型的一项主要优势，是参数拥有意义。这些意义本身就是先验信息，可以用来选择信息性分布。在这里尤其有用，因为科学上需要的参数，往往比数据能够直接识别的参数更多；只要对参数施加一些科学约束，我们仍然可以开展有用的估计。本例正是如此。</p>
+      <p>首先注意，参数 <var>k</var> 与 <var>p</var> 在模型中彼此相乘，数据除了它们的乘积，什么也估计不了。技术上说，在给定这个模型与这些数据时，<var>k</var> 和 <var>p</var> <strong>不可识别</strong>。可以直接用新参数 <var>θ</var> 替代乘积 <span class="math-inline"><var>kp</var><sup>2</sup></span>，转而估计 <var>θ</var>：</p>
+      <div class="equation-block wallis-equation" id="eq-16-cylinder-theta"><div>exp(<var>μ</var><sub><var>i</var></sub>) = π<var>θh</var><sub><var>i</var></sub><sup>3</sup></div></div>
+      <p>这样会得到相同预测，却失去一种方便地为 <var>θ</var> 指定先验的方法。因此，即便打算使用 <span class="math-inline"><var>θ</var> = <var>kp</var><sup>2</sup></span> 这个技巧，仍需思考 <var>k</var> 与 <var>p</var>。</p>
+      <p>先想参数 <var>p</var>。它是半径与身高之比，<span class="math-inline"><var>p</var> = <var>r</var>/<var>h</var></span>，所以必须大于零；它也必须小于一，因为很少有人比自己身高还宽。它几乎肯定小于二分之一：若一个人的宽度与身高相同，就有 <span class="math-inline">2<var>r</var> = <var>h</var></span>，因此 <span class="math-inline"><var>p</var> = (<var>h</var>/2)/<var>h</var> = 0.5</span>。所以 <var>p</var> 大概远小于 0.5。综合起来，我们需要一个以 0 和 1 为界、且大部分先验质量位于 0.5 以下的分布。Beta 分布可以做到：</p>
+      <div class="equation-block wallis-equation" id="eq-16-p-prior"><div><var>p</var> ∼ Beta(2, 18)</div></div>
+      <p>这个先验的均值为 <span class="math-inline">2/(2 + 18) = 0.1</span>。若要做得更好，确实应当进行先验预测模拟（见本章末练习）；但暂时先这样处理 <var>p</var>。</p>
+      <p>参数 <var>k</var> 是体重占体积的比例。它其实只是换算度量尺度，因为改变体积或体重的单位，就会改变它的值。例如，若身高以厘米计、体重以千克计，则体积单位为 cm<sup>3</sup>，<var>k</var> 的单位就必须是 kg/cm<sup>3</sup>。此时 <var>k</var> 的定义，正是每立方厘米对应多少千克。因此，为了把先验放到正确尺度上，需要知道一立方厘米人体大约有多重。可以查资料，也可以用自己的身体建立先验。</p>
+      <aside class="rethinking-box" id="rethinking-16-priors-never-arbitrary"><h4>再思考：先验从不任意</h4><p>常听人忧心忡忡地宣称，Bayes 不可信，因为先验是任意的。确实，有些人会任意对待先验；但只有在科学家忽视领域知识时，先验才会任意。即使坚持使用 GLM，先验预测模拟也会迫使我们接触背景知识，从而产生有用而非任意的先验。模型的科学基础越扎实，参数意义就越丰富。圆柱示例中的 <var>p</var> 与 <var>k</var> 都有科学含义，因而可以指定甚至能够直接物理测量的先验。出于某种形而上的“无知”承诺而在本例使用平坦先验，将是个错误。</p></aside>
+      <p>不过，假如查不到资料怎么办？一个非常实用的技巧，是彻底消除度量尺度——度量尺度只是人类的任意发明——再用已知生物学约束定位先验。怎样消除度量尺度？可以把观测变量除以某些参照值，单位就会约掉。例如，把身高和体重都除以各自均值：</p>
+      <figure class="code-listing" id="code-16-1"><figcaption>R 代码 16.1</figcaption><pre><code>library(rethinking)
+data(Howell1)
+d &lt;- Howell1
+
+# scale observed variables
+d$w &lt;- d$weight / mean(d$weight)
+d$h &lt;- d$height / mean(d$height)</code></pre></figure>
+      <p>新变量 <code>w</code> 与 <code>h</code> 的均值都是 1。这里使用均值并无特殊之处，只需某个参照值来约掉单位。现在考虑在这种缩放下，<var>k</var> 的合理取值。假设有一位身高和体重都恰好等于平均值的人，此时 <span class="math-inline"><var>w</var><sub><var>i</var></sub> = 1</span> 且 <span class="math-inline"><var>h</var><sub><var>i</var></sub> = 1</span>。代入公式：</p>
+      <div class="equation-block wallis-equation" id="eq-16-scaled-cylinder"><div>1 = <var>k</var>π<var>p</var><sup>2</sup>1<sup>3</sup></div></div>
+      <p>若假定 <span class="math-inline"><var>p</var> &lt; 0.5</span>，那么 <var>k</var> 必须大于 1。我建议把 <var>k</var> 约束为正值（它必须为正），并让先验均值位于 2 附近：</p>
+      <div class="equation-block wallis-equation" id="eq-16-k-prior"><div><var>k</var> ∼ Exponential(0.5)</div></div>
+      <p>借助先验预测模拟，当然还能做得更好；不过这足以让我们开始。现在把所有线索织进一幅代码挂毯：</p>
+      <figure class="code-listing" id="code-16-2"><figcaption>R 代码 16.2</figcaption><pre><code>m16.1 &lt;- ulam(
+    alist(
+        w ~ dlnorm( mu , sigma ),
+        exp(mu) &lt;- 3.141593 * k * p^2 * h^3,
+        p ~ beta( 2 , 18 ),
+        k ~ exponential( 0.5 ),
+        sigma ~ exponential( 1 )
+    ), data=d , chains=4 , cores=4 )</code></pre></figure>
+      <p>查看 <code>precis()</code> 的输出。你能理解 <var>p</var> 与 <var>k</var> 的后验分布吗？先验是怎样被更新的？</p>
+      <p>思考这些问题时，不妨检查后验怎样处理 <var>k</var> 与 <var>p</var> 的不可识别性。最直观的方法是画 <code>pairs(m16.1)</code>，其结果见图 16.2 左图。后验中有一条狭窄弯曲的脊：在脊上，<var>k</var> 与 <var>p</var> 的各种组合会产生相同乘积 <span class="math-inline"><var>kp</var><sup>2</sup></span>。这使两个参数强烈负相关——一个增大，另一个就必须减小，才能保持相同乘积。由于使用了信息性先验，我们仍能拟合这个模型；但数据本身依然没有关于两个参数各自的独立信息，至少在这个模型下没有。原则上，没有理由认为 <var>k</var> 与 <var>p</var> 不会也是身高（或年龄）的函数；例如肌肉与脂肪的密度就很不相同。</p>
+      <figure class="book-figure cylinder-posterior-figure" id="fig-16-2"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的圆柱模型参数后验与身高体重拟合双面板图"><img src="/media/chapter-16-cylinder-posterior-fit.svg" alt="左侧为参数 p 与 k 的边际后验、弯曲负相关脊和负零点八九相关；右侧为缩放后身高体重散点、圆柱模型拟合线与预测区间"></div><p class="scroll-hint">图较宽，可横向滚动比较参数后验与模型拟合。</p><figcaption><strong>图 16.2：</strong>左：<var>k</var> 与 <var>p</var> 的后验分布。模型定义中只出现乘积 <span class="math-inline"><var>kp</var><sup>2</sup></span>，所以数据本身只能识别乘积，不能分别识别 <var>k</var> 与 <var>p</var>；先验分布使估计成为可能。右：圆柱模型对 !Kung 数据的拟合。注意模型在较矮身高处拟合不佳。</figcaption></figure>
+      <p>所以 <var>k</var> 不一定是常数，因为相对肌肉量不是常数。同样，身体宽度与身高之比在发育过程中也不是常数，因此 <var>p</var> 也可能变化。</p>
+      <p>认为 <var>p</var> 可能改变，有助于理解后验预测。下面在观测身高范围内绘制后验预测分布：</p>
+      <figure class="code-listing" id="code-16-3"><figcaption>R 代码 16.3</figcaption><pre><code>h_seq &lt;- seq( from=0 , to=max(d$h) , length.out=30 )
+w_sim &lt;- sim( m16.1 , data=list(h=h_seq) )
+mu_mean &lt;- apply( w_sim , 2 , mean )
+w_CI &lt;- apply( w_sim , 2 , PI )
+plot( d$h , d$w , xlim=c(0,max(d$h)) , ylim=c(0,max(d$w)) , col=rangi2 ,
+    lwd=2 , xlab="height (scaled)" , ylab="weight (scaled)" )
+lines( h_seq , mu_mean )
+shade( w_CI , h_seq )</code></pre></figure>
+      <p>结果见图 16.2 右图。第一，模型正确抓住了总体缩放关系。身高的指数由理论固定为 3，我们没有估计它，但它表现得很好。第二，注意模型对样本中最矮身高的拟合很差。这可能意味着儿童的 <var>p</var> 不同，<var>k</var> 也可能不同。重要教训是：科学模型的失配会给出有用线索。若这里只是线性回归，参数没有生物学意义，我们大概只会再转几圈本轮来“修好”它。</p>
+      <aside class="source-erratum" id="erratum-16-cylinder-typos"><strong>原文说明：</strong>PDF 第 557 页的 “muscle and far” 应为 “muscle and fat”；PDF 第 558 页的 “The is possibly” 应为 “This is possibly”。译稿均按上下文订正。</aside>
+    </section>
+
+    <section id="sec-16-1-3"><h3>16.1.3 伪装的 GLM</h3>
+      <p>进入下一个示例之前，考虑把体重的对数与身高关联起来时，这个模型会怎样变化。此时，期望为：</p>
+      <div class="equation-block wallis-equation" id="eq-16-log-cylinder-start"><div>log <var>w</var><sub><var>i</var></sub> = <var>μ</var><sub><var>i</var></sub> = log(<var>k</var>π<var>p</var><sup>2</sup><var>h</var><sub><var>i</var></sub><sup>3</sup>)</div></div>
+      <p class="continuation-note">对数尺度如何把圆柱模型显露为固定斜率的线性回归，以及 16.2“隐藏的心智与观测行为”，将从原书 PDF 第 559 页继续。</p>
     </section>
   </section>
 
   <section class="endnotes" id="chapter-16-notes" role="doc-endnotes"><h2>尾注</h2><ol start="219"><li id="note-219">“Vitruvian Can”（“维特鲁威罐头”）这个双关由 Clint Johns（Twitter：@DrClintonJohns）提供。 <a class="backref" href="#note-219-ref" aria-label="返回正文">↩</a></li><li id="note-220">Harte（1988）。 <a class="backref" href="#note-220-ref" aria-label="返回正文">↩</a></li><li id="note-221">关于模型构建哲学有许多好文章，作者推荐三篇：Levins（1966）、Wimsatt（2002）和 Smaldino（2017）。 <a class="backref" href="#note-221-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 16 章 PDF 第 553–555 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 556 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 16 章 PDF 第 553–558 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 559 页继续。</aside>
 </article>
