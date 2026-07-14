@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-15" data-source-pages="517-527">
-  <header class="chapter-header"><p class="eyebrow">第十五章</p><h1>缺失数据与其他机会</h1><p class="source-range">当前译稿对应原书 PDF 第 517–527 页</p></header>
+<article class="book-article" data-chapter="chapter-15" data-source-pages="517-530">
+  <header class="chapter-header"><p class="eyebrow">第十五章</p><h1>缺失数据与其他机会</h1><p class="source-range">当前译稿对应原书 PDF 第 517–530 页</p></header>
 
   <div class="chapter-introduction" id="intro-15">
     <p>Bayesian 推断的一大优点，是不必非得聪明才行。例如，有一道经典概率谜题叫作<strong>Bertrand 盒子悖论</strong>。<sup id="note-210-ref"><a href="#note-210">210</a></sup> 我偏爱的版本用煎饼来讲。假设我煎了三张饼：第一张两面都焦了（BB），第二张只焦了一面（BU），第三张两面都没焦（UU）。现在我随机拿一张给你，盘中朝上的一面恰好焦了。另一面也焦了的概率是多少？</p>
@@ -188,10 +188,72 @@ A_obs &lt;- rnorm(N,A)</code></pre></figure>
     <p>那还能怎么做？我们可以从因果角度思考缺失性，并用模型<strong>插补</strong>缺失值。生成模型会告诉你，产生缺失值的过程是否也会妨碍识别因果效应；有时会，有时不会。幸好，可以把缺失性加入 DAG，再用已经学过的同一套准则判断它是否造成混杂。生成模型还会提供关于尚未看见之数值的信息。<sup id="note-213-ref"><a href="#note-213">213</a></sup> 这些信息可用来对不确定性取平均，充分利用非缺失值，而不必丢掉任何东西。</p>
     <p>画几张图后，这一切会更清楚。我们先从简单的虚构示例开始，再转向真实示例。</p>
     <aside class="rethinking-box" id="rethinking-15-missing-meaningful"><h3>再思考：缺失数据是有意义的数据</h3><p>一个变量的值未被观测到，这件事实本身仍是一项观测。它也是数据，只不过取了一个非常特殊的值；这个值的含义取决于情境。以个人收入问卷为例：若有人拒绝填写收入，拒答可能与低收入或高收入有关，因此，试图预测缺失值的模型可能很有启发。在生态学中，没有观察到某个物种也是一种微妙的观测：它可能表示该物种不在那里，也可能表示它在那里，只是你没有看到。为处理这种双重性，已有完整一类模型称为<strong>占域模型</strong>。<sup id="note-214-ref"><a href="#note-214">214</a></sup> 缺失值总是由某个过程产生，思考这个过程有时能解决大问题。</p></aside>
-    <p class="continuation-note">图 15.4 与 15.2.1“DAG 吃掉了我的作业”，将从原书 PDF 第 528 页继续。</p>
+    <figure class="book-figure missing-homework-figure" id="fig-15-4"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的四种作业缺失因果情景图"><svg viewBox="0 0 1200 620" role="img" aria-labelledby="fig-15-4-title fig-15-4-desc"><title id="fig-15-4-title">缺失作业的四种因果情景</title><desc id="fig-15-4-desc">四个面板展示狗完全随机吃作业、因学习过多而吃作业、噪声家庭同时影响作业质量与被吃概率，以及狗偏爱差作业四种缺失机制。</desc><defs><marker id="fig15-homework-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#3f4752"/></marker></defs><g fill="none" stroke="#3f4752" stroke-width="4" marker-end="url(#fig15-homework-arrow)"><line x1="165" y1="110" x2="335" y2="110"/><line x1="370" y1="145" x2="370" y2="220"/><line x1="165" y1="240" x2="335" y2="240"/><line x1="745" y1="110" x2="915" y2="110"/><line x1="710" y1="125" x2="710" y2="220"/><line x1="950" y1="145" x2="950" y2="220"/><line x1="745" y1="240" x2="915" y2="240"/><line x1="165" y1="380" x2="335" y2="380"/><line x1="370" y1="415" x2="370" y2="520"/><line x1="165" y1="540" x2="335" y2="540"/><line x1="275" y1="450" x2="340" y2="400"/><line x1="230" y1="485" x2="160" y2="525"/><line x1="745" y1="380" x2="915" y2="380"/><line x1="950" y1="415" x2="950" y2="520"/><line x1="745" y1="540" x2="915" y2="540"/><line x1="925" y1="405" x2="745" y2="520"/></g><g fill="#f0f1fa" stroke="#263f86" stroke-width="3"><circle cx="370" cy="110" r="34"/><circle cx="950" cy="110" r="34"/><circle cx="370" cy="380" r="34"/><circle cx="250" cy="470" r="34" fill="#fff" stroke-dasharray="7 5"/><circle cx="950" cy="380" r="34"/></g><g fill="#263f86" font-size="29" font-weight="700" text-anchor="middle"><text x="130" y="120">S</text><text x="370" y="120">H</text><text x="130" y="250">D</text><text x="370" y="250">H*</text><text x="710" y="120">S</text><text x="950" y="120">H</text><text x="710" y="250">D</text><text x="950" y="250">H*</text><text x="130" y="390">S</text><text x="370" y="390">H</text><text x="130" y="550">D</text><text x="370" y="550">H*</text><text x="250" y="480">X</text><text x="710" y="390">S</text><text x="950" y="390">H</text><text x="710" y="550">D</text><text x="950" y="550">H*</text></g><g fill="#30332e" font-size="27" font-weight="700"><text x="55" y="68">(a)</text><text x="635" y="68">(b)</text><text x="55" y="338">(c)</text><text x="635" y="338">(d)</text></g></svg></div><p class="scroll-hint">图较宽，可横向滚动比较四种缺失机制。</p><figcaption><strong>图 15.4：</strong>作业缺失的四种因果情景，完整解释见正文。（a）狗（<var>D</var>）完全随机地吃掉作业（<var>H</var>）。（b）狗吃掉学习（<var>S</var>）过度的学生之作业。（c）狗在嘈杂（<var>X</var>）家庭中吃掉更多作业，而那里的作业也更差。（d）狗偏爱吃差作业。</figcaption></figure>
+
+    <section id="sec-15-2-1"><h3>15.2.1 DAG 吃掉了我的作业</h3>
+      <p>考虑一群学生的样本，每个人都养狗。学生会完成作业 <var>H</var>；作业质量各异，并受每位学生学习量 <var>S</var> 的影响。可以像下面这样模拟 100 名学生及其属性与作业：</p>
+      <figure class="code-listing" id="code-15-8"><figcaption>R 代码 15.8</figcaption><pre><code>N &lt;- 100
+S &lt;- rnorm( N )
+H &lt;- rbinom( N , size=10 , inv_logit(S) )</code></pre></figure>
+      <p>这里假设作业 <var>H</var> 按 10 分制评分。平均而言，学习越多，得分越高。</p>
+      <p>然后，有些狗吃掉了某些作业。理解缺失数据问题的一种办法，是把缺失性本身看成一个变量，即表示是否缺失的 0/1 指示变量。令 <var>D</var> 为每条狗是否吃掉作业的 0/1 指示变量。作业被吃掉后，我们无法观测作业的真实分布；但能观测到 <var>H</var>*，即一份在 <var>D</var> = 1 处带缺失值的 <var>H</var> 副本。写成 DAG，就是 <span class="math-inline"><var>H</var> → <var>H</var>* ← <var>D</var></span>。</p>
+      <p>我们想知道学习 <var>S</var> 对作业 <var>H</var> 的因果影响，即 <span class="math-inline"><var>S</var> → <var>H</var></span>。但由于看不到 <var>H</var>，只能改用 <var>H</var>*；于是依赖 <span class="math-inline"><var>S</var> → <var>H</var>*</span> 能很好近似 <span class="math-inline"><var>S</var> → <var>H</var></span>。什么时候成立？<var>H</var>* 中缺失值的影响取决于它们怎样产生，也就是取决于其原因。下面考察图 15.4 中以 DAG 描绘的四种情景。</p>
+      <p>最简单的是左上角情景（a）：狗完全随机。狗是否吃掉某份作业，不受任何相关变量影响，因此 DAG 中没有箭头进入 <var>D</var>。模拟一些随机吞食：</p>
+      <figure class="code-listing" id="code-15-9"><figcaption>R 代码 15.9</figcaption><pre><code>D &lt;- rbern( N )  # 狗完全随机
+Hm &lt;- H
+Hm[D==1] &lt;- NA</code></pre></figure>
+      <p>变量 <code>Hm</code> 就是 <var>H</var>*，因为变量名里不能使用 <code>*</code>。查看 <code>Hm</code> 会发现随机散布的 <code>NA</code>。这是问题吗？可以通过考虑结果 <var>H</var> 是否独立于 <var>D</var> 来判断。更一般地说，缺失值保持温和的最低条件，是结果与它们独立，即被它们 <var>d</var>-分离。本例中，由于 <var>H</var>* 是碰撞点，<var>H</var> 与 <var>D</var> 独立：<span class="math-inline"><var>H</var> ⫫ <var>D</var></span>。</p>
+      <p>还可更直观地理解。由于缺失值完全随机，缺失性未必改变作业分数的总体分布；它会删除数据、降低估计效率，却未必让学习的因果效应估计产生偏差。可以尝试建立二项模型，分别用完整数据和带缺失值的数据估计 <var>S</var> 对 <var>H</var> 的因果效应；章末有一道练习会要求这样做。</p>
+      <p>现在考虑图 15.4 右上角的 DAG（b）。在这里，学习会影响狗是否吃作业，即 <span class="math-inline"><var>S</var> → <var>D</var></span>。例如，学习很多的学生不陪狗玩，于是狗通过吃作业来报复。再次模拟：</p>
+      <figure class="code-listing" id="code-15-10"><figcaption>R 代码 15.10</figcaption><pre><code>D &lt;- ifelse( S &gt; 0 , 1 , 0 )
+Hm &lt;- H
+Hm[D==1] &lt;- NA</code></pre></figure>
+      <p>现在，所有学习量高于平均值 0 的学生都缺作业。这一情景没有前一种温和，但也并非注定失败。注意现在存在一条从 <var>H</var> 到 <var>H</var>* 再到 <var>D</var> 与 <var>S</var> 的非因果后门路径：<span class="math-inline"><var>H</var> → <var>H</var>* ← <var>D</var> ← <var>S</var></span>。若不关闭它，就会混杂沿 <span class="math-inline"><var>S</var> → <var>H</var></span> 的推断。幸好，以 <var>S</var> 为条件便能关闭这条非因果路径，而我们本来就想以 <var>S</var> 为条件。因此，只要能控制影响缺失性（狗的 <var>D</var>）的变量，这个情景未必很糟。章末同样有一道题会要求比较全部作业与不含缺失值的作业所得推断。</p>
+      <p>这并不表示毫无危险。若函数或分布设错，仍会得到错误答案，而且缺失数据可能让我们无法通过后验预测检查发现荒谬之处。比如，假设学习只有在超过平均水平 0 后才开始对作业分数产生帮助。那样一来，我们永远看不到这些学生的作业，自然不可能弄清学习努力与作业分数之间的函数关系。</p>
+      <p>下一个情景图 15.4（c）更困难。基本情况仍相同：某个变量同时影响 <var>H</var> 与 <var>D</var>。先前这个变量是 <var>S</var>，现在则是新变量 <var>X</var>，表示学生家里的噪声水平。在嘈杂家庭中，学生作业更差，即 <span class="math-inline"><var>X</var> → <var>H</var></span>；与此同时，狗在嘈杂家庭中更容易吃作业，即 <span class="math-inline"><var>X</var> → <var>D</var></span>。图中给 <var>X</var> 画圈，表示它不可观测。现在用 <var>S</var> 回归 <var>H</var>* 时，一条新的非因果路径会起作用：<span class="math-inline"><var>H</var>* ← <var>D</var> ← <var>X</var> → <var>H</var></span>。</p>
+      <p>棘手的问题是，这条路径会怎样影响对 <span class="math-inline"><var>S</var> → <var>H</var></span> 的估计。那就利用模拟数据实际编码。下面是图 15.4（c）的完整数据模拟：</p>
+      <figure class="code-listing" id="code-15-11"><figcaption>R 代码 15.11</figcaption><pre><code>set.seed(501)
+N &lt;- 1000
+X &lt;- rnorm(N)
+S &lt;- rnorm(N)
+H &lt;- rbinom( N , size=10 , inv_logit( 2 + S - 2*X ) )
+D &lt;- ifelse( X &gt; 1 , 1 , 0 )
+Hm &lt;- H
+Hm[D==1] &lt;- NA</code></pre></figure>
+      <p>先假设一个简单二项模型，看看完整观测 <var>H</var> 时会得到什么。记住，我们没有观测到 <var>X</var>，所以不能把它放进模型：</p>
+      <figure class="code-listing" id="code-15-12"><figcaption>R 代码 15.12</figcaption><pre><code>dat_list &lt;- list(
+    H = H,
+    S = S )
+
+m15.3 &lt;- ulam(
+    alist(
+        H ~ binomial( 10 , p ),
+        logit(p) &lt;- a + bS*S,
+        a ~ normal( 0 , 1 ),
+        bS ~ normal( 0 , 0.5 )
+    ), data=dat_list , chains=4 )
+precis( m15.3 )</code></pre><pre class="code-output" id="output-15-12"><code>   mean   sd  5.5% 94.5% n_eff Rhat
+a  1.11 0.03  1.07  1.15  1265    1
+bS 0.69 0.03  0.65  0.73  1366    1</code></pre></figure>
+      <p><var>S</var> 的真实系数应为 1.00。我们不指望恰好得到它，但上面的估计偏得很远。该模型使用的是完整数据，还没有任何狗吃掉作业，所以问题不可能来自缺失性。这只是遗漏变量偏差（第 10 章）的一个例子。回想一下，在广义线性模型中，即使像 <var>X</var> 这样的未观测变量没有在结构上混杂、也没有与目标预测变量 <var>S</var> 交互，也不表示它不会使 <var>S</var> 的效应估计产生偏差；原因是结果变量存在天花板与地板效应，从而在所有预测变量之间诱发交互。</p>
+      <p>那么缺失数据会产生什么影响？想必会让事情更糟。来看看：现在用 <var>H</var>* 代替 <var>H</var> 运行同一模型，删掉所有 <var>D</var> = 1 的案例。</p>
+      <figure class="code-listing" id="code-15-13"><figcaption>R 代码 15.13（输出续下页）</figcaption><pre><code>dat_list0 &lt;- list(
+    H = H[D==0],
+    S = S[D==0] )
+
+m15.4 &lt;- ulam(
+    alist(
+        H ~ binomial( 10 , p ),
+        logit(p) &lt;- a + bS*S,
+        a ~ normal( 0 , 1 ),
+        bS ~ normal( 0 , 0.5 )
+    ), data=dat_list0 , chains=4 )
+precis( m15.4 )</code></pre><pre class="code-output" id="output-15-13"><code>   mean   sd  5.5% 94.5% n_eff Rhat</code></pre></figure>
+      <p class="continuation-note">代码 15.13 的参数行、缺失性改善或恶化估计的解释，以及图 15.4（d），将从原书 PDF 第 531 页继续。</p>
+    </section>
   </section>
 
   <section class="endnotes" id="chapter-15-notes" role="doc-endnotes"><h2>尾注</h2><ol start="210"><li id="note-210">Joseph Bertrand，1889，<cite>Calcul des probabilités</cite>。 <a class="backref" href="#note-210-ref" aria-label="返回正文">↩</a></li><li id="note-211">这一主题有几篇很好的文章，各有自己的风格与记号变体。参见 Hernán 与 Cole（2009）、Loken 与 Gelman（2017）、Brakenhoff 等（2018）以及 van Smeden 等（2019）。 <a class="backref" href="#note-211-ref" aria-label="返回正文">↩</a></li><li id="note-212">关于这种做法富有建设性的批评，参见 Hernán 与 Cole（2009）。 <a class="backref" href="#note-212-ref" aria-label="返回正文">↩</a></li><li id="note-213">关于当代方法（Bayesian 与其他方法）的综述，参见 Molenberghs 等（2014）。 <a class="backref" href="#note-213-ref" aria-label="返回正文">↩</a></li><li id="note-214">参见 MacKenzie 等（2017）；这是一本意在应用的综合性著作。 <a class="backref" href="#note-214-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 15 章 PDF 第 517–527 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 528 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 15 章 PDF 第 517–530 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 531 页继续。</aside>
 </article>
