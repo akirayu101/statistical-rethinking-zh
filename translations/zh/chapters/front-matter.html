@@ -1,0 +1,376 @@
+<article class="book-article front-matter-article" data-chapter="front-matter" data-source-pages="1-16">
+  <header class="chapter-header">
+    <p class="eyebrow">前置材料</p>
+    <h1>统计再思：贝叶斯课程——R 与 Stan 示例</h1>
+    <p class="source-range">本节完整对应原书 PDF 第 1–16 页</p>
+  </header>
+
+  <section class="front-matter-page front-title-page" id="front-pdf-001" data-source-page="1">
+    <p class="source-page-label">原书 PDF 第 1 页 · 书名页</p>
+    <h2>统计再思<sup>2</sup></h2>
+    <p class="front-subtitle">一门以 R 与 Stan 为例的贝叶斯课程</p>
+    <p><strong>第二版</strong></p>
+    <p>Richard McElreath</p>
+    <p class="front-compiled">本版本编译于 2019 年 12 月 8 日</p>
+  </section>
+
+  <section class="front-matter-page front-blank-page" id="front-pdf-002" data-source-page="2" aria-label="原书 PDF 第 2 页为空白保留页">
+    <p class="source-page-label">原书 PDF 第 2 页</p>
+    <p>（原书空白保留页）</p>
+  </section>
+
+  <section class="front-matter-page front-toc-page" id="front-pdf-003" data-source-page="3">
+    <p class="source-page-label">原书 PDF 第 3 页 · 印刷页 vii</p>
+    <h2>目录</h2>
+    <ol class="front-toc-list">
+      <li class="front-toc-chapter"><a href="#front-pdf-007">第二版序</a><span>xi</span></li>
+      <li class="front-toc-chapter"><a href="#front-pdf-009">序言</a><span>xiii</span>
+        <ol>
+          <li><a href="#front-audience">读者对象</a><span>xiii</span></li>
+          <li><a href="#front-teaching-strategy">教学策略</a><span>xiv</span></li>
+          <li><a href="#front-how-to-use">如何使用本书</a><span>xiv</span></li>
+          <li><a href="#front-install-rethinking">安装 rethinking R 包</a><span>xviii</span></li>
+          <li><a href="#front-pdf-015">致谢</a><span>xix</span></li>
+        </ol>
+      </li>
+      <li class="front-toc-chapter"><a href="/chapters/chapter-01.html">第 1 章　布拉格魔像</a><span>1</span>
+        <ol>
+          <li><a href="/chapters/chapter-01.html#sec-1-1">1.1　统计魔像</a><span>1</span></li>
+          <li><a href="/chapters/chapter-01.html#sec-1-2">1.2　重新思考统计</a><span>4</span></li>
+          <li><a href="/chapters/chapter-01.html#sec-1-3">1.3　魔像工程的工具</a><span>10</span></li>
+          <li><a href="/chapters/chapter-01.html#sec-1-4">1.4　总结</a><span>17</span></li>
+        </ol>
+      </li>
+      <li class="front-toc-chapter"><a href="/chapters/chapter-02.html">第 2 章　小世界与大世界</a><span>19</span>
+        <ol>
+          <li><a href="/chapters/chapter-02.html#sec-2-1">2.1　分叉数据的花园</a><span>20</span></li>
+          <li><a href="/chapters/chapter-02.html#sec-2-2">2.2　构建模型</a><span>28</span></li>
+          <li><a href="/chapters/chapter-02.html#sec-2-3">2.3　模型的组成部分</a><span>32</span></li>
+          <li><a href="/chapters/chapter-02.html#sec-2-4">2.4　让模型运转起来</a><span>36</span></li>
+          <li><a href="/chapters/chapter-02.html#sec-2-5">2.5　总结</a><span>46</span></li>
+          <li><a href="/chapters/chapter-02.html#sec-2-6">2.6　练习</a><span>46</span></li>
+        </ol>
+      </li>
+      <li class="front-toc-chapter"><a href="/chapters/chapter-03.html">第 3 章　从想象中采样</a><span>49</span>
+        <ol>
+          <li><a href="/chapters/chapter-03.html#sec-3-1">3.1　从网格近似后验中采样</a><span>52</span></li>
+          <li><a href="/chapters/chapter-03.html#sec-3-2">3.2　用抽样进行汇总</a><span>53</span></li>
+          <li><a href="/chapters/chapter-03.html#sec-3-3">3.3　用抽样模拟预测</a><span>61</span></li>
+          <li><a href="/chapters/chapter-03.html#sec-3-4">3.4　总结</a><span>68</span></li>
+          <li><a href="/chapters/chapter-03.html#sec-3-5">3.5　练习</a><span>69</span></li>
+        </ol>
+      </li>
+      <li class="front-toc-chapter"><a href="/chapters/chapter-04.html">第 4 章　地心模型</a><span>73</span>
+        <ol>
+          <li><a href="/chapters/chapter-04.html#sec-4-1">4.1　正态分布为何正态</a><span>74</span></li>
+          <li><a href="/chapters/chapter-04.html#sec-4-2">4.2　描述模型的语言</a><span>79</span></li>
+          <li><a href="/chapters/chapter-04.html#sec-4-3">4.3　身高的高斯模型</a><span>81</span></li>
+          <li><a href="/chapters/chapter-04.html#sec-4-4">4.4　线性预测</a><span>94</span></li>
+          <li><a href="/chapters/chapter-04.html#sec-4-5">4.5　从直线到曲线</a><span>113</span></li>
+          <li><a href="/chapters/chapter-04.html#sec-4-6">4.6　总结</a><span>123</span></li>
+          <li><a href="/chapters/chapter-04.html#sec-4-7">4.7　练习</a><span>123</span></li>
+        </ol>
+      </li>
+      <li class="front-toc-chapter"><a href="/chapters/chapter-05.html">第 5 章　多变量与虚假华夫饼</a><span>127</span>
+        <ol>
+          <li><a href="/chapters/chapter-05.html#sec-5-1">5.1　虚假关联</a><span>129</span></li>
+          <li><a href="/chapters/chapter-05.html#sec-5-2">5.2　被遮蔽的关系</a><span>148</span></li>
+        </ol>
+      </li>
+    </ol>
+  </section>
+
+  <section class="front-matter-page front-toc-page" id="front-pdf-004" data-source-page="4">
+    <p class="source-page-label">原书 PDF 第 4 页 · 印刷页 viii</p>
+    <h2>目录（续）</h2>
+    <ol class="front-toc-list" start="5">
+      <li class="front-toc-continuation"><span>第 5 章（续）</span>
+        <ol start="3">
+          <li><a href="/chapters/chapter-05.html#sec-5-3">5.3　分类变量</a><span>157</span></li>
+          <li><a href="/chapters/chapter-05.html#sec-5-4">5.4　总结</a><span>162</span></li>
+          <li><a href="/chapters/chapter-05.html#sec-5-5">5.5　练习</a><span>162</span></li>
+        </ol>
+      </li>
+      <li class="front-toc-chapter"><a href="/chapters/chapter-06.html">第 6 章　闹鬼的 DAG 与因果恐怖</a><span>165</span>
+        <ol>
+          <li><a href="/chapters/chapter-06.html#sec-6-1">6.1　多重共线性</a><span>167</span></li>
+          <li><a href="/chapters/chapter-06.html#sec-6-2">6.2　处理后偏差</a><span>174</span></li>
+          <li><a href="/chapters/chapter-06.html#sec-6-3">6.3　碰撞点偏差</a><span>180</span></li>
+          <li><a href="/chapters/chapter-06.html#sec-6-4">6.4　直面混杂</a><span>187</span></li>
+          <li><a href="/chapters/chapter-06.html#sec-6-5">6.5　总结</a><span>193</span></li>
+          <li><a href="/chapters/chapter-06.html#sec-6-6">6.6　练习</a><span>193</span></li>
+        </ol>
+      </li>
+      <li class="front-toc-chapter"><a href="/chapters/chapter-07.html">第 7 章　尤利西斯的罗盘</a><span>195</span>
+        <ol>
+          <li><a href="/chapters/chapter-07.html#sec-7-1">7.1　参数的问题</a><span>197</span></li>
+          <li><a href="/chapters/chapter-07.html#sec-7-2">7.2　熵与准确性</a><span>206</span></li>
+          <li><a href="/chapters/chapter-07.html#sec-7-3">7.3　驯服魔像：正则化</a><span>218</span></li>
+          <li><a href="/chapters/chapter-07.html#sec-7-4">7.4　预测预测准确性</a><span>221</span></li>
+          <li><a href="/chapters/chapter-07.html#sec-7-5">7.5　模型比较</a><span>229</span></li>
+          <li><a href="/chapters/chapter-07.html#sec-7-6">7.6　总结</a><span>239</span></li>
+          <li><a href="/chapters/chapter-07.html#sec-7-7">7.7　练习</a><span>239</span></li>
+        </ol>
+      </li>
+      <li class="front-toc-chapter"><a href="/chapters/chapter-08.html">第 8 章　条件海牛</a><span>241</span>
+        <ol>
+          <li><a href="/chapters/chapter-08.html#sec-8-1">8.1　构建交互作用</a><span>243</span></li>
+          <li><a href="/chapters/chapter-08.html#sec-8-2">8.2　交互作用的对称性</a><span>254</span></li>
+          <li><a href="/chapters/chapter-08.html#sec-8-3">8.3　连续交互作用</a><span>257</span></li>
+          <li><a href="/chapters/chapter-08.html#sec-8-4">8.4　总结</a><span>264</span></li>
+          <li><a href="/chapters/chapter-08.html#sec-8-5">8.5　练习</a><span>265</span></li>
+        </ol>
+      </li>
+      <li class="front-toc-chapter"><a href="/chapters/chapter-09.html">第 9 章　马尔可夫链蒙特卡洛</a><span>269</span>
+        <ol>
+          <li><a href="/chapters/chapter-09.html#sec-9-1">9.1　好国王马尔可夫与他的岛屿王国</a><span>270</span></li>
+          <li><a href="/chapters/chapter-09.html#sec-9-2">9.2　Metropolis 算法</a><span>273</span></li>
+          <li><a href="/chapters/chapter-09.html#sec-9-3">9.3　哈密顿蒙特卡洛</a><span>276</span></li>
+          <li><a href="/chapters/chapter-09.html#sec-9-4">9.4　简易 HMC：ulam</a><span>284</span></li>
+          <li><a href="/chapters/chapter-09.html#sec-9-5">9.5　马尔可夫链的照料与养护</a><span>293</span></li>
+          <li><a href="/chapters/chapter-09.html#sec-9-6">9.6　总结</a><span>303</span></li>
+          <li><a href="/chapters/chapter-09.html#sec-9-7">9.7　练习</a><span>303</span></li>
+        </ol>
+      </li>
+      <li class="front-toc-chapter"><a href="/chapters/chapter-10.html">第 10 章　大熵与广义线性模型</a><span>307</span>
+        <ol>
+          <li><a href="/chapters/chapter-10.html#sec-10-1">10.1　最大熵</a><span>308</span></li>
+          <li><a href="/chapters/chapter-10.html#sec-10-2">10.2　广义线性模型</a><span>320</span></li>
+          <li><a href="/chapters/chapter-10.html#sec-10-3">10.3　最大熵先验</a><span>329</span></li>
+          <li><a href="/chapters/chapter-10.html#sec-10-4">10.4　总结</a><span>329</span></li>
+        </ol>
+      </li>
+      <li class="front-toc-chapter"><a href="/chapters/chapter-11.html">第 11 章　上帝给整数加了料</a><span>331</span>
+        <ol>
+          <li><a href="/chapters/chapter-11.html#sec-11-1">11.1　二项回归</a><span>332</span></li>
+          <li><a href="/chapters/chapter-11.html#sec-11-2">11.2　泊松回归</a><span>353</span></li>
+          <li><a href="/chapters/chapter-11.html#sec-11-3">11.3　多项与分类模型</a><span>366</span></li>
+          <li><a href="/chapters/chapter-11.html#sec-11-4">11.4　删失与生存</a><span>373</span></li>
+          <li><a href="/chapters/chapter-11.html#sec-11-5">11.5　总结</a><span>378</span></li>
+          <li><a href="/chapters/chapter-11.html#sec-11-6">11.6　练习</a><span>378</span></li>
+        </ol>
+      </li>
+      <li class="front-toc-chapter"><a href="/chapters/chapter-12.html">第 12 章　怪物与混合</a><span>381</span>
+        <ol>
+          <li><a href="/chapters/chapter-12.html#sec-12-1">12.1　过度离散计数</a><span>381</span></li>
+        </ol>
+      </li>
+    </ol>
+  </section>
+
+  <section class="front-matter-page front-toc-page" id="front-pdf-005" data-source-page="5">
+    <p class="source-page-label">原书 PDF 第 5 页 · 印刷页 ix</p>
+    <h2>目录（续）</h2>
+    <ol class="front-toc-list" start="12">
+      <li class="front-toc-continuation"><span>第 12 章（续）</span>
+        <ol start="2">
+          <li><a href="/chapters/chapter-12.html#sec-12-2">12.2　零膨胀结果</a><span>388</span></li>
+          <li><a href="/chapters/chapter-12.html#sec-12-3">12.3　有序分类结果</a><span>392</span></li>
+          <li><a href="/chapters/chapter-12.html#sec-12-4">12.4　有序分类预测变量</a><span>403</span></li>
+          <li><a href="/chapters/chapter-12.html#sec-12-5">12.5　总结</a><span>409</span></li>
+          <li><a href="/chapters/chapter-12.html#sec-12-6">12.6　练习</a><span>409</span></li>
+        </ol>
+      </li>
+      <li class="front-toc-chapter"><a href="/chapters/chapter-13.html">第 13 章　有记忆的模型</a><span>413</span>
+        <ol>
+          <li><a href="/chapters/chapter-13.html#sec-13-1">13.1　示例：多层蝌蚪</a><span>415</span></li>
+          <li><a href="/chapters/chapter-13.html#sec-13-2">13.2　变化效应与欠拟合/过拟合权衡</a><span>422</span></li>
+          <li><a href="/chapters/chapter-13.html#sec-13-3">13.3　不止一种簇</a><span>429</span></li>
+          <li><a href="/chapters/chapter-13.html#sec-13-4">13.4　发散转移与非中心化先验</a><span>434</span></li>
+          <li><a href="/chapters/chapter-13.html#sec-13-5">13.5　多层后验预测</a><span>440</span></li>
+          <li><a href="/chapters/chapter-13.html#sec-13-6">13.6　总结</a><span>445</span></li>
+          <li><a href="/chapters/chapter-13.html#sec-13-7">13.7　练习</a><span>445</span></li>
+        </ol>
+      </li>
+      <li class="front-toc-chapter"><a href="/chapters/chapter-14.html">第 14 章　协方差历险</a><span>449</span>
+        <ol>
+          <li><a href="/chapters/chapter-14.html#sec-14-1">14.1　通过构造得到变化斜率</a><span>451</span></li>
+          <li><a href="/chapters/chapter-14.html#sec-14-2">14.2　高级变化斜率</a><span>461</span></li>
+          <li><a href="/chapters/chapter-14.html#sec-14-3">14.3　工具变量与因果设计</a><span>468</span></li>
+          <li><a href="/chapters/chapter-14.html#sec-14-4">14.4　作为相关变化效应的社会关系</a><span>475</span></li>
+          <li><a href="/chapters/chapter-14.html#sec-14-5">14.5　连续类别与高斯过程</a><span>481</span></li>
+          <li><a href="/chapters/chapter-14.html#sec-14-6">14.6　总结</a><span>498</span></li>
+          <li><a href="/chapters/chapter-14.html#sec-14-7">14.7　练习</a><span>499</span></li>
+        </ol>
+      </li>
+      <li class="front-toc-chapter"><a href="/chapters/chapter-15.html">第 15 章　缺失数据与其他机会</a><span>501</span>
+        <ol>
+          <li><a href="/chapters/chapter-15.html#sec-15-1">15.1　测量误差</a><span>503</span></li>
+          <li><a href="/chapters/chapter-15.html#sec-15-2">15.2　缺失数据</a><span>511</span></li>
+          <li><a href="/chapters/chapter-15.html#sec-15-3">15.3　分类误差与离散缺失</a><span>528</span></li>
+          <li><a href="/chapters/chapter-15.html#sec-15-4">15.4　总结</a><span>533</span></li>
+          <li><a href="/chapters/chapter-15.html#sec-15-5">15.5　练习</a><span>533</span></li>
+        </ol>
+      </li>
+      <li class="front-toc-chapter"><a href="/chapters/chapter-16.html">第 16 章　广义线性疯狂</a><span>537</span>
+        <ol>
+          <li><a href="/chapters/chapter-16.html#sec-16-1">16.1　几何人</a><span>538</span></li>
+          <li><a href="/chapters/chapter-16.html#sec-16-2">16.2　隐藏心智与观测行为</a><span>543</span></li>
+          <li><a href="/chapters/chapter-16.html#sec-16-3">16.3　用常微分方程砸坚果</a><span>549</span></li>
+          <li><a href="/chapters/chapter-16.html#sec-16-4">16.4　种群动力学</a><span>553</span></li>
+          <li><a href="/chapters/chapter-16.html#sec-16-5">16.5　总结</a><span>562</span></li>
+          <li><a href="/chapters/chapter-16.html#sec-16-6">16.6　练习</a><span>562</span></li>
+        </ol>
+      </li>
+      <li class="front-toc-chapter"><a href="/chapters/chapter-17.html">第 17 章　星象</a><span>565</span></li>
+      <li class="front-toc-chapter"><a href="/chapters/endnotes.html">尾注</a><span>569</span></li>
+      <li class="front-toc-chapter"><a href="/chapters/bibliography.html">参考文献</a><span>583</span></li>
+      <li class="front-toc-chapter"><a href="/chapters/citation-index.html">引文索引</a><span>595</span></li>
+    </ol>
+  </section>
+
+  <section class="front-matter-page front-blank-page" id="front-pdf-006" data-source-page="6" aria-label="原书 PDF 第 6 页为空白保留页">
+    <p class="source-page-label">原书 PDF 第 6 页</p>
+    <p>（原书空白保留页）</p>
+  </section>
+
+  <section class="front-matter-page" id="front-pdf-007" data-source-page="7">
+    <p class="source-page-label">原书 PDF 第 7 页 · 印刷页 xi</p>
+    <h2>第二版序</h2>
+    <p>我竟然写了一本统计学书，这件事完全出乎自己的意料；而这本书竟然如此受欢迎，就更令我惊讶了。不过，我原本就是想写出一本自己读研究生时希望拥有的统计学书。任何人都不该像我当年那样学习这些内容。很高兴确实有一群读者能从本书中受益。</p>
+    <p>写作耗去了五年。最初有一套课程讲义，我把它们熔化、锤打成一份两百页的初稿，后来又把那份初稿扔掉了。但它让我看清了自己真正想写的那本书的轮廓。此后，我又拿着书稿教了几年课，继续将它打磨。</p>
+    <p>其实，我本可以每年都继续修改。付印的代价，是把一个动态过程冻结起来：一边学习怎样教授这些材料，一边跟上材料本身的变化。随着时间推移，我越来越常发现书中有些地方希望当初换一种写法；我也收到了许多反馈，它们给了我改进本书的新想法。</p>
+    <p>因此，我在第二版中把这些想法付诸行动。第二版的目标，只是进一步完善让第一版获得成功的那套策略。主要变化如下。</p>
+    <p><strong>R 包增添了一些新工具。</strong>第一版中的 <code>map</code> 工具仍然存在，但现在名为 <code>quap</code>。改名只是为了避免误解：我们用它求的是后验分布的二次近似，所以现在名称也直接表达这一点。更大的变化是，以 <code>ulam</code> 取代了 <code>map2stan</code>。新的 <code>ulam</code> 与 <code>map2stan</code> 非常相似，许多时候可以用完全相同的方式使用；但它灵活得多，主要因为它不对 GLM 结构作任何假定，并允许在公式列表中显式声明变量类型。所有 <code>map2stan</code> 代码仍保留在包中，也会继续工作。不过 <code>ulam</code> 现在能做的事情多得多，尤其是在后面几章。两个工具都可通过 <code>extract.prior</code> 从先验分布抽样，也可从后验分布抽样。这就引出了下一项变化。</p>
+    <p><strong>大量增加先验预测模拟。</strong>先验预测模拟，是只用先验分布而非后验分布来模拟模型的预测。它非常适合帮助我们理解先验的含义。第一版中仅零星涉及这一做法；如今，大多数建模示例都包含先验预测模拟。我认为这是第二版最有用的新增内容，因为它不仅能大大加深对先验的理解，也能帮助理解模型本身。</p>
+    <p><strong>更强调预测与推断的区别。</strong>原来讲多元回归的第 5 章被拆成了两章：第一章侧重回归有帮助的一面，第二章则侧重它可能误导人的方式。这也让我们可以更直接地讨论因果推断。</p>
+  </section>
+
+  <section class="front-matter-page" id="front-pdf-008" data-source-page="8">
+    <p class="source-page-label">原书 PDF 第 8 页 · 印刷页 xii</p>
+    <p>因此，DAG——有向无环图——在书中登场。原来讨论过拟合的章节现在成为第 7 章，也更直接地提醒读者：信息准则和交叉验证衡量的是预测表现。书中如今明确讨论交叉验证及其重要性抽样近似（PSIS-LOO）。</p>
+    <p><strong>新的模型类型。</strong>第 4 章现在以 B 样条收尾。讲计数模型的第 11 章加入了一个项目反应（因子分析）示例；第 12 章包含带删失的生存分析；第 14 章提供了一个系统发育距离回归示例；还新增了完整的第 16 章，专门讨论不容易构想为 GLMM 的模型。</p>
+    <p><strong>一些新的数据示例。</strong>新示例包括日本樱花历史时间序列，以及一个更大的灵长类演化数据集，其中含 300 个物种及配套的系统发育关系。</p>
+    <p><strong>更多展示原始 Stan 模型。</strong>现在有几处会在选读框中讲解原始 Stan 模型代码。希望这能让读者更容易过渡到直接使用 Stan。不过正文仍以 R 脚本为主，使用 <code>rethinking</code> 包中的教学工具。</p>
+    <p><strong>善意与坚持。</strong>和第一版一样，我尽力让这些材料对读者友善。这里没有哪样东西是容易的，通往理解的路漫长而又闹鬼。读者务必要预先知道：困惑和不完整的理解都很正常。这也是我没有改变本书基本建模策略的原因。</p>
+    <p>第一，我要求读者明确写出模型的每一项假定。第一版有些读者劝我采用 <code>brms</code> 或 <code>rstanarm</code> 之类简化公式工具。它们都是极好的包；读完本书后，推荐你进一步使用它们。但我看不出一个人怎样能在使用这些工具时真正理解模型。先验被隐藏还不是最大的限制；更重要的是，像 <code>y ~ (1|x) + z</code> 这样的线性模型公式既不显示参数，甚至也不显示全部项，很难看出数学模型与代码如何对应。归根结底，稍微“残酷”一点、要求读者多做些工作，反而更加仁慈。因此，公式列表仍保留在本书中。你会亲手编写对数后验，一直细化到每个变量与每个系数之间的确切关系。以后你会感谢我的。</p>
+    <p>第二，读过半本书之后 MCMC 才会登场。第一版有些读者希望我一开始就讲 MCMC。我没有这样做，因为贝叶斯并不等同于 MCMC。我们的目标是后验分布，但对它存在许多正当的近似，而 MCMC 只是一组策略。前半本书采用二次近似，也能更清楚地与非贝叶斯算法建立联系。求二次近似又很快，读者不必一次和太多事情搏斗。说到底，这仍然是为了对读者友善。</p>
+    <p class="preface-signature">Richard McElreath<br>莱比锡，2019 年 8 月 10 日</p>
+  </section>
+
+  <section class="front-matter-page" id="front-pdf-009" data-source-page="9">
+    <p class="source-page-label">原书 PDF 第 9 页 · 印刷页 xiii</p>
+    <h2>序言</h2>
+    <blockquote class="book-quote front-poem">
+      <p>泥瓦匠动手盖房时，<br>总会仔细检验脚手架；</p>
+      <p>确保繁忙处木板不会滑动，<br>固定每架梯子，拧紧螺栓接头。</p>
+      <p>然而工程一旦完成，这些都要拆下，<br>让牢靠坚实的石墙显露出来。</p>
+      <p>所以，亲爱的，若你我之间<br>旧日的桥梁有时像在断裂，</p>
+      <p>不要害怕。我们可以任脚手架倒下，<br>因为确信自己的墙已经筑成。</p>
+      <p>——Seamus Heaney（1939–2013），《脚手架》</p>
+    </blockquote>
+    <p>本书希望提升你对统计建模的知识与信心。它要充当一座脚手架，让你筑起自己需要的墙，之后即使把它丢开也无妨。因此，本书常用一种不太方便的方式教授材料，迫使你一步一步完成通常会自动化的计算。之所以在算法上如此大费周章，是为了确保你理解足够多的细节，能在自己的建模工作中作出合理选择与解释。所以，尽管今后你会采用更多自动化，起步时仍有必要放慢速度：先筑起你的墙，再让脚手架倒下。</p>
+    <h3 id="front-audience">读者对象</h3>
+    <p>本书的主要读者，是自然科学和社会科学领域的研究者——无论是刚入学的博士生，还是经验丰富的专业人士——他们上过基础回归课程，却仍对统计建模感到不安。这群读者意识到，21 世纪初常见的统计实践似乎隐约有些不对劲：它受 <i>p</i> 值主宰，又充斥着令人眼花缭乱的检验程序。他们在期刊和书籍中见到替代方法，却不知道该去哪里学习。</p>
+    <p>因此，本书并不真正把篇幅用在反驳 <i>p</i> 值一类方法上。在我看来，问题与其说出在 <i>p</i> 值本身，不如说出在科学荒野里围绕它演化出来的一整套古怪仪式，以及由此排斥掉的许多其他有用工具。</p>
+  </section>
+
+  <section class="front-matter-page" id="front-pdf-010" data-source-page="10">
+    <p class="source-page-label">原书 PDF 第 10 页 · 印刷页 xiv</p>
+    <p>所以，本书假定读者已经准备好尝试不借助 <i>p</i> 值进行统计推断。这并不是理想状态。更好的做法，本应是提供材料，帮助你识别围绕 <i>p</i> 值乃至一般检验的常见错误与误解；即使不用它们，我们所有人也必须理解这些东西。因此，我设法悄悄穿插了一点相关内容，但遗憾的是无法投入太多篇幅，否则全书会过长，也会打断材料的教学节奏。</p>
+    <p>不过，需要认识到：对 <i>p</i> 值的冷淡并非贝叶斯学派独有的态度。事实上，显著性检验同样可以——也确实曾经——被表述为贝叶斯程序。因此，避开显著性检验这一选择，实际源自认识论方面的顾虑；第 1 章会简要讨论其中一些。</p>
+    <h3 id="front-teaching-strategy">教学策略</h3>
+    <p>本书使用的计算机代码远多于形式数学。即便是出色的数学家，在亲眼看到一个可运行的算法之前，也可能难以理解某种方法。这是因为，以代码形式实现会消除所有歧义。因此，如果你同时学习怎样实现，这类材料会更容易掌握。</p>
+    <p>除展示代码的教学价值之外，当今统计学有如此多的内容依赖计算，纯数学方法无论如何都不够。你会在本书后面看到，同一个数理统计模型有时能用不同方式实现，而这些差异很重要。所以，当你读完本书、转向更高级或更专门的统计建模时，这里的计算取向会帮助你识别并处理形形色色的实际麻烦。</p>
+    <p>本书的每一节其实都只是冰山一角。我无意穷尽任何主题，只是努力把某些东西讲清楚。为此，我把大量概念与材料编织进数据分析示例。于是，我没有设置“预测变量中心化”之类传统单元，而是在一个数据分析叙事中发展这些概念。这种风格当然不适合所有读者，但对我的许多学生都有效。我猜，对于那些被迫学习这些内容的人，它会彻底失灵；而对有内在动力的人，它更贴近我们在自身研究语境中真正学习这些技能的方式。</p>
+    <h3 id="front-how-to-use">如何使用本书</h3>
+    <p>本书不是一本供查阅的参考书，而是一门课程。它不打算支持随意跳读，而是期待你按顺序阅读。这在教学上有巨大的优势，却也违背了大多数科学家实际读书的方式。</p>
+    <p>本书包含大量代码，并把它们完全融入正文。原因是，在 21 世纪从事基于模型的统计工作，确实需要某种程度的编程。代码不是选读内容。我在任何地方都宁可放进太多代码，也不愿放得太少。根据我教授科学编程的经验，初学者若有一段能运行的代码可供修改，会比必须从头写算法学得更快。我这一代大概是最后一代不得不先学一点编程才能使用计算机的人，因此随着时间推移，教人写代码反而越来越难。我的学生很懂计算机，但有时根本不知道计算机代码长什么样。</p>
+  </section>
+
+  <section class="front-matter-page" id="front-pdf-011" data-source-page="11">
+    <p class="source-page-label">原书 PDF 第 11 页 · 印刷页 xv</p>
+    <h3>本书作了哪些预设</h3>
+    <p>本书不打算从最基础的层面教读者编程。它假定你已经作过基本努力，学会怎样在 R 中导入并处理数据。多数情况下，一份简短的 R 编程入门就足够。我知道很多人认为 Emmanuel Paradis 的 <i>R for Beginners</i> 很有帮助。它和许多其他初学者指南可在 <a href="https://cran.r-project.org/other-docs.html">CRAN 的相关页面</a>找到。</p>
+    <p>要使用本书，你应该已经知道 <code>y &lt;- 7</code> 会把数值 7 存入符号 <code>y</code>；应该知道后面带括号的符号是函数；应该认得循环，并理解命令可以嵌套在其他命令之中（递归）；还要知道 R 会把许多代码向量化，而不必使用循环。但你现在还无需对 R 编程很有把握。</p>
+    <p>不可避免地，你会在本书代码中遇到从未见过的成分。我尽力解释自己代码里任何特别重要或不同寻常的编程技巧。事实上，本书用了大量篇幅解释代码，因为学生确实需要。如果他们不能把每条命令与操作步骤及目标联系起来，那么出了问题时，就不知道原因是小错误还是大错误。我讲授数理演化理论时也会遇到同样的问题：学生和同事的代数技能常已生疏，算不出正确答案时，他们往往不知道原因只是某个小小的数学失误，还是整个策略出了问题。本书对代码不厌其烦的解释，是为了建立足够的理解，让读者能够诊断并修复问题。</p>
+    <h3>为什么是 R？</h3>
+    <p>本书使用 R 的理由，与使用英语一样：已经有很多人懂它。R 很适合做计算统计，不过许多其他语言也完全可以。我也推荐 Python（尤其是 PyMC）和 Julia。第一版后来出现了多种语言和风格的代码译本，希望第二版也会如此。</p>
+    <h3>使用代码</h3>
+    <p>书中的代码示例用带底色的框标示；示例代码的输出常紧接在框下，并使用等宽字体。例如：</p>
+    <figure class="code-listing" id="front-code-0-1"><figcaption>R 代码 0.1</figcaption><pre><code>print( "所有模型都是错的，但有些很有用。" )</code></pre><pre class="code-output"><code>[1] "所有模型都是错的，但有些很有用。"</code></pre></figure>
+    <p>每段代码旁都有一个编号，可在本书网站提供的配套代码片段文件中搜索。我的用意是让读者一边阅读，一边运行底色框里的代码，并把自己的输出与书中印出的结果比较。我真的希望你亲手执行这些代码：正如只看李小龙电影学不会武术，只读一本书也学不会编写统计模型。你必须下场挥拳，同样也得挨几下。</p>
+    <p>如果遇到困惑，请记住：你可以逐行独立执行代码，检查中间计算。这样既能学习，也能解决问题。例如，下面是一种颇令人迷惑的 10 与 20 相乘方法：</p>
+  </section>
+
+  <section class="front-matter-page" id="front-pdf-012" data-source-page="12">
+    <p class="source-page-label">原书 PDF 第 12 页 · 印刷页 xvi</p>
+    <figure class="code-listing" id="front-code-0-2"><figcaption>R 代码 0.2</figcaption><pre><code>x &lt;- 1:2
+x &lt;- x*10
+x &lt;- log(x)
+x &lt;- sum(x)
+x &lt;- exp(x)
+x</code></pre><pre class="code-output"><code>200</code></pre></figure>
+    <p>如果你不理解某一步，总可以在那一步之后立即打印符号 <code>x</code> 的内容。面对书中的代码示例，这样做能帮助你理解；面对自己的代码，这样做能帮你找到问题源头并修好它。</p>
+    <h3>选读部分</h3>
+    <p>为了如实反映人们实际阅读这类书的方式，书中设置了两类选读部分：（1）“再思考”；（2）“过度思考”。“再思考”部分长这样：</p>
+    <aside class="rethinking-box" id="front-rethinking-example"><h3>再思考：再想一次</h3><p>“再思考”框的作用，是为材料提供更广阔的语境。它们会提示与其他方法的联系、提供历史背景，或指出常见误解。这些框是选读的，但能让材料更完整，也邀请读者深入思考。</p></aside>
+    <p>“过度思考”部分长这样：</p>
+    <aside class="overthinking-box" id="front-overthinking-example">
+      <h3>过度思考：动手弄脏一点</h3>
+      <p>这类部分使用较小字号，更详细地解释代码或数学。理解正文并不依赖这些材料，但它们很有价值，尤其适合第二遍阅读。例如，计算方式有时十分重要。数学告诉我们，下面两个表达式等价：</p>
+      <div class="equation-block" id="front-eq-underflow"><div><var>p</var><sub>1</sub> = log(0.01<sup>200</sup>)</div><div><var>p</var><sub>2</sub> = 200 × log(0.01)</div></div>
+      <p>但在 R 中计算，会得到不同答案：</p>
+      <figure class="code-listing" id="front-code-0-3"><figcaption>R 代码 0.3</figcaption><pre><code>( log( 0.01^200 ) )
+( 200 * log(0.01) )</code></pre><pre class="code-output"><code>[1] -Inf
+[1] -921.034</code></pre></figure>
+      <p>第二行才是正确答案。这个问题源自舍入误差：计算机会把极小的小数舍入为零，从而损失精度，并可能在推断中引入可观误差。因此，我们几乎总是用概率的对数，而不是概率本身来做统计计算。</p>
+    </aside>
+    <p>第一次阅读时，你可以忽略大多数“过度思考”部分。</p>
+    <h3>命令行是最好的工具</h3>
+    <p>要完成 21 世纪统计推断所需的编程并不复杂，只是一开始很陌生。为什么不直接教读者用点选式程序完成所有事情？因为与在菜单上点来点去相比，用文本命令做统计有很大优势。</p>
+  </section>
+
+  <section class="front-matter-page" id="front-pdf-013" data-source-page="13">
+    <p class="source-page-label">原书 PDF 第 13 页 · 印刷页 xvii</p>
+    <p>大家都知道命令行更强大，但它还会节省时间，并帮助你履行伦理义务。有了命令脚本，每次分析都会留下自我说明的文档；多年以后，你仍能回到这项分析，精确复现它。你可以重复利用旧文件，也能把它们发给同事。点选操作却不会留下沿途的面包屑，而保存 R 命令的文件会。只要养成用这种方式规划、运行和保存统计分析的习惯，回报会远远超过投入。点选方式只是把成本推迟到以后，而不是一开始一次付清。</p>
+    <p>让分析得到完整记录、能够重复，也是科学的一项基本伦理要求。同行评审的完整性和研究的累积进展都依赖于此。命令行统计程序会自然地产生这类文档，点选界面不会。请做一个讲伦理的人。</p>
+    <p>所以，我们使用命令行并不是因为自己很硬核或很精英（尽管也可能如此），而是因为命令行更好。起步时确实更难：与点选界面不同，你必须先学会一组基本命令。不过，它在伦理和成本上的优势值得这点不便。</p>
+    <h3>你应该怎样工作</h3>
+    <p>如果我只叫读者使用命令行工具，却不解释应该怎么做，那就太残酷了。你确实要重新培养一些习惯，但变化并不大。以前只用菜单式统计软件的读者，需要经历一段明显的适应；不过几天之后，它就会显得自然。用过 Stata、SAS 等命令驱动统计软件的读者仍要作些调整。我先说明总体做法，再解释为什么连 Stata 和 SAS 用户也需要改变。</p>
+    <p>为统计分析编写脚本的理性做法，是在两个应用之间来回工作：（1）你选择的一款纯文本编辑器；（2）在终端里运行的 R 程序。有些应用会把文本编辑器与 R 控制台整合起来，其中最流行的是 RStudio。它有许多选项，但本质上只是一个同时包含脚本编辑器和 R 终端的界面。</p>
+    <p>纯文本编辑器用于创建和编辑没有格式的简单文本文件。常见例子包括 Windows 的记事本、Mac OS X 的 TextEdit，以及多数 *NIX 发行版（包括 Mac OS X）中的 Emacs。还有许多专为程序员设计的高级编辑器可选，例如免费的 RStudio 和 Atom。请注意，MS Word 文件不是纯文本。</p>
+    <p>你要用纯文本编辑器持续记录交给 R 处理的命令。绝对不要把所有命令直接敲进 R。应该从文本编辑器复制代码行到 R，或者让 R 直接读取完整脚本文件。探索数据、调试或只是玩一玩时，可以直接在 R 中输入命令；但基于上一节所说的理由，严肃工作应通过纯文本编辑器实现。</p>
+    <p>你可以在 R 脚本中加入注释，以便规划代码，并在日后记起代码在做什么。注释只需以 <code>#</code> 符号开头。下面是一段非常简短但完整的脚本，用 R 的一个内置数据集执行线性回归。即使还不知道代码的具体含义，也希望你能把它看成排版清晰、注释得当的基本范例。</p>
+    <figure class="code-listing" id="front-code-0-4"><figcaption>R 代码 0.4</figcaption><pre><code># 载入数据：
+# 以英尺计的汽车制动距离，与以千米/小时计的速度配对</code></pre></figure>
+  </section>
+
+  <section class="front-matter-page" id="front-pdf-014" data-source-page="14">
+    <p class="source-page-label">原书 PDF 第 14 页 · 印刷页 xviii</p>
+    <figure class="code-listing front-code-continuation"><figcaption>R 代码 0.4（续）</figcaption><pre><code># 详见 ?cars
+data(cars)
+
+# 拟合距离关于速度的线性回归
+m &lt;- lm( dist ~ speed , data=cars )
+
+# 模型估计出的系数
+coef(m)
+
+# 绘制残差关于速度的图
+plot( resid(m) ~ speed , data=cars )</code></pre></figure>
+    <p>即便熟悉 Stata 或 SAS 脚本的人，也要经历一些调整。Stata 与 SAS 处理信息的范式不同：在这些程序中，人们发出 <code>PROC GLM</code> 一类过程式命令，仿照菜单命令；过程随后生成大量默认输出，留给使用者筛选。R 并不这样工作。R 会迫使使用者决定自己想要哪些信息：先拟合一个统计模型，再发出后续命令向它提问。随着阅读正文示例，你会逐渐熟悉这种更像审问的范式；但请留意，你必须更主动地决定要向模型提出哪些问题。</p>
+    <h3 id="front-install-rethinking">安装 rethinking R 包</h3>
+    <p>代码示例要求你已经安装 <code>rethinking</code> R 包。它包含正文使用的数据示例和许多建模工具；<code>rethinking</code> 本身又依赖另一个包 <code>rstan</code>，用来拟合本书后半部分更高级的模型。</p>
+    <p>应先安装 <code>rstan</code>。请在浏览器打开 <a href="https://mc-stan.org/">mc-stan.org</a>，按对应平台的说明操作。你需要安装 C++ 编译器（也称“工具链”）和 <code>rstan</code> 包；两者的说明都在该网站上。之后，可在 R 中用下面的代码安装 <code>rethinking</code> 及其依赖：</p>
+    <figure class="code-listing" id="front-code-0-5"><figcaption>R 代码 0.5</figcaption><pre><code>install.packages(c("coda","mvtnorm","devtools"))
+library(devtools)
+devtools::install_github("rmcelreath/rethinking",ref="Experimental")</code></pre></figure>
+    <p>（<code>ref</code> 参数指定 Experimental 分支，其中包含第二版的新工具；第二版正式发布后，它会成为 master 分支。）请注意，至少在本版本编写时，<code>rethinking</code> 尚未进入 CRAN 包仓库。你始终可以简单搜索网络，找到最新版 <code>rethinking</code> 的当前安装说明。使用中遇到错误，可查看 <a href="https://github.com/rmcelreath/rethinking">github.com/rmcelreath/rethinking</a> 是否已有解决办法；如果没有，可以提交错误报告，并在解决方案出现时得到通知。包的全部源代码也在那里，供想亲自动手改造的人使用。尽管“fork”这个包，让它听从你的意志吧。</p>
+  </section>
+
+  <section class="front-matter-page" id="front-pdf-015" data-source-page="15">
+    <p class="source-page-label">原书 PDF 第 15 页 · 印刷页 xix</p>
+    <h2>致谢</h2>
+    <p>许多人为本书贡献了建议、想法和抱怨。其中最重要的，是过去十年上过我统计课的研究生，以及前来向我请教的同事。他们教会我怎样向他们教授这些材料；有些内容，我甚至只是因为他们需要才去学会。还有许多人投入时间，为书中各节或配套计算机代码提供评论，包括：Rasmus Bååth、Ryan Baldini、Bret Beheim、Maciek Chudek、John Durand、Andrew Gelman、Ben Goodrich、Mark Grote、Dave Harris、Chris Howerton、James Holland Jones、Jeremy Koster、Andrew Marshall、Sarah Mathew、Karthik Panchanathan、Pete Richerson、Alan Rogers、Cody Ross、Noam Ross、Aviva Rossi、Kari Schroeder、Paul Smaldino、Rob Trangucci、Shravan Vasishth、Annika Wallin，以及二十来位匿名审稿人。</p>
+    <p>Bret Beheim 和 Dave Harris 勇敢地为早期书稿提供了大量评论。Caitlin DeRango 与 Kotrina Kajokaite 投入时间，改进了若干章节和习题集。Mary Brooke McEachern 对内容与呈现方式提出了关键意见，也给予我沉着的支持和包容。许多匿名审稿人对个别章节提供了详细反馈。这些人没有谁赞同我的全部选择，一切错误和缺陷仍由我负责。但尤其是在彼此意见不一致时，他们的看法让本书变得更好。</p>
+    <p>本书献给 Parry M. R. Clarke 博士（1977–2012）；是他请我写下这本书。Parry 对统计、数学和计算方法的不断追问，帮助了身边的每一个人。他让我们变得更好。</p>
+  </section>
+
+  <section class="front-matter-page front-blank-page" id="front-pdf-016" data-source-page="16" aria-label="原书 PDF 第 16 页为空白保留页">
+    <p class="source-page-label">原书 PDF 第 16 页</p>
+    <p>（原书空白保留页）</p>
+  </section>
+
+  <aside class="translation-status" aria-label="翻译状态"><strong>翻译状态：</strong>前置材料 PDF 第 1–16 页已完成书名页、三级目录、第二版序、序言、代码示例与致谢的完整翻译、逐页核对、结构契约检查及桌面/移动端整节验收；第 2、6、16 页为空白保留页，达到前置材料级 verified。</aside>
+</article>

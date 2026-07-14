@@ -411,6 +411,29 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .bibliography-original { font-family: Georgia, "Times New Roman", serif; }
 .translation-status { margin-top: 3.5rem; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; font-size: .88rem; line-height: 1.65; }
 
+.front-matter-page { margin-top: 4.5rem; padding-top: 1rem; border-top: 1px solid var(--line); scroll-margin-top: 4.5rem; }
+.source-page-label { margin: 0 0 1rem !important; color: var(--muted); font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; font-size: .78rem !important; letter-spacing: .02em; text-align: left !important; }
+.front-title-page { min-height: 38rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.2rem; text-align: center; }
+.front-title-page .source-page-label { align-self: stretch; margin-bottom: auto !important; }
+.front-title-page h2 { margin: 0; font-size: clamp(2.6rem, 8vw, 4.5rem); text-align: center; }
+.front-title-page > p { margin: 0; text-align: center !important; }
+.front-title-page .front-subtitle { max-width: 25rem; color: #3f403b; font-size: 1.2rem; }
+.front-title-page .front-compiled { margin-top: auto; padding-bottom: 2rem; color: var(--muted); font-size: .9rem; }
+.front-blank-page { min-height: 11rem; display: flex; flex-direction: column; justify-content: center; color: var(--muted); text-align: center; }
+.front-blank-page .source-page-label { align-self: stretch; }
+.front-blank-page > p:last-child { text-align: center !important; }
+.front-toc-list, .front-toc-list ol { margin: 1.2rem 0 0; padding: 0; list-style: none; }
+.front-toc-list > li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .25rem .8rem; margin: 1rem 0; break-inside: avoid; }
+.front-toc-list ol { grid-column: 1 / -1; margin: .3rem 0 0 1.25rem; }
+.front-toc-list ol li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .25rem .8rem; margin: .2rem 0; }
+.front-toc-list a { overflow-wrap: anywhere; text-decoration-color: #b7bdd4; text-underline-offset: .14em; }
+.front-toc-list li > span:last-child { color: var(--muted); font-variant-numeric: tabular-nums; }
+.front-toc-chapter > a, .front-toc-continuation > span:first-child { color: #353630; font-weight: 700; }
+.front-poem { max-width: 30rem; margin-inline: auto; }
+.front-poem p + p { margin-top: .75rem; }
+.preface-signature { margin-top: 2.5rem !important; text-align: right !important; }
+.front-code-continuation { margin-top: 0; }
+
 .index-introduction { margin: 2rem 0 3rem; padding: 1rem 1.25rem; border-left: 4px solid var(--accent); background: var(--soft); }
 .index-introduction p { margin: .35rem 0; }
 .index-section { margin-top: 3.5rem; padding-top: 1rem; border-top: 1px solid var(--line); }
@@ -443,4 +466,8 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
   .index-columns, .index-columns.single-column { grid-template-columns: 1fr; max-width: none; gap: 0; }
   .index-list li { grid-template-columns: 1fr; gap: .15rem; margin: .72rem 0; }
   .index-pages { font-size: .84rem; text-align: left; }
+  .front-matter-page { margin-top: 3.25rem; }
+  .front-title-page { min-height: 31rem; }
+  .front-toc-list ol { margin-left: .65rem; }
+  .front-toc-list > li, .front-toc-list ol li { gap: .2rem .55rem; }
 }

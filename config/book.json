@@ -6,7 +6,7 @@
   "default_pdf": "~/Downloads/Statistical Rethinking 2nd Edition.pdf",
   "pdf_pages": 617,
   "chapters": [
-    {"slug": "front-matter", "number": "", "title_en": "Front Matter", "title_zh": "前置内容", "start": 1, "end": 16},
+    {"slug": "front-matter", "number": "", "title_en": "Front Matter", "title_zh": "前置材料", "start": 1, "end": 16},
     {"slug": "chapter-01", "number": "1", "title_en": "The Golem of Prague", "title_zh": "布拉格魔像", "start": 17, "end": 34},
     {"slug": "chapter-02", "number": "2", "title_en": "Small Worlds and Large Worlds", "title_zh": "小世界与大世界", "start": 35, "end": 64},
     {"slug": "chapter-03", "number": "3", "title_en": "Sampling the Imaginary", "title_zh": "从想象中采样", "start": 65, "end": 88},

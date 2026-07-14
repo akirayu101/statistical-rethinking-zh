@@ -56,8 +56,8 @@ def build_index() -> str:
         reviewed += len(item.get("reviewed_pages", []))
         verified += len(item.get("verified_pages", []))
         status = item.get("status", "pending")
-        prefix = f"第 {chapter['number']} 章" if chapter["number"] else chapter["title_zh"]
-        title = chapter["title_zh"] if chapter["number"] else chapter["title_en"]
+        prefix = f"第 {chapter['number']} 章" if chapter["number"] else ("书前" if slug == "front-matter" else "书后")
+        title = chapter["title_zh"]
         fragment = CHAPTERS / f"{slug}.html"
         title_html = f'<a href="/chapters/{esc(slug)}.html">{esc(title)}</a>' if fragment.exists() else esc(title)
         rows.append(
