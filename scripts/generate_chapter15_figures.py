@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import csv
 import math
 from pathlib import Path
 
@@ -15,6 +16,8 @@ OUT2 = ROOT / "translations" / "zh" / "media" / "chapter-15-divorce-shrinkage.sv
 OUT3 = ROOT / "translations" / "zh" / "media" / "chapter-15-both-errors-shrinkage.svg"
 OUT4 = ROOT / "translations" / "zh" / "media" / "chapter-15-imputation-independent.svg"
 OUT5 = ROOT / "translations" / "zh" / "media" / "chapter-15-imputation-correlated.svg"
+OUT6 = ROOT / "translations" / "zh" / "media" / "chapter-15-moralizing-gods-missingness.svg"
+MORALIZING_GODS_DATA = ROOT / "scripts" / "data" / "moralizing-gods.csv"
 FONT = "-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"
 INK = "#30332e"
 GRID = "#ddd9ce"
@@ -492,17 +495,91 @@ def figure_15_6() -> None:
     )
 
 
+def figure_15_7() -> None:
+    """Plot every observed and missing case in Moralizing_gods."""
+    width, height = 1200, 620
+    plot = (105.0, 70.0, 1145.0, 505.0)
+    x_range, y_range = (-10250.0, 2350.0), (1.15, 8.55)
+    with MORALIZING_GODS_DATA.open(encoding="utf-8", newline="") as handle:
+        data = list(csv.DictReader(handle, delimiter=";"))
+
+    x0, y0, x1, y1 = plot
+
+    def xy(year: float, population: float) -> tuple[float, float]:
+        return (
+            x0 + (year - x_range[0]) / (x_range[1] - x_range[0]) * (x1 - x0),
+            y1 - (population - y_range[0]) / (y_range[1] - y_range[0]) * (y1 - y0),
+        )
+
+    svg = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
+        '<title>图 15.7：道德化神灵历史数据中的缺失模式</title>',
+        '<desc>横轴是公元纪年，纵轴是人口规模的对数；蓝色实心点表示已知存在道德化神灵，蓝色空心点表示已知不存在，黑色叉号表示相关信仰资料缺失。</desc>',
+        f'<rect width="{width}" height="{height}" fill="#fff"/>',
+        f'<line x1="{x0}" y1="{y1}" x2="{x1}" y2="{y1}" stroke="{INK}" stroke-width="1.5"/>',
+        f'<line x1="{x0}" y1="{y0}" x2="{x0}" y2="{y1}" stroke="{INK}" stroke-width="1.5"/>',
+    ]
+    for tick in [-10000, -8000, -6000, -4000, -2000, 0, 2000]:
+        x, _ = xy(float(tick), y_range[0])
+        svg.extend([
+            f'<line x1="{x:.1f}" y1="{y1}" x2="{x:.1f}" y2="{y1 + 7}" stroke="{INK}"/>',
+            label(x, y1 + 32, str(tick), size=16, anchor="middle"),
+        ])
+    for tick in [2, 3, 4, 5, 6, 7, 8]:
+        _, y = xy(x_range[0], float(tick))
+        svg.extend([
+            f'<line x1="{x0 - 7}" y1="{y:.1f}" x2="{x0}" y2="{y:.1f}" stroke="{INK}"/>',
+            label(x0 - 14, y + 6, str(tick), size=16, anchor="end"),
+        ])
+
+    # Missing cases first; observed symbols remain visible where points overlap.
+    for row in data:
+        if row["moralizing_gods"] != "NA":
+            continue
+        x, y = xy(float(row["year"]), float(row["population"]))
+        svg.extend([
+            f'<line x1="{x - 4:.1f}" y1="{y - 4:.1f}" x2="{x + 4:.1f}" y2="{y + 4:.1f}" stroke="{INK}" stroke-width="1.35"/>',
+            f'<line x1="{x - 4:.1f}" y1="{y + 4:.1f}" x2="{x + 4:.1f}" y2="{y - 4:.1f}" stroke="{INK}" stroke-width="1.35"/>',
+        ])
+    for row in data:
+        value = row["moralizing_gods"]
+        if value == "NA":
+            continue
+        x, y = xy(float(row["year"]), float(row["population"]))
+        if value == "1":
+            svg.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="4" fill="#6670ee" fill-opacity="0.82"/>')
+        else:
+            svg.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="4.3" fill="#fff" stroke="#6670ee" stroke-width="1.8"/>')
+
+    legend_x, legend_y = 185.0, 92.0
+    svg.extend([
+        f'<circle cx="{legend_x}" cy="{legend_y}" r="4.5" fill="#6670ee"/>',
+        label(legend_x + 16, legend_y + 6, "存在道德化神灵", size=17),
+        f'<circle cx="{legend_x}" cy="{legend_y + 27}" r="4.5" fill="#fff" stroke="#6670ee" stroke-width="1.8"/>',
+        label(legend_x + 16, legend_y + 33, "不存在道德化神灵", size=17),
+        f'<line x1="{legend_x - 4}" y1="{legend_y + 50}" x2="{legend_x + 4}" y2="{legend_y + 58}" stroke="{INK}" stroke-width="1.5"/>',
+        f'<line x1="{legend_x - 4}" y1="{legend_y + 58}" x2="{legend_x + 4}" y2="{legend_y + 50}" stroke="{INK}" stroke-width="1.5"/>',
+        label(legend_x + 16, legend_y + 60, "道德化神灵未知", size=17),
+        label((x0 + x1) / 2, 592, "时间（年份）", size=20, anchor="middle", weight=600),
+        label(30, (y0 + y1) / 2, "人口规模", size=20, anchor="middle", weight=600, rotate=-90),
+        '</svg>',
+    ])
+    OUT6.write_text("\n".join(svg), encoding="utf-8")
+
+
 def main() -> None:
     figure_15_1()
     figure_15_2()
     figure_15_3()
     figure_15_5()
     figure_15_6()
+    figure_15_7()
     print(OUT1)
     print(OUT2)
     print(OUT3)
     print(OUT4)
     print(OUT5)
+    print(OUT6)
 
 
 if __name__ == "__main__":
