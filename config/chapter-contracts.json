@@ -2438,8 +2438,8 @@
     }
   },
   "chapter-14": {
-    "required_status": "in_progress",
-    "source_pages": [465, 515],
+    "required_status": "verified",
+    "source_pages": [465, 516],
     "required_ids": [
       "intro-14",
       "eq-14-cafe-varying-slopes",
@@ -2608,6 +2608,14 @@
       "exercise-14M2",
       "eq-14M2",
       "exercise-14M3",
+      "exercise-14M4",
+      "exercise-14M5",
+      "practice-14-hard",
+      "exercise-14H1",
+      "exercise-14H2",
+      "exercise-14H3",
+      "exercise-14H4",
+      "code-14-54",
       "chapter-14-notes",
       "note-194",
       "note-195",
@@ -2653,14 +2661,15 @@
       "14.7 练习",
       "简单题",
       "中等题",
+      "困难题",
       "尾注"
     ],
     "counts": {
       "section": 12,
-      "figure": 72,
+      "figure": 73,
       "figure img": 14,
       ".book-figure": 14,
-      ".code-listing": 53,
+      ".code-listing": 54,
       ".code-output": 15,
       ".rethinking-box": 5,
       ".overthinking-box": 4,
@@ -2669,8 +2678,44 @@
       ".wallis-equation": 30,
       ".source-erratum": 15,
       ".chapter-introduction": 1,
-      ".continuation-note": 1,
+      ".continuation-note": 0,
       ".endnotes li": 16
+    }
+  },
+  "chapter-15": {
+    "required_status": "in_progress",
+    "source_pages": [517, 518],
+    "required_ids": [
+      "intro-15",
+      "note-210-ref",
+      "eq-15-conditional-schematic",
+      "eq-15-conditional-pancake",
+      "eq-15-burnt-up",
+      "eq-15-pancake-result",
+      "code-15-1",
+      "chapter-15-notes",
+      "note-210"
+    ],
+    "required_headings": [
+      "缺失数据与其他机会",
+      "尾注"
+    ],
+    "counts": {
+      "section": 1,
+      "figure": 1,
+      "figure img": 0,
+      ".book-figure": 0,
+      ".code-listing": 1,
+      ".code-output": 1,
+      ".rethinking-box": 0,
+      ".overthinking-box": 0,
+      ".book-quote": 0,
+      ".equation-block": 4,
+      ".wallis-equation": 4,
+      ".source-erratum": 0,
+      ".chapter-introduction": 1,
+      ".continuation-note": 1,
+      ".endnotes li": 1
     }
   }
 }
