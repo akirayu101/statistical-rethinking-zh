@@ -3132,22 +3132,38 @@
   },
   "endnotes": {
     "required_status": "in_progress",
-    "source_pages": [585, 587],
+    "source_pages": [585, 590],
     "required_ids": [
       "endnotes-chapter-01",
       "endnote-1",
       "endnote-36",
       "endnotes-chapter-02",
       "endnote-37",
-      "endnote-42"
+      "endnote-48",
+      "endnotes-chapter-03",
+      "endnote-49",
+      "endnote-63",
+      "endnotes-chapter-04",
+      "endnote-64",
+      "endnote-76",
+      "endnotes-chapter-05",
+      "endnote-77",
+      "endnote-84",
+      "endnotes-chapter-06",
+      "endnote-85",
+      "endnote-90"
     ],
     "required_headings": [
       "尾注",
       "第 1 章",
-      "第 2 章"
+      "第 2 章",
+      "第 3 章",
+      "第 4 章",
+      "第 5 章",
+      "第 6 章"
     ],
     "counts": {
-      "section": 2,
+      "section": 6,
       "figure": 0,
       "figure img": 0,
       ".book-figure": 0,
@@ -3161,7 +3177,7 @@
       ".source-erratum": 0,
       ".chapter-introduction": 0,
       ".continuation-note": 0,
-      ".endnotes li": 42
+      ".endnotes li": 90
     }
   }
 }
