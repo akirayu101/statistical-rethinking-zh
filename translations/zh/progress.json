@@ -117,5 +117,12 @@
     "reviewed_pages": [581, 582, 583, 584],
     "verified_pages": [581, 582, 583, 584],
     "notes": "第 17 章 PDF 第 581–584 页已完成整章翻译、逐页核对、结构契约检查与桌面/移动端全章验收，达到章节级 verified；PDF 第 584 页为空白保留页。"
+  },
+  "endnotes": {
+    "status": "in_progress",
+    "translated_pages": [585, 586, 587],
+    "reviewed_pages": [585, 586, 587],
+    "verified_pages": [585, 586, 587],
+    "notes": "书后尾注 PDF 第 585–587 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，覆盖第 1 章尾注 1–36 及第 2 章尾注 37–42。"
   }
 }
