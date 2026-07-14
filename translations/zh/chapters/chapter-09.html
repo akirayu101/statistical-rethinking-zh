@@ -28,16 +28,16 @@
 positions &lt;- rep(0,num_weeks)
 current &lt;- 10
 for ( i in 1:num_weeks ) {
-    # record current position
+    # 记录当前位置
     positions[i] &lt;- current
 
-    # flip coin to generate proposal
+    # 抛硬币生成提议
     proposal &lt;- current + sample( c(-1,1) , size=1 )
-    # now make sure he loops around the archipelago
+    # 确保能绕群岛首尾循环
     if ( proposal &lt; 1 ) proposal &lt;- 10
     if ( proposal &gt; 10 ) proposal &lt;- 1
 
-    # move?
+    # 是否移动？
     prob_move &lt;- proposal/current
     current &lt;- ifelse( runif(1) &lt; prob_move , proposal , current )
 }</code></pre></figure>
@@ -69,7 +69,8 @@ for ( i in 1:num_weeks ) {
     <section id="sec-9-2-2"><h3>9.2.2 高维问题</h3>
       <p>但 Gibbs 抽样存在一些严重限制。第一，你也许并不想使用共轭先验。一旦开始构建多层模型，需要为整个协方差矩阵指定先验，有些共轭先验的形状其实相当病态。等到第 14 章再讨论这个问题。</p>
       <p>第二，随着模型越来越复杂，包含数百、数千乃至数万个参数，Metropolis 与 Gibbs 抽样都会变得惊人地低效。原因是，它们可能长时间困在后验的一小片区域。问题与其说是参数数量很多，不如说参数很多的模型几乎总会在后验中出现高度相关的区域，也就是两个或更多参数在后验样本中彼此高度相关。第 6 章的两条腿例子已经展示过这种情况。为什么这会成为问题？因为高度相关意味着高概率参数组合形成狭窄的脊，而 Metropolis 和 Gibbs 对下一步去哪里作出的愚蠢提议太多，于是它们会被困住。</p>
-      <p>一幅图会让问题更清楚。图 9.3 展示普通 Metropolis 算法试图探索一个具有强负相关（−0.9）的二维后验。高概率参数值形成一条狭窄山谷。先看左图：链从山谷左上方开始，实心点是接受的提议，空心点是拒绝的提议。提议通过给每个参数加上随机高斯噪声生成，并把标准差当作步长。图中显示 50 次提议。山谷如此狭窄，提议很容易落到外面，所以只有约 60% 被接受；链仍能缓慢沿山谷下行，但即便提议获准，它也离前一点很近，因此移动很慢。</p>
+      <p>一幅图会让问题更清楚。图 9.3 展示普通 Metropolis 算法试图探索一个具有强负相关（−0.9）的二维后验。高概率参数值形成一条狭窄山谷。先看左图：链从山谷左上方开始，实心点是接受的提议，空心点是拒绝的提议。提议通过给每个参数加上随机高斯噪声生成，标准差为 0.1，也就是步长。图中显示 50 次提议。山谷如此狭窄，提议很容易落到外面，所以只有约 60% 被接受；链仍能缓慢沿山谷下行，但即便提议获准，它也离前一点很近，因此移动很慢。</p>
+      <p class="source-erratum" id="erratum-9-3-step-size"><strong>原文勘误：</strong>正文把图 9.3 左图的步长写成 0.01；但图题明确标为 0.1，图示约 62% 的接受率与轨迹尺度也对应 0.1，译稿据此更正。</p>
       <p>若增大步长，让提议走得更远，会怎样？现在看图 9.3 右侧。此时只有约 30% 的提议被接受：步长越大，落到山谷之外荒唐位置的提议越多。不过，获准提议确实沿山谷长度方向移动得更快。实践中很难在这种权衡中获胜。Metropolis 与 Gibbs 都会这样被困住，因为它们的提议对后验整体形状了解不足；它们不知道自己要去哪里。</p>
       <p>高相关例子说明了这个问题，但真实问题更严重，也更有趣。一旦参数数量足够多，任何逐步对单个参数抽样的马尔可夫链方法都会被困住，原因称为<strong>测度集中</strong>。这个名字有些别扭，指的却是一个惊人的事实：高维分布的大部分概率质量总是离分布众数非常远。它很难可视化——多数日子里，我们看不见 100 维空间——但思考二维和三维版本就能理解基本现象。</p>
       <p>在二维中，高斯分布是一座山，最高点位于中央的众数。设想山由泥土填满——山还能由什么填满呢？——然后问：大部分泥土在哪里？从峰顶向任意方向远离时，高度下降，脚下正对着的泥土变少；但围绕山体、与峰顶距离相同的环带里，泥土比峰顶更多。离峰顶越远，环带面积越大，尽管高度在下降。因此，随着离开峰顶，总泥土量——呃，概率——起初反而增加。等山坡降到零，总泥土量（概率）最终才再次下降。所以，在离峰顶某个径向距离处，泥土（概率质量）达到最大。三维时，它不再是一座山，而是一个模糊球体。球心“峰顶”处密度最高，但离球心越远，体积仍会增加，于是包围球心的一层壳中含有更多球体物质。</p>
@@ -107,28 +108,29 @@ dens( Rd )</code></pre></figure>
     <section id="sec-9-3-2"><h3>9.3.2 空间中的粒子</h3>
       <p>蒙蒂国王的故事对应真实哈密顿蒙特卡洛算法的工作方式。在统计应用中，王室车辆就是当前的参数值向量。为简单起见，先考虑只有一个参数的情形。此时，对数后验像一只碗，后验概率最高点位于碗底，也就是山谷中央。随后给粒子随机轻弹一下——赋予它一些动量——并模拟其路径。粒子必须服从物理规律，一路滑行，直到我们停下时钟并取得一个样本。</p>
       <p>这不是另一个隐喻。HMC 真的会运行物理模拟，假装参数向量给出一个无摩擦小粒子的位置；对数后验则提供粒子滑行的表面。当对数后验很平坦——似然信息不多、先验也相当平坦——粒子可以滑行很久，才会被坡度（梯度）迫使转向。反之，当对数后验很陡——似然或先验非常集中——粒子走不了多远就会掉头。</p>
-      <p>原则上，HMC 总会接受每个提议，因为它只作聪明提议。实践中，HMC 仍使用拒绝准则，因为它只是在近似粒子的光滑路径。HMC 接受率超过 95% 并不少见；聪明提议确实值得。拒绝准则是什么？既然 HMC 运行物理模拟，系统总能量等量就必须守恒。若模拟过程中总能量发生变化，就说明数值近似很差；近似不佳时，算法可能拒绝提议。</p>
+      <p>原则上，HMC 总会接受每个提议，因为它只作聪明提议。实践中，HMC 仍使用拒绝准则，因为它只是在近似粒子的光滑路径。HMC 接受率超过 95% 并不少见；聪明提议确实值得。拒绝准则是什么？既然 HMC 运行物理模拟，系统总能量就必须守恒。若模拟过程中总能量发生变化，就说明数值近似很差；近似不佳时，算法可能拒绝提议。</p>
       <p>这一切听起来很复杂，事实也确实如此；换来的则是对复杂模型极高效的抽样。普通 Metropolis 或 Gibbs 抽样在参数空间中缓慢游荡时，HMC 仍能保持高效。对含数百或数千参数的多层模型尤其如此。1000 维空间中的粒子听起来疯狂，但对计算机而言，并不比想象三维粒子更难。</p>
-      <p>为了去掉一些神秘感，下面对一个只有两个参数的简单后验做二维模拟，参数是高斯分布的均值与标准差。这里只展示最少的数学细节；使用 HMC 不要求掌握全部数学，但对原理有些直觉，能帮助理解它为何远胜其他方法，也能理解它有时为何失败。若想阅读更多数学细节，请见尾注。<sup id="note-143-ref"><a href="#note-143">143</a></sup></p>
-      <p>假设数据是从 Normal(0, 1) 抽取的 100 个 <span class="math-inline"><var>x</var></span> 值与 100 个 <span class="math-inline"><var>y</var></span> 值，模型为：</p>
+      <p>为了去掉一些神秘感，下面对一个只有两个参数的简单后验做二维模拟，参数分别是两组高斯数据的均值 <span class="math-inline"><var>μ</var><sub>x</sub></span> 与 <span class="math-inline"><var>μ</var><sub>y</sub></span>。这里只展示最少的数学细节；使用 HMC 不要求掌握全部数学，但对原理有些直觉，能帮助理解它为何远胜其他方法，也能理解它有时为何失败。若想阅读更多数学细节，请见尾注。<sup id="note-143-ref"><a href="#note-143">143</a></sup></p>
+      <p>假设数据是从 Normal(0, 1) 各抽取的 50 个 <span class="math-inline"><var>x</var></span> 值与 50 个 <span class="math-inline"><var>y</var></span> 值（合计 100 个观测），模型为：</p>
       <div class="equation-block model-system-equation" id="eq-9-hmc-gaussian-model"><div><var>x</var><sub>i</sub> ∼ Normal(<var>μ</var><sub>x</sub>, 1)</div><div><var>y</var><sub>i</sub> ∼ Normal(<var>μ</var><sub>y</sub>, 1)</div><div><var>μ</var><sub>x</sub> ∼ Normal(0, 0.5)</div><div><var>μ</var><sub>y</sub> ∼ Normal(0, 0.5)</div></div>
+      <p class="source-erratum" id="erratum-9-hmc-gaussian-example"><strong>原文勘误：</strong>本段原称两个参数是一个高斯分布的“均值与标准差”，但模型实际估计两个均值，标准差都固定为 1；正文又称 <span class="math-inline"><var>x</var></span>、<span class="math-inline"><var>y</var></span> 各有 100 个观测，而代码 9.6 实际各生成 50 个。下方两次出现的对数概率式还把末项误排成 <span class="math-inline"><var>p</var>(<var>μ</var><sub>x</sub>, 0, 0.5)</span>；译稿均按模型与代码更正。</p>
       <p>驱动 HMC 需要两个函数和两项设定。第一个函数计算数据与参数的对数概率。这就是贝叶斯公式的分子部分，每种 MCMC 策略都需要它；它告诉算法任意一组参数值处的“海拔”。对上面的模型，就是：</p>
-      <div class="equation-block compact-equation" id="eq-9-hmc-log-prob"><span>∑<sub><var>i</var></sub> log <var>p</var>(<var>y</var><sub>i</sub> | <var>μ</var><sub>y</sub>, 1) + ∑<sub><var>i</var></sub> log <var>p</var>(<var>x</var><sub>i</sub> | <var>μ</var><sub>x</sub>, 1) + log <var>p</var>(<var>μ</var><sub>y</sub> | 0, 0.5) + log <var>p</var>(<var>μ</var><sub>x</sub> | 0, 0.5)</span></div>
+      <div class="equation-block hmc-log-prob-equation" id="eq-9-hmc-log-prob"><span class="equation-row"><span class="summation"><span class="sum-upper"></span><span class="sum-symbol">∑</span><span class="sum-lower"><var>i</var></span></span> log <var>p</var>(<var>y</var><sub>i</sub> | <var>μ</var><sub>y</sub>, 1) + <span class="summation"><span class="sum-upper"></span><span class="sum-symbol">∑</span><span class="sum-lower"><var>i</var></span></span> log <var>p</var>(<var>x</var><sub>i</sub> | <var>μ</var><sub>x</sub>, 1) + log <var>p</var>(<var>μ</var><sub>y</sub> | 0, 0.5) + log <var>p</var>(<var>μ</var><sub>x</sub> | 0, 0.5)</span></div>
       <p>这里 <span class="math-inline"><var>p</var>(<var>x</var> | <var>a</var>, <var>b</var>)</span> 表示均值为 <span class="math-inline"><var>a</var></span>、标准差为 <span class="math-inline"><var>b</var></span> 的高斯密度在 <span class="math-inline"><var>x</var></span> 处的值。HMC 需要的第二个函数是<strong>梯度</strong>，也就是当前位置沿所有方向的坡度。本例只有两个导数：分别对上式中的 <span class="math-inline"><var>μ</var><sub>x</sub></span> 和 <span class="math-inline"><var>μ</var><sub>y</sub></span> 求导即可。代码形式的导数与完整 R 实现放在后面的“过度思考”框中。</p>
       <p>HMC 所需的两项设定，是<strong>蛙跳步数</strong>和每一步的<strong>步长</strong>。这部分很奇怪，通常会由机器替你选择；但略有了解，有助于理解较新的 HMC 算法。模拟中的每条路径——例如图 9.5 两次访问之间的每段曲线——都被划分为若干蛙跳步。步数多，路径就长；步数少，路径就短。每一步多大则由步长决定。步长控制模拟的细腻程度：步长小时粒子能急转弯；步长大时每一跳都很远，甚至可能越过模拟本想转向的位置。</p>
       <p>图 9.6 把这些内容组合起来；复现代码位于下面的“过度思考”框。左侧模拟采用 <span class="math-inline"><var>L</var> = 11</span> 个蛙跳步，每步 <span class="math-inline"><var>ε</var> = 0.03</span>。等高线显示对数后验，本例是一只对称的碗。图中只显示 4 个后验样本；链从 × 处开始。第一次模拟被向右轻弹，先滚下坡、再滚上另一侧，最终停下并在标为 1 的点抽样。路径宽度表示各点的总动量，即动能。<sup id="note-144-ref"><a href="#note-144">144</a></sup>路径上的白点表示各个蛙跳步。过程不断重复，每次在两个维度上采用新的随机方向与动量。在这里抽取 100 个样本，就能得到自相关很低的优秀近似。</p>
       <p>然而，低自相关并不会自动出现。图 9.6 右侧使用相同代码，却令 <span class="math-inline"><var>L</var> = 28</span>。蛙跳步数与步长的组合让路径倾向于落回起点附近；得到的不再是独立后验样本，而是像 Metropolis 链一样的相关样本。这称为<strong>掉头问题</strong>：模拟掉头并返回同一邻域。本例的后验是一只完美二维高斯碗，抛物线路径总会绕回自身，所以掉头问题格外明显。多数模型并非如此，但路径仍会返回起点附近。这表明 HMC 的高效率有代价：必须为每项应用调校蛙跳步数和步长。</p>
       <p>Stan 及其 <code>rstan</code> 包这类高级 HMC 抽样器用两种方法处理掉头。第一，它们会替你选择蛙跳步数与步长。为此，抽样器先运行<strong>预热阶段</strong>，尝试找出能高效探索后验的步长。熟悉 Gibbs 抽样等旧算法的人请注意，预热不同于老化期：严格说，老化期样本仍是样本，属于后验；Stan 的预热阶段则不产生有用样本，只用于调校模拟。预热往往比抽样阶段慢，所以开始使用 Stan 时即便预热似乎很慢，多数情况下随后会大幅加速。</p>
-      <p>第二，高级 HMC 抽样器会用巧妙算法自适应设定蛙跳步数，称为<strong>无掉头抽样器</strong>（No-U-Turn Sampler，NUTS）。它根据后验形状猜测路径何时开始掉头，随即停止模拟。细节既复杂又惊人。<sup id="note-145-ref"><a href="#note-145">145</a></sup></p>
+      <p>第二，高级 HMC 抽样器会用巧妙算法自适应设定蛙跳步数，称为<strong>无掉头抽样器</strong>（No-U-Turn Sampler，NUTS）。它根据后验形状猜测路径何时开始掉头，随即停止模拟。细节既复杂又惊人。<sup id="note-145-ref"><a href="#note-145">145</a></sup>本书原版以 Stan 2.17 为准，当时 Stan 使用第二代 NUTS2 抽样器；更多内容可参见 Stan 手册。</p>
       <figure class="book-figure hmc-trajectories-figure" id="fig-9-6"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的四面板哈密顿蒙特卡洛轨迹图"><img src="/media/chapter-09-hmc-trajectories.svg" alt="四个面板比较合适与过长的蛙跳轨迹，并展示 HMC 在高度相关后验中的探索效率"></div><p class="scroll-hint">图较宽，可横向滚动比较四个面板。</p><figcaption><strong>图 9.6：</strong>哈密顿蒙特卡洛轨迹沿着由后验分布曲率决定的物理路径前进。左上：蛙跳步数与步长组合合适时，各条路径能从后验中产生近似独立的样本；模拟从 × 开始，依次移动到标为 1 至 4 的点。右上：组合不合适时，连续样本可能彼此非常接近；这条链仍然有效，只是效率低得多。左下：当后验像这里一样具有高度相关性时，HMC 真正显出优势。右下：同一高度相关后验中的 50 个样本，只有一个提议被拒绝（空心点）。拒绝率低、样本间自相关小，意味着只需更少样本就能近似后验。</figcaption></figure>
     </section>
 
     <aside class="overthinking-box" id="overthinking-raw-hmc"><h3>过度思考：原始的哈密顿蒙特卡洛</h3>
       <p>HMC 算法要运转需要五样东西：（1）函数 <code>U</code>，返回当前位置（参数值）下数据的负对数概率；（2）函数 <code>grad_U</code>，返回当前位置的负对数概率梯度；（3）步长 <code>epsilon</code>；（4）蛙跳步数 <code>L</code>；（5）起始位置 <code>current_q</code>。请记住，位置是参数值向量，梯度也必须返回同样长度的向量。</p>
       <p>先把这两个函数写出来，并专门针对上面的二维高斯例子构造。函数 <code>U</code> 只是把正文已经给出的对数后验表达出来：</p>
-      <div class="equation-block compact-equation" id="eq-9-hmc-u-log-posterior"><span>∑<sub><var>i</var></sub> log <var>p</var>(<var>y</var><sub>i</sub> | <var>μ</var><sub>y</sub>, 1) + ∑<sub><var>i</var></sub> log <var>p</var>(<var>x</var><sub>i</sub> | <var>μ</var><sub>x</sub>, 1) + log <var>p</var>(<var>μ</var><sub>y</sub> | 0, 0.5) + log <var>p</var>(<var>μ</var><sub>x</sub> | 0, 0.5)</span></div>
+      <div class="equation-block hmc-log-prob-equation" id="eq-9-hmc-u-log-posterior"><span class="equation-row"><span class="summation"><span class="sum-upper"></span><span class="sum-symbol">∑</span><span class="sum-lower"><var>i</var></span></span> log <var>p</var>(<var>y</var><sub>i</sub> | <var>μ</var><sub>y</sub>, 1) + <span class="summation"><span class="sum-upper"></span><span class="sum-symbol">∑</span><span class="sum-lower"><var>i</var></span></span> log <var>p</var>(<var>x</var><sub>i</sub> | <var>μ</var><sub>x</sub>, 1) + log <var>p</var>(<var>μ</var><sub>y</sub> | 0, 0.5) + log <var>p</var>(<var>μ</var><sub>x</sub> | 0, 0.5)</span></div>
       <p>所以实际上只需调用四次 <code>dnorm</code>：</p>
-      <figure class="code-listing" id="code-9-5"><figcaption>R 代码 9.5</figcaption><pre><code># U needs to return neg-log-probability
+      <figure class="code-listing" id="code-9-5"><figcaption>R 代码 9.5</figcaption><pre><code># U 需要返回负对数概率
 U &lt;- function( q , a=0 , b=1 , k=0 , d=1 ) {
     muy &lt;- q[1]
     mux &lt;- q[2]
@@ -137,33 +139,33 @@ U &lt;- function( q , a=0 , b=1 , k=0 , d=1 ) {
     return( -U )
 }</code></pre></figure>
       <p>梯度函数需要两个偏导数。幸运的是，高斯分布的导数非常整洁。任意均值为 <span class="math-inline"><var>a</var></span>、标准差为 <span class="math-inline"><var>b</var></span> 的一元高斯分布，其对数密度对 <span class="math-inline"><var>a</var></span> 的导数为：</p>
-      <div class="equation-block compact-equation" id="eq-9-gaussian-log-derivative"><span>∂ log Normal(<var>y</var> | <var>a</var>, <var>b</var>) / ∂<var>a</var> = (<var>y</var> − <var>a</var>) / <var>b</var><sup>2</sup></span></div>
+      <div class="equation-block hmc-derivative-equation" id="eq-9-gaussian-log-derivative"><span class="equation-row"><span class="compact-fraction"><span>∂ log N(<var>y</var> | <var>a</var>, <var>b</var>)</span><span>∂<var>a</var></span></span> = <span class="compact-fraction"><span><var>y</var> − <var>a</var></span><span><var>b</var><sup>2</sup></span></span></span></div>
       <p>又因为和的导数等于各项导数之和，写出梯度所需的就只有这些：</p>
-      <div class="equation-block compact-equation" id="eq-9-hmc-u-gradient"><span>∂<var>U</var>/∂<var>μ</var><sub>x</sub> = ∂ log Normal(<var>x</var> | <var>μ</var><sub>x</sub>, 1)/∂<var>μ</var><sub>x</sub> + ∂ log Normal(<var>μ</var><sub>x</sub> | 0, 0.5)/∂<var>μ</var><sub>x</sub> = ∑<sub><var>i</var></sub> (<var>x</var><sub>i</sub> − <var>μ</var><sub>x</sub>)/1<sup>2</sup> + (0 − <var>μ</var><sub>x</sub>)/0.5<sup>2</sup></span></div>
+      <div class="equation-block hmc-gradient-equation" id="eq-9-hmc-u-gradient"><span class="equation-row"><span class="compact-fraction"><span>∂<var>U</var></span><span>∂<var>μ</var><sub>x</sub></span></span> = <span class="compact-fraction"><span>∂ log N(<var>x</var> | <var>μ</var><sub>x</sub>, 1)</span><span>∂<var>μ</var><sub>x</sub></span></span> + <span class="compact-fraction"><span>∂ log N(<var>μ</var><sub>x</sub> | 0, 0.5)</span><span>∂<var>μ</var><sub>x</sub></span></span> = <span class="summation"><span class="sum-upper"></span><span class="sum-symbol">∑</span><span class="sum-lower"><var>i</var></span></span> <span class="compact-fraction"><span><var>x</var><sub>i</sub> − <var>μ</var><sub>x</sub></span><span>1<sup>2</sup></span></span> + <span class="compact-fraction"><span>0 − <var>μ</var><sub>x</sub></span><span>0.5<sup>2</sup></span></span></span></div>
       <p><span class="math-inline"><var>μ</var><sub>y</sub></span> 的梯度形式相同。写成代码如下：</p>
-      <figure class="code-listing" id="code-9-6"><figcaption>R 代码 9.6</figcaption><pre><code># gradient function
-# need vector of partial derivatives of U with respect to vector q
+      <figure class="code-listing" id="code-9-6"><figcaption>R 代码 9.6</figcaption><pre><code># 梯度函数
+# 需要一个包含 U 对向量 q 各分量偏导数的向量
 U_gradient &lt;- function( q , a=0 , b=1 , k=0 , d=1 ) {
     muy &lt;- q[1]
     mux &lt;- q[2]
     G1 &lt;- sum( y - muy ) + (a - muy)/b^2 #dU/dmuy
     G2 &lt;- sum( x - mux ) + (k - mux)/d^2 #dU/dmux
-    return( c( -G1 , -G2 ) ) # negative bc energy is neg-log-prob
+    return( c( -G1 , -G2 ) ) # 能量是负对数概率，因此取负
 }
-# test data
+# 测试数据
 set.seed(7)
 y &lt;- rnorm(50)
 x &lt;- rnorm(50)
 x &lt;- as.numeric(scale(x))
 y &lt;- as.numeric(scale(y))</code></pre></figure>
       <p>对这个模型而言，上面的梯度函数还不算太糟；但只要模型复杂一些，手写梯度就可能令人望而生畏。这正是 Stan 之类的工具会根据模型定义动态构建梯度的原因。现在可以进入算法核心了。若想理解这里的更多细节，可阅读 Radford Neal 在《马尔可夫链蒙特卡洛手册》中的章节。准备好对数后验函数和梯度函数后，下面的代码会生成图 9.6：</p>
-      <figure class="code-listing" id="code-9-7"><figcaption>R 代码 9.7</figcaption><pre><code>library(shape) # for fancy arrows
+      <figure class="code-listing" id="code-9-7"><figcaption>R 代码 9.7</figcaption><pre><code>library(shape) # 用于绘制漂亮的箭头
 Q &lt;- list()
 Q$q &lt;- c(-0.1,0.2)
 pr &lt;- 0.3
 plot( NULL , ylab="muy" , xlab="mux" , xlim=c(-pr,pr) , ylim=c(-pr,pr) )
 step &lt;- 0.03
-L &lt;- 11 # 0.03/28 for U-turns --- 11 for working example
+L &lt;- 11 # 0.03/28 会掉头；工作示例用 11
 n_samples &lt;- 4
 path_col &lt;- col.alpha("black",0.5)
 points( Q$q[1] , Q$q[2] , pch=4 , col="black" )
@@ -171,7 +173,7 @@ for ( i in 1:n_samples ) {
     Q &lt;- HMC2( U , U_gradient , step , L , Q$q )
     if ( n_samples &lt; 10 ) {
       for ( j in 1:L ) {
-        K0 &lt;- sum(Q$ptraj[j,]^2)/2 # kinetic energy
+        K0 &lt;- sum(Q$ptraj[j,]^2)/2 # 动能
         lines( Q$traj[j:(j+1),1] , Q$traj[j:(j+1),2] , col=path_col , lwd=1+2*K0 )
       }
       points( Q$traj[1:L+1,] , pch=16 , col="white" , cex=0.35 )
@@ -185,20 +187,20 @@ for ( i in 1:n_samples ) {
       <p><code>HMC2</code> 函数内置于 <code>rethinking</code>，以 Radford Neal 的一个示例脚本为基础。<sup id="note-146-ref"><a href="#note-146">146</a></sup>它其实并不太复杂。下面逐步走一遍，消除其中的神秘感。这个函数运行一条轨迹，因此只产生一个样本；要构成一条链，就必须反复调用它，正如上面的循环所做。函数的第一段先选择随机动量——给粒子轻弹一下——再初始化轨迹：</p>
       <figure class="code-listing" id="code-9-8"><figcaption>R 代码 9.8</figcaption><pre><code>HMC2 &lt;- function (U, grad_U, epsilon, L, current_q) {
   q = current_q
-  p = rnorm(length(q),0,1) # random flick - p is momentum.
+  p = rnorm(length(q),0,1) # 随机轻弹：p 是动量
   current_p = p
-  # Make a half step for momentum at the beginning
+  # 开始时让动量走半步
   p = p - epsilon * grad_U(q) / 2
-  # initialize bookkeeping - saves trajectory
+  # 初始化记录：保存轨迹
   qtraj &lt;- matrix(NA,nrow=L+1,ncol=length(q))
   ptraj &lt;- qtraj
   qtraj[1,] &lt;- current_q
   ptraj[1,] &lt;- p</code></pre></figure>
       <p>真正的动作发生在遍历蛙跳步的循环中。算法一共走 <span class="math-inline"><var>L</var></span> 步，每到一点都利用梯度计算对数后验曲面的线性近似：</p>
-      <figure class="code-listing" id="code-9-9"><figcaption>R 代码 9.9</figcaption><pre><code># Alternate full steps for position and momentum
+      <figure class="code-listing" id="code-9-9"><figcaption>R 代码 9.9</figcaption><pre><code># 位置与动量交替走完整步
 for ( i in 1:L ) {
-  q = q + epsilon * p # Full step for the position
-  # Make a full step for the momentum, except at end of trajectory
+  q = q + epsilon * p # 位置走完整步
+  # 除轨迹终点外，动量都走完整步
   if ( i!=L ) {
       p = p - epsilon * grad_U(q)
       ptraj[i+1,] &lt;- p
@@ -206,23 +208,23 @@ for ( i in 1:L ) {
   qtraj[i+1,] &lt;- q
 }</code></pre></figure>
       <p>注意，步长 <code>epsilon</code> 怎样同时进入位置向量和动量向量。正因为路径是一连串线性跳跃，而不是真正平滑的曲线，它只能是一种近似。若对数后验急剧弯曲，而模拟一步跨过了弯曲处，这一点可能产生重要后果。剩下的只是收尾工作：确保提议对称，让马尔可夫链保持有效，再决定接受还是拒绝提议。</p>
-      <figure class="code-listing" id="code-9-10"><figcaption>R 代码 9.10</figcaption><pre><code># Make a half step for momentum at the end
+      <figure class="code-listing" id="code-9-10"><figcaption>R 代码 9.10</figcaption><pre><code># 结束时让动量走半步
 p = p - epsilon * grad_U(q) / 2
 ptraj[L+1,] &lt;- p
-# Negate momentum at end of trajectory to make the proposal symmetric
+# 在轨迹终点反转动量，使提议保持对称
 p = -p
-# Evaluate potential and kinetic energies at start and end of trajectory
+# 计算轨迹起点和终点的势能与动能
 current_U = U(current_q)
 current_K = sum(current_p^2) / 2
 proposed_U = U(q)
 proposed_K = sum(p^2) / 2
-# Accept or reject the state at end of trajectory, returning either
-# the position at the end of the trajectory or the initial position
+# 接受或拒绝轨迹终点的状态，返回
+# 轨迹终点位置或初始位置
 accept &lt;- 0
 if (runif(1) &lt; exp(current_U-proposed_U+current_K-proposed_K)) {
-  new_q &lt;- q # accept
+  new_q &lt;- q # 接受
   accept &lt;- 1
-} else new_q &lt;- current_q # reject
+} else new_q &lt;- current_q # 拒绝
 return(list( q=new_q, traj=qtraj, ptraj=ptraj, accept=accept ))
 }</code></pre></figure>
       <p>最后的接受/拒绝决策利用了哈密顿动力学的一条事实：系统总能量必须保持不变。因此，若轨迹起点的能量与终点相差很大，就说明某处出了问题。这称为<strong>发散转移</strong>（divergent transition），后面的章节还会详细讨论。</p>
@@ -239,7 +241,8 @@ return(list( q=new_q, traj=qtraj, ptraj=ptraj, accept=accept ))
   <section id="sec-9-4"><h2>9.4 简易 HMC：ulam</h2>
     <p><code>rethinking</code> 包提供了一个方便的接口 <code>ulam</code>，能把公式列表——就像目前用于构造 <code>quap</code> 估计的那些列表——编译成 Stan HMC 代码。使用 <code>ulam</code> 需要多做一点整理：先预处理所有变量变换，再构造一个干净的数据列表，其中只包含真正会用到的变量。除此之外，最难的部分就是在计算机上安装 Stan。等你熟悉怎样解释这种方式生成的样本，就可以探头看看内部，弄清已经理解的模型公式怎样对应到驱动马尔可夫链的代码。使用 <code>ulam</code> 时，也能继续使用与 <code>quap</code> 相同的辅助函数：<code>extract.samples</code>、<code>extract.prior</code>、<code>link</code>、<code>sim</code> 等。</p>
     <p>还有其他 R 包能让 Stan 更容易使用，因为它们不要求写出 <code>quap</code> 和 <code>ulam</code> 所需的完整公式。在本书付印时，多层模型领域最好的选择是 <code>brms</code> 和 <code>rstanarm</code>，结构方程模型领域则是 <code>blavaan</code>。为了学习贝叶斯建模，我建议暂时坚持使用 <code>ulam</code> 完整而明确的公式。原因是，隐藏模型结构的接口会让模型结构本身更难学习。等积累经验后，再转向简化接口当然没有任何问题。</p>
-    <p>为了看看 <code>ulam</code> 怎样工作，回到第 7 章的地形崎岖度例子。下面的代码加载数据，并把它缩减到拥有目标结果变量的案例（国家）：</p>
+    <p>为了看看 <code>ulam</code> 怎样工作，回到第 8 章的地形崎岖度例子。下面的代码加载数据，并把它缩减到拥有目标结果变量的案例（国家）：</p>
+    <p class="source-erratum" id="erratum-9-ruggedness-chapter"><strong>原文勘误：</strong>原书此处误称地形崎岖度例子来自第 7 章；该例实际位于紧邻的第 8 章，模型对象名 <code>m8.3</code> 也与此一致。</p>
     <figure class="code-listing" id="code-9-11"><figcaption>R 代码 9.11</figcaption><pre><code>library(rethinking)
 data(rugged)
 d &lt;- rugged
@@ -540,7 +543,7 @@ sigma  1.03 0.08   0.92  1.17   448    1</code></pre></figure>
     <h3>中等题</h3>
     <ol class="practice-list" id="practice-9-medium">
       <li id="exercise-9m1"><strong>9M1.</strong> 重新估计本章的地形崎岖度模型，这次分别为标准差 <code>sigma</code> 使用均匀先验和指数先验。均匀先验应为 <code>dunif(0,10)</code>，指数先验应为 <code>dexp(1)</code>。不同先验是否对后验分布产生了可检测的影响？</li>
-      <li id="exercise-9m2"><strong>9M2.</strong> 地形崎岖度模型中的 Cauchy 先验和指数先验都很弱。减小它们的尺度，就能使其信息更强。逐渐减小尺度参数，比较 <code>dcauchy</code> 与 <code>dexp</code> 先验。随着先验变强，它们各自怎样影响后验分布？</li>
+      <li id="exercise-9m2"><strong>9M2.</strong> 地形崎岖度模型中的 Cauchy 先验和指数先验都很弱。减小它们的尺度，就能使其信息更强。逐渐减小尺度参数，比较 <code>dcauchy</code> 与 <code>dexp</code> 先验。随着先验变强，它们各自怎样影响后验分布？<p class="source-erratum"><strong>原文说明：</strong>本章前面的崎岖度模型实际使用正态先验与指数先验，并未使用 Cauchy 先验；这里应把 <code>dcauchy</code> 理解为本题另行引入、要求与 <code>dexp</code> 比较的候选先验。</p></li>
       <li id="exercise-9m3"><strong>9M3.</strong> 重新估计本章某个 Stan 模型，但分别使用不同数量的预热迭代。确保每次使用相同数量的正式抽样迭代，然后比较 <code>n_eff</code>。多少预热才算足够？</li>
     </ol>
 
@@ -560,14 +563,14 @@ sigma  1.03 0.08   0.92  1.17   448    1</code></pre></figure>
       <li id="exercise-9h2"><strong>9H2.</strong> 回想第 5 章的离婚率例子。这次使用 <code>ulam()</code> 重复那项分析，拟合模型 <code>m5.1</code>、<code>m5.2</code> 和 <code>m5.3</code>。用 <code>compare</code> 按 WAIC 或 PSIS 比较模型，并解释结果。</li>
       <li id="exercise-9h3"><strong>9H3.</strong> 改变一个参数的先验，有时会对其他参数产生意料之外的影响。这是因为当某个参数在后验中与另一个参数高度相关时，先验会同时影响两者。下面是一个值得动手和思考的例子。
         <p>回到第 5 章的腿长例子。下面再次给出模拟 100 个假想个体身高与腿长的代码：</p>
-        <figure class="code-listing" id="code-9-29"><figcaption>R 代码 9.29</figcaption><pre><code>N &lt;- 100                              # number of individuals
-height &lt;- rnorm(N,10,2)               # sim total height of each
-leg_prop &lt;- runif(N,0.4,0.5)          # leg as proportion of height
-leg_left &lt;- leg_prop*height +         # sim left leg as proportion + error
+        <figure class="code-listing" id="code-9-29"><figcaption>R 代码 9.29</figcaption><pre><code>N &lt;- 100                              # 个体数量
+height &lt;- rnorm(N,10,2)               # 模拟每人的总身高
+leg_prop &lt;- runif(N,0.4,0.5)          # 腿长占身高的比例
+leg_left &lt;- leg_prop*height +         # 模拟左腿比例并加入误差
     rnorm( N , 0 , 0.02 )
-leg_right &lt;- leg_prop*height +        # sim right leg as proportion + error
+leg_right &lt;- leg_prop*height +        # 模拟右腿比例并加入误差
     rnorm( N , 0 , 0.02 )
-                                      # combine into data frame
+                                      # 合并为数据框
 d &lt;- data.frame(height,leg_left,leg_right)</code></pre></figure>
         <p>下面是之前拟合过的模型，它会让两个 beta 参数得到高度相关的后验。这次用 <code>ulam()</code> 拟合：</p>
         <figure class="code-listing" id="code-9-30"><figcaption>R 代码 9.30</figcaption><pre><code>m5.8s &lt;- ulam(

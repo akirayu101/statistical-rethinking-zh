@@ -5,7 +5,7 @@
     <p>高中时，我问物理老师怎么看统计学，她给我讲了一个笑话。以下是我记得的版本。一位物理学家、一位工程师和一位统计学家结伴去用弓打猎。几个小时后，他们终于在远处发现一只鹿。物理学家快速做了弹道计算，忽略空气阻力；箭飞得很正，却落在目标前几米，鹿毫无察觉。工程师冷笑一声，给空气阻力加入一个修正因子，然后放箭；第二支箭却落在目标后几米，鹿仍然没有察觉。统计学家取了平均值，高喊：“我们射中了！”</p>
     <p>科学会构造自然过程的理论，这些理论最终以数学模型的正式形式表达。这样的模型高度专门化，能作出精确预测，也能以同样精确的方式失败。精确地犯错很有用，因为失败会从模型内置的因果关系中获得意义。笑话里的物理学家与工程师正是如此：他们错得很精确，因此也留下线索，告诉我们哪些原因出了问题。</p>
     <p>应用统计学必须适用于所有科学，所以它对模型往往含糊得多，转而关注平均表现，而不管模型是什么。前几章的广义线性模型，并不是多数自然过程可信的科学模型；它们是强大的、地心式的关联描述（第 4 章）。然而只要与因果推断逻辑结合——例如 DAG 与 <em>do</em> 演算——广义线性模型仍会强大得不讲道理。</p>
-    <p>不过，“GLM 加 DAG”也有问题。并非一切都能建模为 GLM——把变量的线性组合映射到非线性结果上；但若你只会这一种方法，就只能硬用它。有时，感兴趣的理论确实可以表达为 GLM，却同时意味着某些参数必须固定在特殊值上；若从 GLM 而不是真实模型出发，我们可能永远注意不到这一点。而当 GLM 失败时，也很难从失败中学习。调试地心体系的本轮游戏，谁也赢不了。若能用真正的结构因果模型取代启发式 DAG，也许可以一次解决所有这些问题。</p>
+    <p>不过，“GLM 加 DAG”也有问题。并非一切都能建模为 GLM——把变量的线性组合映射到非线性结果上；但若你只会这一种方法，就只能硬用它。有时，感兴趣的理论确实可以表达为 GLM，却同时意味着某些参数必须固定在特殊值上；若从 GLM 而不是真实模型出发，我们可能永远注意不到这一点。而当 GLM 失败时，也很难从失败中学习。不断调试地心体系中的本轮，是一场没人能赢的游戏。若能用真正的结构因果模型取代启发式 DAG，也许可以一次解决所有这些问题。</p>
     <p>本章将超越<strong>广义线性疯狂</strong>。我会逐一研究一些示例，其中科学情境提供因果模型，为统计模型注入生命。我特意选择彼此不同的例子，用来突出开发因果模型、并把它们转化成定制统计模型时的不同挑战（见下方“再思考”框）。理解这些例子不需要任何专门科学知识。基本策略仍然与全书开头相同：定义现象的生成模型，再用它设计因果推断与统计估计策略。</p>
     <p>与本书其他章节不同，本章包含一些无法回避的数学；但只需要代数。与其说我们要“做数学”，不如说要用数学表达思想。由于某些示例对 <code>ulam()</code> 来说不够灵活，我们还会直接使用 Stan 模型代码。若对代码不感兴趣，可以跳过；不过一如往常，看到实现细节往往有助于澄清概念。</p>
     <aside class="rethinking-box" id="rethinking-16-bespoke"><h3>再思考：量身定制</h3><p>批量生产有一些好处，却也让衣服不那么合身。从货架上直接买来的成衣，并不是为你而做；它们不是针对某个特定身体的<strong>定制</strong>产品。除非你幸运地拥有完美的平均体形，否则想要更合身，就得找裁缝。</p><p>统计分析也一样。广义线性模型是货架产品，为目标各异、没有耐心的研究者构成的消费市场批量生产。科学向统计学家索要一种到处都能用的工具，于是统计学家交货了；但衣服并不总合身。</p><p>货架模型的一个问题，是它会截断专业知识。典型研究者对自己的主题知道很多；当另一个专业的人试图为该主题建立理论模型时，科学家会提出细致反驳，这正是证据。但轮到分析自己的数据时，他们却使用禁止运用这些知识的工具；标准 GLM 根本没有地方容纳它们。更糟的是，若研究者学过的模型只有 GLM（或 GLMM），这些模型可能挤掉知情、定制科学模型的形成空间。</p><p>GLM 强大得不讲道理，但应当记住，它们通常只是地心式装置。最终，为了更好的拟合与推断，都需要更好的定制模型。</p></aside>
@@ -21,10 +21,10 @@
       <div class="equation-block wallis-equation" id="eq-16-cylinder-volume"><div><var>V</var> = π<var>r</var><sup>2</sup><var>h</var></div></div>
       <p>其中 <var>r</var> 是这个人的半径，<var>h</var> 是身高，见图 16.1。<sup id="note-219-ref"><a href="#note-219">219</a></sup> 我们不知道每个人的半径，但先假定每个人的半径都是其身高的某个固定比例 <var>p</var>。</p>
       <figure class="book-figure vitruvian-can-figure" id="fig-16-1"><svg viewBox="0 0 700 560" role="img" aria-labelledby="fig-16-1-title fig-16-1-desc"><title id="fig-16-1-title">维特鲁威罐头圆柱人体模型</title><desc id="fig-16-1-desc">一个人形位于圆柱体中，圆柱半径标为 r，高度标为 h，体积公式为 V 等于圆周率乘 r 平方再乘 h。</desc><defs><marker id="fig16-dim-arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10z" fill="#263f86"/></marker></defs><g fill="none" stroke="#263f86" stroke-width="4"><ellipse cx="350" cy="105" rx="160" ry="42"/><line x1="190" y1="105" x2="190" y2="435"/><line x1="510" y1="105" x2="510" y2="435"/><path d="M190 435 A160 42 0 0 0 510 435"/><path d="M190 435 A160 42 0 0 1 510 435" stroke-dasharray="8 7"/></g><g fill="none" stroke="#59616b" stroke-width="5" stroke-linecap="round"><circle cx="350" cy="180" r="28"/><line x1="350" y1="208" x2="350" y2="330"/><line x1="350" y1="235" x2="265" y2="280"/><line x1="350" y1="235" x2="435" y2="280"/><line x1="350" y1="330" x2="295" y2="410"/><line x1="350" y1="330" x2="405" y2="410"/><line x1="350" y1="250" x2="245" y2="245"/><line x1="350" y1="250" x2="455" y2="245"/></g><g fill="none" stroke="#263f86" stroke-width="3" stroke-dasharray="7 6" marker-start="url(#fig16-dim-arrow)" marker-end="url(#fig16-dim-arrow)"><line x1="350" y1="105" x2="510" y2="105"/><line x1="555" y1="105" x2="555" y2="435"/></g><g fill="#263f86" font-family="Times New Roman, Songti SC, serif" font-size="34" font-style="italic"><text x="425" y="88">r</text><text x="573" y="280">h</text><text x="255" y="510">V = πr²h</text></g></svg><figcaption><strong>图 16.1：</strong>以身高为基础预测人体体重的“维特鲁威罐头”（Vitruvian Can）模型。若维特鲁威人是圆柱体，就可以把体积 <var>V</var> 写成身高 <var>h</var> 与半径 <var>r</var> 的函数，进而估计体重。</figcaption></figure>
-      <p>也就是说，<span class="math-inline"><var>r</var> = <var>ph</var></span>。把它代入体积公式：</p>
-      <div class="equation-block wallis-equation" id="eq-16-cylinder-proportion-volume"><div><var>V</var> = π(<var>ph</var>)<sup>2</sup><var>h</var> = π<var>p</var><sup>2</sup><var>h</var><sup>3</sup></div></div>
+      <p>也就是说，<span class="math-inline"><var>r</var> = <var>p</var><var>h</var></span>。把它代入体积公式：</p>
+      <div class="equation-block wallis-equation" id="eq-16-cylinder-proportion-volume"><div><var>V</var> = π(<var>p</var><var>h</var>)<sup>2</sup><var>h</var> = π<var>p</var><sup>2</sup><var>h</var><sup>3</sup></div></div>
       <p>最后，体重是体积的某个比例——每立方厘米对应多少千克？因此还需要参数 <var>k</var>，表达从体积到体重的换算：</p>
-      <div class="equation-block wallis-equation" id="eq-16-cylinder-weight"><div><var>W</var> = <var>kV</var> = <var>k</var>π<var>p</var><sup>2</sup><var>h</var><sup>3</sup></div></div>
+      <div class="equation-block wallis-equation" id="eq-16-cylinder-weight"><div><var>W</var> = <var>k</var><var>V</var> = <var>k</var>π<var>p</var><sup>2</sup><var>h</var><sup>3</sup></div></div>
       <p>这就是给定一个人的身高 <var>h</var> 时，预期体重的公式。它显然不是普通的广义线性模型，但没关系：它能作出预测，也能拟合到数据。</p>
       <aside class="rethinking-box" id="rethinking-16-spherical-cows"><h4>再思考：球形奶牛</h4><p>有用的数学建模通常包含荒唐的假设，例如上面假定人类长得像圆柱体。这类假设可称为<strong>球形奶牛</strong>，名称来自《<cite>Consider a Spherical Cow: A Course in Environmental Problem Solving</cite>》。<sup id="note-220-ref"><a href="#note-220">220</a></sup>策略性的简化假设，是所有有用模型的特征。先理解简化模型，随后就更容易在适当位置加入相关细节；简化模型暴露的缺陷，也会帮助我们判断哪些细节真正相关。非数学模型同样会简化，只是通常不把简化明确说出来，因此更难识别其缺陷。<sup id="note-221-ref"><a href="#note-221">221</a></sup></p></aside>
     </section>
@@ -33,12 +33,12 @@
       <p>可以在统计模型中使用圆柱公式；不过还要再作一些选择。下面先给出模型轮廓，随后逐项解释：</p>
       <div class="equation-block wallis-equation" id="eq-16-cylinder-statistical-model"><div class="annotated-equation-line"><span class="equation-expression"><var>W</var><sub><var>i</var></sub> ∼ Log-Normal(<var>μ</var><sub><var>i</var></sub>, <var>σ</var>)</span><span class="equation-label">[体重的分布]</span></div><div class="annotated-equation-line"><span class="equation-expression">exp(<var>μ</var><sub><var>i</var></sub>) = <var>k</var>π<var>p</var><sup>2</sup><var>h</var><sub><var>i</var></sub><sup>3</sup></span><span class="equation-label">[体重的预期中位数]</span></div><div class="annotated-equation-line"><span class="equation-expression"><var>k</var> ∼ 某个先验</span><span class="equation-label">[体重与体积之间的先验关系]</span></div><div class="annotated-equation-line"><span class="equation-expression"><var>p</var> ∼ 某个先验</span><span class="equation-label">[半径与身高比例的先验]</span></div><div class="annotated-equation-line"><span class="equation-expression"><var>σ</var> ∼ Exponential(1)</span><span class="equation-label">[老朋友 σ]</span></div></div>
       <p>从顶部开始，首先要决定观测结果变量——体重 <var>W</var><sub><var>i</var></sub>——的分布。这个变量为正且连续：体重不可能为负。因此我选择了对数正态分布。对数正态分布用对数的均值参数化，这个均值称作 <var>μ</var><sub><var>i</var></sub>；其原尺度中位数为 <span class="math-inline">exp(<var>μ</var><sub><var>i</var></sub>)</span>。</p>
-      <aside class="source-erratum" id="erratum-16-statistically-required"><strong>原文说明：</strong>PDF 第 554 页的 “rather than just statistical required” 应为 “rather than just statistically required”；译稿按上下文处理为“不只是统计上需要”。</aside>
+      <aside class="source-erratum" id="erratum-16-statistically-required"><strong>原文说明：</strong>PDF 第 554 页的 “rather than just statistical required” 应为 “rather than just statistically required”，第 556 页的 “use to chose” 应为 “use to choose”；译稿均按上下文订正。</aside>
       <p>在上面的模型中，我把这个中位数指定为圆柱函数。最后，还需要为 <var>k</var>、<var>p</var> 与 <var>σ</var> 三个参数指定先验。</p>
       <p>科学启发模型的一项主要优势，是参数拥有意义。这些意义本身就是先验信息，可以用来选择信息性分布。在这里尤其有用，因为科学上需要的参数，往往比数据能够直接识别的参数更多；只要对参数施加一些科学约束，我们仍然可以开展有用的估计。本例正是如此。</p>
-      <p>首先注意，参数 <var>k</var> 与 <var>p</var> 在模型中彼此相乘，数据除了它们的乘积，什么也估计不了。技术上说，在给定这个模型与这些数据时，<var>k</var> 和 <var>p</var> <strong>不可识别</strong>。可以直接用新参数 <var>θ</var> 替代乘积 <span class="math-inline"><var>kp</var><sup>2</sup></span>，转而估计 <var>θ</var>：</p>
-      <div class="equation-block wallis-equation" id="eq-16-cylinder-theta"><div>exp(<var>μ</var><sub><var>i</var></sub>) = π<var>θh</var><sub><var>i</var></sub><sup>3</sup></div></div>
-      <p>这样会得到相同预测，却失去一种方便地为 <var>θ</var> 指定先验的方法。因此，即便打算使用 <span class="math-inline"><var>θ</var> = <var>kp</var><sup>2</sup></span> 这个技巧，仍需思考 <var>k</var> 与 <var>p</var>。</p>
+      <p>首先注意，参数 <var>k</var> 与 <var>p</var> 在模型中彼此相乘，数据除了它们的乘积，什么也估计不了。技术上说，在给定这个模型与这些数据时，<var>k</var> 和 <var>p</var> <strong>不可识别</strong>。可以直接用新参数 <var>θ</var> 替代乘积 <span class="math-inline"><var>k</var><var>p</var><sup>2</sup></span>，转而估计 <var>θ</var>：</p>
+      <div class="equation-block wallis-equation" id="eq-16-cylinder-theta"><div>exp(<var>μ</var><sub><var>i</var></sub>) = π<var>θ</var><var>h</var><sub><var>i</var></sub><sup>3</sup></div></div>
+      <p>这样会得到相同预测，却失去一种方便地为 <var>θ</var> 指定先验的方法。因此，即便打算使用 <span class="math-inline"><var>θ</var> = <var>k</var><var>p</var><sup>2</sup></span> 这个技巧，仍需思考 <var>k</var> 与 <var>p</var>。</p>
       <p>先想参数 <var>p</var>。它是半径与身高之比，<span class="math-inline"><var>p</var> = <var>r</var>/<var>h</var></span>，所以必须大于零；它也必须小于一，因为很少有人比自己身高还宽。它几乎肯定小于二分之一：若一个人的宽度与身高相同，就有 <span class="math-inline">2<var>r</var> = <var>h</var></span>，因此 <span class="math-inline"><var>p</var> = (<var>h</var>/2)/<var>h</var> = 0.5</span>。所以 <var>p</var> 大概远小于 0.5。综合起来，我们需要一个以 0 和 1 为界、且大部分先验质量位于 0.5 以下的分布。Beta 分布可以做到：</p>
       <div class="equation-block wallis-equation" id="eq-16-p-prior"><div><var>p</var> ∼ Beta(2, 18)</div></div>
       <p>这个先验的均值为 <span class="math-inline">2/(2 + 18) = 0.1</span>。若要做得更好，确实应当进行先验预测模拟（见本章末练习）；但暂时先这样处理 <var>p</var>。</p>
@@ -49,7 +49,7 @@
 data(Howell1)
 d &lt;- Howell1
 
-# scale observed variables
+# 缩放观测变量
 d$w &lt;- d$weight / mean(d$weight)
 d$h &lt;- d$height / mean(d$height)</code></pre></figure>
       <p>新变量 <code>w</code> 与 <code>h</code> 的均值都是 1。这里使用均值并无特殊之处，只需某个参照值来约掉单位。现在考虑在这种缩放下，<var>k</var> 的合理取值。假设有一位身高和体重都恰好等于平均值的人，此时 <span class="math-inline"><var>w</var><sub><var>i</var></sub> = 1</span> 且 <span class="math-inline"><var>h</var><sub><var>i</var></sub> = 1</span>。代入公式：</p>
@@ -66,8 +66,8 @@ d$h &lt;- d$height / mean(d$height)</code></pre></figure>
         sigma ~ exponential( 1 )
     ), data=d , chains=4 , cores=4 )</code></pre></figure>
       <p>查看 <code>precis()</code> 的输出。你能理解 <var>p</var> 与 <var>k</var> 的后验分布吗？先验是怎样被更新的？</p>
-      <p>思考这些问题时，不妨检查后验怎样处理 <var>k</var> 与 <var>p</var> 的不可识别性。最直观的方法是画 <code>pairs(m16.1)</code>，其结果见图 16.2 左图。后验中有一条狭窄弯曲的脊：在脊上，<var>k</var> 与 <var>p</var> 的各种组合会产生相同乘积 <span class="math-inline"><var>kp</var><sup>2</sup></span>。这使两个参数强烈负相关——一个增大，另一个就必须减小，才能保持相同乘积。由于使用了信息性先验，我们仍能拟合这个模型；但数据本身依然没有关于两个参数各自的独立信息，至少在这个模型下没有。原则上，没有理由认为 <var>k</var> 与 <var>p</var> 不会也是身高（或年龄）的函数；例如肌肉与脂肪的密度就很不相同。</p>
-      <figure class="book-figure cylinder-posterior-figure" id="fig-16-2"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的圆柱模型参数后验与身高体重拟合双面板图"><img src="/media/chapter-16-cylinder-posterior-fit.svg" alt="左侧为参数 p 与 k 的边际后验、弯曲负相关脊和负零点八九相关；右侧为缩放后身高体重散点、圆柱模型拟合线与预测区间"></div><p class="scroll-hint">图较宽，可横向滚动比较参数后验与模型拟合。</p><figcaption><strong>图 16.2：</strong>左：<var>k</var> 与 <var>p</var> 的后验分布。模型定义中只出现乘积 <span class="math-inline"><var>kp</var><sup>2</sup></span>，所以数据本身只能识别乘积，不能分别识别 <var>k</var> 与 <var>p</var>；先验分布使估计成为可能。右：圆柱模型对 !Kung 数据的拟合。注意模型在较矮身高处拟合不佳。</figcaption></figure>
+      <p>思考这些问题时，不妨检查后验怎样处理 <var>k</var> 与 <var>p</var> 的不可识别性。最直观的方法是画 <code>pairs(m16.1)</code>，其结果见图 16.2 左图。后验中有一条狭窄弯曲的脊：在脊上，<var>k</var> 与 <var>p</var> 的各种组合会产生相同乘积 <span class="math-inline"><var>k</var><var>p</var><sup>2</sup></span>。这使两个参数强烈负相关——一个增大，另一个就必须减小，才能保持相同乘积。由于使用了信息性先验，我们仍能拟合这个模型；但数据本身依然没有关于两个参数各自的独立信息，至少在这个模型下没有。原则上，没有理由认为 <var>k</var> 与 <var>p</var> 不会也是身高（或年龄）的函数；例如肌肉与脂肪的密度就很不相同。</p>
+      <figure class="book-figure cylinder-posterior-figure" id="fig-16-2"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的圆柱模型参数后验与身高体重拟合双面板图"><img src="/media/chapter-16-cylinder-posterior-fit.svg" alt="左侧为参数 p 与 k 的边际后验、弯曲负相关脊和负零点八九相关；右侧为缩放后身高体重散点、圆柱模型拟合线与预测区间"></div><p class="scroll-hint">图较宽，可横向滚动比较参数后验与模型拟合。</p><figcaption><strong>图 16.2：</strong>左：<var>k</var> 与 <var>p</var> 的后验分布。模型定义中只出现乘积 <span class="math-inline"><var>k</var><var>p</var><sup>2</sup></span>，所以数据本身只能识别乘积，不能分别识别 <var>k</var> 与 <var>p</var>；先验分布使估计成为可能。右：圆柱模型对 !Kung 数据的拟合。注意模型在较矮身高处拟合不佳。</figcaption></figure>
       <p>所以 <var>k</var> 不一定是常数，因为相对肌肉量不是常数。同样，身体宽度与身高之比在发育过程中也不是常数，因此 <var>p</var> 也可能变化。</p>
       <p>认为 <var>p</var> 可能改变，有助于理解后验预测。下面在观测身高范围内绘制后验预测分布：</p>
       <figure class="code-listing" id="code-16-3"><figcaption>R 代码 16.3</figcaption><pre><code>h_seq &lt;- seq( from=0 , to=max(d$h) , length.out=30 )
@@ -111,24 +111,24 @@ culture          3.75 1.96    1     8 ▃▂▁▇▁▂▁▂▁▂▁▁▁▁
     <figure class="code-listing" id="code-16-5"><figcaption>R 代码 16.5</figcaption><pre><code>table( Boxes$y ) / length( Boxes$y )</code></pre><pre class="code-output" id="output-16-5"><code>        1         2         3
 0.2114467 0.4562798 0.3322734</code></pre></figure>
     <p>这是否意味着 45% 的儿童采用“跟随多数”策略？不是。核心推断问题在于：可作三种选择，却有许多可能策略；而不同策略可能在同一轮产生相同选择。例如，儿童可能只是随机选择，这种策略有三分之一的机会给出与“跟随多数”儿童相同的预测。对这些选择拟合 GLM，会推断行为频率；但我们想推断的是策略。怎样才能做到？</p>
-    <aside class="source-erratum" id="erratum-16-hidden-minds-typos"><strong>原文说明：</strong>PDF 第 559 页的 “on a speicfic scale” 拼错了 <em>specific</em>；“One of the most basic problem” 应为复数 <em>problems</em>；“it can very hard” 漏排 <em>be</em>。译稿均按上下文订正。</aside>
+    <aside class="source-erratum" id="erratum-16-hidden-minds-typos"><strong>原文说明：</strong>PDF 第 559 页的 “on a speicfic scale” 拼错了 <em>specific</em>；“One of the most basic problem” 应为复数 <em>problems</em>；“it can very hard” 漏排 <em>be</em>。第 560 页的 “infer frequencies behavior” 漏排 <em>of</em>，第 561 页的 <em>accomodate</em> 应为 <em>accommodate</em>；译稿均按上下文订正。</aside>
 
     <section id="sec-16-2-1"><h3>16.2.1 科学模型</h3>
       <p>关键一如往常，是从生成角度思考。例如，有一群儿童，其中一半随机选择，另一半跟随多数。模拟这些儿童的选择，就能判断我们会多常看到代表多数颜色的“2”号选择。</p>
       <figure class="code-listing" id="code-16-6"><figcaption>R 代码 16.6</figcaption><pre><code>set.seed(7)
-N &lt;- 30 # number of children
+N &lt;- 30 # 儿童数量
 
-# half are random
-# sample from 1,2,3 at random for each
+# 一半随机选择
+# 每人从 1、2、3 中随机抽取
 y1 &lt;- sample( 1:3 , size=N/2 , replace=TRUE )
 
-# half follow majority
+# 一半跟随多数
 y2 &lt;- rep( 2 , N/2 )
 
-# combine and shuffle y1 and y2
+# 合并并打乱 y1 与 y2
 y &lt;- sample( c(y1,y2) )
 
-# count the 2s
+# 计算 2 的比例
 sum(y==2)/N</code></pre><pre class="code-output" id="output-16-6"><code>[1] 0.6333333</code></pre></figure>
       <p>大约三分之二的选择落在多数颜色上，但真正跟随多数的儿童只有一半。上面只模拟了一次，却已展示问题所在：不同隐藏策略能产生相同行为时，对策略的推断远比单纯统计行为复杂。</p>
       <p>下面考虑儿童可能使用的五种不同策略：</p>
@@ -158,16 +158,16 @@ sum(y==2)/N</code></pre><pre class="code-output" id="output-16-6"><code>[1] 0.63
 cat(Boxes_model)</code></pre></figure>
       <p>Stan 代码的解释放在稍后的“过度思考”框中，这样暂时可以先专注于建模细节。</p>
       <p>运行采样器只剩两步：准备数据列表，再调用 <code>stan()</code>。数据列表只需要样本量 <code>N</code>、选择向量 <code>y</code> 和呈现顺序向量 <code>majority_first</code>：</p>
-      <figure class="code-listing" id="code-16-8"><figcaption>R 代码 16.8</figcaption><pre><code># prep data
+      <figure class="code-listing" id="code-16-8"><figcaption>R 代码 16.8</figcaption><pre><code># 准备数据
 dat_list &lt;- list(
     N = nrow(Boxes),
     y = Boxes$y,
     majority_first = Boxes$majority_first )
 
-# run the sampler
+# 运行采样器
 m16.2 &lt;- stan( model_code=Boxes_model , data=dat_list , chains=3 , cores=3 )
 
-# show marginal posterior for p
+# 显示 p 的边际后验
 p_labels &lt;- c("1 Majority","2 Minority","3 Maverick","4 Random","5 Follow First")
 plot( precis(m16.2,2) , labels=p_labels )</code></pre></figure>
       <figure class="book-figure boxes-strategy-figure" id="plot-16-boxes-strategy-posterior"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的五种儿童选择策略后验图"><img src="/media/chapter-16-boxes-strategy-posterior.svg" alt="五种儿童选择策略概率的后验均值和百分之八十九相容区间；跟随多数与跟随第一的均值都约为零点二六"></div><p class="scroll-hint">图较宽，可横向滚动比较五种隐藏策略。</p><figcaption>代码 16.8 的输出。空心圆是各策略概率的后验均值，水平线是 89% 相容区间；“跟随多数”与“跟随第一”都约占四分之一。</figcaption></figure>
@@ -176,43 +176,43 @@ plot( precis(m16.2,2) , labels=p_labels )</code></pre></figure>
 
       <aside class="overthinking-box" id="overthinking-16-boxes-stan"><h3>过度思考：Boxes 模型的 Stan 代码</h3>
         <p>Stan 模型需要三个代码“块”。依次来看。第一块是<strong>数据块</strong>，只为观测变量命名并声明类型。本模型如下：</p>
-        <pre><code>data{
+        <figure class="code-listing" id="stan-16-boxes-data"><figcaption>Stan：data 块</figcaption><pre><code>data{
     int N;
     int y[N];
     int majority_first[N];
-}</code></pre>
+}</code></pre></figure>
         <p>整数 <code>N</code> 只是观测案例数，即 <code>data(Boxes)</code> 的行数。随后把结果 <code>y</code> 与预测变量 <code>majority_first</code> 声明为长度 <code>N</code> 的整数向量。也可以把长度硬编码为 629，但那样案例数每次变化，都得修改模型代码。</p>
         <p>Stan 模型所需的第二块是<strong>参数块</strong>。它类似数据块，但声明未观测变量，也就是我们要取得后验样本的变量。本模型只有单纯形 <code>p</code>：</p>
-        <pre><code>parameters{
+        <figure class="code-listing" id="stan-16-boxes-parameters"><figcaption>Stan：parameters 块</figcaption><pre><code>parameters{
     simplex[5] p;
-}</code></pre>
+}</code></pre></figure>
         <p>第三块是核心——<strong>模型块</strong>。它计算观测变量（数据）与未观测变量（参数）的对数概率，也就是 Bayes 定理的分子；Stan 用它运行 Hamiltonian 模拟（见第 9 章）。下面分段来看。首先，在顶部声明一个向量，保存每种策略的概率计算；处理数据的每一行时都会复用它，算出不同概率：</p>
-        <pre><code>model{
-    vector[5] phi;</code></pre>
+        <figure class="code-listing" id="stan-16-boxes-model"><figcaption>Stan：model 块开头</figcaption><pre><code>model{
+    vector[5] phi;</code></pre></figure>
         <p>然后指定先验：</p>
-        <pre><code>    // prior
-    p ~ dirichlet( rep_vector(4,5) );</code></pre>
+        <figure class="code-listing" id="stan-16-boxes-prior"><figcaption>Stan：策略概率的先验</figcaption><pre><code>    // 先验
+    p ~ dirichlet( rep_vector(4,5) );</code></pre></figure>
         <p>接下来进入核心。循环遍历每一行；对于第 <code>i</code> 行，计算观测值 <code>y[i]</code> 的对数概率。每种策略都有自己的 <code>if...then</code>，用于指定以该策略为条件时数据的概率：</p>
-        <pre><code>    // probability of data
+        <figure class="code-listing" id="stan-16-boxes-data-probability"><figcaption>Stan：各策略的数据概率</figcaption><pre><code>    // 数据的概率
     for ( i in 1:N ) {
-        if ( y[i]==2 ) phi[1]=1; else phi[1]=0; // majority
-        if ( y[i]==3 ) phi[2]=1; else phi[2]=0; // minority
-        if ( y[i]==1 ) phi[3]=1; else phi[3]=0; // maverick
-        phi[4]=1.0/3.0;                         // random
-        if ( majority_first[i]==1 )             // follow first
+        if ( y[i]==2 ) phi[1]=1; else phi[1]=0; // 跟随多数
+        if ( y[i]==3 ) phi[2]=1; else phi[2]=0; // 跟随少数
+        if ( y[i]==1 ) phi[3]=1; else phi[3]=0; // 特立独行
+        phi[4]=1.0/3.0;                         // 随机
+        if ( majority_first[i]==1 )             // 跟随第一
             if ( y[i]==2 ) phi[5]=1; else phi[5]=0;
         else
-            if ( y[i]==3 ) phi[5]=1; else phi[5]=0;</code></pre>
+            if ( y[i]==3 ) phi[5]=1; else phi[5]=0;</code></pre></figure>
         <p>现在要纳入参数 <var>p</var>。把每个 <span class="math-inline">log(<var>p</var><sub><var>s</var></sub>)</span> 加到上面算出的对数概率中，再把平均概率加到 <code>target</code>；<code>target</code> 只是 Stan 对“总对数概率”的称呼：</p>
-        <pre><code>        // compute log( p_s * Pr(y_i|s) )
+        <figure class="code-listing" id="stan-16-boxes-average-log-probability"><figcaption>Stan：平均对数概率</figcaption><pre><code>        // 计算 log( p_s * Pr(y_i|s) )
         for ( s in 1:5 ) phi[s] = log(p[s]) + log(phi[s]);
-        // compute average log-probability of y_i
-        target += log_sum_exp( phi );</code></pre>
+        // 计算 y_i 的平均对数概率
+        target += log_sum_exp( phi );</code></pre></figure>
         <p><code>log_sum_exp</code> 按正文定义，计算数据的边际对数概率 <span class="math-inline">log Pr(<var>y</var><sub><var>i</var></sub>)</span>。它接收向量 <code>phi</code>——其中保存每种策略各自的对数概率——并返回这些概率在概率尺度上求和后再取对数的结果。在这种带离散参数的 Stan 模型中，它十分常见。</p>
         <p>要加入预测变量，选择很多，因此再次依靠真实理论有助于聚焦。最简单的修改，是让单纯形 <var>p</var> 随性别之类的离散类别变化。此时在数据块中加入变量 <code>gender</code>，并在参数块中给 <code>p</code> 增加一个维度：</p>
-        <pre><code>    simplex[5] p[2];</code></pre>
+        <figure class="code-listing" id="stan-16-boxes-gender-simplex"><figcaption>Stan：按性别索引的单纯形</figcaption><pre><code>    simplex[5] p[2];</code></pre></figure>
         <p>然后在模型块中，用 <code>p[gender[i],s]</code> 同时按策略和性别索引 <code>p</code>：</p>
-        <pre><code>    for ( s in 1:5 ) phi[s] = log(p[gender[i],s]) + log(phi[s]);</code></pre>
+        <figure class="code-listing" id="stan-16-boxes-gender-index"><figcaption>Stan：按性别索引策略概率</figcaption><pre><code>    for ( s in 1:5 ) phi[s] = log(p[gender[i],s]) + log(phi[s]);</code></pre></figure>
         <p>这个模型作为 <code>data(Boxes_model_gender)</code> 收录在 <code>rethinking</code> 包中。年龄这样的连续协变量会带来更多选择：Gaussian process、样条、多项式都能处理，却各要用不同方式编码。Stan 模型 <code>data(Boxes_model_age)</code> 展示了一个简单的线性年龄趋势：先给每个 <var>p</var> 在 logit 尺度上指定线性模型，再用多元逆 logit 变换到单纯形尺度。这完全是地心式做法；如果有更强的理论，它会有所帮助。</p>
       </aside>
     </section>
@@ -222,13 +222,13 @@ plot( precis(m16.2,2) , labels=p_labels )</code></pre></figure>
     </section>
   </section>
 
-  <section id="sec-16-3"><h2>16.3 常微分坚果破解</h2>
+  <section id="sec-16-3"><h2>16.3 常微分开坚果</h2>
     <p>Panda 坚果与熊猫毫无关系。它是常绿乔木 <em>Panda oleosa</em> 结出的一种又大又硬的坚果。几千年来，人们一直享用美味的 Panda 坚果，用石器和钢制工具把它们敲开。其他动物要打开这种坚果困难得多；但科特迪瓦的黑猩猩与人类一样会使用工具。它们用石锤和木锤敲开 Panda 坚果，而且效率很高。</p>
     <p>本节要为这些黑猩猩开坚果技能的发展建立模型。先载入数据，勾勒项目：</p>
     <figure class="code-listing" id="code-16-9"><figcaption>R 代码 16.9</figcaption><pre><code>library(rethinking)
 data(Panda_nuts)</code></pre></figure>
     <p>这些数据记录了一次次独立的开坚果活动<sup id="note-223-ref"><a href="#note-223">223</a></sup>，每一行对应“个体—活动”组合。眼下最关心的变量是结果 <code>nuts_opened</code>、以秒计的活动持续时间，以及个体年龄。研究问题是：开坚果技能怎样发展，又有哪些因素促成它？这个问题之所以值得关心，部分原因是工具使用在灵长类中非常罕见，而人类却离不开工具。我们是怎样走到这一步的？要理解人类技术的演化，需要跨物种比较，拆分认知、灵巧性、社会学习与力量各自的贡献。本节当然解决不了这一切，但会开个头，而且不用 GLM。</p>
-    <aside class="source-erratum" id="erratum-16-nut-cracking-typos"><strong>原文说明：</strong>PDF 第 565 页的 “duration pf the bout” 应为 “duration <em>of</em> the bout”；PDF 第 566 页两处 “it let’s the animal” 应为 “it <em>lets</em> the animal”，而 “An adult male chimpanzees” 应为单数 <em>chimpanzee</em>。译稿均按上下文订正。</aside>
+    <aside class="source-erratum" id="erratum-16-nut-cracking-typos"><strong>原文说明：</strong>PDF 第 565 页的 “duration pf the bout” 应为 “duration <em>of</em> the bout”；PDF 第 566 页两处 “it let’s the animal” 应为 “it <em>lets</em> the animal”，而 “An adult male chimpanzees” 应为单数 <em>chimpanzee</em>。PDF 第 569 页把模型中的指数参数 <var>θ</var> 称为 “scaling parameter”，与前文定义不符；译稿按模型结构处理为“指数参数”。</aside>
 
     <section id="sec-16-3-1"><h3>16.3.1 科学模型</h3>
       <p>我们需要一个随年龄变化的开坚果速率生成模型。先考虑最笨、却仍然比 GLM 聪明的模型：假设唯一重要因素是个体力量。个体随年龄增长而变强，开坚果速率也随之上升。黑猩猩显然还需要一些知识，但先假设知识来得容易，身体力量才是限制因素。若模型表现很差，就有充分理由重新考虑这个假设。</p>
@@ -237,19 +237,19 @@ data(Panda_nuts)</code></pre></figure>
       <p>参数 <var>k</var> 衡量技能随年龄增长的速率。上式告诉我们质量在任意年龄变化得多快，但还需要给定年龄时的质量公式。求解微分方程超出了本书的层次，不过其实不必会解——任何计算机代数系统都能完成。这条微分方程本身是生物学经典<sup id="note-224-ref"><a href="#note-224">224</a></sup>，其解为：</p>
       <div class="equation-block wallis-equation" id="eq-16-growth-solution"><div><var>M</var><sub><var>t</var></sub> = <var>M</var><sub>max</sub>(1 − exp(−<var>k</var><var>t</var>))</div></div>
       <p>稍后进行先验预测模拟时会绘制这个函数。它产生逐渐减速、最终在 <var>M</var><sub>max</sub> 处趋平的曲线；若想提前看，图 16.4 左侧就是示例。</p>
-      <p>真正关心的是力量，而质量不等于力量。于是再假设力量与质量成正比：<span class="math-inline"><var>S</var><sub><var>t</var></sub> = <var>βM</var><sub><var>t</var></sub></span>。参数 <var>β</var> 只衡量这个比例。接下来还要把力量与开坚果速率关联起来。可以假设它们也简单成正比；但力量至少通过三种方式提供帮助。第一，力量让动物举起更重的锤子，而重锤动量更大；第二，力量让动物以超过重力加速度的速度加速锤子；第三，更强壮的动物肢体也更长，形成效率更高的杠杆。因此，假设力量带来递增报酬很合理。用数学表示，开坚果速率函数为：</p>
-      <div class="equation-block wallis-equation" id="eq-16-nut-rate-full"><div><var>λ</var> = <var>αS</var><sub><var>t</var></sub><sup><var>θ</var></sup> = <var>α</var>(<var>βM</var><sub>max</sub>(1 − exp(−<var>k</var><var>t</var>)))<sup><var>θ</var></sup></div></div>
+      <p>真正关心的是力量，而质量不等于力量。于是再假设力量与质量成正比：<span class="math-inline"><var>S</var><sub><var>t</var></sub> = <var>β</var><var>M</var><sub><var>t</var></sub></span>。参数 <var>β</var> 只衡量这个比例。接下来还要把力量与开坚果速率关联起来。可以假设它们也简单成正比；但力量至少通过三种方式提供帮助。第一，力量让动物举起更重的锤子，而重锤动量更大；第二，力量让动物以超过重力加速度的速度加速锤子；第三，更强壮的动物肢体也更长，形成效率更高的杠杆。因此，假设力量带来递增报酬很合理。用数学表示，开坚果速率函数为：</p>
+      <div class="equation-block wallis-equation" id="eq-16-nut-rate-full"><div><var>λ</var> = <var>α</var><var>S</var><sub><var>t</var></sub><sup><var>θ</var></sup> = <var>α</var>(<var>β</var><var>M</var><sub>max</sub>(1 − exp(−<var>k</var><var>t</var>)))<sup><var>θ</var></sup></div></div>
       <p>其中 <var>θ</var> 是大于 1 的指数。假设力量具有递增报酬，一个现实含义是：低于某个阈值时，个体无法在合理时间内打开哪怕一颗坚果。新参数 <var>α</var> 表示力量与开坚果之间的比例，把以牛顿计的力转换为每秒打开的坚果数。</p>
       <p>现在有了打开坚果速率 <var>λ</var> 的函数，却是一锅参数汤。可以先把体重 <var>M</var><sub>max</sub> 重新缩放成 1。这样看似作弊，但测量尺度本来就是任意的；令 <span class="math-inline"><var>M</var><sub>max</sub> = 1</span> 只是在设定度量尺度，于是：</p>
-      <div class="equation-block wallis-equation" id="eq-16-nut-rate-rescaled"><div><var>λ</var> = <var>αβ</var><sup><var>θ</var></sup>(1 − exp(−<var>k</var><var>t</var>))<sup><var>θ</var></sup></div></div>
-      <p>前面的乘积 <span class="math-inline"><var>αβ</var><sup><var>θ</var></sup></span> 只是把力量重新缩放为每秒打开的坚果数，所以可以用单个参数替代：</p>
+      <div class="equation-block wallis-equation" id="eq-16-nut-rate-rescaled"><div><var>λ</var> = <var>α</var><var>β</var><sup><var>θ</var></sup>(1 − exp(−<var>k</var><var>t</var>))<sup><var>θ</var></sup></div></div>
+      <p>前面的乘积 <span class="math-inline"><var>α</var><var>β</var><sup><var>θ</var></sup></span> 只是把力量重新缩放为每秒打开的坚果数，所以可以用单个参数替代：</p>
       <div class="equation-block wallis-equation" id="eq-16-nut-rate-phi"><div><var>λ</var> = <var>ϕ</var>(1 − exp(−<var>k</var><var>t</var>))<sup><var>θ</var></sup></div></div>
       <p>这样好多了。简化也有代价：它隐藏了一些有用事实。例如，成年雄性与雌性的平均体重不同；成年雄性黑猩猩可能比成年雌性重 10 千克。章末练习会要求你表达这个事实。</p>
     </section>
 
     <section id="sec-16-3-2"><h3>16.3.2 统计模型</h3>
       <p>要用上面的模型作估计，需要 likelihood 与先验。Likelihood 很直接：只要打开的坚果数远少于可用坚果总数，Poisson 分布就具有正确约束。因此：</p>
-      <div class="equation-block wallis-equation" id="eq-16-nut-statistical-model"><div><var>n</var><sub><var>i</var></sub> ∼ Poisson(<var>λ</var><sub><var>i</var></sub>)</div><div><var>λ</var><sub><var>i</var></sub> = <var>d</var><sub><var>i</var></sub><var>ϕ</var>(1 − exp(−<var>kt</var><sub><var>i</var></sub>))<sup><var>θ</var></sup></div></div>
+      <div class="equation-block wallis-equation" id="eq-16-nut-statistical-model"><div><var>n</var><sub><var>i</var></sub> ∼ Poisson(<var>λ</var><sub><var>i</var></sub>)</div><div><var>λ</var><sub><var>i</var></sub> = <var>d</var><sub><var>i</var></sub><var>ϕ</var>(1 − exp(−<var>k</var><var>t</var><sub><var>i</var></sub>))<sup><var>θ</var></sup></div></div>
       <p>其中 <var>n</var><sub><var>i</var></sub> 是打开的坚果数，<var>d</var><sub><var>i</var></sub> 是开坚果所用时间，<var>t</var><sub><var>i</var></sub> 是观测 <var>i</var> 中个体的年龄。唯一新增的是暴露量 <var>d</var><sub><var>i</var></sub>。第 11 章曾通过在线性模型中加入持续时间的对数，给 Poisson 模型添加暴露量；这里不用对数，因为模型并非线性，也没有对数链接函数。我们直接编写速率 <var>λ</var>，所以持续时间 <var>d</var><sub><var>i</var></sub> 只需乘上速率，得到期望打开数。比如我说自己每秒能打开 <span class="math-inline"><var>λ</var> = 0.4</span> 颗坚果；要算 10 秒能打开多少，只需用 0.4 乘 10，得到每 10 秒 4 颗。</p>
       <p>先验怎么办？要在这里取得合理先验，需要同时考虑相关生物学事实，并借助模拟把事实转化为分布假设。最相关的事实是，黑猩猩大约在 12 岁达到成年体重，所以先验生长曲线应当在 12 岁左右趋平。需要为 <var>k</var> 和 <var>θ</var> 选择能做到这一点的分布；而 <var>ϕ</var> 的先验均值应当接近开坚果的最大速率。我并不是开坚果专家，不过不妨假定一只专业黑猩猩每秒能打开一颗——毕竟可以同时捶打好几颗。</p>
       <p>建议使用以下先验：</p>
@@ -260,14 +260,14 @@ phi &lt;- rlnorm( N , log(1) , 0.1 )
 k &lt;- rlnorm( N , log(2), 0.25 )
 theta &lt;- rlnorm( N , log(5) , 0.25 )
 
-# relative grow curve
+# 相对生长曲线
 plot( NULL , xlim=c(0,1.5) , ylim=c(0,1) , xaxt="n" , xlab="age" ,
     ylab="body mass" )
 at &lt;- c(0,0.25,0.5,0.75,1,1.25,1.5)
 axis( 1 , at=at , labels=round(at*max(Panda_nuts$age)) )
 for ( i in 1:20 ) curve( (1-exp(-k[i]*x)) , add=TRUE , col=grau() , lwd=1.5 )
 
-# implied rate of nut opening curve
+# 隐含的开坚果速率曲线
 plot( NULL , xlim=c(0,1.5) , ylim=c(0,1.2) , xaxt="n" , xlab="age" ,
     ylab="nuts per second" )
 at &lt;- c(0,0.25,0.5,0.75,1,1.25,1.5)
@@ -297,12 +297,12 @@ plot( NULL , xlim=c(0,1) , ylim=c(0,1.5) , xlab="age" ,
 at &lt;- c(0,0.25,0.5,0.75,1,1.25,1.5)
 axis( 1 , at=at , labels=round(at*max(Panda_nuts$age)) )
 
-# raw data
+# 原始数据
 pts &lt;- dat_list$n / dat_list$seconds
 point_size &lt;- normalize( dat_list$seconds )
 points( jitter(dat_list$age) , pts , col=rangi2 , lwd=2 , cex=point_size*3 )
 
-# 30 posterior curves
+# 30 条后验曲线
 for ( i in 1:30 ) with( post ,
     curve( phi[i]*(1-exp(-k[i]*x))^theta[i] , add=TRUE , col=grau() ) )</code></pre></figure>
       <p>结果见图 16.5。蓝点是原始数据，点大小按每次观测的持续时间缩放；曲线是从后验分布抽出的 30 条技能曲线。这些曲线大约在达到最大体型的年龄趋平，与“力量是主要限制因素”的想法一致。这并不表示知识不重要，仍有大量变异有待解释。</p>
@@ -311,7 +311,7 @@ for ( i in 1:30 ) with( post ,
 
     <section id="sec-16-3-3"><h3>16.3.3 协变量与个体差异</h3>
       <p>这里的模型简单得发傻，却是科学上合理的起点。可以扩展它，纳入性别等协变量与力量的个体差异。数据中有对同一个体的重复观测，甚至有跨年份的重复观测，可以用来估计个体变化效应；章末练习会探索这些应用。</p>
-      <p>暂且注意：某些参数适合随个体变化，另一些则不适合。例如缩放参数 <var>θ</var> 是物理学性质，而不是个体性质。允许哪些参数随个体变化，应由对参数的科学知识决定。这又是避免 GLM 的一个理由：让参数具有更坚实的科学含义。</p>
+      <p>暂且注意：某些参数适合随个体变化，另一些则不适合。例如指数参数 <var>θ</var> 是物理学性质，而不是个体性质。允许哪些参数随个体变化，应由对参数的科学知识决定。这又是避免 GLM 的一个理由：让参数具有更坚实的科学含义。</p>
       <p>另一项改进，是采用更真实的黑猩猩生长模型。已有详细发表的黑猩猩生长曲线<sup id="note-225-ref"><a href="#note-225">225</a></sup>。雄性黑猩猩确实会在约 10 岁时经历生长突增，因此生长速率会在达到最大体型前不久反而上升。把它纳入模型，至少可能改善对雄性的预测。</p>
     </section>
   </section>
@@ -357,7 +357,7 @@ text( 19 , 50 , "Lynx" , pos=2 , col=rangi2 )</code></pre></figure>
       <p>这就是著名的 <strong>Lotka–Volterra 模型</strong><sup id="note-228-ref"><a href="#note-228">228</a></sup>。它描述简单的捕食者—猎物互动，并展示生态动力学中的若干要点。甚至完全不用数据，就能证明它的许多性质。例如，种群往往不稳定，像图 16.6 那样上下循环。这很有意思：尽管自然界复杂得多，但要看到周期性种群动力学，简单得发傻的模型似乎已经抓住全部必要条件。</p>
       <p>上一节也用了微分方程模型；在那里可以显式求解，得到任意时刻 <var>t</var> 的变量值。这里做不到：这些方程没有显式解，无法直接告诉我们任意 <var>t</var> 时应预期怎样的 <var>H</var><sub><var>t</var></sub> 与 <var>L</var><sub><var>t</var></sub>。怎样使用它们？通过模拟进行数值求解。先看看做法，再把它变成统计模型。</p>
       <p>微分方程不过是一种更新变量的方法。方程 <span class="math-inline">d<var>H</var>/d<var>t</var></span> 告诉我们，每经过一个微小时间单位 d<var>t</var>，怎样更新 <var>H</var>。因此，一旦有了 <var>H</var> 的当前值，只需反复应用 <span class="math-inline">d<var>H</var>/d<var>t</var></span> 就能更新。具体来说：</p>
-      <div class="equation-block wallis-equation derivative-equation" id="eq-16-hare-euler-update"><div><var>H</var><sub><var>t</var>+d<var>t</var></sub> = <var>H</var><sub><var>t</var></sub> + d<var>t</var> <span class="fraction"><span>d<var>H</var></span><span>d<var>t</var></span></span> = <var>H</var><sub><var>t</var></sub> + d<var>t H</var><sub><var>t</var></sub>(<var>b</var><sub><var>H</var></sub> − <var>L</var><sub><var>t</var></sub><var>m</var><sub><var>H</var></sub>)</div></div>
+      <div class="equation-block wallis-equation derivative-equation" id="eq-16-hare-euler-update"><div><var>H</var><sub><var>t</var>+d<var>t</var></sub> = <var>H</var><sub><var>t</var></sub> + d<var>t</var> <span class="fraction"><span>d<var>H</var></span><span>d<var>t</var></span></span> = <var>H</var><sub><var>t</var></sub> + d<var>t</var><var>H</var><sub><var>t</var></sub>(<var>b</var><sub><var>H</var></sub> − <var>L</var><sub><var>t</var></sub><var>m</var><sub><var>H</var></sub>)</div></div>
       <p>计算机里的数学很棘手，因此操作时必须小心。特别是，d<var>t</var> 要足够小，才能很好地近似连续时间。但这个策略确实可行，而且让我们在拟合数据之前就能看到模型意味着什么。</p>
       <p>下面编写一个模拟猞猁—雪兔动力学的函数，只需把上述策略同时应用到 <var>H</var> 与 <var>L</var>：</p>
       <figure class="code-listing" id="code-16-14"><figcaption>R 代码 16.14</figcaption><pre><code>sim_lynx_hare &lt;- function( n_steps , init , theta , dt=0.002 ) {
@@ -388,7 +388,7 @@ mtext( "time" , 1 )</code></pre></figure>
       <p>要把猞猁—雪兔模型变成统计分析，需要把确定性的种群动力学与观测数据连接起来。观测数据有很多理由不会精确匹配确定性期望；最明显的是，我们永远无法数完每一只雪兔和猞猁，手上只有局部样本。因此，需要同时为底层种群动力学与观测过程建模。</p>
       <p>仍用 <var>H</var><sub><var>t</var></sub> 与 <var>L</var><sub><var>t</var></sub> 表示时刻 <var>t</var> 的雪兔和猞猁真实数量，再用 <var>h</var><sub><var>t</var></sub> 与 <var>ℓ</var><sub><var>t</var></sub> 表示观测数量。<var>H</var><sub><var>t</var></sub> 会导致 <var>H</var><sub><var>t</var>+d<var>t</var></sub>，但观测值 <var>h</var><sub><var>t</var></sub> 什么也不导致；它只是时刻 <var>t</var> 未观测系统状态的一抹苍白倒影。必须用统计模型把它投射回底层的 <var>H</var><sub><var>t</var></sub> 与 <var>L</var><sub><var>t</var></sub>，再预测 <var>h</var><sub><var>t</var>+d<var>t</var></sub> 与 <var>ℓ</var><sub><var>t</var>+d<var>t</var></sub>。</p>
       <p>为此，需要给观测过程指定误差分布。原则性的做法，是勾勒从自然界真实状态 <var>H</var><sub><var>t</var></sub> 到测量 <var>h</var><sub><var>t</var></sub> 的生成过程。雪兔先被捕获；假设每只雪兔以概率 <var>p</var><sub><var>t</var></sub> 被捕，这个概率会因各种原因逐年变化。实际毛皮数又被四舍五入到最接近的 100，然后除以 1000，因此已不再是严格计数。听起来一团糟——测量就是这样。</p>
-      <p>不过仍能建模。例如，假设真实雪兔种群为 <span class="math-inline"><var>H</var><sub><var>t</var></sub> = 10<sup>4</sup></span>，年度捕获率服从 <span class="math-inline"><var>p</var><sub><var>t</var></sub> ∼ Beta(2, 18)</span>。这表示平均捕获率为 10%，但几乎不会高到两倍。先从雪兔种群得到毛皮的二项计数，再四舍五入到最近的 100 并除以 1000。下一页将查看这种分布的形状。</p>
+      <p>不过仍能建模。例如，假设真实雪兔种群为 <span class="math-inline"><var>H</var><sub><var>t</var></sub> = 10<sup>4</sup></span>，年度捕获率服从 <span class="math-inline"><var>p</var><sub><var>t</var></sub> ∼ Beta(2, 18)</span>。这表示平均捕获率为 10%，但几乎不会高到两倍。先从雪兔种群得到毛皮的二项计数，再四舍五入到最近的 100 并除以 1000。下面来看看这种分布的形状。</p>
       <figure class="book-figure observation-density-figure" id="fig-16-8"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的年度捕获率变化所生成的毛皮观测数量密度图"><img src="/media/chapter-16-observation-model-density.svg" alt="毛皮观测数量密度明显右偏，峰值在一千张以下，长尾延伸至五千张左右"></div><p class="scroll-hint">图较宽，可横向滚动查看完整右偏分布。</p><figcaption><strong>图 16.8：</strong>观测模型的模拟分布，其中捕获概率逐年变化。此时，同一个真实种群规模可以对应很宽的毛皮数量范围，使种群规模推断变得困难。</figcaption></figure>
       <figure class="code-listing" id="code-16-16"><figcaption>R 代码 16.16</figcaption><pre><code>N &lt;- 1e4
 Ht &lt;- 1e4
@@ -398,8 +398,8 @@ h &lt;- round( h/1000 , 2 )
 dens( h , xlab="thousand of pelts" , lwd=2 )</code></pre></figure>
       <p>图 16.8 展示了这个密度。<var>p</var><sub><var>t</var></sub> 的变化带来右偏误差分布。试着在上面的代码里修改 <code>Ht</code> 和 <code>p</code> 的分布，看看结果怎样改变。</p>
       <p>有几种合理方式可以近似这一分布。例如直接用 Log-Normal 分布：它具有正确的取值约束与偏斜方向。可以指定：</p>
-      <div class="equation-block wallis-equation" id="eq-16-observation-lognormal"><div><var>h</var><sub><var>t</var></sub> ∼ Log-Normal(log(<var>pH</var><sub><var>t</var></sub>), <var>σ</var><sub><var>H</var></sub>)</div></div>
-      <p>这使 <var>h</var><sub><var>t</var></sub> 的中位数为 <var>pH</var><sub><var>t</var></sub>，即预期被捕获的雪兔种群比例；参数 <var>σ</var><sub><var>H</var></sub> 控制离散程度。这个测量过程有个重要事实：至少在没有大量数据时，无法很好地估计 <var>p</var>。所以这里用强先验把它基本固定下来。若这让你不舒服，请注意，正是这个模型迫使我们承认：除非有可靠方法获知 <var>p</var>，否则最多只能估计相对种群规模。典型时间序列模型只会在自己的本轮上愉快空转，教不了我们这样有用的东西。</p>
+      <div class="equation-block wallis-equation" id="eq-16-observation-lognormal"><div><var>h</var><sub><var>t</var></sub> ∼ Log-Normal(log(<var>p</var><var>H</var><sub><var>t</var></sub>), <var>σ</var><sub><var>H</var></sub>)</div></div>
+      <p>这使 <var>h</var><sub><var>t</var></sub> 的中位数为 <var>p</var><var>H</var><sub><var>t</var></sub>，即预期被捕获的雪兔种群比例；参数 <var>σ</var><sub><var>H</var></sub> 控制离散程度。这个测量过程有个重要事实：至少在没有大量数据时，无法很好地估计 <var>p</var>。所以这里用强先验把它基本固定下来。若这让你不舒服，请注意，正是这个模型迫使我们承认：除非有可靠方法获知 <var>p</var>，否则最多只能估计相对种群规模。典型时间序列模型只会在自己的本轮上愉快空转，教不了我们这样有用的东西。</p>
       <p>四舍五入误差最多是 <span class="math-inline">50/4000 = 0.0125 = 1.25%</span> 的毛皮数量，因此暂且忽略。若好奇怎样把四舍五入纳入统计模型，可看稍后的“过度思考”框。做起来并不难——只需生成式地思考，解法自然会出现。</p>
       <p>现在列出完整统计模型。首先是观测变量——毛皮数量——的概率：</p>
       <div class="equation-block wallis-equation annotated-model-equation" id="eq-16-observed-pelts"><div><span><var>h</var><sub><var>t</var></sub> ∼ Log-Normal(log(<var>p</var><sub><var>H</var></sub><var>H</var><sub><var>t</var></sub>), <var>σ</var><sub><var>H</var></sub>)</span><span class="equation-label">[观测雪兔毛皮的概率]</span></div><div><span><var>ℓ</var><sub><var>t</var></sub> ∼ Log-Normal(log(<var>p</var><sub><var>L</var></sub><var>L</var><sub><var>t</var></sub>), <var>σ</var><sub><var>L</var></sub>)</span><span class="equation-label">[观测猞猁毛皮的概率]</span></div></div>
@@ -434,12 +434,12 @@ plot( 1:21 , pelts[,2] , pch=16 , ylim=c(0,120) , xlab="year" ,
 at &lt;- c(1,11,21)
 axis( 1 , at=at , labels=Lynx_Hare$Year[at] )
 points( 1:21 , pelts[,1] , col=rangi2 , pch=16 )
-# 21 time series from posterior
+# 来自后验的 21 条时间序列
 for ( s in 1:21 ) {
     lines( 1:21 , post$pelts_pred[s,,2] , col=col.alpha("black",0.2) , lwd=2 )
     lines( 1:21 , post$pelts_pred[s,,1] , col=col.alpha(rangi2,0.3) , lwd=2 )
 }
-# text labels
+# 文字标签
 text( 17 , 90 , "Lepus" , pos=2 )
 text( 19 , 50 , "Lynx" , pos=2 , col=rangi2 )</code></pre></figure>
       <p>结果见图 16.9 上图。黑点与黑色轨迹是雪兔毛皮，蓝点与蓝色轨迹是猞猁毛皮。注意预测轨迹的锯齿；这是模型假定各时点测量误差互不相关的结果。</p>
@@ -474,7 +474,8 @@ for ( s in 1:21 ) {
     </div>
     <div class="practice-group" id="practice-16-medium"><h3>中等题</h3>
       <article class="exercise" id="exercise-16M1"><h4>16M1</h4><p>修改圆柱身高模型 <code>m16.1</code>，把身高上的指数 3 改成自由参数。你能恢复出数值 3 吗？绘制新模型的后验预测；它们与 <code>m16.1</code> 的预测有何不同？</p></article>
-      <article class="exercise" id="exercise-16M2"><h4>16M2</h4><p>对圆柱身高模型进行先验预测模拟。先从本章使用的先验开始；它们会产生合理的先验身高分布吗？若不会，你建议怎样修改？</p></article>
+      <article class="exercise" id="exercise-16M2"><h4>16M2</h4><p>对圆柱身高模型进行先验预测模拟。先从本章使用的先验开始；它们会产生合理的先验体重分布吗？若不会，你建议怎样修改？</p></article>
+      <aside class="source-erratum" id="erratum-16M2-height-weight"><strong>原文说明：</strong>PDF 第 578 页的 16M2 要求检查先验“height distributions”，但模型 <code>m16.1</code> 以体重为结果、身高为预测变量，先验预测模拟得到的应是体重分布；译稿按模型结构订正为“先验体重分布”。</aside>
       <article class="exercise" id="exercise-16M3"><h4>16M3</h4><p>用先验预测模拟研究猞猁—雪兔模型。先从本章的先验开始；它们会产生怎样的种群动力学？根据模拟结果，你能否提出改进先验的建议？</p></article>
     </div>
     <div class="practice-group" id="practice-16-hard"><h3>困难题</h3>

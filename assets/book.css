@@ -152,9 +152,21 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .africa-delta-figure .figure-scroll img { display: block; width: 45rem; max-width: none; height: auto; margin: 0 auto; }
 .interaction-readings { margin: 1.4rem 0; padding-left: 2.4rem; }
 .interaction-readings li { margin: .7rem 0; padding-left: .35rem; }
-.symmetry-equation { display: flex; flex-direction: column; gap: .6rem; }
-.symmetry-equation small { color: var(--muted); font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; }
-.continuous-interaction-equation { display: flex; flex-direction: column; gap: .55rem; }
+.symmetry-equation,
+.continuous-interaction-equation { display: flex; flex-direction: column; gap: .55rem; overflow-x: auto; }
+.symmetry-equation .equation-row,
+.continuous-interaction-equation .equation-row { display: block; min-width: max-content; }
+.underbrace-group { display: inline-grid; grid-template-rows: auto .5em auto; justify-items: stretch; margin: 0 .1em; vertical-align: middle; line-height: 1; }
+.underbrace-expression { white-space: nowrap; }
+.underbrace-mark { display: block; width: 100%; height: .5em; overflow: visible; color: currentColor; }
+.underbrace-mark path { fill: none; stroke: currentColor; stroke-width: 1.2; vector-effect: non-scaling-stroke; }
+.underbrace-group small { color: inherit; font: .65em/1.05 "Times New Roman", serif; text-align: center; white-space: nowrap; }
+.hmc-log-prob-equation,
+.hmc-derivative-equation,
+.hmc-gradient-equation { display: block; overflow-x: auto; }
+.hmc-log-prob-equation .equation-row,
+.hmc-derivative-equation .equation-row,
+.hmc-gradient-equation .equation-row { display: block; width: max-content; min-width: 100%; white-space: nowrap; }
 .tulips-triptych-figure .figure-scroll img,
 .tulips-prior-triptych-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
 .island-kingdom-figure .figure-scroll img { display: block; width: min(100%, 20rem); height: auto; margin: 0 auto; }
@@ -223,6 +235,8 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .matrix-2x1 > span { white-space: nowrap; }
 .matrix-4x1 { display: inline-grid; grid-template-columns: 1fr; gap: .15rem; padding: .35rem .9rem; border-inline: 2px solid currentColor; border-radius: 45%; vertical-align: middle; }
 .matrix-4x1 > span { white-space: nowrap; }
+.matrix-vector { display: inline-grid; grid-template-columns: 1fr; gap: .08rem; padding: .28rem .9rem; border-inline: 2px solid currentColor; border-radius: 45%; vertical-align: middle; }
+.matrix-vector > span { white-space: nowrap; }
 .annotated-equation-line { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .45rem 1rem; }
 .annotated-equation-line .equation-expression, .annotated-equation-line .equation-label { white-space: nowrap; }
 .annotated-equation-line .equation-label { color: var(--muted); font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; font-size: .78rem; }
@@ -231,13 +245,17 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .principle-list li { margin: .7rem 0; padding-left: .25rem; }
 .wallis-equation { overflow-x: auto; }
 .wallis-equation .math-line { display: inline-block; min-width: max-content; white-space: nowrap; }
+.bounded-operator { display: inline-grid; grid-template-rows: auto auto auto; justify-items: center; align-items: center; margin: 0 .08em; vertical-align: middle; line-height: .82; }
+.bounded-operator .operator-upper, .bounded-operator .operator-lower { font-size: .54em; white-space: nowrap; }
+.bounded-operator .operator-symbol { font-size: 1.55em; line-height: .72; }
+.bounded-operator.integral-operator .operator-symbol { font-size: 1.9em; line-height: .62; }
+.compact-underbrace { vertical-align: middle; }
 .algorithm-steps, .preparation-steps { margin: 1.5rem 0; padding: 1rem 1rem 1rem 3.2rem; border-left: .25rem solid var(--blue); background: #f3f5fb; }
 .algorithm-steps li, .preparation-steps li { margin: .7rem 0; padding-left: .25rem; }
 .practice-list { margin: 1.2rem 0; padding-left: 0; list-style: none; }
 .practice-list > li { margin: 1rem 0; }
 .metropolis-mapping { margin: 1.5rem 0; padding: 1rem 1rem 1rem 3.2rem; border-left: .25rem solid var(--blue); background: #f3f5fb; }
 .metropolis-mapping li { margin: .7rem 0; padding-left: .25rem; }
-#sec-7-7 > .continuation-note { display: none; }
 .laffer-practice-figure { width: min(100%, 32rem); margin: 2rem auto; transform: none; }
 .laffer-practice-figure svg { display: block; width: 28rem; max-width: none; height: auto; margin: 0 auto; }
 .dag-figure svg { display: block; width: min(100%, 32rem); height: auto; margin: 0 auto; }
@@ -257,6 +275,12 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .gaussian-density-equation { display: flex; flex-wrap: wrap; justify-content: center; gap: .35rem; align-items: center; }
 .gaussian-density-equation .fraction { min-width: 5.5rem; }
 .gaussian-precision-equation { display: flex; flex-wrap: wrap; justify-content: center; gap: .45rem; align-items: center; }
+.radical-expression { display: inline-flex; align-items: flex-start; white-space: nowrap; }
+.radical-expression .radical-sign { font-size: 1.35em; line-height: .9; }
+.radical-expression .radicand { border-top: 1px solid currentColor; padding: .04em .1em 0; line-height: 1.05; }
+.radical-expression .root-fraction { display: inline-grid; grid-template-rows: auto auto; justify-items: stretch; text-align: center; line-height: 1; }
+.radical-expression .root-fraction > span:first-child { border-bottom: 1px solid currentColor; padding: 0 .18em .08em; }
+.radical-expression .root-fraction > span:last-child { padding: .08em .18em 0; }
 .model-language-steps { margin: 1.5rem 0; padding: 1rem 1rem 1rem 3.2rem; border-left: .25rem solid var(--blue); background: #f3f5fb; }
 .model-language-steps li { margin: .7rem 0; padding-left: .25rem; }
 .target-dimensions { margin: 1.5rem 0; padding: 1rem 1rem 1rem 3.2rem; border-left: .25rem solid var(--blue); background: #f3f5fb; }
@@ -334,10 +358,23 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .fraction { display: inline-flex; flex-direction: column; min-width: min(100%, 27rem); vertical-align: middle; }
 .fraction > span:first-child { padding: 0 .45rem .2rem; border-bottom: 1px solid currentColor; }
 .fraction > span:last-child { padding-top: .1rem; }
-.code-listing { position: relative; margin: 1.5rem 0; border: 1px solid #d9dcf0; border-radius: .4rem; overflow: hidden; background: #f0f1fa; }
-.code-listing figcaption { padding: .45rem .8rem; color: var(--blue); font: 700 .78rem/1.4 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; }
-.code-listing pre { margin: 0; padding: .85rem 1rem; overflow-x: auto; font: .9rem/1.65 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-.code-listing .code-output { border-top: 1px solid #d9dcf0; background: #fff; }
+.compact-fraction { display: inline-grid; grid-template-rows: auto auto; justify-items: stretch; min-width: 1.6em; margin: 0 .08em; text-align: center; vertical-align: middle; line-height: 1.05; }
+.compact-fraction > span:first-child { padding: 0 .18em .08em; border-bottom: 1px solid currentColor; }
+.compact-fraction > span:last-child { padding: .08em .18em 0; }
+.code-listing { position: relative; margin: 1.6rem 0; border: 1px solid #d5d9e8; border-radius: .55rem; overflow: hidden; background: #f4f5fa; }
+.code-listing .code-caption { display: flex; align-items: center; justify-content: space-between; gap: .75rem; min-height: 2.4rem; padding: .42rem .7rem .42rem .85rem; border-bottom: 1px solid #d5d9e8; color: var(--blue); font: 700 .78rem/1.4 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; }
+.code-caption-title { min-width: 0; }
+.code-caption-controls { display: inline-flex; flex: 0 0 auto; align-items: center; gap: .45rem; }
+.code-language { padding: .13rem .48rem; border: 1px solid #c7cde0; border-radius: 999px; background: #fff; color: #555e76; font-size: .68rem; letter-spacing: .03em; }
+.copy-code { appearance: none; padding: .2rem .52rem; border: 1px solid #c7cde0; border-radius: .3rem; background: #fff; color: var(--blue); font: inherit; cursor: pointer; }
+.copy-code:hover { border-color: var(--blue); background: var(--blue-soft); }
+.copy-code:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.code-listing pre { margin: 0; padding: .9rem 1rem; overflow-x: auto; background: #f4f5fa; font: .9rem/1.65 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; tab-size: 2; }
+.code-listing .code-output { position: relative; padding-top: 1.8rem; border-top: 1px solid #d5d9e8; background: #fff; color: #343630; }
+.code-listing .code-output::before { content: "输出"; position: absolute; top: .34rem; left: 1rem; color: var(--muted); font: 700 .66rem/1.3 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; letter-spacing: .08em; }
+.code-diagnostic { border-color: #dccdad; }
+.code-diagnostic .code-caption { border-color: #dccdad; background: #fff8e9; color: var(--amber); }
+.code-diagnostic .code-output::before { content: "诊断输出"; color: var(--amber); }
 .book-article code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .9em; }
 .term-definitions { margin: 1.5rem 0; padding-left: 1.7rem; }
 .term-definitions li { margin: .75rem 0; padding-left: .25rem; }
@@ -379,14 +416,29 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .natural-frequency-equation .fraction { min-width: 4.5rem; }
 .continuation-note { color: var(--muted); font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; font-size: .8rem !important; font-style: italic; }
 .bad-science-equation { display: flex; flex-wrap: wrap; justify-content: center; gap: .45rem; align-items: center; font-size: .91rem; }
-.bad-science-equation .fraction { min-width: min(100%, 13rem); }
-.bad-science-equation .wide-fraction { min-width: min(100%, 31rem); }
+.bad-science-equation .equation-term { display: inline-flex; max-width: 100%; align-items: center; justify-content: center; gap: .45rem; }
+.bad-science-equation .equation-term > span:not(.fraction) { flex: 0 0 auto; white-space: nowrap; }
+.bad-science-equation .equation-term .fraction { flex: 0 1 13rem; width: min(100%, 13rem); min-width: 0; }
+.bad-science-equation .equation-continuation { flex-basis: 100%; }
+.bad-science-equation .equation-term .wide-fraction { flex-basis: 31rem; width: min(100%, 31rem); min-width: 0; }
 .sample-questions { margin: 1.5rem 0; padding: 1rem 1rem 1rem 3.2rem; border: 1px solid var(--line); border-radius: .35rem; background: #fff; }
 .sample-questions li { margin: .55rem 0; padding-left: .25rem; }
 .simulation-uses { margin: 1.5rem 0; padding: 1rem 1rem 1rem 3.2rem; border-left: .25rem solid var(--blue); background: #f3f5fb; }
 .simulation-uses li { margin: .8rem 0; padding-left: .25rem; }
 .dummy-binomial-equation { display: flex; flex-wrap: wrap; justify-content: center; gap: .55rem; align-items: center; }
 .dummy-binomial-equation .fraction { min-width: 8.5rem; }
+.iid-equation { display: flex; justify-content: center; align-items: center; gap: .45rem; }
+.annotated-relation { position: relative; display: inline-flex; min-width: 1.35rem; justify-content: center; padding-top: .7rem; line-height: 1; }
+.annotated-relation .relation-note { position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-size: .64rem; font-style: italic; }
+.units-regression-equation sub { font-size: .68em; font-style: normal; vertical-align: -.35em; }
+.units-regression-equation .stacked-unit { display: inline-flex; flex-direction: column; align-items: stretch; vertical-align: -.75em; line-height: 1; }
+.units-regression-equation .stacked-unit span:first-child { border-bottom: 1px solid currentColor; }
+.summation { display: inline-grid; grid-template-rows: auto auto auto; justify-items: center; align-items: center; margin: 0 .12em; vertical-align: middle; line-height: .9; }
+.summation .sum-upper, .summation .sum-lower { font-size: .54em; white-space: nowrap; }
+.summation .sum-symbol { font-size: 1.5em; line-height: .72; }
+.product-operator { display: inline-grid; grid-template-rows: auto auto; justify-items: center; align-items: center; margin: 0 .05em; vertical-align: middle; line-height: .8; }
+.product-operator .product-symbol { font-size: 1.35em; line-height: .72; }
+.product-operator .product-lower { font-size: .55em; }
 .rethinking-box .fisher-quote { margin: 1rem .2rem; background: #fff; }
 .book-quote { margin: 1.5rem 1rem; padding: .85rem 1.1rem; border-left: .22rem solid var(--blue); background: #f7f7f3; color: #3e403b; }
 .book-quote p { margin: 0; font-size: .98rem; line-height: 1.7; }
@@ -450,6 +502,7 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .index-pages a { color: var(--blue); text-decoration-color: #aeb4d0; text-underline-offset: .14em; }
 
 @media (max-width: 640px) {
+  .symmetry-equation { font-size: .89rem; }
   main { width: min(100% - 1.25rem, 72rem); padding-top: 2rem; }
   .progress-grid { grid-template-columns: repeat(2, 1fr); }
   .toc-list li { grid-template-columns: 1fr auto; gap: .35rem .7rem; }
@@ -462,6 +515,11 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
   .quap-formula-map > div { grid-template-columns: 1fr; gap: .3rem; }
   .polynomial-model-map > div { grid-template-columns: 1fr; gap: .3rem; }
   .multiple-model-code-map > div { grid-template-columns: 1fr; gap: .3rem; }
+  .gaussian-density-equation { flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; }
+  .gaussian-density-equation > span { flex: 0 0 auto; }
+  .height-posterior-equation { flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; }
+  .height-posterior-equation > span:first-child { flex: 0 0 auto; }
+  .height-posterior-equation .fraction { flex: 0 0 34rem; min-width: 34rem; overflow-wrap: normal; white-space: nowrap; }
   .exponential-gamma-figure .figure-scroll img { width: 58rem; max-width: none; }
   .index-columns, .index-columns.single-column { grid-template-columns: 1fr; max-width: none; gap: 0; }
   .index-list li { grid-template-columns: 1fr; gap: .15rem; margin: .72rem 0; }

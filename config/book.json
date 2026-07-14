@@ -23,7 +23,7 @@
     {"slug": "chapter-14", "number": "14", "title_en": "Adventures in Covariance", "title_zh": "协方差历险", "start": 465, "end": 516},
     {"slug": "chapter-15", "number": "15", "title_en": "Missing Data and Other Opportunities", "title_zh": "缺失数据与其他机会", "start": 517, "end": 552},
     {"slug": "chapter-16", "number": "16", "title_en": "Generalized Linear Madness", "title_zh": "广义线性疯狂", "start": 553, "end": 580},
-    {"slug": "chapter-17", "number": "17", "title_en": "Horoscopes", "title_zh": "星象", "start": 581, "end": 584},
+    {"slug": "chapter-17", "number": "17", "title_en": "Horoscopes", "title_zh": "星座运势", "start": 581, "end": 584},
     {"slug": "endnotes", "number": "", "title_en": "Endnotes", "title_zh": "尾注", "start": 585, "end": 598},
     {"slug": "bibliography", "number": "", "title_en": "Bibliography", "title_zh": "参考文献", "start": 599, "end": 610},
     {"slug": "citation-index", "number": "", "title_en": "Citation Index", "title_zh": "引文索引", "start": 611, "end": 617}

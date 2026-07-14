@@ -5,7 +5,7 @@
     <p class="source-range">本章译稿对应原书 PDF 第 35–64 页</p>
   </header>
 
-  <p>1492 年，Cristoforo Colombo（Christopher Columbus，中文常译“哥伦布”）那次声名狼藉的向西航行开始时，他相信地球是球形的。在这一点上，他和当时大多数受过教育的人一样。与大多数人不同的是，他还相信地球比实际小得多：赤道周长只有 30,000 公里，而不是真实的 40,000 公里（图 2.1）。<sup><a href="#note-37" aria-label="尾注 37">37</a></sup>这是欧洲历史上影响最为深远的错误之一。</p>
+  <p>1492 年，克里斯托弗·哥伦布（意大利语名 Cristoforo Colombo，英语名 Christopher Columbus）开始了那次声名狼藉的向西航行。当时，他相信地球是球形的；这一点与同时代大多数受过教育的人并无不同。真正不同的是，他还相信地球比实际小得多：赤道周长只有 30,000 公里，而不是真实的 40,000 公里（图 2.1）。<sup><a href="#note-37" aria-label="尾注 37">37</a></sup>这是欧洲历史上影响最为深远的错误之一。</p>
 
   <p>如果哥伦布相信地球周长是 40,000 公里，他就会正确推断出，船队无法携带足够的食物与饮用水，一路向西完成前往亚洲的航程。但若周长只有 30,000 公里，亚洲便位于加利福尼亚海岸以西不远处；携带足够补给抵达那里似乎可行。这项非传统估计给了他部分勇气，于是哥伦布扬帆出海，最终在巴哈马群岛登陆。</p>
 
@@ -24,12 +24,12 @@
 
   <p>本章将开始构建贝叶斯模型。贝叶斯模型从证据中学习的方式，在小世界中可以说是最优的；当其假设近似现实时，它在大世界中也会表现良好。但大世界表现必须通过实际证据展示，不能只靠逻辑推导。在两个世界之间来回穿梭，使贝叶斯推断等形式方法与同行评议等非形式方法都能发挥不可替代的作用。</p>
 
-  <p>本章聚焦小世界。它以概率理论最本质的形式解释概率：计算事情可能以多少种方式发生。贝叶斯推断会从这一视角自动产生。接着，本章介绍贝叶斯统计模型的程式化组成部分，也就是一个从数据中学习的模型；然后展示怎样赋予模型生命，使其产生估计。</p>
+  <p>本章聚焦小世界。它以概率理论最本质的形式解释概率：计算事情可能以多少种方式发生。贝叶斯推断会从这一视角自然产生。接着，本章介绍贝叶斯统计模型的典型组成部分，也就是一个从数据中学习的模型；然后展示怎样让模型运转起来，产生估计。</p>
 
   <p>这些工作为下一章奠定基础。下一章将学习如何总结贝叶斯估计，并开始考虑我们对大世界负有的义务。</p>
 
   <aside class="rethinking-box">
-    <h3>再思考：大世界中的快而省</h3>
+    <h3>再思考：大世界中的快而节俭</h3>
     <p>尝试做科学会不断提醒我们，自然世界十分复杂。然而，从不起眼的蜱虫、勤劳的松鼠到无所事事的树懒，各种动物都经常能够作出适应性决策。但多数动物大概并不是贝叶斯主义者，哪怕只是因为做贝叶斯分析代价高昂，而且依赖一个好模型。</p>
     <p>动物采用的是适合其当前或过去环境的各种启发式方法。这些启发式方法走适应性捷径；把信息收集与处理的成本，以及过拟合（第 6 章）考虑在内后，它们可能胜过严格的贝叶斯分析。<sup><a href="#note-40" aria-label="尾注 40">40</a></sup>一旦已经知道哪些信息应忽略、哪些应关注，完整贝叶斯分析便是一种浪费。真实动物表明，贝叶斯分析既不是良好决策的必要条件，也不是充分条件。不过，对人类这种动物而言，贝叶斯分析提供了一种发现相关信息并以逻辑方式处理它的通用方法。只是别以为它是唯一方法。</p>
   </aside>
@@ -37,7 +37,7 @@
   <section id="sec-2-1">
     <h2>2.1 分叉数据的花园</h2>
 
-    <p>本节的目标，是从最朴素的起点构建贝叶斯推断，让它不再带有任何迷信色彩。贝叶斯推断其实只是对各种可能性进行计数和比较。可以类比 Jorge Luis Borges（豪尔赫·路易斯·博尔赫斯）的短篇小说《小径分岔的花园》。故事中的一名男子遇到一本充满矛盾的书。在大多数书中，人物抵达情节点时，必须在不同道路中作出选择。主人公也许来到一个男人家里；她可以杀掉那个人，也可以喝一杯茶。谋杀或饮茶，只会走其中一条路。</p>
+    <p>本节的目标，是从最朴素的起点构建贝叶斯推断，让它不再带有任何迷信色彩。贝叶斯推断其实只是对各种可能性进行计数和比较。可以类比豪尔赫·路易斯·博尔赫斯（Jorge Luis Borges）的短篇小说《小径分岔的花园》。故事中的一名男子遇到一本充满矛盾的书。在大多数书中，人物走到情节分岔点时，必须在不同道路中作出选择。书中的主人公也许来到一个男人家里；她可以杀掉那个人，也可以喝一杯茶。谋杀或饮茶，只会走其中一条路。</p>
 
     <p>但 Borges 故事中的那本书探索所有道路，每个决定都会向外分支，形成一座不断扩张的小径分岔花园。</p>
 
@@ -170,7 +170,7 @@
         <h3>再思考：论证依据</h3>
         <p>把花园中的路径计数用作相对可信程度的度量，可以从多种方式加以论证。这里采用逻辑论证：如果希望对可信程度进行推理，同时与普通逻辑——关于真与假的陈述——保持一致，就应遵守这套程序。<sup><a href="#note-41" aria-label="尾注 41">41</a></sup>还有其他论证也会导向相同的数学程序。</p>
         <p>无论在哲学上选择怎样为它辩护，请注意它确实有效。论证与哲学为方法提供动机，但真正重要的是结果。贝叶斯推断在现实世界中的众多成功应用，或许已经是你所需要的全部依据。20 世纪反对贝叶斯数据分析的人曾主张，贝叶斯推断易于辩护，却难以应用。<sup><a href="#note-42" aria-label="尾注 42">42</a></sup>幸运的是，这已经不再成立。事实上，情况往往恰好相反：科学家正转向贝叶斯方法，因为它让他们能够使用自己想要的模型。</p>
-        <p>不过，贝叶斯推断能够得到论证，并不意味着其他方法便无法得到论证。魔像有许多类型，而每一种类型中都有一些有用的。</p>
+        <p>不过，贝叶斯推断能够得到论证，并不意味着其他方法便无法得到论证。魔像不止一种，每一类都有用武之地。</p>
       </aside>
     </section>
 
@@ -245,7 +245,7 @@
 
       <aside class="rethinking-box">
         <h3>再思考：原初无知</h3>
-        <p>若没有任何关于猜想的先前信息，应当采用什么假设？最常见的解法，是在看到数据之前，给每个猜想分配相同的正确方式数。这有时称为<strong>无差别原则</strong>：若没有理由认为某个猜想比另一个更可信，就给予所有猜想相同权重。本书既不采用也不赞同“无知”先验。后续章节会看到，模型结构和科学语境总能提供信息，让我们做得比无知更好。</p>
+        <p>若没有任何关于猜想的先前信息，应当采用什么假设？最常见的解法，是在看到数据之前，为每个猜想分配相同的“成立方式数”。这有时称为<strong>无差别原则</strong>：若没有理由认为某个猜想比另一个更可信，就给予所有猜想相同权重。本书既不采用也不赞同“无知”先验。后续章节会看到，模型结构和科学语境总能提供信息，让我们做得比无知更好。</p>
         <p>对于本书考察的这类问题，无差别原则所得的推断与主流非贝叶斯方法非常相似；后者大多隐含着对各种可能性的等权处理。例如，典型的非贝叶斯置信区间会对参数可能取得的所有值给予相同权重，不管其中某些值多么不可信。此外，许多非贝叶斯程序也已通过惩罚似然等方法摆脱等权处理。第 7 章还会讨论这一点。</p>
       </aside>
     </section>
@@ -259,7 +259,7 @@
 
       <p>幸运的是，数学上有办法压缩这一切。具体而言，我们把看到数据后每种可能袋中组成的更新可信程度定义为：</p>
 
-      <div class="equation-block" role="math" aria-label="看到数据后猜想的可信程度，正比于该猜想产生数据的方式数乘以该猜想的先验可信程度">
+      <div class="equation-block" id="eq-2-plausibility-counting" role="math" aria-label="看到数据后猜想的可信程度，正比于该猜想产生数据的方式数乘以该猜想的先验可信程度">
         <div>看到 <span class="marble-set data-sequence" aria-label="蓝色、白色、蓝色"><i class="marble blue"></i><i class="marble white"></i><i class="marble blue"></i></span> 后，<span class="marble-set" aria-label="1 蓝 3 白"><i class="marble blue"></i><i class="marble white"></i><i class="marble white"></i><i class="marble white"></i></span> 的可信程度</div>
         <div class="equation-relation">∝</div>
         <div><span class="marble-set" aria-label="1 蓝 3 白"><i class="marble blue"></i><i class="marble white"></i><i class="marble white"></i><i class="marble white"></i></span> 产生 <span class="marble-set data-sequence" aria-label="蓝色、白色、蓝色"><i class="marble blue"></i><i class="marble white"></i><i class="marble blue"></i></span> 的方式数</div>
@@ -271,7 +271,7 @@
         <span class="marble-set" aria-label="1 蓝 3 白"><i class="marble blue"></i><i class="marble white"></i><i class="marble white"></i><i class="marble white"></i></span>，<span class="math-inline"><var>p</var> = 1/4 = 0.25</span>。再令 <span class="math-inline"><var>D</var><sub>new</sub></span> =
         <span class="marble-set data-sequence" aria-label="蓝色、白色、蓝色"><i class="marble blue"></i><i class="marble white"></i><i class="marble blue"></i></span>，便可以写成：</p>
 
-      <div class="equation-block compact-equation" role="math" aria-label="看到新数据后 p 的可信程度，正比于 p 产生新数据的方式数乘以 p 的先验可信程度">
+      <div class="equation-block compact-equation" id="eq-2-proportional-plausibility" role="math" aria-label="看到新数据后 p 的可信程度，正比于 p 产生新数据的方式数乘以 p 的先验可信程度">
         <div><var>p</var> 在 <var>D</var><sub>new</sub> 之后的可信程度</div>
         <div class="equation-relation">∝</div>
         <div><var>p</var> 产生 <var>D</var><sub>new</sub> 的方式数 × <var>p</var> 的先验可信程度</div>
@@ -281,7 +281,7 @@
 
       <p>最后，通过标准化可信程度来构造概率，使所有可能猜想的可信程度之和为 1。标准化只需把 <span class="math-inline"><var>p</var></span> 每个可能取值对应的乘积相加，再用每个乘积除以乘积总和：</p>
 
-      <div class="equation-block normalized-equation" role="math" aria-label="看到新数据后 p 的可信程度，等于 p 产生新数据的方式数乘以 p 的先验可信程度，再除以所有乘积之和">
+      <div class="equation-block normalized-equation" id="eq-2-normalized-plausibility" role="math" aria-label="看到新数据后 p 的可信程度，等于 p 产生新数据的方式数乘以 p 的先验可信程度，再除以所有乘积之和">
         <span><var>p</var> 在 <var>D</var><sub>new</sub> 之后的可信程度 =</span>
         <span class="fraction"><span><var>p</var> 产生 <var>D</var><sub>new</sub> 的方式数 × <var>p</var> 的先验可信程度</span><span>乘积总和</span></span>
       </div>
@@ -313,7 +313,7 @@ ways/sum(ways)</code></pre>
 
       <p><code>ways</code> 中的值就是前面提到的乘积，而 <code>sum(ways)</code> 是本页上方表达式分母中的“乘积总和”。</p>
 
-      <p>这些可信程度也就是<strong>概率</strong>：它们是非负（零或正）实数，且总和为 1。概率能够进行的所有数学运算，也都可以对这些值进行。更具体地说，计算的每个部分在应用概率论中都有直接对应物。这些对应物有一套约定俗成的名称，值得学会，因为以后会一再遇到：</p>
+      <p>这些可信程度也就是<strong>概率</strong>：它们是非负（零或正）实数，且总和为 1。能对概率进行的所有数学运算，同样也能用在这些数值上。更具体地说，计算的每个部分在应用概率论中都有直接对应物。这些对应物有一套约定俗成的名称，值得学会，因为以后会一再遇到：</p>
 
       <ul class="term-definitions">
         <li>猜想中的蓝色弹珠比例 <span class="math-inline"><var>p</var></span>，通常称为一个<strong>参数值</strong>。它只是给数据的各种可能解释编制索引的一种方式。</li>
@@ -398,7 +398,7 @@ ways/sum(ways)</code></pre>
 
       <p>图 2.5 的其余面板把地球仪的其他样本逐个交给模型。每条虚线都来自前一面板的实线，阅读顺序是从左到右、从上到下。每当观测到 W，可信程度曲线的峰值就向右移动，朝向更大的 <span class="math-inline"><var>p</var></span> 值；每当观测到 L，峰值则向相反方向移动。</p>
 
-      <p>曲线的最大高度会随样本逐个增加；这意味着，随着证据增多，越来越少的 <span class="math-inline"><var>p</var></span> 值汇聚了越来越多的可信程度。每加入一个新观测，曲线都会以与此前全部观测一致的方式更新。</p>
+      <p>曲线的最大高度会随着样本逐个加入而上升；这意味着，证据越多，可信程度就越集中在少数 <span class="math-inline"><var>p</var></span> 值上。每加入一个新观测，曲线都会以与此前全部观测一致的方式更新。</p>
 
       <p>请注意，每一组更新后的可信程度，都会成为下一个观测的初始可信程度。每个结论都是未来推断的起点。不过，更新过程不仅能向前，也能向后。给定图 2.5 右下角的最终可信程度，并且知道最后一次观测是 W，就可以在数学上把这次观测“除掉”，反推出前一条可信程度曲线。因此，数据可以按任意顺序交给模型，甚至一次全部给出。实际工作中，为了方便，通常会一次性提供全部数据；但应当明白，这只是对反复学习过程的缩写。</p>
 
@@ -446,7 +446,7 @@ ways/sum(ways)</code></pre>
       <li>每种数据成因猜想的初始可信程度。</li>
     </ol>
 
-    <p>这些对象在传统概率论中都有直接对应物。因此，构建统计模型的常规方式，就是为每类对象选择分布和装置，以表示事情发生的相对方式数。</p>
+    <p>这些对象在传统概率论中都有直接对应物。因此，构建统计模型的常规方式，就是为每类对象选择相应的分布与计算机制，用来表示事情发生的相对方式数。</p>
 
     <p>本节将较为详细地介绍这些组成部分，并说明每部分如何对应本章前面的计数。眼前的工作其实只是命名所有变量并逐一定义它们。下面依次完成这些任务。</p>
 
@@ -476,7 +476,7 @@ ways/sum(ways)</code></pre>
 
         <p>在本例中，加入两项假设——第一，每次投掷都与其他投掷相互独立；第二，每次投掷得到 W 的概率相同——概率论便给出唯一答案，称为<strong>二项分布</strong>，也就是常见的“掷硬币”分布。因此，每次投掷得到水域的概率为 <span class="math-inline"><var>p</var></span> 时，观测到 <span class="math-inline"><var>W</var></span> 个水域和 <span class="math-inline"><var>L</var></span> 个陆地的概率为：</p>
 
-        <div class="equation-block binomial-equation" role="math" aria-label="W 个水域和 L 个陆地在给定水域概率 p 时的概率，等于 W 加 L 的阶乘除以 W 阶乘乘 L 阶乘，再乘 p 的 W 次方和一减 p 的 L 次方">
+        <div class="equation-block binomial-equation" id="eq-2-binomial-probability" role="math" aria-label="W 个水域和 L 个陆地在给定水域概率 p 时的概率，等于 W 加 L 的阶乘除以 W 阶乘乘 L 阶乘，再乘 p 的 W 次方和一减 p 的 L 次方">
           <span>Pr(<var>W</var>, <var>L</var> | <var>p</var>) =</span>
           <span class="fraction"><span>(<var>W</var> + <var>L</var>)!</span><span><var>W</var>! <var>L</var>!</span></span>
           <span><var>p</var><sup><var>W</var></sup>(1 - <var>p</var>)<sup><var>L</var></sup></span>
@@ -598,13 +598,13 @@ ways/sum(ways)</code></pre>
 
       <p>数据 <span class="math-inline"><var>W</var></span>、<span class="math-inline"><var>L</var></span> 与 <span class="math-inline"><var>p</var></span> 任一特定取值的联合概率为：</p>
 
-      <div class="equation-block simple-equation" role="math" aria-label="W、L 和 p 的联合概率等于给定 p 后 W 和 L 的概率乘以 p 的先验概率">
+      <div class="equation-block simple-equation" id="eq-2-joint-data-parameter" role="math" aria-label="W、L 和 p 的联合概率等于给定 p 后 W 和 L 的概率乘以 p 的先验概率">
         <span>Pr(<var>W</var>, <var>L</var>, <var>p</var>) = Pr(<var>W</var>, <var>L</var> | <var>p</var>) Pr(<var>p</var>)</span>
       </div>
 
       <p>这只是说，<span class="math-inline"><var>W</var></span>、<span class="math-inline"><var>L</var></span> 和 <span class="math-inline"><var>p</var></span> 的概率，等于 <span class="math-inline">Pr(<var>W</var>, <var>L</var> | <var>p</var>)</span> 与先验概率 <span class="math-inline">Pr(<var>p</var>)</span> 的乘积。就像同一天又下雨又寒冷的概率，等于寒冷时下雨的概率乘以寒冷的概率。这只是定义。但下面同样成立：</p>
 
-      <div class="equation-block simple-equation" role="math" aria-label="W、L 和 p 的联合概率也等于给定 W 和 L 后 p 的概率乘以 W 和 L 的概率">
+      <div class="equation-block simple-equation" id="eq-2-joint-parameter-data" role="math" aria-label="W、L 和 p 的联合概率也等于给定 W 和 L 后 p 的概率乘以 W 和 L 的概率">
         <span>Pr(<var>W</var>, <var>L</var>, <var>p</var>) = Pr(<var>p</var> | <var>W</var>, <var>L</var>) Pr(<var>W</var>, <var>L</var>)</span>
       </div>
 
@@ -612,7 +612,7 @@ ways/sum(ways)</code></pre>
 
       <p>由于上面两个等式的右边都等于同一个 <span class="math-inline">Pr(<var>W</var>, <var>L</var>, <var>p</var>)</span>，它们也彼此相等：</p>
 
-      <div class="equation-block simple-equation" role="math" aria-label="给定 p 后 W 和 L 的概率乘 p 的先验，等于给定 W 和 L 后 p 的概率乘 W 和 L 的概率">
+      <div class="equation-block simple-equation" id="eq-2-joint-equality" role="math" aria-label="给定 p 后 W 和 L 的概率乘 p 的先验，等于给定 W 和 L 后 p 的概率乘 W 和 L 的概率">
         <span>Pr(<var>W</var>, <var>L</var> | <var>p</var>) Pr(<var>p</var>) = Pr(<var>p</var> | <var>W</var>, <var>L</var>) Pr(<var>W</var>, <var>L</var>)</span>
       </div>
 
@@ -625,7 +625,7 @@ ways/sum(ways)</code></pre>
 
       <p>这就是贝叶斯定理。它说：考虑数据之后，<span class="math-inline"><var>p</var></span> 任一特定取值的概率，等于“给定 <span class="math-inline"><var>p</var></span> 后数据的相对可信程度”与“<span class="math-inline"><var>p</var></span> 的先验可信程度”的乘积，再除以 <span class="math-inline">Pr(<var>W</var>, <var>L</var>)</span>。我把后者称为<strong>数据的平均概率</strong>。用文字写成：</p>
 
-      <div class="equation-block word-bayes-equation" role="math" aria-label="后验等于数据概率乘以先验，再除以数据的平均概率">
+      <div class="equation-block word-bayes-equation" id="eq-2-bayes-in-words" role="math" aria-label="后验等于数据概率乘以先验，再除以数据的平均概率">
         <span>后验 =</span>
         <span class="fraction"><span>数据概率 × 先验</span><span>数据的平均概率</span></span>
       </div>
@@ -702,19 +702,19 @@ ways/sum(ways)</code></pre>
 
       <figure class="code-listing" id="code-2-3">
         <figcaption>R 代码 2.3</figcaption>
-        <pre><code># define grid
+        <pre><code># 定义网格
 p_grid &lt;- seq( from=0 , to=1 , length.out=20 )
 
-# define prior
+# 定义先验
 prior &lt;- rep( 1 , 20 )
 
-# compute likelihood at each value in grid
+# 计算网格中每个值的似然
 likelihood &lt;- dbinom( 6 , size=9 , prob=p_grid )
 
-# compute product of likelihood and prior
+# 计算似然与先验的乘积
 unstd.posterior &lt;- likelihood * prior
 
-# standardize the posterior, so it sums to 1
+# 标准化后验，使其总和为 1
 posterior &lt;- unstd.posterior / sum(unstd.posterior)</code></pre>
       </figure>
       <p class="scroll-hint code-scroll-hint">代码较宽，可横向滚动查看完整行。</p>
@@ -782,12 +782,12 @@ prior &lt;- exp( -5*abs( p_grid - 0.5 ) )</code></pre>
 
 globe.qa &lt;- quap(
   alist(
-    W ~ dbinom( W+L , p ) , # binomial likelihood
-    p ~ dunif(0,1)           # uniform prior
+    W ~ dbinom( W+L , p ) , # 二项似然
+    p ~ dunif(0,1)           # 均匀先验
   ) ,
   data=list(W=6,L=3) )
 
-# display summary of quadratic approximation
+# 显示二次近似摘要
 precis( globe.qa )</code></pre>
       </figure>
       <p class="scroll-hint code-scroll-hint">代码较宽，可横向滚动查看完整行。</p>
@@ -808,12 +808,12 @@ precis( globe.qa )</code></pre>
 
       <figure class="code-listing" id="code-2-7">
         <figcaption>R 代码 2.7</figcaption>
-        <pre><code># analytical calculation
+        <pre><code># 解析计算
 W &lt;- 6
 L &lt;- 3
 curve( dbeta( x , W+1 , L+1 ) , from=0 , to=1 )
 
-# quadratic approximation
+# 二次近似
 curve( dnorm( x , 0.67 , 0.16 ) , lty=2 , add=TRUE )</code></pre>
       </figure>
       <p class="scroll-hint code-scroll-hint">代码较宽，可横向滚动查看完整行。</p>
@@ -856,7 +856,7 @@ curve( dnorm( x , 0.67 , 0.16 ) , lty=2 , add=TRUE )</code></pre>
 
       <p>此外，多层模型并不总允许把后验分布写成单个统一函数。这意味着，寻找 MAP 时要最大化的函数并不已知，而必须分块计算。</p>
 
-      <p>因此，出现了各种反直觉的模型拟合技术。其中最流行的是<strong>马尔可夫链蒙特卡洛</strong>（MCMC）：一族能够处理高度复杂模型的条件化引擎。可以说，MCMC 对 20 世纪 90 年代开始的贝叶斯数据分析复兴负有主要责任。MCMC 本身比 90 年代更古老，廉价计算能力却不是，所以还要感谢工程师。本书后面的第 9 章会用简单、精确的 MCMC 模型拟合例子帮助理解这项技术。</p>
+      <p>因此，出现了各种反直觉的模型拟合技术。其中最流行的是<strong>马尔可夫链蒙特卡洛</strong>（MCMC）：一族能够处理高度复杂模型的条件化引擎。可以说，MCMC 是 20 世纪 90 年代以来贝叶斯数据分析复兴的主要推动力。MCMC 本身比 90 年代更古老，廉价计算能力却不是，所以还要感谢工程师。本书后面的第 9 章会用简单、精确的 MCMC 模型拟合例子帮助理解这项技术。</p>
 
       <p>MCMC 的概念挑战来自它极不直观的策略。它不尝试直接计算或近似后验分布，只是从后验中抽取样本。最终得到一组参数值，这些值出现的频率对应后验可信程度；再用样本直方图便可构造后验图像。</p>
 
@@ -917,16 +917,16 @@ curve( dbeta( x , W+1 , L+1 ) , lty=2 , add=TRUE )</code></pre>
           <h4>2E1</h4>
           <p>下列哪些表达式对应这句话：“星期一下雨的概率”？</p>
           <ol class="exercise-options">
-            <li><span class="math-inline">Pr(下雨)</span></li>
-            <li><span class="math-inline">Pr(下雨 | 星期一)</span></li>
-            <li><span class="math-inline">Pr(星期一 | 下雨)</span></li>
-            <li><span class="math-inline">Pr(下雨, 星期一) / Pr(星期一)</span></li>
+            <li><span class="math-inline">Pr(rain)</span></li>
+            <li><span class="math-inline">Pr(rain | Monday)</span></li>
+            <li><span class="math-inline">Pr(Monday | rain)</span></li>
+            <li><span class="math-inline">Pr(rain, Monday) / Pr(Monday)</span></li>
           </ol>
         </div>
 
         <div class="exercise" id="exercise-2e2">
           <h4>2E2</h4>
-          <p>下列哪句话对应表达式 <span class="math-inline">Pr(星期一 | 下雨)</span>？</p>
+          <p>下列哪句话对应表达式 <span class="math-inline">Pr(Monday | rain)</span>？</p>
           <ol class="exercise-options">
             <li>星期一下雨的概率。</li>
             <li>已知今天是星期一时，下雨的概率。</li>
@@ -939,11 +939,11 @@ curve( dbeta( x , W+1 , L+1 ) , lty=2 , add=TRUE )</code></pre>
           <h4>2E3</h4>
           <p>下列哪些表达式对应这句话：“已知正在下雨时，今天是星期一的概率”？</p>
           <ol class="exercise-options">
-            <li><span class="math-inline">Pr(星期一 | 下雨)</span></li>
-            <li><span class="math-inline">Pr(下雨 | 星期一)</span></li>
-            <li><span class="math-inline">Pr(下雨 | 星期一) Pr(星期一)</span></li>
-            <li><span class="math-inline">Pr(下雨 | 星期一) Pr(星期一) / Pr(下雨)</span></li>
-            <li><span class="math-inline">Pr(星期一 | 下雨) Pr(下雨) / Pr(星期一)</span></li>
+            <li><span class="math-inline">Pr(Monday | rain)</span></li>
+            <li><span class="math-inline">Pr(rain | Monday)</span></li>
+            <li><span class="math-inline">Pr(rain | Monday) Pr(Monday)</span></li>
+            <li><span class="math-inline">Pr(rain | Monday) Pr(Monday) / Pr(rain)</span></li>
+            <li><span class="math-inline">Pr(Monday | rain) Pr(rain) / Pr(Monday)</span></li>
           </ol>
         </div>
 
@@ -973,7 +973,7 @@ curve( dbeta( x , W+1 , L+1 ) , lty=2 , add=TRUE )</code></pre>
 
         <div class="exercise" id="exercise-2m3">
           <h4>2M3</h4>
-          <p>假设有两个地球仪，一个代表地球，一个代表火星。地球仪有 70% 被水覆盖，火星仪则是 100% 陆地。再假设其中一个球被抛到空中并得到一次“陆地”观测，但你不知道抛的是哪一个；两个球被选中的先验概率相同。证明：在已经看到“陆地”的条件下，这个球是地球仪的后验概率 <span class="math-inline">Pr(地球 | 陆地)</span> 为 0.23。</p>
+          <p>假设有两个地球仪，一个代表地球，一个代表火星。地球仪有 70% 被水覆盖，火星仪则是 100% 陆地。再假设其中一个球被抛到空中并得到一次“陆地”观测，但你不知道抛的是哪一个；两个球被选中的先验概率相同。证明：在已经看到“陆地”的条件下，这个球是地球仪的后验概率 <span class="math-inline">Pr(Earth | land)</span> 为 0.23。</p>
         </div>
 
         <div class="exercise" id="exercise-2m4">
@@ -1049,6 +1049,6 @@ curve( dbeta( x , W+1 , L+1 ) , lty=2 , add=TRUE )</code></pre>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>第 2 章 PDF 第 35–64 页已完成整章翻译、逐页渲染对照、结构契约和桌面/移动端视觉验收。
+    <strong>整章状态：</strong>第 2 章 PDF 第 35–64 页已完成第二次精译、公式与符号逐项复核、代码一致性处理及视觉验收。
   </aside>
 </article>

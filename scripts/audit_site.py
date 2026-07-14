@@ -77,7 +77,10 @@ def main() -> int:
             continue
         if PLACEHOLDER.search(html):
             failures.append(f"{path.name}: translation placeholder leaked")
-        if soup.select("script[src], iframe, object, embed"):
+        scripts = soup.select("script[src]")
+        if any(not script.get("src", "").startswith("/assets/book.js?v=") for script in scripts):
+            failures.append(f"{path.name}: unexpected script source")
+        if len(scripts) != 1 or soup.select("iframe, object, embed"):
             failures.append(f"{path.name}: unexpected active/external content")
         ids = [tag.get("id") for tag in soup.select("[id]")]
         if len(ids) != len(set(ids)):
@@ -139,6 +142,23 @@ def main() -> int:
                                 failures.append(f"{path.name}: image asset too small {src} ({width}x{height})")
                         except Exception as error:
                             failures.append(f"{path.name}: unreadable image asset {src}: {error}")
+        for listing in article.select("figure.code-listing"):
+            direct_captions = listing.find_all("figcaption", recursive=False)
+            if len(direct_captions) != 1:
+                failures.append(f"{path.name}: code listing requires one direct figcaption")
+            direct_pres = listing.find_all("pre", recursive=False)
+            if not direct_pres:
+                failures.append(f"{path.name}: code listing requires a direct pre block")
+            for pre in direct_pres:
+                children = [child for child in pre.children if getattr(child, "name", None)]
+                if len(children) != 1 or children[0].name != "code":
+                    failures.append(f"{path.name}: code pre must contain exactly one code element")
+        for pre in article.select("pre"):
+            if pre.find_parent("figure", class_="code-listing") is None:
+                failures.append(f"{path.name}: pre outside figure.code-listing")
+        for equation in article.select(".equation-block"):
+            if not equation.get("id"):
+                failures.append(f"{path.name}: display equation requires stable id")
         for svg in article.select("svg[role='img']"):
             if svg.select_one("title") is None or svg.select_one("desc") is None:
                 failures.append(f"{path.name}: accessible SVG requires title and desc")

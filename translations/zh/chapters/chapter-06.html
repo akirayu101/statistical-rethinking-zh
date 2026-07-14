@@ -20,28 +20,28 @@
   <p>本章与下一章都讨论：在没有清晰因果模型时，仅仅向回归加入变量会发生哪些糟糕事情。本章考察三种危险：<strong>多重共线性</strong>、<strong>处理后偏差</strong>与<strong>碰撞点偏差</strong>。最后会把这些例子纳入一个框架，判断为了有效推断，哪些变量必须加入模型，哪些绝不能加入。但这个框架不会替我们完成最重要的一步：它不会凭空给出有效模型。</p>
 
   <aside class="overthinking-box" id="overthinking-simulated-science-distortion"><h3>过度思考：模拟科学扭曲</h3><p>看过一些例子后，这类模拟很容易用 R 或任何脚本语言完成。本例只需为一组提案抽取随机高斯标准，再选出合计得分最高的 10%。</p><figure class="code-listing" id="code-6-1"><figcaption>R 代码 6.1</figcaption><pre><code>set.seed(1914)
-N &lt;- 200 # num grant proposals
-p &lt;- 0.1 # proportion to select
-# uncorrelated newsworthiness and trustworthiness
+N &lt;- 200 # 资助申请数
+p &lt;- 0.1 # 选中比例
+# 新闻价值与可信度不相关
 nw &lt;- rnorm(N)
 tw &lt;- rnorm(N)
-# select top 10% of combined scores
-s &lt;- nw + tw # total score
-q &lt;- quantile( s , 1-p ) # top 10% threshold
+# 选取综合得分最高的 10%
+s &lt;- nw + tw # 总分
+q &lt;- quantile( s , 1-p ) # 前 10% 的阈值
 selected &lt;- ifelse( s &gt;= q , TRUE , FALSE )
 cor( tw[selected] , nw[selected] )</code></pre></figure><p>这里选择特定随机种子，以便复现图 6.1 的结果；去掉 <code>set.seed</code> 后反复运行，会发现这个种子没有任何特殊之处。</p></aside>
 
   <section id="sec-6-1"><h2>6.1 多重共线性</h2><p>回归模型通常有许多潜在预测变量可供加入。例如，灵长类乳汁数据中有 7 个变量可以预测我们选作结果的任何一列。为什么不直接拟合包含全部 7 个变量的模型？因为存在若干危险。这里首先关注<strong>多重共线性</strong>：两个或更多预测变量之间存在非常强的相关。其后果是，后验分布似乎会表明没有任何变量可靠地与结果相关，即使现实中所有变量都与结果强相关。</p><p>这种令人沮丧的现象源于多元回归工作的细节。事实上，多重共线性本身没有“错误”；模型用于预测时仍能正常工作，只是会让解释变得令人抓狂。理解多重共线性之后，也会更深入地理解一般回归模型。先从简单模拟开始，再回到灵长类乳汁数据观察真实数据中的多重共线性。</p>
 
-    <section id="sec-6-1-1"><h3>6.1.1 共线的双腿</h3><p>模拟任务是用一个人的腿长预测身高。腿长当然应与身高正相关——至少模拟会这样假设。然而，把左右腿长同时放进模型后，会发生一件恼人的事。</p><p>下面模拟 100 个人的身高与腿长。先从高斯分布模拟每个人的身高，再给每个人模拟一个介于 0.4 与 0.5 的腿长占身高比例。最后给每条腿加一点测量或发育误差，因此左右腿不会完全等长，这也符合真实人群。代码最后把身高与两条腿长放入同一数据框：</p><figure class="code-listing" id="code-6-2"><figcaption>R 代码 6.2</figcaption><pre><code>N &lt;- 100                                    # number of individuals
+    <section id="sec-6-1-1"><h3>6.1.1 共线的双腿</h3><p>模拟任务是用一个人的腿长预测身高。腿长当然应与身高正相关——至少模拟会这样假设。然而，把左右腿长同时放进模型后，会发生一件恼人的事。</p><p>下面模拟 100 个人的身高与腿长。先从高斯分布模拟每个人的身高，再给每个人模拟一个介于 0.4 与 0.5 的腿长占身高比例。最后给每条腿加一点测量或发育误差，因此左右腿不会完全等长，这也符合真实人群。代码最后把身高与两条腿长放入同一数据框：</p><figure class="code-listing" id="code-6-2"><figcaption>R 代码 6.2</figcaption><pre><code>N &lt;- 100                                    # 个体数
 set.seed(909)
-height &lt;- rnorm(N,10,2)                     # sim total height of each
-leg_prop &lt;- runif(N,0.4,0.5)                # leg as proportion of height
-leg_left &lt;- leg_prop*height +               # sim left leg as proportion + error
+height &lt;- rnorm(N,10,2)                     # 模拟每个人的总身高
+leg_prop &lt;- runif(N,0.4,0.5)                # 腿长占身高的比例
+leg_left &lt;- leg_prop*height +               # 模拟左腿：比例 + 误差
     rnorm( N , 0 , 0.02 )
-leg_right &lt;- leg_prop*height +              # sim right leg as proportion + error
+leg_right &lt;- leg_prop*height +              # 模拟右腿：比例 + 误差
     rnorm( N , 0 , 0.02 )
-# combine into data frame
+# 合并为数据框
 d &lt;- data.frame(height,leg_left,leg_right)</code></pre></figure><p>接下来用 <code>leg_left</code> 与 <code>leg_right</code> 共同预测结果 <code>height</code>。在近似后验前，先想想预期。平均而言，腿长约为身高的 45%。因此，测量腿长与身高关联的系数应接近平均身高 10 除以平均腿长 4.5，即 <span class="math-inline">10 / 4.5 ≈ 2.2</span>。下面看看实际会发生什么。这里故意使用非常模糊、很糟糕的先验，以确认即将出现的现象不是先验造成的。</p>
 
       <figure class="code-listing" id="code-6-3"><figcaption>R 代码 6.3</figcaption><pre><code>m6.1 &lt;- quap(
@@ -104,7 +104,7 @@ d$L &lt;- scale( d$perc.lactose )</code></pre></figure>
       <p>这里关心 <code>perc.fat</code>（脂肪百分比）与 <code>perc.lactose</code>（乳糖百分比），用它们预测总能量 <code>kcal.per.g</code>。三者都已标准化。它们构成一个自然的多重共线性例子。这几列没有缺失值 <code>NA</code>，因此无需提取完整案例；而且可以放心，<code>quap</code> 不像 <code>lm</code> 那些鲁莽函数，绝不会默默丢弃个案。</p>
 
       <p>先分别用脂肪和乳糖预测千卡，拟合两个二元回归：</p>
-      <figure class="code-listing" id="code-6-9"><figcaption>R 代码 6.9</figcaption><pre><code># kcal.per.g regressed on perc.fat
+      <figure class="code-listing" id="code-6-9"><figcaption>R 代码 6.9</figcaption><pre><code># 用 perc.fat 回归 kcal.per.g
 m6.3 &lt;- quap(
     alist(
         K ~ dnorm( mu , sigma ) ,
@@ -114,7 +114,7 @@ m6.3 &lt;- quap(
         sigma ~ dexp( 1 )
     ) , data=d )
 
-# kcal.per.g regressed on perc.lactose
+# 用 perc.lactose 回归 kcal.per.g
 m6.4 &lt;- quap(
     alist(
         K ~ dnorm( mu , sigma ) ,
@@ -180,7 +180,7 @@ sim.coll &lt;- function( r=0.9 ) {
     d$x &lt;- rnorm( nrow(d) , mean=r*d$perc.fat ,
         sd=sqrt( (1-r^2)*var(d$perc.fat) ) )
     m &lt;- lm( kcal.per.g ~ perc.fat + x , data=d )
-    sqrt( diag( vcov(m) ) )[2] # stddev of parameter
+    sqrt( diag( vcov(m) ) )[2] # 参数的标准差
 }
 rep.sim.coll &lt;- function( r=0.9 , n=100 ) {
     stddev &lt;- replicate( n , sim.coll(r) )
@@ -196,18 +196,18 @@ plot( stddev ~ r.seq , type="l" , col=rangi2, lwd=2 , xlab="correlation" )</code
     <p>“处理后”这个说法来自实验设计。设想在温室里种植物，想知道不同抗真菌土壤处理对生长的影响，因为真菌会降低生长。植物播种发芽后先测初始高度，再施加不同土壤处理，最后测量高度与是否出现真菌。四个变量是初始高度、最终高度、处理和真菌存在。结果是最终高度。若目标是对处理做因果推断，就不应纳入真菌，因为它是处理后的效应。</p><p>下面模拟数据，看看加入处理后变量究竟会怎样出错：</p>
 
     <figure class="code-listing" id="code-6-13"><figcaption>R 代码 6.13</figcaption><pre><code>set.seed(71)
-# number of plants
+# 植物数量
 N &lt;- 100
 
-# simulate initial heights
+# 模拟初始高度
 h0 &lt;- rnorm(N,10,2)
 
-# assign treatments and simulate fungus and growth
+# 分配处理，模拟真菌与生长
 treatment &lt;- rep( 0:1 , each=N/2 )
 fungus &lt;- rbinom( N , size=1 , prob=0.5 - treatment*0.4 )
 h1 &lt;- h0 + rnorm(N, 5 - 3*fungus)
 
-# compose a clean data frame
+# 整理成干净的数据框
 d &lt;- data.frame( h0=h0 , h1=h1 , treatment=treatment , fungus=fungus )
 precis(d)</code></pre><pre class="code-output"><code>           mean   sd  5.5% 94.5%    histogram
 h0         9.96 2.10  6.57 13.08 ▁▂▂▂▇▃▂▃▁▁▁▁
@@ -330,8 +330,8 @@ happiness   0.0  1.21 -1.79  1.79         ▇▅▇▅▅▇▅▇</code></pre><
 
       <p>假设偶然得到这些数据，想问年龄是否与幸福感有关。你不知道真正的因果模型，却合情合理地认为婚姻状态可能是重要混杂因素：若已婚者平均而言更幸福或更不幸福，就需要以婚姻状态为条件，才能推断年龄与幸福感的关系。</p><p>因此考虑一个多元回归模型，在控制婚姻状态的同时推断年龄对幸福感的影响。它与本章及上一章的其他模型一样，只是普通多元回归。线性模型为：</p>
       <div class="equation-block" id="eq-6-happiness-age-marriage"><var>μ</var><sub>i</sub> = <var>α</var><sub>MID[i]</sub> + <var>β</var><sub>A</sub><var>A</var><sub>i</sub></div>
-      <p>其中 <span class="math-inline">MID[<var>i</var>]</span> 是个体 <span class="math-inline"><var>i</var></span> 的婚姻状态索引：1 表示未婚，2 表示已婚。这就是第 4 章的类别变量策略。每个类别使用一个截距，会比使用指示变量更容易设定先验。</p><p>现在履行职责，认真考虑先验。先看斜率 <span class="math-inline"><var>β</var><sub>A</sub></span>，因为预测变量 <span class="math-inline"><var>A</var></span> 的缩放方式会决定截距的含义。只关注 18 岁及以上的成年人。设想年龄与幸福感之间存在非常强的关系：幸福感在 18 岁达到最大，在 65 岁达到最小。若把 18 到 65 岁的范围缩放成一个单位，会更方便：</p>
-      <figure class="code-listing" id="code-6-22"><figcaption>R 代码 6.22</figcaption><pre><code>d2 &lt;- d[ d$age&gt;17 , ] # only adults
+      <p>其中 <span class="math-inline">MID[<var>i</var>]</span> 是个体 <span class="math-inline"><var>i</var></span> 的婚姻状态索引：1 表示未婚，2 表示已婚。这就是上一章的类别变量策略。每个类别使用一个截距，会比使用指示变量更容易设定先验。</p><p class="source-erratum"><strong>原文勘误：</strong>原书此处误写为“第 4 章的类别变量策略”；索引变量与每类一个截距的方法实际在上一章（第 5 章）介绍，译稿依章节结构更正。</p><p>现在履行职责，认真考虑先验。先看斜率 <span class="math-inline"><var>β</var><sub>A</sub></span>，因为预测变量 <span class="math-inline"><var>A</var></span> 的缩放方式会决定截距的含义。只关注 18 岁及以上的成年人。设想年龄与幸福感之间存在非常强的关系：幸福感在 18 岁达到最大，在 65 岁达到最小。若把 18 到 65 岁的范围缩放成一个单位，会更方便：</p>
+      <figure class="code-listing" id="code-6-22"><figcaption>R 代码 6.22</figcaption><pre><code>d2 &lt;- d[ d$age&gt;17 , ] # 仅保留成年人
 d2$A &lt;- ( d2$age - 18 ) / ( 65 - 18 )</code></pre></figure>
       <p>新变量 <span class="math-inline"><var>A</var></span> 的范围现在是 0 到 1：0 表示 18 岁，1 表示 65 岁。幸福感采用任意尺度，本数据中从 −2 到 +2。因此，设想中最强的关系——让幸福感从最大降至最小——其斜率为升高量除以水平变化量，即 <span class="math-inline">(2 − (−2))/1 = 4</span>。正态分布约 95% 的质量落在两个标准差内，所以把斜率先验的标准差设为 4 的一半，表示我们预计 95% 的可信斜率不会强过这个最大关系。这不算很强的先验，但至少把推断限制在现实范围内。</p><p>再看截距。每个 <span class="math-inline"><var>α</var></span> 都是 <span class="math-inline"><var>A</var><sub>i</sub> = 0</span> 时的 <span class="math-inline"><var>μ</var><sub>i</sub></span>，本例就是 18 岁时的平均幸福感。因此需要让 <span class="math-inline"><var>α</var></span> 覆盖完整的幸福感范围。Normal(0, 1) 会把约 95% 的质量放在 −2 到 +2 之间。</p><p>最后近似后验。还要构造婚姻状态索引变量，然后立即给出 <code>quap</code> 代码：</p>
       <figure class="code-listing" id="code-6-23"><figcaption>R 代码 6.23</figcaption><pre><code>d2$mid &lt;- d2$married + 1
@@ -371,11 +371,11 @@ sigma 1.21 0.03  1.17 1.26</code></pre></figure>
       <p>现在 <span class="math-inline"><var>P</var></span> 是 <span class="math-inline"><var>G</var></span> 与 <span class="math-inline"><var>U</var></span> 的共同后果，所以即使永远测不到 <span class="math-inline"><var>U</var></span>，以 <span class="math-inline"><var>P</var></span> 为条件仍会使对 <span class="math-inline"><var>G</var> → <var>C</var></span> 的推断产生偏差。这个事实并不直观，下面慢慢走过一个定量例子。</p><p>先模拟 200 个祖父母—父母—儿童三元组。模拟很简单：把 DAG 投影成一系列隐含的函数关系：</p>
       <ol><li><span class="math-inline"><var>P</var></span> 是 <span class="math-inline"><var>G</var></span> 与 <span class="math-inline"><var>U</var></span> 的某个函数；</li><li><span class="math-inline"><var>C</var></span> 是 <span class="math-inline"><var>G</var></span>、<span class="math-inline"><var>P</var></span> 与 <span class="math-inline"><var>U</var></span> 的某个函数；</li><li><span class="math-inline"><var>G</var></span> 与 <span class="math-inline"><var>U</var></span> 不是其他任何已知变量的函数。</li></ol>
       <p>可以用 <code>rnorm</code> 生成模拟观测，把这些含义写成简单模拟。但“某个函数”还不够精确，所以人为指定一些关联强度：</p>
-      <figure class="code-listing" id="code-6-25"><figcaption>R 代码 6.25</figcaption><pre><code>N &lt;- 200 # number of grandparent-parent-child triads
-b_GP &lt;- 1 # direct effect of G on P
-b_GC &lt;- 0 # direct effect of G on C
-b_PC &lt;- 1 # direct effect of P on C
-b_U &lt;- 2 # direct effect of U on P and C</code></pre></figure>
+      <figure class="code-listing" id="code-6-25"><figcaption>R 代码 6.25</figcaption><pre><code>N &lt;- 200 # 祖父母—父母—子女三元组数量
+b_GP &lt;- 1 # G 对 P 的直接效应
+b_GC &lt;- 0 # G 对 C 的直接效应
+b_PC &lt;- 1 # P 对 C 的直接效应
+b_U &lt;- 2 # U 对 P 和 C 的直接效应</code></pre></figure>
       <p>这些参数类似回归模型中的斜率。这里假设祖父母 <span class="math-inline"><var>G</var></span> 对孙辈 <span class="math-inline"><var>C</var></span> 的效应为零。例子的结论并不依赖它恰好为零，但这样更容易看清要点。接着用这些斜率抽取随机观测：</p>
       <figure class="code-listing" id="code-6-26"><figcaption>R 代码 6.26</figcaption><pre><code>set.seed(1)
 U &lt;- 2*rbern( N , 0.5 ) - 1
@@ -470,7 +470,7 @@ M _||_ W | S</code></pre></figure>
 
   <aside class="rethinking-box" id="rethinking-dags-not-enough"><h3>再思考：仅有 DAG 还不够</h3><p>若没有系统的真实机制模型，DAG 是极好的工具。至少，它会警告我们不要把多元回归当作理论的替代品。但 DAG 不是终点。一旦拥有系统的动力学模型，就不再需要 DAG。事实上，许多动力系统对初始条件敏感，行为复杂，无法用 DAG 有效表示；但仍可分析这些模型并据此设计因果干预。DAG 并非处处有用，不构成反对它的理由。所有理论工具都有局限；在教授因果推断的机制与障碍方面，作者尚未见过比 DAG 更好的工具。</p></aside>
 
-  <aside class="overthinking-box" id="overthinking-do-operator"><h3>过度思考：平滑算子</h3><p>要用精确记号定义混杂，需要采用所谓的 <strong>do-算子</strong>。<sup id="note-93-ref"><a href="#note-93">93</a></sup> 混杂发生在：</p><div class="equation-block" id="eq-6-do-operator"><span>Pr(<var>Y</var> | <var>X</var>) ≠ Pr(<var>Y</var> | do(<var>X</var>))</span></div><p><span class="math-inline">do(<var>X</var>)</span> 表示切断所有进入 <span class="math-inline"><var>X</var></span> 的后门路径，就像实施操纵实验。do-算子改变图并关闭后门。它定义因果关系，因为给定因果图后，<span class="math-inline">Pr(<var>Y</var> | do(<var>X</var>))</span> 告诉我们操纵 <span class="math-inline"><var>X</var></span> 对 <span class="math-inline"><var>Y</var></span> 的预期结果。若 <span class="math-inline">Pr(<var>Y</var> | do(<var>X</var>)) &gt; Pr(<var>Y</var> | do(not-<var>X</var>))</span>，可以说 <span class="math-inline"><var>X</var></span> 是 <span class="math-inline"><var>Y</var></span> 的原因。普通条件概率比较 <span class="math-inline">Pr(<var>Y</var> | <var>X</var>) &gt; Pr(<var>Y</var> | not-<var>X</var>)</span> 并不相同，因为它没有关闭后门。</p><p>do-算子给出的不只是直接因果效应，而是沿所有前向路径的总因果效应。若要得到直接效应，可能还需关闭更多“门”。即使有些后门无法关闭，do-算子也能推导因果推断策略；后续章节会看两个例子。</p></aside>
+  <aside class="overthinking-box" id="overthinking-do-operator"><h3>过度思考：圆滑的算子</h3><p>要用精确记号定义混杂，需要采用所谓的 <strong>do-算子</strong>。<sup id="note-93-ref"><a href="#note-93">93</a></sup> 混杂发生在：</p><div class="equation-block" id="eq-6-do-operator"><span>Pr(<var>Y</var> | <var>X</var>) ≠ Pr(<var>Y</var> | do(<var>X</var>))</span></div><p><span class="math-inline">do(<var>X</var>)</span> 表示切断所有进入 <span class="math-inline"><var>X</var></span> 的后门路径，就像实施操纵实验。do-算子改变图并关闭后门。它定义因果关系，因为给定因果图后，<span class="math-inline">Pr(<var>Y</var> | do(<var>X</var>))</span> 告诉我们操纵 <span class="math-inline"><var>X</var></span> 对 <span class="math-inline"><var>Y</var></span> 的预期结果。若 <span class="math-inline">Pr(<var>Y</var> | do(<var>X</var>)) &gt; Pr(<var>Y</var> | do(not-<var>X</var>))</span>，可以说 <span class="math-inline"><var>X</var></span> 是 <span class="math-inline"><var>Y</var></span> 的原因。普通条件概率比较 <span class="math-inline">Pr(<var>Y</var> | <var>X</var>) &gt; Pr(<var>Y</var> | not-<var>X</var>)</span> 并不相同，因为它没有关闭后门。</p><p>do-算子给出的不只是直接因果效应，而是沿所有前向路径的总因果效应。若要得到直接效应，可能还需关闭更多“门”。即使有些后门无法关闭，do-算子也能推导因果推断策略；后续章节会看两个例子。</p></aside>
 
   <section id="sec-6-5"><h2>6.5 总结</h2><p>多元回归不是神谕。它符合逻辑，但描述的是条件关联，而不是因果影响。因此需要模型外部的额外信息，才能解释结果。本章用入门例子展示了几类常见挫折：多重共线性、处理后偏差和碰撞点偏差。解决这些问题的方法可组织在一套一致框架下：分析变量之间假想的因果关系，以定位并处理混杂。所有情况下，因果模型都存在于统计模型之外，而且可能难以检验。不过，即使没有实验，也有可能得到有效因果推断。这是好消息，因为出于实践和伦理原因，我们经常无法做实验。</p></section>
 

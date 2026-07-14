@@ -53,12 +53,12 @@
 
     <figure class="code-listing" id="code-5-1">
       <figcaption>R 代码 5.1</figcaption>
-      <pre><code># load data and copy
+      <pre><code># 载入并复制数据
 library(rethinking)
 data(WaffleDivorce)
 d &lt;- WaffleDivorce
 
-# standardize variables
+# 标准化变量
 d$A &lt;- scale( d$MedianAgeMarriage )
 d$D &lt;- scale( d$Divorce )</code></pre>
     </figure>
@@ -124,13 +124,13 @@ for ( i in 1:50 ) lines( c(-2,2) , mu[i,] , col=col.alpha("black",0.4) )</code><
 
     <figure class="code-listing" id="code-5-5">
       <figcaption>R 代码 5.5</figcaption>
-      <pre><code># compute percentile interval of mean
+      <pre><code># 计算均值的百分位区间
 A_seq &lt;- seq( from=-3 , to=3.2 , length.out=30 )
 mu &lt;- link( m5.1 , data=list(A=A_seq) )
 mu.mean &lt;- apply( mu , 2, mean )
 mu.PI &lt;- apply( mu , 2 , PI )
 
-# plot it all
+# 绘制全部内容
 plot( D ~ A , data=d , col=rangi2 )
 lines( A_seq , mu.mean , lwd=2 )
 shade( mu.PI , A_seq )</code></pre>
@@ -337,6 +337,8 @@ impliedConditionalIndependencies( DMA_dag1 )</code></pre>
 
       <p>参数和变量可以使用任何喜欢的符号。这里用 <span class="math-inline"><var>M</var></span> 表示结婚率，用 <span class="math-inline"><var>A</var></span> 表示结婚年龄，并把它们复用为对应参数的下标。不过，完全可以选择任何能减轻自己记忆负担的符号。</p>
 
+      <p class="source-erratum"><strong>原文勘误：</strong>原书本句把结婚率的符号误写为 <span class="math-inline"><var>R</var></span>；本章公式、DAG 与代码均使用 <span class="math-inline"><var>M</var></span>，译稿依此更正。</p>
+
       <p>假设 <span class="math-inline"><var>μ</var><sub>i</sub> = <var>α</var> + <var>β</var><sub>M</sub><var>M</var><sub>i</sub> + <var>β</var><sub>A</sub><var>A</var><sub>i</sub></span> 意味着什么？它表示，结婚率为 <span class="math-inline"><var>M</var><sub>i</sub></span>、结婚年龄中位数为 <span class="math-inline"><var>A</var><sub>i</sub></span> 的任意州，其预期结果由三个独立项相加而成。第一项是常数 <span class="math-inline"><var>α</var></span>，每个州都有。第二项是结婚率 <span class="math-inline"><var>M</var><sub>i</sub></span> 与系数 <span class="math-inline"><var>β</var><sub>M</sub></span> 的乘积；该系数测量结婚率与离婚率的关联。第三项类似，但对应结婚年龄中位数的关联。</p>
 
       <p>如果你和大多数人一样，这可能仍然相当神秘。一种有帮助的读法，是把加号读作“或”：一个州的离婚率可以是结婚率的函数，或是结婚年龄中位数的函数。“或”表示彼此独立的关联，而这些关联可能纯粹是统计性的，也可能是因果性的。</p>
@@ -344,7 +346,7 @@ impliedConditionalIndependencies( DMA_dag1 )</code></pre>
       <aside class="overthinking-box" id="overthinking-design-matrix">
         <h3>过度思考：紧凑记号与设计矩阵</h3>
         <p>线性模型经常写成如下紧凑形式：</p>
-        <div class="equation-block compact-regression-equation" id="eq-5-compact-regression"><var>μ</var><sub>i</sub> = <var>α</var> + Σ<sub><var>j</var>=1</sub><sup><var>n</var></sup> <var>β</var><sub><var>j</var></sub><var>x</var><sub><var>ji</var></sub></div>
+        <div class="equation-block compact-regression-equation" id="eq-5-compact-regression"><var>μ</var><sub>i</sub> = <var>α</var> + <span class="summation"><span class="sum-upper"><var>n</var></span><span class="sum-symbol">∑</span><span class="sum-lower"><var>j</var>=1</span></span> <var>β</var><sub><var>j</var></sub><var>x</var><sub><var>ji</var></sub></div>
         <p>其中 <span class="math-inline"><var>j</var></span> 是预测变量索引，<span class="math-inline"><var>n</var></span> 是预测变量数量。同一个模型也可以简写为：</p>
         <div class="equation-block expanded-regression-equation" id="eq-5-expanded-regression"><var>μ</var><sub>i</sub> = <var>α</var> + <var>β</var><sub>1</sub><var>x</var><sub>1<var>i</var></sub> + <var>β</var><sub>2</sub><var>x</var><sub>2<var>i</var></sub> + … + <var>β</var><sub><var>n</var></sub><var>x</var><sub><var>ni</var></sub></div>
         <p>两种形式都可以读作：均值由截距与“参数和预测变量乘积”的加性组合之和建模。使用矩阵记号还能更紧凑：</p>
@@ -424,10 +426,10 @@ sigma 0.79 0.08  0.66  0.91</code></pre>
         <p>离婚数据是真实数据，来源见 <code>?WaffleDivorce</code>。不过，模拟前一个 DAG 所示的因果关系 <span class="math-inline"><var>M</var> ← <var>A</var> → <var>D</var></span> 很有用。每个 DAG 都隐含一种模拟，而模拟能帮助我们设计模型，正确推断变量之间的关系。本例只需模拟三个变量：</p>
         <figure class="code-listing" id="code-5-12">
           <figcaption>R 代码 5.12</figcaption>
-          <pre><code>N &lt;- 50 # number of simulated States
-age &lt;- rnorm( N )        # sim A
-mar &lt;- rnorm( N , -age ) # sim A -&gt; M
-div &lt;- rnorm( N , age )  # sim A -&gt; D</code></pre>
+          <pre><code>N &lt;- 50 # 模拟州的数量
+age &lt;- rnorm( N )        # 模拟 A
+mar &lt;- rnorm( N , -age ) # 模拟 A -&gt; M
+div &lt;- rnorm( N , age )  # 模拟 A -&gt; D</code></pre>
         </figure>
         <p>把这些变量用于模型 <code>m5.1</code>、<code>m5.2</code> 和 <code>m5.3</code>，会看到相同的后验推断模式。也可以模拟 <span class="math-inline"><var>A</var></span> 与 <span class="math-inline"><var>M</var></span> 都影响 <span class="math-inline"><var>D</var></span>：<code>div &lt;- rnorm(N, age + mar)</code>。此时，<span class="math-inline"><var>D</var></span> 对 <span class="math-inline"><var>A</var></span> 的朴素回归会高估 <span class="math-inline"><var>A</var></span> 的影响，正如 <span class="math-inline"><var>D</var></span> 对 <span class="math-inline"><var>M</var></span> 的朴素回归会高估 <span class="math-inline"><var>M</var></span> 的重要性。多元回归同样有助于理清这种情形。但参数估计的解释始终取决于你相信哪种因果模型，因为通常有若干甚至大量因果模型都与同一组参数估计相容。后面会以<strong>马尔可夫等价</strong>之名讨论这一点。</p>
       </aside>
@@ -475,6 +477,8 @@ div &lt;- rnorm( N , age )  # sim A -&gt; D</code></pre>
 
         <p>随后，用各州观测到的结婚率减去上面模型给出的预测率，计算残差：</p>
 
+        <p class="source-erratum"><strong>原文勘误：</strong>原书文字把减法方向写反了；紧随其后的代码 <code>d$M - mu_mean</code> 是“观测值减预测值”，译稿按代码更正。</p>
+
         <figure class="code-listing" id="code-5-14">
           <figcaption>R 代码 5.14</figcaption>
           <pre><code>mu &lt;- link(m5.4)
@@ -517,16 +521,16 @@ mu_resid &lt;- d$M - mu_mean</code></pre>
         <p>在离婚例子中，怎样生成简单的后验预测检查？先模拟预测，并对后验求平均：</p>
         <figure class="code-listing" id="code-5-15">
           <figcaption>R 代码 5.15</figcaption>
-          <pre><code># call link without specifying new data
-# so it uses original data
+          <pre><code># 调用 link 时不指定新数据
+# 因而使用原始数据
 mu &lt;- link( m5.3 )
 
-# summarize samples across cases
+# 跨个案汇总样本
 mu_mean &lt;- apply( mu , 2 , mean )
 mu_PI &lt;- apply( mu , 2 , PI )
 
-# simulate observations
-# again no new data, so uses original data
+# 模拟观测
+# 同样不指定新数据，因而使用原始数据
 D_sim &lt;- sim( m5.3 , n=1e4 )
 D_PI &lt;- apply( D_sim , 2 , PI )</code></pre>
         </figure>
@@ -570,11 +574,11 @@ for ( i in 1:nrow(d) ) lines( rep(d$D[i],2) , mu_PI[,i] , col=rangi2 )</code></p
           <p>预测变量与结果之间产生虚假关联的一种方式，是某个真正有因果作用的预测变量 <span class="math-inline"><var>x</var><sub>real</sub></span> 同时影响结果 <span class="math-inline"><var>y</var></span> 和虚假预测变量 <span class="math-inline"><var>x</var><sub>spur</sub></span>。这个情形可能令人困惑，所以模拟一遍会很有帮助：既能看到虚假数据怎样产生，也能自行证明多元回归可以可靠地指出正确预测变量 <span class="math-inline"><var>x</var><sub>real</sub></span>。</p>
           <figure class="code-listing" id="code-5-18">
             <figcaption>R 代码 5.18</figcaption>
-            <pre><code>N &lt;- 100                         # number of cases
-x_real &lt;- rnorm( N )             # x_real as Gaussian with mean 0 and stddev 1
-x_spur &lt;- rnorm( N , x_real )    # x_spur as Gaussian with mean=x_real
-y &lt;- rnorm( N , x_real )         # y as Gaussian with mean=x_real
-d &lt;- data.frame(y,x_real,x_spur) # bind all together in data frame</code></pre>
+            <pre><code>N &lt;- 100                         # 个案数
+x_real &lt;- rnorm( N )             # x_real 服从均值 0、标准差 1 的高斯分布
+x_spur &lt;- rnorm( N , x_real )    # x_spur 服从均值为 x_real 的高斯分布
+y &lt;- rnorm( N , x_real )         # y 服从均值为 x_real 的高斯分布
+d &lt;- data.frame(y,x_real,x_spur) # 合并为数据框</code></pre>
           </figure>
           <p>数据框 <code>d</code> 现在有 100 个模拟个案。由于 <code>x_real</code> 同时影响 <code>y</code> 和 <code>x_spur</code>，可以把 <code>x_spur</code> 看成 <code>x_real</code> 的另一个结果，却被误认为 <code>y</code> 的潜在预测变量。因此，<code>x_real</code> 与 <code>x_spur</code> 都和 <code>y</code> 相关，在 <code>pairs(d)</code> 的散点图中可以看到。但在同时用两个 <code>x</code> 预测 <code>y</code> 的线性回归中，<code>y</code> 与 <code>x_spur</code> 关联的后验均值会接近零，而 <code>x_real</code> 对应的均值更接近 1。</p>
         </aside>
@@ -650,17 +654,17 @@ m5.3_A &lt;- quap(
 
         <figure class="code-listing" id="code-5-21">
           <figcaption>R 代码 5.21</figcaption>
-          <pre><code># prep data
+          <pre><code># 准备数据
 sim_dat &lt;- data.frame( A=A_seq )
 
-# simulate M and then D, using A_seq
+# 使用 A_seq 依次模拟 M 和 D
 s &lt;- sim( m5.3_A , data=sim_dat , vars=c("M","D") )</code></pre>
         </figure>
 
         <p>就这么简单。不过，至少请扫一眼本节末尾的“过度思考”侧栏；那里会展示各个步骤，以便用任何软件拟合的任何模型执行这类反事实模拟。下面绘制预测：</p>
         <figure class="code-listing" id="code-5-22">
           <figcaption>R 代码 5.22</figcaption>
-          <pre><code># display counterfactual predictions
+          <pre><code># 显示反事实预测
 plot( sim_dat$A , colMeans(s$D) , ylim=c(-2,2) , type="l" ,
     xlab="manipulated A" , ylab="counterfactual D" )
 shade( apply(s$D,2,PI) , sim_dat$A )
@@ -1274,7 +1278,7 @@ d$house &lt;- sample( rep(1:4,each=8) , size=nrow(d) )</code></pre></figure>
       <aside class="rethinking-box" id="rethinking-differences-significance">
         <h3>再思考：差异与统计显著性</h3>
         <p>解释参数估计时，一个常见错误是认为：一个参数离零足够远——“显著”——而另一个“不显著”，所以两参数之差也显著。事实未必如此。<sup id="note-83-ref"><a href="#note-83">83</a></sup> 这不只是非贝叶斯分析的问题：若想知道差异的分布，就必须真正计算这个差异，也就是对比。仅仅观察到男性中的某个斜率与零高度重叠，而女性中的同一斜率可靠地大于零，并不足够；必须计算男女斜率差异的后验分布。</p>
-        <p>例如，假设两个参数 <span class="math-inline"><var>β</var><sub>f</sub></span> 与 <span class="math-inline"><var>β</var><sub>m</sub></span> 的后验均值和标准差分别为 0.15 ± 0.02 与 0.02 ± 0.10。虽然前者可靠地不同于零而后者不是，但若假设二者不相关，差异约为 <span class="math-inline">(0.15 − 0.02) ± √(0.02² + 0.10²) ≈ 0.13 ± 0.10</span>，仍与零大量重叠。换言之，可以确信 <span class="math-inline"><var>β</var><sub>f</sub></span> 远离零，却不能确信它与 <span class="math-inline"><var>β</var><sub>m</sub></span> 的差远离零。</p>
+        <p>例如，假设两个参数 <span class="math-inline"><var>β</var><sub>f</sub></span> 与 <span class="math-inline"><var>β</var><sub>m</sub></span> 的后验均值和标准差分别为 0.15 ± 0.02 与 0.02 ± 0.10。虽然前者可靠地不同于零而后者不是，但若假设二者不相关，差异约为 <span class="math-inline">(0.15 − 0.02) ± <span class="radical-expression"><span class="radical-sign">√</span><span class="radicand">0.02² + 0.1²</span></span> ≈ 0.13 ± 0.10</span>，仍与零大量重叠。换言之，可以确信 <span class="math-inline"><var>β</var><sub>f</sub></span> 远离零，却不能确信它与 <span class="math-inline"><var>β</var><sub>m</sub></span> 的差远离零。</p>
         <p>在非贝叶斯显著性检验中，这种现象源于统计显著性只在“与零假设不同”这一方面具有推断力。<span class="math-inline"><var>β</var><sub>m</sub></span> 与零重叠时，也可能与远离零的值重叠，它的值很不确定；因此与 <span class="math-inline"><var>β</var><sub>f</sub></span> 的比较同样不确定，表现为差异后验分布 <span class="math-inline"><var>β</var><sub>f</sub> − <var>β</var><sub>m</sub></span> 很宽。更根本的错误是接受零假设。文章或书中所谓“没有发现差异”或“没有效应”，通常只是某个参数没有显著不同于零，于是作者把零当成估计值。这既不合逻辑，又极其常见。</p>
       </aside>
     </section>
@@ -1320,6 +1324,6 @@ d$house &lt;- sample( rep(1:4,each=8) , size=nrow(d) )</code></pre></figure>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>PDF 第 143–180 页整章已完成翻译、逐页核对、结构契约及桌面/移动端视觉验收。
+    <strong>译稿状态：</strong>PDF 第 143–180 页整章已完成第二次精译；正文、13 组展示公式和 53 个代码清单逐页复核，结构契约及桌面/移动端视觉验收均通过。
   </aside>
 </article>

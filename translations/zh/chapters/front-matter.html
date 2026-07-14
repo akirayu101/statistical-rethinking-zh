@@ -74,7 +74,7 @@
       <li class="front-toc-chapter"><a href="/chapters/chapter-05.html">第 5 章　多变量与虚假华夫饼</a><span>127</span>
         <ol>
           <li><a href="/chapters/chapter-05.html#sec-5-1">5.1　虚假关联</a><span>129</span></li>
-          <li><a href="/chapters/chapter-05.html#sec-5-2">5.2　被遮蔽的关系</a><span>148</span></li>
+          <li><a href="/chapters/chapter-05.html#sec-5-2">5.2　被掩盖的关系</a><span>148</span></li>
         </ol>
       </li>
     </ol>
@@ -86,7 +86,7 @@
     <ol class="front-toc-list" start="5">
       <li class="front-toc-continuation"><span>第 5 章（续）</span>
         <ol start="3">
-          <li><a href="/chapters/chapter-05.html#sec-5-3">5.3　分类变量</a><span>157</span></li>
+          <li><a href="/chapters/chapter-05.html#sec-5-3">5.3　类别变量</a><span>157</span></li>
           <li><a href="/chapters/chapter-05.html#sec-5-4">5.4　总结</a><span>162</span></li>
           <li><a href="/chapters/chapter-05.html#sec-5-5">5.5　练习</a><span>162</span></li>
         </ol>
@@ -204,15 +204,15 @@
       </li>
       <li class="front-toc-chapter"><a href="/chapters/chapter-16.html">第 16 章　广义线性疯狂</a><span>537</span>
         <ol>
-          <li><a href="/chapters/chapter-16.html#sec-16-1">16.1　几何人</a><span>538</span></li>
-          <li><a href="/chapters/chapter-16.html#sec-16-2">16.2　隐藏心智与观测行为</a><span>543</span></li>
-          <li><a href="/chapters/chapter-16.html#sec-16-3">16.3　用常微分方程砸坚果</a><span>549</span></li>
+          <li><a href="/chapters/chapter-16.html#sec-16-1">16.1　几何人类</a><span>538</span></li>
+          <li><a href="/chapters/chapter-16.html#sec-16-2">16.2　隐藏的心智与观测行为</a><span>543</span></li>
+          <li><a href="/chapters/chapter-16.html#sec-16-3">16.3　常微分开坚果</a><span>549</span></li>
           <li><a href="/chapters/chapter-16.html#sec-16-4">16.4　种群动力学</a><span>553</span></li>
           <li><a href="/chapters/chapter-16.html#sec-16-5">16.5　总结</a><span>562</span></li>
           <li><a href="/chapters/chapter-16.html#sec-16-6">16.6　练习</a><span>562</span></li>
         </ol>
       </li>
-      <li class="front-toc-chapter"><a href="/chapters/chapter-17.html">第 17 章　星象</a><span>565</span></li>
+      <li class="front-toc-chapter"><a href="/chapters/chapter-17.html">第 17 章　星座运势</a><span>565</span></li>
       <li class="front-toc-chapter"><a href="/chapters/endnotes.html">尾注</a><span>569</span></li>
       <li class="front-toc-chapter"><a href="/chapters/bibliography.html">参考文献</a><span>583</span></li>
       <li class="front-toc-chapter"><a href="/chapters/citation-index.html">引文索引</a><span>595</span></li>
@@ -239,7 +239,8 @@
   <section class="front-matter-page" id="front-pdf-008" data-source-page="8">
     <p class="source-page-label">原书 PDF 第 8 页 · 印刷页 xii</p>
     <p>因此，DAG——有向无环图——在书中登场。原来讨论过拟合的章节现在成为第 7 章，也更直接地提醒读者：信息准则和交叉验证衡量的是预测表现。书中如今明确讨论交叉验证及其重要性抽样近似（PSIS-LOO）。</p>
-    <p><strong>新的模型类型。</strong>第 4 章现在以 B 样条收尾。讲计数模型的第 11 章加入了一个项目反应（因子分析）示例；第 12 章包含带删失的生存分析；第 14 章提供了一个系统发育距离回归示例；还新增了完整的第 16 章，专门讨论不容易构想为 GLMM 的模型。</p>
+    <p><strong>新的模型类型。</strong>第 4 章现在以 B 样条收尾。讲计数模型的第 11 章加入了一个项目反应（因子分析）示例，并包含带删失的生存分析；第 14 章提供了一个系统发育距离回归示例；还新增了完整的第 16 章，专门讨论不容易构想为 GLMM 的模型。</p>
+    <aside class="source-erratum" id="erratum-front-survival-chapter"><strong>原文说明：</strong>PDF 第 8 页把带删失的生存分析写在第 12 章，但目录与正文均将它置于第 11 章 11.4；译稿按全书实际结构订正。PDF 第 9 页的 “The principle audience” 亦应为 “The principal audience”。</aside>
     <p><strong>一些新的数据示例。</strong>新示例包括日本樱花历史时间序列，以及一个更大的灵长类演化数据集，其中含 300 个物种及配套的系统发育关系。</p>
     <p><strong>更多展示原始 Stan 模型。</strong>现在有几处会在选读框中讲解原始 Stan 模型代码。希望这能让读者更容易过渡到直接使用 Stan。不过正文仍以 R 脚本为主，使用 <code>rethinking</code> 包中的教学工具。</p>
     <p><strong>善意与坚持。</strong>和第一版一样，我尽力让这些材料对读者友善。这里没有哪样东西是容易的，通往理解的路漫长而又闹鬼。读者务必要预先知道：困惑和不完整的理解都很正常。这也是我没有改变本书基本建模策略的原因。</p>
@@ -333,12 +334,8 @@ x</code></pre><pre class="code-output"><code>200</code></pre></figure>
     <p>你要用纯文本编辑器持续记录交给 R 处理的命令。绝对不要把所有命令直接敲进 R。应该从文本编辑器复制代码行到 R，或者让 R 直接读取完整脚本文件。探索数据、调试或只是玩一玩时，可以直接在 R 中输入命令；但基于上一节所说的理由，严肃工作应通过纯文本编辑器实现。</p>
     <p>你可以在 R 脚本中加入注释，以便规划代码，并在日后记起代码在做什么。注释只需以 <code>#</code> 符号开头。下面是一段非常简短但完整的脚本，用 R 的一个内置数据集执行线性回归。即使还不知道代码的具体含义，也希望你能把它看成排版清晰、注释得当的基本范例。</p>
     <figure class="code-listing" id="front-code-0-4"><figcaption>R 代码 0.4</figcaption><pre><code># 载入数据：
-# 以英尺计的汽车制动距离，与以千米/小时计的速度配对</code></pre></figure>
-  </section>
-
-  <section class="front-matter-page" id="front-pdf-014" data-source-page="14">
-    <p class="source-page-label">原书 PDF 第 14 页 · 印刷页 xviii</p>
-    <figure class="code-listing front-code-continuation"><figcaption>R 代码 0.4（续）</figcaption><pre><code># 详见 ?cars
+# 以英尺计的汽车制动距离，与以千米/小时计的速度配对
+# 详见 ?cars
 data(cars)
 
 # 拟合距离关于速度的线性回归
@@ -349,6 +346,10 @@ coef(m)
 
 # 绘制残差关于速度的图
 plot( resid(m) ~ speed , data=cars )</code></pre></figure>
+  </section>
+
+  <section class="front-matter-page" id="front-pdf-014" data-source-page="14">
+    <p class="source-page-label">原书 PDF 第 14 页 · 印刷页 xviii</p>
     <p>即便熟悉 Stata 或 SAS 脚本的人，也要经历一些调整。Stata 与 SAS 处理信息的范式不同：在这些程序中，人们发出 <code>PROC GLM</code> 一类过程式命令，仿照菜单命令；过程随后生成大量默认输出，留给使用者筛选。R 并不这样工作。R 会迫使使用者决定自己想要哪些信息：先拟合一个统计模型，再发出后续命令向它提问。随着阅读正文示例，你会逐渐熟悉这种更像审问的范式；但请留意，你必须更主动地决定要向模型提出哪些问题。</p>
     <h3 id="front-install-rethinking">安装 rethinking R 包</h3>
     <p>代码示例要求你已经安装 <code>rethinking</code> R 包。它包含正文使用的数据示例和许多建模工具；<code>rethinking</code> 本身又依赖另一个包 <code>rstan</code>，用来拟合本书后半部分更高级的模型。</p>

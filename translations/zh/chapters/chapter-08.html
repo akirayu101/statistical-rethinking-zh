@@ -16,7 +16,7 @@
   <p>允许复杂交互作用的模型很容易拟合数据，却可能难理解得多。因此，本章将回顾简单交互效应：怎样指定、怎样解释，以及怎样绘图。本章先研究一个分类（指示）变量与一个连续变量之间的交互作用；在这种情境下，交互作用所容纳的假说很容易理解。随后转向多个连续预测变量之间更复杂的交互作用，这就困难得多。本章每一节都会把模型预测可视化，并对参数不确定性进行平均。</p>
   <p>交互作用很常见，却并不容易。我希望本章能为解释后续章节中的广义线性模型和多层模型打下坚实基础。</p>
 
-  <aside class="rethinking-box" id="rethinking-abraham-wald"><h3>再思考：统计学全明星 Abraham Wald</h3><p>第二次世界大战轰炸机的故事来自 Abraham Wald（1902–1950）的工作。Wald 出生于如今的罗马尼亚，纳粹入侵奥地利后移民美国。在短暂的一生中，他作出了许多贡献。与当前材料最相关的是：Wald 证明，对许多类型的统计决策规则而言，总存在一条贝叶斯规则，至少不逊于任何非贝叶斯规则。更惊人的是，Wald 从非贝叶斯前提出发证明了这一点，因此反贝叶斯派无法忽视它。这项工作总结在 Wald 1950 年出版的著作中，就在他去世前不久。<sup id="note-130-ref"><a href="#note-130">130</a></sup> Wald 在印度巡回访问时死于空难，实在英年早逝。</p></aside>
+  <aside class="rethinking-box" id="rethinking-abraham-wald"><h3>再思考：统计学全明星 Abraham Wald</h3><p>第二次世界大战轰炸机的故事来自 Abraham Wald（1902–1950）的工作。Wald 出生于如今的罗马尼亚，纳粹入侵奥地利后移民美国。在短暂的一生中，他作出了许多贡献。与本章最相关的是：Wald 证明，对许多类型的统计决策规则而言，总存在一条贝叶斯规则，至少不逊于任何非贝叶斯规则。更惊人的是，Wald 从非贝叶斯前提出发证明了这一点，因此反贝叶斯派无法忽视它。这项工作总结在 Wald 1950 年出版的著作中，就在他去世前不久。<sup id="note-130-ref"><a href="#note-130">130</a></sup> Wald 在印度巡回访问时死于空难；他的离世实在太早。</p></aside>
 
   <section id="sec-8-1"><h2>8.1 构建交互作用</h2>
     <p>非洲很特殊。它是世界第二大洲，也是文化与遗传多样性最高的大陆。非洲人口比亚洲少约 30 亿，现存语言数量却与亚洲相当。非洲的遗传多样性如此之高，以至于非洲以外的大部分遗传变异，仅仅是非洲内部变异的一个子集。非洲的地理也很特殊，而且方式令人困惑：在非洲以外，恶劣地理往往与糟糕经济相关；但在非洲，恶劣地理实际上可能有利于经济。</p>
@@ -34,20 +34,20 @@
     <p>所以，我们需要一种统计方法来判断关于 <span class="math-inline"><var>f</var>(<var>R</var>, <var>C</var>)</span> 的不同命题。怎样建立模型来产生图 8.2 中的条件性？我们可以走捷径，把数据拆成两个数据框：一个只含非洲，另一个包含其余所有大洲。但这样拆分数据并不好，理由有四个。</p>
     <ol class="argument-list" id="reasons-not-to-split-data"><li><p>第一，通常有些参数——例如 <span class="math-inline"><var>σ</var></span>——按模型假设完全不依赖大洲。拆分数据表会损害这些参数的估计精度，因为原本可以汇集全部证据形成一个估计，现在却变成两个精度较低的估计。实际上，你无意中假设了非洲与非非洲国家的方差不同。这类假设本身没有错，但应避免<strong>意外</strong>作出假设。</p></li><li><p>第二，要对用于拆分数据的变量——这里是 <code>cont_africa</code>——作出概率陈述，就必须把它纳入模型，否则只能得到最薄弱的一类统计论证。区分非洲与非非洲国家的预测价值难道没有不确定性吗？当然有。若不在同一个模型中分析全部数据，就很难量化这种不确定性。让后验分布替你完成工作，就能得到一项有用的不确定性度量。</p></li><li><p>第三，我们可能想用信息准则或其他方法比较模型。若要比较“所有大洲一视同仁”的模型与“允许不同大洲具有不同斜率”的模型，二者必须使用完全相同的数据（第 7 章已经解释）。因此不能自己拆数据，而要让模型拆数据。</p></li><li><p>第四，从第 13 章开始使用多层模型后，你会看到在“非洲”与“非非洲”这类类别之间借用信息的好处。不同类别样本量不同时尤其如此，因为有些类别内部的过拟合风险更高。换言之，我们在非洲之外学到的崎岖度信息，应当对非洲内部的估计产生某种影响，反过来也一样。多层模型（第 13 章）以这种方式借用信息，从而改善所有类别的估计。一旦拆分数据，这种借用就不可能发生。</p></li></ol>
 
-    <aside class="overthinking-box" id="overthinking-rugged-causation"><h3>过度思考：因果关系没那么简单</h3><p>上一节的地形崎岖度 DAG 很简单，但真相并不简单。真正感兴趣的原因并不是大洲本身，而是殖民主义和奴隶贸易等假想历史暴露，它们会持续影响经济表现。崎岖度等地形特征若曾以因果方式减少这些历史因素，就可能间接影响经济。可以画成：</p><figure class="dag-figure" id="dag-8-ruggedness-history"><svg viewBox="0 0 760 430" role="img" aria-labelledby="dag-8-history-title dag-8-history-desc"><title id="dag-8-history-title">加入历史因素后的崎岖度 DAG</title><desc id="dag-8-history-desc">崎岖度 R 直接指向 GDP G，也经历史因素 H 间接指向 G；大洲 C 指向 H，未观测混杂 U 指向 R、H 与 G。</desc><defs><marker id="dag8-history-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#3f4752"/></marker></defs><g stroke="#3f4752" stroke-width="4" marker-end="url(#dag8-history-arrow)"><line x1="330" y1="225" x2="430" y2="225"/><line x1="610" y1="225" x2="490" y2="225"/><line x1="315" y1="195" x2="245" y2="105"/><line x1="430" y1="205" x2="270" y2="95"/><line x1="245" y1="345" x2="300" y2="255"/><line x1="260" y1="360" x2="430" y2="245"/><line x1="225" y1="345" x2="225" y2="120"/></g><g fill="#f0f1fa" stroke="#263f86" stroke-width="3"><circle cx="225" cy="80" r="34"/><circle cx="300" cy="225" r="34"/><circle cx="460" cy="225" r="34"/><circle cx="640" cy="225" r="34"/><circle cx="225" cy="380" r="34"/></g><g text-anchor="middle" font-size="28" font-weight="700" fill="#263f86"><text x="225" y="90">G</text><text x="300" y="235">R</text><text x="460" y="235">H</text><text x="640" y="235">C</text><text x="225" y="390">U</text></g></svg><figcaption><span class="math-inline"><var>H</var></span> 表示奴隶贸易暴露等历史因素；<span class="math-inline"><var>R</var></span> 同时经直接与间接路径影响 <span class="math-inline"><var>G</var></span>。</figcaption></figure><p><span class="math-inline"><var>H</var></span> 表示奴隶贸易暴露等历史因素。<span class="math-inline"><var>R</var></span> 的总因果影响既包含直接路径 <span class="math-inline"><var>R</var> → <var>G</var></span>（大概始终为负），也包含间接路径 <span class="math-inline"><var>R</var> → <var>H</var> → <var>G</var></span>。第二条路径会随大洲 <span class="math-inline"><var>C</var></span> 而共同变化，因为 <span class="math-inline"><var>H</var></span> 与 <span class="math-inline"><var>C</var></span> 强烈相关。注意，混杂因素 <span class="math-inline"><var>U</var></span> 可以影响除 <span class="math-inline"><var>C</var></span> 外的任意变量。例如，如果过去真正影响 <span class="math-inline"><var>H</var></span> 的是到海岸的距离而非地形崎岖度，那么崎岖度与 GDP 的关联便不是因果性的。数据中还有大量潜在混杂因素值得考虑。</p></aside>
+    <aside class="overthinking-box" id="overthinking-rugged-causation"><h3>过度思考：因果关系没那么简单</h3><p>上一节的地形崎岖度 DAG 很简单，但真相并不简单。真正感兴趣的原因并不是大洲本身，而是殖民主义和奴隶贸易等假设中的历史暴露因素，它们会持续影响经济表现。崎岖度等地形特征若曾以因果方式减少这些历史因素，就可能间接影响经济。可以画成：</p><figure class="dag-figure" id="dag-8-ruggedness-history"><svg viewBox="0 0 760 430" role="img" aria-labelledby="dag-8-history-title dag-8-history-desc"><title id="dag-8-history-title">加入历史因素后的崎岖度 DAG</title><desc id="dag-8-history-desc">崎岖度 R 直接指向 GDP G，也经历史因素 H 间接指向 G；大洲 C 指向 H，未观测混杂 U 指向 R、H 与 G。</desc><defs><marker id="dag8-history-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#3f4752"/></marker></defs><g stroke="#3f4752" stroke-width="4" marker-end="url(#dag8-history-arrow)"><line x1="330" y1="225" x2="430" y2="225"/><line x1="610" y1="225" x2="490" y2="225"/><line x1="315" y1="195" x2="245" y2="105"/><line x1="430" y1="205" x2="270" y2="95"/><line x1="245" y1="345" x2="300" y2="255"/><line x1="260" y1="360" x2="430" y2="245"/><line x1="225" y1="345" x2="225" y2="120"/></g><g fill="#f0f1fa" stroke="#263f86" stroke-width="3"><circle cx="225" cy="80" r="34"/><circle cx="300" cy="225" r="34"/><circle cx="460" cy="225" r="34"/><circle cx="640" cy="225" r="34"/><circle cx="225" cy="380" r="34"/></g><g text-anchor="middle" font-size="28" font-weight="700" fill="#263f86"><text x="225" y="90">G</text><text x="300" y="235">R</text><text x="460" y="235">H</text><text x="640" y="235">C</text><text x="225" y="390">U</text></g></svg><figcaption><span class="math-inline"><var>H</var></span> 表示奴隶贸易暴露等历史因素；<span class="math-inline"><var>R</var></span> 同时经直接与间接路径影响 <span class="math-inline"><var>G</var></span>。</figcaption></figure><p><span class="math-inline"><var>H</var></span> 表示奴隶贸易暴露等历史因素。<span class="math-inline"><var>R</var></span> 的总因果影响既包含直接路径 <span class="math-inline"><var>R</var> → <var>G</var></span>（大概始终为负），也包含间接路径 <span class="math-inline"><var>R</var> → <var>H</var> → <var>G</var></span>。第二条路径会随大洲 <span class="math-inline"><var>C</var></span> 而共同变化，因为 <span class="math-inline"><var>H</var></span> 与 <span class="math-inline"><var>C</var></span> 强烈相关。注意，混杂因素 <span class="math-inline"><var>U</var></span> 可以影响除 <span class="math-inline"><var>C</var></span> 外的任意变量。例如，如果过去真正影响 <span class="math-inline"><var>H</var></span> 的是到海岸的距离而非地形崎岖度，那么崎岖度与 GDP 的关联便不是因果性的。数据中还有大量潜在混杂因素值得考虑。</p></aside>
 
     <section id="sec-8-1-1"><h3>8.1.1 建立崎岖度模型</h3><p>来看怎样在单个模型中恢复斜率反转。先忽略大洲，对全部数据拟合一个模型；这样，在直面交互作用这个魔鬼之前，可以先想清楚模型结构与先验。首先加载数据并做一些预处理：</p>
       <figure class="code-listing" id="code-8-1"><figcaption>R 代码 8.1</figcaption><pre><code>library(rethinking)
 data(rugged)
 d &lt;- rugged
 
-# make log version of outcome
+# 构造结果变量的对数版本
 d$log_gdp &lt;- log( d$rgdppc_2000 )
 
-# extract countries with GDP data
+# 提取 GDP 数据完整的国家
 dd &lt;- d[ complete.cases(d$rgdppc_2000) , ]
 
-# rescale variables
+# 重新缩放变量
 dd$log_gdp_std &lt;- dd$log_gdp / mean(dd$log_gdp)
 dd$rugged_std &lt;- dd$rugged / max(dd$rugged)</code></pre></figure>
       <p>这些数据的每一行是一个国家，各列则是经济、地理和历史特征。<sup id="note-133-ref"><a href="#note-133">133</a></sup> GDP 与地形崎岖度的原始数量级对人类并不直观，所以我重新缩放了变量，让单位更容易处理。通常的标准化是减去均值再除以标准差，把变量转成 z 分数。但这里不宜这样做，因为崎岖度为零具有实际意义。因此，地形崎岖度改为除以观测最大值，最终尺度从完全平坦的 0 延伸到样本最大值 1（莱索托——一个非常崎岖而美丽的地方）。同样，对数 GDP 除以其平均值，于是变成相对于国际平均水平的比例：1 表示平均，0.8 表示平均水平的 80%，1.1 表示比平均高 10%。</p>
@@ -72,13 +72,13 @@ dd$rugged_std &lt;- dd$rugged / max(dd$rugged)</code></pre></figure>
       <figure class="code-listing" id="code-8-3"><figcaption>R 代码 8.3</figcaption><pre><code>set.seed(7)
 prior &lt;- extract.prior( m8.1 )
 
-# set up the plot dimensions
+# 设置绘图范围
 plot( NULL , xlim=c(0,1) , ylim=c(0.5,1.5) ,
     xlab="ruggedness" , ylab="log GDP" )
 abline( h=min(dd$log_gdp_std) , lty=2 )
 abline( h=max(dd$log_gdp_std) , lty=2 )
 
-# draw 50 lines from the prior
+# 从先验中绘制 50 条直线
 rugged_seq &lt;- seq( from=-0.1 , to=1.1 , length.out=30 )
 mu &lt;- link( m8.1 , post=prior , data=data.frame(rugged_std=rugged_seq) )
 for ( i in 1:50 ) lines( rugged_seq , mu[i,] , col=col.alpha("black",0.3) )</code></pre></figure>
@@ -116,7 +116,7 @@ sigma 0.14 0.01 0.12 0.15</code></pre></figure>
       <p>解决办法很简单：非洲国家得到一个截距，非洲之外国家得到另一个截距。此时：</p>
       <div class="equation-block" id="eq-8-indexed-intercepts"><span><var>μ</var><sub>i</sub> = <var>α</var><sub>cid[i]</sub> + <var>β</var>(<var>r</var><sub>i</sub> − <span class="overbar">r</span>)</span></div>
       <p>这里 <code>cid</code> 是索引变量，即大洲 ID：非洲国家取 1，其他国家取 2。因此共有两个参数 <span class="math-inline"><var>α</var><sub>1</sub></span> 与 <span class="math-inline"><var>α</var><sub>2</sub></span>，每个唯一索引值对应一个。记法 <code>cid[i]</code> 表示第 <span class="math-inline"><var>i</var></span> 行的 <code>cid</code> 值。我使用方括号索引变量，因为它比再加一层下标 <span class="math-inline"><var>α</var><sub>cid<sub>i</sub></sub></span> 更易读。先自己建立这个索引：</p>
-      <figure class="code-listing" id="code-8-7"><figcaption>R 代码 8.7</figcaption><pre><code># make variable to index Africa (1) or not (2)
+      <figure class="code-listing" id="code-8-7"><figcaption>R 代码 8.7</figcaption><pre><code># 构造索引变量：非洲为 1，非非洲为 2
 dd$cid &lt;- ifelse( dd$cont_africa==1 , 1 , 2 )</code></pre></figure>
       <p>这种索引方法不采用传统的 0/1 指示变量附加项，因此不会迫使我们声称非洲均值天生比其他大洲均值更不确定；只需复用之前的先验。无论非洲的平均对数 GDP 是多少，它几乎肯定落在 1 的正负 0.2 内。请记住，它在结构上与传统方法得到的模型完全相同，只是这样更容易指定合理先验。</p>
       <p>在 <code>quap</code> 中定义模型，需要在线性模型和先验中加入方括号：</p>
@@ -147,15 +147,15 @@ PI( diff_a1_a2 )</code></pre><pre class="code-output"><code>        5%       94%
       <p>接着绘制 <code>m8.2</code> 的后验预测。虽然它的预测表现优于 <code>m8.1</code>，仍无法让非洲内外具有不同斜率。下面从后验抽样，并分别计算非洲与非非洲国家的预测均值和区间：</p>
       <figure class="code-listing" id="code-8-12"><figcaption>R 代码 8.12</figcaption><pre><code>rugged.seq &lt;- seq( from=-0.1 , to=1.1 , length.out=30 )
 
-# compute mu over samples, fixing cid=2
+# 固定 cid=2，逐个样本计算 mu
 mu.NotAfrica &lt;- link( m8.2 ,
     data=data.frame( cid=2 , rugged_std=rugged.seq ) )
 
-# compute mu over samples, fixing cid=1
+# 固定 cid=1，逐个样本计算 mu
 mu.Africa &lt;- link( m8.2 ,
     data=data.frame( cid=1 , rugged_std=rugged.seq ) )
 
-# summarize to means and intervals
+# 汇总均值与区间
 mu.NotAfrica_mu &lt;- apply( mu.NotAfrica , 2 , mean )
 mu.NotAfrica_ci &lt;- apply( mu.NotAfrica , 2 , PI , prob=0.97 )
 mu.Africa_mu &lt;- apply( mu.Africa , 2 , mean )
@@ -203,7 +203,7 @@ m8.1 -188.6   2.8  70.2   0.00 13.33 15.56</code></pre></figure>
     </section>
 
     <section id="sec-8-1-4"><h3>8.1.4 绘制交互作用</h3><p>绘制这个模型并不需要新技巧。目标是画两幅图：第一幅显示非洲国家，并叠加后验均值回归线及其 97% 区间；第二幅显示非洲之外的国家。</p>
-      <figure class="code-listing" id="code-8-17"><figcaption>R 代码 8.17</figcaption><pre><code># plot Africa - cid=1
+      <figure class="code-listing" id="code-8-17"><figcaption>R 代码 8.17</figcaption><pre><code># 绘制非洲国家：cid=1
 d.A1 &lt;- dd[ dd$cid==1 , ]
 plot( d.A1$rugged_std , d.A1$log_gdp_std , pch=16 , col=rangi2 ,
     xlab="ruggedness (standardized)" , ylab="log GDP (as proportion of mean)" ,
@@ -215,7 +215,7 @@ lines( rugged_seq , mu_mean , lwd=2 )
 shade( mu_ci , rugged_seq , col=col.alpha(rangi2,0.3) )
 mtext("African nations")
 
-# plot non-Africa - cid=2
+# 绘制非非洲国家：cid=2
 d.A0 &lt;- dd[ dd$cid==2 , ]
 plot( d.A0$rugged_std , d.A0$log_gdp_std , pch=1 , col="black" ,
     xlab="ruggedness (standardized)" , ylab="log GDP (as proportion of mean)" ,
@@ -242,7 +242,7 @@ mtext("Non-African nations")</code></pre></figure>
     <p>再次考虑 <span class="math-inline"><var>μ</var><sub>i</sub></span> 的模型：</p>
     <div class="equation-block" id="eq-8-symmetry-indexed"><span><var>μ</var><sub>i</sub> = <var>α</var><sub>cid[i]</sub> + <var>β</var><sub>cid[i]</sub>(<var>r</var><sub>i</sub> − <span class="overbar">r</span>)</span></div>
     <p>之前的解释是：斜率以大洲为条件。但说截距以崎岖度为条件也完全可以。把表达式换一种写法，更容易看出这一点：</p>
-    <div class="equation-block symmetry-equation" id="eq-8-symmetry-expanded"><span><var>μ</var><sub>i</sub> = (2 − <var>cid</var><sub>i</sub>)[<var>α</var><sub>1</sub> + <var>β</var><sub>1</sub>(<var>r</var><sub>i</sub> − <span class="overbar">r</span>)] + (<var>cid</var><sub>i</sub> − 1)[<var>α</var><sub>2</sub> + <var>β</var><sub>2</sub>(<var>r</var><sub>i</sub> − <span class="overbar">r</span>)]</span><small>第一项：<code>cid[i]=1</code>　　第二项：<code>cid[i]=2</code></small></div>
+    <div class="equation-block symmetry-equation" id="eq-8-symmetry-expanded"><span class="equation-row"><var>μ</var><sub>i</sub> = <span class="underbrace-group"><span class="underbrace-expression">(2 − <var>cid</var><sub>i</sub>)(<var>α</var><sub>1</sub> + <var>β</var><sub>1</sub>(<var>r</var><sub>i</sub> − <span class="overbar">r</span>))</span><svg class="underbrace-mark" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0 0 C0 5 4 5 9 5 H43 C47 5 47 10 50 10 C53 10 53 5 57 5 H91 C96 5 100 5 100 0"/></svg><small><var>cid</var>[<var>i</var>] = 1</small></span> + <span class="underbrace-group"><span class="underbrace-expression">(<var>cid</var><sub>i</sub> − 1)(<var>α</var><sub>2</sub> + <var>β</var><sub>2</sub>(<var>r</var><sub>i</sub> − <span class="overbar">r</span>))</span><svg class="underbrace-mark" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0 0 C0 5 4 5 9 5 H43 C47 5 47 10 50 10 C53 10 53 5 57 5 H91 C96 5 100 5 100 0"/></svg><small><var>cid</var>[<var>i</var>] = 2</small></span></span></div>
     <p>它看起来很怪，却是同一个模型。当 <span class="math-inline"><var>cid</var><sub>i</sub> = 1</span> 时，只剩第一项，即非洲参数；第二项归零。当 <span class="math-inline"><var>cid</var><sub>i</sub> = 2</span> 时，第一项归零，只剩第二项。现在若想象把一个国家切换到非洲，要知道这对预测有何影响，就必须知道它的崎岖度（除非它恰好位于平均崎岖度 <span class="math-inline"><span class="overbar">r</span></span>）。</p>
     <p>绘制反向解释会很有帮助：位于非洲与对数 GDP 的关联，取决于地形崎岖度。做法是在崎岖度保持不变时，计算同一个国家位于非洲与位于非洲之外的预测差值。只需运行两次 <code>link</code>，再用第一次结果减去第二次：</p>
     <figure class="code-listing" id="code-8-18"><figcaption>R 代码 8.18</figcaption><pre><code>rugged_seq &lt;- seq(from=-0.2,to=1.2,length.out=30)
@@ -312,7 +312,7 @@ sum( a &lt; 0 | a &gt; 1 ) / length( a )</code></pre><pre class="code-output"><c
       <div class="equation-block model-system-equation" id="eq-8-water-slope-model"><div><var>μ</var><sub>i</sub> = <var>α</var> + <var>γ</var><sub>W,i</sub><var>W</var><sub>i</sub> + <var>β</var><sub>S</sub><var>S</var><sub>i</sub></div><div><var>γ</var><sub>W,i</sub> = <var>β</var><sub>W</sub> + <var>β</var><sub>WS</sub><var>S</var><sub>i</sub></div></div>
       <p>现在 <span class="math-inline"><var>γ</var><sub>W,i</sub></span> 是花朵随水量变化快慢的斜率。参数 <span class="math-inline"><var>β</var><sub>W</sub></span> 是遮阴处于均值时的变化率；<span class="math-inline"><var>β</var><sub>WS</sub></span> 则是遮阴变化时，<span class="math-inline"><var>γ</var><sub>W,i</sub></span> 的变化率——也就是“遮阴对水量斜率”的斜率。记住：乌龟下面还是乌龟。<span class="math-inline"><var>γ</var><sub>W,i</sub></span> 带有 <span class="math-inline"><var>i</var></span>，因为它含有 <span class="math-inline"><var>S</var><sub>i</sub></span>，所以依赖第 <span class="math-inline"><var>i</var></span> 行。</p>
       <p>我们也希望遮阴关联 <span class="math-inline"><var>β</var><sub>S</sub></span> 依赖水量。幸运的是，由于简单交互作用的对称性，这一点免费获得。无法指定一种简单线性交互，说 <span class="math-inline"><var>x</var></span> 的效应依赖 <span class="math-inline"><var>z</var></span>，但 <span class="math-inline"><var>z</var></span> 的效应不依赖 <span class="math-inline"><var>x</var></span>。本节末“过度思考”侧栏会更详细解释。因此，惯例是把 <span class="math-inline"><var>γ</var><sub>W,i</sub></span> 代回 <span class="math-inline"><var>μ</var><sub>i</sub></span>：</p>
-      <div class="equation-block continuous-interaction-equation" id="eq-8-continuous-interaction-expanded"><span><var>μ</var><sub>i</sub> = <var>α</var> + (<var>β</var><sub>W</sub> + <var>β</var><sub>WS</sub><var>S</var><sub>i</sub>)<var>W</var><sub>i</sub> + <var>β</var><sub>S</sub><var>S</var><sub>i</sub></span><span>= <var>α</var> + <var>β</var><sub>W</sub><var>W</var><sub>i</sub> + <var>β</var><sub>S</sub><var>S</var><sub>i</sub> + <var>β</var><sub>WS</sub><var>S</var><sub>i</sub><var>W</var><sub>i</sub></span></div>
+      <div class="equation-block continuous-interaction-equation" id="eq-8-continuous-interaction-expanded"><span class="equation-row"><var>μ</var><sub>i</sub> = <var>α</var> + <span class="underbrace-group"><span class="underbrace-expression">(<var>β</var><sub>W</sub> + <var>β</var><sub>WS</sub><var>S</var><sub>i</sub>)</span><svg class="underbrace-mark" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0 0 C0 5 4 5 9 5 H43 C47 5 47 10 50 10 C53 10 53 5 57 5 H91 C96 5 100 5 100 0"/></svg><small><var>γ</var><sub>W,i</sub></small></span><var>W</var><sub>i</sub> + <var>β</var><sub>S</sub><var>S</var><sub>i</sub></span><span class="equation-row">= <var>α</var> + <var>β</var><sub>W</sub><var>W</var><sub>i</sub> + <var>β</var><sub>S</sub><var>S</var><sub>i</sub> + <var>β</var><sub>WS</sub><var>S</var><sub>i</sub><var>W</var><sub>i</sub></span></div>
       <p>这就是连续交互作用的传统形式，最右侧新增项包含两个变量的乘积。</p>
       <p>把它用于郁金香。交互模型为：</p>
       <div class="equation-block model-system-equation" id="eq-8-tulips-interaction"><div><var>B</var><sub>i</sub> ∼ Normal(<var>μ</var><sub>i</sub>, <var>σ</var>)</div><div><var>μ</var><sub>i</sub> = <var>α</var> + <var>β</var><sub>W</sub><var>W</var><sub>i</sub> + <var>β</var><sub>S</sub><var>S</var><sub>i</sub> + <var>β</var><sub>WS</sub><var>W</var><sub>i</sub><var>S</var><sub>i</sub></div></div>
@@ -338,7 +338,7 @@ sum( a &lt; 0 | a &gt; 1 ) / length( a )</code></pre><pre class="code-output"><c
       <p>前几章没有交互作用，因此把模型预测画成任一预测变量的函数时，可以随意把其他预测变量固定在任意值；未显示变量取什么值几乎无关紧要。现在不同了。模型一旦含交互作用，改变某个预测变量的效应就依赖其他预测变量的值。绘制这种相互依赖，最简单的办法或许是做一组双变量图：每幅图给未显示变量选择不同值，再相互比较，看这些变化造成多大差异。</p>
       <p>地形崎岖度示例就是这样，只需两幅图：非洲和其他地区。现在需要更多。对郁金香数据，可以在同一面板中画三幅图；三幅图合起来观看，就构成<strong>三联图</strong>，特别适合理解交互作用。策略如下：每幅图都显示模型预测的水量与花朵双变量关系，但分别使用不同遮阴值。本例容易选择 −1、0、1 三个值，因为遮阴只有这三级；更一般地，可以选择有代表性的低值、中位数和高值。</p>
       <p>下面的代码绘制无交互模型 <code>m8.4</code> 的后验预测：循环三个遮阴值，计算后验预测，再从后验画 20 条线。</p>
-      <figure class="code-listing" id="code-8-25"><figcaption>R 代码 8.25</figcaption><pre><code>par(mfrow=c(1,3)) # 3 plots in 1 row
+      <figure class="code-listing" id="code-8-25"><figcaption>R 代码 8.25</figcaption><pre><code>par(mfrow=c(1,3)) # 一行排列 3 幅图
 for ( s in -1:1 ) {
     idx &lt;- which( d$shade_cent==s )
     plot( d$water_cent[idx] , d$blooms_std[idx] , xlim=c(-1,1) , ylim=c(0,1) ,

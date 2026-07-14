@@ -72,7 +72,7 @@ for ( i in 1:nrow(d) ) {
       <p>下面为每个离婚率定义误差分布。每个观测值 <var>D</var><sub>obs,<var>i</var></sub> 都对应一个参数 <var>D</var><sub>true,<var>i</var></sub>：</p>
       <div class="equation-block wallis-equation" id="eq-15-observation-error"><div><var>D</var><sub>obs,<var>i</var></sub> ∼ Normal(<var>D</var><sub>true,<var>i</var></sub>, <var>D</var><sub>SE,<var>i</var></sub>)</div></div>
       <p>这只是把测量值 <var>D</var><sub>obs,<var>i</var></sub> 定义为一个指定的 Gaussian 分布，以未知参数 <var>D</var><sub>true,<var>i</var></sub> 为中心。因此，上式为每个州的观测离婚率指定了一个概率，同时使用已知测量误差。若从已知真实离婚率模拟观测离婚率，会写成：</p>
-      <pre class="stan-snippet" id="snippet-15-observation-simulation"><code>D_obs &lt;- rnorm( N_states , D_true , D_se )</code></pre>
+      <figure class="code-listing" id="snippet-15-observation-simulation"><figcaption>R：模拟带测量误差的观测值</figcaption><pre><code>D_obs &lt;- rnorm( N_states , D_true , D_se )</code></pre></figure>
       <p>这样的模拟从分布走向数据；改为估计 <code>D_true</code> 时，我们让它反向运行，借助 Bayesian 更新从数据走向分布。这正是从一开始就在做的事。</p>
       <p>信息很多，但仍然一步一步来。目标是把离婚率 <var>D</var> 建模成结婚年龄 <var>A</var> 与结婚率 <var>M</var> 的线性函数。把测量误差突出显示后，模型为：</p>
       <div class="equation-block wallis-equation" id="eq-15-divorce-measurement-model"><div class="annotated-equation-line"><span class="equation-expression"><var>D</var><sub>obs,<var>i</var></sub> ∼ Normal(<var>D</var><sub>true,<var>i</var></sub>, <var>D</var><sub>SE,<var>i</var></sub>)</span><span class="equation-label">[观测值的分布]</span></div><div class="annotated-equation-line"><span class="equation-expression"><var>D</var><sub>true,<var>i</var></sub> ∼ Normal(<var>μ</var><sub><var>i</var></sub>, <var>σ</var>)</span><span class="equation-label">[真实值的分布]</span></div><div class="annotated-equation-line"><span class="equation-expression"><var>μ</var><sub><var>i</var></sub> = <var>α</var> + <var>β</var><sub><var>A</var></sub><var>A</var><sub><var>i</var></sub> + <var>β</var><sub><var>M</var></sub><var>M</var><sub><var>i</var></sub></span><span class="equation-label">[评估 <var>A</var> → <var>D</var> 的线性模型]</span></div><div><var>α</var> ∼ Normal(0, 0.2)</div><div><var>β</var><sub><var>A</var></sub> ∼ Normal(0, 0.5)</div><div><var>β</var><sub><var>M</var></sub> ∼ Normal(0, 0.5)</div><div><var>σ</var> ∼ Exponential(1)</div></div>
@@ -367,7 +367,7 @@ sigma    0.88 0.19  0.64  1.20  1145    1</code></pre></figure>
 B_impute_mu &lt;- apply( post$B_impute , 2 , mean )
 B_impute_ci &lt;- apply( post$B_impute , 2 , PI )
 
-# B vs K
+# B 与 K 的关系
 plot( dat_list$B , dat_list$K , pch=16 , col=rangi2 ,
     xlab="neocortex percent (std)" , ylab="kcal milk (std)" )
 miss_idx &lt;- which( is.na(dat_list$B) )
@@ -375,7 +375,7 @@ Ki &lt;- dat_list$K[miss_idx]
 points( B_impute_mu , Ki )
 for ( i in 1:12 ) lines( B_impute_ci[,i] , rep(Ki[i],2) )
 
-# M vs B
+# M 与 B 的关系
 plot( dat_list$M , dat_list$B , pch=16 , col=rangi2 ,
     ylab="neocortex percent (std)" , xlab="log body mass (std)" )
 Mi &lt;- dat_list$M[miss_idx]
@@ -387,23 +387,23 @@ for ( i in 1:12 ) lines( rep(Mi[i],2) , B_impute_ci[,i] )</code></pre></figure>
       <p>可以改进这个模型，让插补模型估计两个预测变量之间的关系。其实这只是说要使用完整的生成模型。在 DAG 中，<var>B</var> 与 <var>M</var> 因 <var>U</var> 而相关。若能把这个事实纳入模型，便可能得到更好的插补，进而得到更好的推断。技术上只需把插补模型中的简单一行：</p>
       <div class="equation-block wallis-equation" id="eq-15-imputation-independent"><div><var>B</var><sub><var>i</var></sub> ∼ Normal(<var>ν</var>, <var>σ</var><sub><var>B</var></sub>)</div></div>
       <p>改成同时包含 <var>M</var> 与 <var>B</var> 的双变量正态分布：</p>
-      <div class="equation-block wallis-equation" id="eq-15-imputation-bivariate"><div>(<var>M</var><sub><var>i</var></sub>, <var>B</var><sub><var>i</var></sub>) ∼ MVNormal((<var>μ</var><sub><var>M</var></sub>, <var>μ</var><sub><var>B</var></sub>), <var>S</var>)</div></div>
-      <p><var>S</var> 矩阵是另一个协方差矩阵。它会用已观测案例度量 <var>M</var> 与 <var>B</var> 的相关，再利用该相关推断缺失的 <var>B</var> 值。请注意，这是我们能为 <var>M</var> 与 <var>B</var> 关联建立的最简单模型：它假定协方差足以描述二者关系。但情况并非总是如此，因为许多不同的双变量关系都能产生相同协方差。若你有更好的想法，就应改用它。</p>
+      <div class="equation-block wallis-equation" id="eq-15-imputation-bivariate"><div>(<var>M</var><sub><var>i</var></sub>, <var>B</var><sub><var>i</var></sub>) ∼ MVNormal((<var>μ</var><sub><var>M</var></sub>, <var>μ</var><sub><var>B</var></sub>), <strong>S</strong>)</div></div>
+      <p><strong>S</strong> 矩阵是另一个协方差矩阵。它会用已观测案例度量 <var>M</var> 与 <var>B</var> 的相关，再利用该相关推断缺失的 <var>B</var> 值。请注意，这是我们能为 <var>M</var> 与 <var>B</var> 关联建立的最简单模型：它假定协方差足以描述二者关系。但情况并非总是如此，因为许多不同的双变量关系都能产生相同协方差。若你有更好的想法，就应改用它。</p>
       <p>下面是 <code>ulam</code> 实现。代码比较复杂，因为必须构造一个变量，同时包含观测到的 <var>M</var> 值，以及由观测与插补 <var>B</var> 值合并而成的列表。这里还会更明确地执行合并。本节末的“过度思考”框会逐步讲解 Stan 代码与若干编码细节。</p>
       <figure class="code-listing" id="code-15-22"><figcaption>R 代码 15.22</figcaption><pre><code>m15.5 &lt;- ulam(
     alist(
-        # K as function of B and M
+        # K 是 B 与 M 的函数
         K ~ dnorm( mu , sigma ),
         mu &lt;- a + bB*B_merge + bM*M,
 
-        # M and B correlation
+        # M 与 B 的相关
         MB ~ multi_normal( c(muM,muB) , Rho_BM , Sigma_BM ),
         matrix[29,2]:MB &lt;&lt;- append_col( M , B_merge ),
 
-        # define B_merge as mix of observed and imputed values
+        # 将观测值与插补值合并为 B_merge
         vector[29]:B_merge &lt;- merge_missing( B , B_impute ),
 
-        # priors
+        # 先验
         c(a,muB,muM) ~ dnorm( 0 , 0.5 ),
         c(bB,bM) ~ dnorm( 0, 0.5 ),
         sigma ~ dexp( 1 ),
@@ -422,7 +422,7 @@ Rho_BM[2,2]   1.00 0.00  1.00  1.00  1981    1</code></pre></figure>
       <p>这个相关会怎样影响插补值？可以使用与之前相同的绘图代码。图 15.6 显示与之前相同种类的图，但对应新的插补模型。右图现在可以看出，模型的插补方式保留了新皮层与体重对数的正相关。尽管本例中这并未对结果变量关系的推断造成很大差别，但显然更好。做得更好就是好事。</p>
       <aside class="rethinking-box" id="rethinking-15-multiple-imputations"><h4>再思考：多重插补</h4><p>缺失数据插补有一段混乱的历史。插补形式很多，其中大多是缺乏坚实概率论基础的临时办法：热卡插补、冷卡插补、均值替代、随机插补等等。这些程序如今没有一个被视为体面的方法。常见的非 Bayesian 程序是<strong>多重插补</strong>。<sup id="note-216-ref"><a href="#note-216">216</a></sup> 多重插补是在调查无应答的背景下发展出来的，实际上有 Bayesian 理由支撑。但它发明于桌面计算机还无法实际执行 Bayesian 插补的年代，所以试图近似“随机缺失”缺失性模型的完整 Bayesian 解。若你不愿删除不完整案例，那么采用多重插补也应当让你感到放心。</p><p>该程序从缺失值的近似后验分布中进行多次抽取，分别用这些抽取值开展分析，再以近似完整 Bayesian 插补的方式合并各次分析。多重插补比完整 Bayesian 插补更受限制，所以现在我们直接使用真正的完整方案。但许多非 Bayesian 分析仍在使用多重插补。记住，频率主义统计并不是关于如何产生估计的理论，而只是一套关于如何评价估计的理论。</p></aside>
       <aside class="source-erratum" id="erratum-15-multiple-imputation-either"><strong>原文说明：</strong>PDF 第 539 页的 “then you should be comfortable using multiple imputation either” 中 <em>either</em> 与肯定式谓语不搭配；译稿按上下文将其视为多余词处理。</aside>
-      <aside class="overthinking-box" id="overthinking-15-stan-imputation"><h3>过度思考：Stan 插补算法</h3><p>原则上，插补只是使用同一个模型，却把数据替换成参数。数据是观测变量，参数是未观测变量；同一个生成模型让我们能够了解两者。但实践中仍需额外编程，因为必须构造一个混合了观测值与未观测值的新变量。<code>m15.3</code> 的 <code>ulam</code> 代码会自动完成这件事。不过，看看机器内部仍然值得：既能加深理解，也能教你怎样用原始 Stan 代码手动实现。</p><p>检查 Stan 代码 <code>stancode(m15.3)</code>，会在顶部看到一个 <code>functions</code> 块。这里可以放置不希望挤满 <code>model</code> 块的专用代码。本例是：</p><pre class="stan-snippet" id="stan-15-merge-missing-function"><code>functions{
+      <aside class="overthinking-box" id="overthinking-15-stan-imputation"><h3>过度思考：Stan 插补算法</h3><p>原则上，插补只是使用同一个模型，却把数据替换成参数。数据是观测变量，参数是未观测变量；同一个生成模型让我们能够了解两者。但实践中仍需额外编程，因为必须构造一个混合了观测值与未观测值的新变量。<code>m15.3</code> 的 <code>ulam</code> 代码会自动完成这件事。不过，看看机器内部仍然值得：既能加深理解，也能教你怎样用原始 Stan 代码手动实现。</p><p>检查 Stan 代码 <code>stancode(m15.3)</code>，会在顶部看到一个 <code>functions</code> 块。这里可以放置不希望挤满 <code>model</code> 块的专用代码。本例是：</p><figure class="code-listing" id="stan-15-merge-missing-function"><figcaption>Stan：merge_missing 函数</figcaption><pre><code>functions{
     vector merge_missing( int[] miss_indexes , vector x_obs , vector x_miss ) {
         int N = dims(x_obs)[1];
         int N_miss = dims(x_miss)[1];
@@ -432,17 +432,17 @@ Rho_BM[2,2]   1.00 0.00  1.00  1.00  1981    1</code></pre></figure>
             merged[ miss_indexes[i] ] = x_miss[i];
         return merged;
     }
-}</code></pre><p>这段代码只做一件事：把观测值向量与代替缺失值的一组参数合并。它会在 <code>model</code> 块中被调用。下面是重要的几行：</p><pre class="stan-snippet" id="stan-15-merge-missing-model"><code>B_merge = merge_missing(B_missidx, to_vector(B), B_impute);
+}</code></pre></figure><p>这段代码只做一件事：把观测值向量与代替缺失值的一组参数合并。它会在 <code>model</code> 块中被调用。下面是重要的几行：</p><figure class="code-listing" id="stan-15-merge-missing-model"><figcaption>Stan：model 块中的插补合并</figcaption><pre><code>B_merge = merge_missing(B_missidx, to_vector(B), B_impute);
 B_merge ~ normal( nu , sigma_B );
 for ( i in 1:29 ) {
     mu[i] = a + bB * B_merge[i] + bM * M[i];
 }
-K ~ normal( mu , sigma );</code></pre><p>上面第一行把观测数据 <code>B</code> 与 <code>B_impute</code> 中的插补参数合并。向量 <code>B_missidx</code> 只是缺失值索引位置的列表。若使用 <code>ulam</code>，它会替你构造 <code>B_missidx</code>；若直接使用 Stan，则需要自己构造。一行就够：</p><figure class="code-listing" id="code-15-23"><figcaption>R 代码 15.23</figcaption><pre><code>B_missidx &lt;- which( is.na( dat_list$B ) )</code></pre></figure><p>把 <code>B_missidx</code> 作为数据传给 Stan 模型。函数 <code>merge_missing</code> 会把每个缺失值替换成 <code>B_impute</code> 中对应参数的值。这有点别扭——只是毫无乐趣地搬弄索引——但确实能完成任务。最终得到的向量 <code>B_merge</code>，会在所有正确位置同时包含观测值与插补参数。接下来的代码再使用 <code>B_merge</code>：第二行只是模型所陈述的新皮层值概率；随后循环为每个物种构造线性预测量 <code>mu</code>，其中包含 <code>B_merge</code>，于是观测值与插补参数会各得其所地投入使用。</p><p>也可以直接在 <code>ulam</code> 模型中使用 <code>merge_missing</code>。它会声明合并向量和插补参数向量；模型 <code>m15.5</code> 就包含示例。连 <code>m15.3</code> 也会在幕后插入 <code>merge_missing</code>，可查看 <code>m15.3@formula_parsed$formula</code>。若直接使用 Stan，则所有这些都要自行声明；<code>stancode(m15.3)</code> 的 <code>parameters</code> 与 <code>model</code> 块展示了必要声明。</p><aside class="source-erratum" id="erratum-15-stan-imputation-typos"><strong>原文说明：</strong>PDF 第 540 页的 “you’ll a functions block” 漏排 <em>find</em>，后文 “which B_merge appearing” 应为 “with B_merge appearing”；译稿均按上下文订正。</aside></aside>
+K ~ normal( mu , sigma );</code></pre></figure><p>上面第一行把观测数据 <code>B</code> 与 <code>B_impute</code> 中的插补参数合并。向量 <code>B_missidx</code> 只是缺失值索引位置的列表。若使用 <code>ulam</code>，它会替你构造 <code>B_missidx</code>；若直接使用 Stan，则需要自己构造。一行就够：</p><figure class="code-listing" id="code-15-23"><figcaption>R 代码 15.23</figcaption><pre><code>B_missidx &lt;- which( is.na( dat_list$B ) )</code></pre></figure><p>把 <code>B_missidx</code> 作为数据传给 Stan 模型。函数 <code>merge_missing</code> 会把每个缺失值替换成 <code>B_impute</code> 中对应参数的值。这有点别扭——只是毫无乐趣地搬弄索引——但确实能完成任务。最终得到的向量 <code>B_merge</code>，会在所有正确位置同时包含观测值与插补参数。接下来的代码再使用 <code>B_merge</code>：第二行只是模型所陈述的新皮层值概率；随后循环为每个物种构造线性预测量 <code>mu</code>，其中包含 <code>B_merge</code>，于是观测值与插补参数会各得其所地投入使用。</p><p>也可以直接在 <code>ulam</code> 模型中使用 <code>merge_missing</code>。它会声明合并向量和插补参数向量；模型 <code>m15.5</code> 就包含示例。连 <code>m15.3</code> 也会在幕后插入 <code>merge_missing</code>，可查看 <code>m15.3@formula_parsed$formula</code>。若直接使用 Stan，则所有这些都要自行声明；<code>stancode(m15.3)</code> 的 <code>parameters</code> 与 <code>model</code> 块展示了必要声明。</p><aside class="source-erratum" id="erratum-15-stan-imputation-typos"><strong>原文说明：</strong>PDF 第 540 页的 “you’ll a functions block” 漏排 <em>find</em>，后文 “which B_merge appearing” 应为 “with B_merge appearing”；译稿均按上下文订正。</aside></aside>
     </section>
 
     <section id="sec-15-2-3"><h3>15.2.3 你的神现在在哪里？</h3>
       <p>科学问题有时不存在统计解。但即便如此，审慎的统计思考仍然有用，因为它会告诉我们确实没有统计解。下面看一个涉及缺失数据的例子。</p>
-      <p>宗教是人类的普遍现象，在人类社会中就像双足行走和给星星命名一样常见。人类学家、考古学家与宗教学者有时会好奇：宗教信仰怎样影响人类社会的福祉？某些最成功的宗教传统包含执行道德规范的神灵（及其他超自然实体）。例如，在 Abraham 诸教传统中，上帝惩罚恶人、奖赏义人；这样的神可以称为“<strong>道德化神灵</strong>”。另一些传统中的神只追求自身利益，无意鼓励人类相互合作。信仰上的这种差异会给社会带来后果吗？例如，若相信道德化神灵的人更善于相互合作，那么信仰这类神灵的社会也许会增长得更快，并倾向于取代信仰较少道德化神灵的社会。</p>
+      <p>宗教是人类的普遍现象，在人类社会中就像双足行走和给星星命名一样常见。人类学家、考古学家与宗教学者有时会好奇：宗教信仰怎样影响人类社会的福祉？某些最成功的宗教传统包含执行道德规范的神灵（及其他超自然实体）。例如，在亚伯拉罕诸教传统中，上帝惩罚恶人、奖赏义人；这样的神可以称为“<strong>道德化神灵</strong>”。另一些传统中的神只追求自身利益，无意鼓励人类相互合作。信仰上的这种差异会给社会带来后果吗？例如，若相信道德化神灵的人更善于相互合作，那么信仰这类神灵的社会也许会增长得更快，并倾向于取代信仰较少道德化神灵的社会。</p>
       <p>来看一组曾被用来评估这个想法的历史数据。<sup id="note-217-ref"><a href="#note-217">217</a></sup></p>
       <figure class="code-listing" id="code-15-24"><figcaption>R 代码 15.24</figcaption><pre><code>data(Moralizing_gods)
 str(Moralizing_gods)</code></pre><pre class="code-output" id="output-15-24"><code>'data.frame': 864 obs. of 5 variables:
@@ -503,7 +503,7 @@ moralizing_gods   NA   NA   NA   NA   NA   NA   NA   NA    1</code></pre></figur
       <p>这个非常愚蠢的示例，却给出了处理离散缺失数据的实用工作案例。我们会把故事转成生成模型，从中模拟数据，再建立能应对缺失值的统计模型。先把上述故事看作一张 DAG：</p>
       <figure class="dag-figure" id="dag-15-discrete-cats"><svg viewBox="0 0 1000 280" role="img" aria-labelledby="dag-15-discrete-cats-title dag-15-discrete-cats-desc"><title id="dag-15-discrete-cats-title">猫是否存在、缺失指示与鸟鸣音符数的 DAG</title><desc id="dag-15-discrete-cats-desc">缺失指示 RC 与真实猫状态 C 共同产生观测猫状态 C星，真实猫状态还影响鸟鸣音符数 N。</desc><defs><marker id="dag15-cats-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#3f4752"/></marker></defs><g stroke="#3f4752" stroke-width="4" marker-end="url(#dag15-cats-arrow)"><line x1="210" y1="140" x2="390" y2="140"/><line x1="570" y1="140" x2="450" y2="140"/><line x1="610" y1="140" x2="790" y2="140"/></g><circle cx="590" cy="140" r="38" fill="#fff" stroke="#263f86" stroke-width="3" stroke-dasharray="7 5"/><g fill="#263f86" font-size="32" font-weight="700" text-anchor="middle"><text x="170" y="151">Rᶜ</text><text x="420" y="151">C*</text><text x="590" y="151">C</text><text x="830" y="151">N</text></g></svg><figcaption>猫是否存在 <var>C</var> 会影响鸟鸣音符数 <var>N</var>；但由于缺失指示 <var>R</var><sub><var>C</var></sub>，我们只能观测到 <var>C</var>*。</figcaption></figure>
       <p>猫是否存在 <var>C</var> 会影响鸟唱出的音符数 <var>N</var>。然而由于缺失值 <var>R</var><sub><var>C</var></sub>，我们只能观测到 <var>C</var>*。要把它变成完全生成式的模型，现在必须为上面每条箭头选择函数。下面是我用统计记号表达的选择：</p>
-      <div class="equation-block wallis-equation" id="eq-15-discrete-cats-model"><div class="annotated-equation-line"><span class="equation-expression"><var>N</var><sub><var>i</var></sub> ∼ Poisson(<var>λ</var><sub><var>i</var></sub>)</span><span class="equation-label">[鸟鸣音符数的概率]</span></div><div class="annotated-equation-line"><span class="equation-expression">log <var>λ</var><sub><var>i</var></sub> = <var>α</var> + <var>βC</var><sub><var>i</var></sub></span><span class="equation-label">[音符率是猫状态的函数]</span></div><div class="annotated-equation-line"><span class="equation-expression"><var>C</var><sub><var>i</var></sub> ∼ Bernoulli(<var>k</var>)</span><span class="equation-label">[猫存在的概率]</span></div><div class="annotated-equation-line"><span class="equation-expression"><var>R</var><sub><var>C</var>,<var>i</var></sub> ∼ Bernoulli(<var>r</var>)</span><span class="equation-label">[不知道 <var>C</var><sub><var>i</var></sub> 的概率]</span></div></div>
+      <div class="equation-block wallis-equation" id="eq-15-discrete-cats-model"><div class="annotated-equation-line"><span class="equation-expression"><var>N</var><sub><var>i</var></sub> ∼ Poisson(<var>λ</var><sub><var>i</var></sub>)</span><span class="equation-label">[鸟鸣音符数的概率]</span></div><div class="annotated-equation-line"><span class="equation-expression">log <var>λ</var><sub><var>i</var></sub> = <var>α</var> + <var>β</var><var>C</var><sub><var>i</var></sub></span><span class="equation-label">[音符率是猫状态的函数]</span></div><div class="annotated-equation-line"><span class="equation-expression"><var>C</var><sub><var>i</var></sub> ∼ Bernoulli(<var>k</var>)</span><span class="equation-label">[猫存在的概率]</span></div><div class="annotated-equation-line"><span class="equation-expression"><var>R</var><sub><var>C</var>,<var>i</var></sub> ∼ Bernoulli(<var>r</var>)</span><span class="equation-label">[不知道 <var>C</var><sub><var>i</var></sub> 的概率]</span></div></div>
       <p>要真正模拟一些演示数据，还必须为 <var>α</var>、<var>β</var>、<var>k</var> 与 <var>r</var> 选择数值。下面是一段可运行的模拟：</p>
       <figure class="code-listing" id="code-15-29"><figcaption>R 代码 15.29</figcaption><pre><code>set.seed(9)
 N_houses &lt;- 100L
@@ -527,21 +527,21 @@ dat &lt;- list(
       <p>不知道 <var>C</var><sub><var>i</var></sub> 时，就对 <var>C</var><sub><var>i</var></sub> 的每个可能值——这里是 1 或 0——分别计算 <var>N</var><sub><var>i</var></sub> 的 likelihood，再用 <var>C</var><sub><var>i</var></sub> 取各值的概率对这些 likelihood 加权平均。上面的表达式正是模型中需要编码的内容。既可以直接使用 Stan，也可以在 <code>ulam()</code> 中使用自定义分布。先看 <code>ulam()</code> 代码，再来解释。</p>
       <figure class="code-listing" id="code-15-30"><figcaption>R 代码 15.30</figcaption><pre><code>m15.6 &lt;- ulam(
     alist(
-        # singing bird model
-        ## cat known present/absent:
+        # 鸣禽模型
+        ## 已知有猫或无猫：
         notes|RC==0 ~ poisson( lambda ),
         log(lambda) &lt;- a + b*cat,
-        ## cat NA:
+        ## 猫状态缺失：
         notes|RC==1 ~ custom( log_sum_exp(
                  log(k) + poisson_lpmf( notes | exp(a + b) ),
                  log(1-k) + poisson_lpmf( notes | exp(a) )
             ) ),
 
-        # priors
+        # 先验
         a ~ normal(0,1),
         b ~ normal(0,0.5),
 
-        # sneaking cat model
+        # 潜行猫模型
         cat|RC==0 ~ bernoulli(k),
         k ~ beta(2,2)
     ), data=dat , chains=4 , cores=4 )</code></pre></figure>
@@ -553,7 +553,7 @@ dat &lt;- list(
       <p>要为每个 <var>i</var> 计算 <span class="math-inline">Pr(<var>C</var><sub><var>i</var></sub> = 1 | <var>N</var><sub><var>i</var></sub>)</span>，只需在模型代码中再加几行。我们会在 Stan 的 <code>generated quantities</code> 块执行这些计算，也就是说，每次 HMC 转移只计算一次，并把结果保存在返回的样本中。使用 <code>ulam</code> 时，可以在行首标记 <code>gq&gt;</code> 来表达这一要求。下面是更新后的模型，新行位于底部：</p>
       <figure class="code-listing" id="code-15-31"><figcaption>R 代码 15.31</figcaption><pre><code>m15.7 &lt;- ulam(
     alist(
-        # singing bird model
+        # 鸣禽模型
         notes|RC==0 ~ poisson( lambda ),
         notes|RC==1 ~ custom( log_sum_exp(
                  log(k) + poisson_lpmf( notes | exp(a + b) ),
@@ -563,11 +563,11 @@ dat &lt;- list(
         a ~ normal(0,1),
         b ~ normal(0,0.5),
 
-        # sneaking cat model
+        # 潜行猫模型
         cat|RC==0 ~ bernoulli(k),
         k ~ beta(2,2),
 
-        # imputed values
+        # 插补值
         gq&gt; vector[N]:PrC1 &lt;- exp(lpC1)/(exp(lpC1)+exp(lpC0)),
         gq&gt; vector[N]:lpC1 &lt;- log(k) + poisson_lpmf( notes[i] | exp(a+b) ),
         gq&gt; vector[N]:lpC0 &lt;- log(1-k) + poisson_lpmf( notes[i] | exp(a) )
@@ -575,11 +575,11 @@ dat &lt;- list(
       <p>以 <code>gq&gt;</code> 开头的三行执行 <span class="math-inline">Pr(<var>C</var><sub><var>i</var></sub> = 1 | <var>N</var><sub><var>i</var></sub>)</span> 的计算。第一行定义保存这些概率的向量；公式就是前面的数学表达式，也就是 Bayes 规则。之所以需要一堆 <code>exp</code>，是因为其余计算一如既往地在对数尺度上完成。接下来两行还是前面的 likelihood 计算：分别求猫存在（<code>lpC1</code>）或不存在（<code>lpC0</code>）时 <var>N</var><sub><var>i</var></sub> 的 likelihood。</p>
       <p>章末练习会要求你把 <code>PrC1</code> 中的后验概率与模拟时的真实值比较。虽然这些样本的计算方式不同寻常，仍可以像处理其他参数一样处理它们。</p>
       <p>这里的策略可以推广到取值不止两个的离散变量。此时，只需在平均 likelihood 中使用两项以上。例如，若每栋房子最多能养两只猫，猫的数量就可以改为在各房子间服从二项分布。likelihood 代码可以改成：</p>
-      <pre class="stan-snippet" id="snippet-15-two-cats"><code>notes|RC==1 ~ custom( log_sum_exp(
+      <figure class="code-listing" id="snippet-15-two-cats"><figcaption>R/Stan：两只猫的平均似然</figcaption><pre><code>notes|RC==1 ~ custom( log_sum_exp(
         binomial_lpmf(2|2,k) + poisson_lpmf( notes | exp(a + b*2) ),
         binomial_lpmf(1|2,k) + poisson_lpmf( notes | exp(a + b*1) ),
         binomial_lpmf(0|2,k) + poisson_lpmf( notes | exp(a + b*0) )
-    ) )</code></pre>
+    ) )</code></pre></figure>
       <p>把上面每一行读作：若假定猫的数量以 2 为最大值、以 <var>k</var> 为概率服从二项分布，则某个特定猫数的对数概率，加上假定正好有该数量的猫时出现特定音符数的对数概率。无序类别的做法相同，只是开头各项来自某个概率单纯形。</p>
       <p>当不止一个离散变量含有缺失值时，同样的方法依然成立。此时，每一种缺失值组合都需要不同的平均 likelihood（<code>custom()</code> 分布）。例如，假设还要根据每栋房子 <var>i</var> 是否住着狗（<var>D</var><sub><var>i</var></sub>）来分类。一栋房子可能属于四种观测组合之一：（1）有猫也有狗；（2）有猫；（3）有狗；（4）猫狗都没有（悲伤）。同样，其中一部分房子无法查明有没有狗。于是数据中，猫变量和狗变量可能任意一个为 <code>NA</code>，也可能两者都是 <code>NA</code>。若两者都为 <code>NA</code>，就必须对上面四种可能性全部取平均，其中还要同时纳入猫与狗的先验概率：</p>
       <div class="equation-block wallis-equation" id="eq-15-cat-dog-both-missing"><div>Pr(<var>N</var><sub><var>i</var></sub>) = Pr(<var>C</var><sub><var>i</var></sub> = 1) Pr(<var>D</var><sub><var>i</var></sub> = 1) Pr(<var>N</var><sub><var>i</var></sub> | <var>C</var><sub><var>i</var></sub> = 1, <var>D</var><sub><var>i</var></sub> = 1)</div><div>+ Pr(<var>C</var><sub><var>i</var></sub> = 1) Pr(<var>D</var><sub><var>i</var></sub> = 0) Pr(<var>N</var><sub><var>i</var></sub> | <var>C</var><sub><var>i</var></sub> = 1, <var>D</var><sub><var>i</var></sub> = 0)</div><div>+ Pr(<var>C</var><sub><var>i</var></sub> = 0) Pr(<var>D</var><sub><var>i</var></sub> = 1) Pr(<var>N</var><sub><var>i</var></sub> | <var>C</var><sub><var>i</var></sub> = 0, <var>D</var><sub><var>i</var></sub> = 1)</div><div>+ Pr(<var>C</var><sub><var>i</var></sub> = 0) Pr(<var>D</var><sub><var>i</var></sub> = 0) Pr(<var>N</var><sub><var>i</var></sub> | <var>C</var><sub><var>i</var></sub> = 0, <var>D</var><sub><var>i</var></sub> = 0)</div></div>
@@ -617,7 +617,7 @@ dat &lt;- list(
       <article class="exercise" id="exercise-15H3"><h4>15H3</h4><p>信息会在参数之间向所有方向流动，这个事实有时会带来相当反直觉的结论。下面是一个缺失数据插补示例：插补单个数据点，竟会反转所推断关系的方向。使用以下数据：</p><figure class="code-listing" id="code-15-32"><figcaption>R 代码 15.32</figcaption><pre><code>set.seed(100)
 x &lt;- c( rnorm(10) , NA )
 y &lt;- c( rnorm(10,x) , 100 )
-d &lt;- list(x=x,y=y)</code></pre></figure><p>这组数据包含 11 个案例，其中一个案例的预测变量缺失。可以很快确认：若只对完整案例用 <var>x</var> 回归 <var>y</var>，两个变量之间会呈现很强的正关系。但现在拟合下面的模型，并插补那一个缺失的 <var>x</var> 值：</p><div class="equation-block wallis-equation" id="eq-15H3"><div><var>y</var><sub><var>i</var></sub> ∼ Normal(<var>μ</var><sub><var>i</var></sub>, <var>σ</var>)</div><div><var>μ</var><sub><var>i</var></sub> = <var>α</var> + <var>βx</var><sub><var>i</var></sub></div><div><var>x</var><sub><var>i</var></sub> ∼ Normal(0, 1)</div><div><var>α</var> ∼ Normal(0, 100)</div><div><var>β</var> ∼ Normal(0, 100)</div><div><var>σ</var> ∼ HalfCauchy(0, 1)</div></div><p><var>β</var> 的后验分布发生了什么？务必检查完整密度。你能解释推断为何改变吗？</p></article>
+d &lt;- list(x=x,y=y)</code></pre></figure><p>这组数据包含 11 个案例，其中一个案例的预测变量缺失。可以很快确认：若只对完整案例用 <var>x</var> 回归 <var>y</var>，两个变量之间会呈现很强的正关系。但现在拟合下面的模型，并插补那一个缺失的 <var>x</var> 值：</p><div class="equation-block wallis-equation" id="eq-15H3"><div><var>y</var><sub><var>i</var></sub> ∼ Normal(<var>μ</var><sub><var>i</var></sub>, <var>σ</var>)</div><div><var>μ</var><sub><var>i</var></sub> = <var>α</var> + <var>β</var><var>x</var><sub><var>i</var></sub></div><div><var>x</var><sub><var>i</var></sub> ∼ Normal(0, 1)</div><div><var>α</var> ∼ Normal(0, 100)</div><div><var>β</var> ∼ Normal(0, 100)</div><div><var>σ</var> ∼ HalfCauchy(0, 1)</div></div><p><var>β</var> 的后验分布发生了什么？务必检查完整密度。你能解释推断为何改变吗？</p></article>
       <article class="exercise" id="exercise-15H4"><h4>15H4</h4><p>一个名叫 Andrew 的家伙做了一个八格转盘，想知道它是否公平。他转了很多次，记录每个数值出现的次数，随后却不小心把咖啡洒在了 4 和 5 的记录上。幸存数据如下：</p><div class="table-wrap" id="table-15H4-spinner"><table class="count-table"><thead><tr><th scope="col">数值</th><th scope="col">1</th><th scope="col">2</th><th scope="col">3</th><th scope="col">4</th><th scope="col">5</th><th scope="col">6</th><th scope="col">7</th><th scope="col">8</th></tr></thead><tbody><tr><th scope="row">频数</th><td>18</td><td>19</td><td>22</td><td>?</td><td>?</td><td>19</td><td>20</td><td>22</td></tr></tbody></table></div><p>你的任务，是插补表中两个缺失值。Andrew 不记得一共转了多少次，因此你必须为转动总次数指定一个先验分布，再对未知总数取边际。Andrew 不确定转盘是否公平（每个数值等可能），但他确信没有任何一个数值的概率达到另一个数值的两倍。使用 Dirichlet 分布表达这项先验信念，并绘制数字 4 与 5 出现次数的联合后验分布。</p></article>
     </div>
   </section>

@@ -5,26 +5,26 @@
     <p class="source-range">当前译稿对应原书 PDF 第 65–88 页</p>
   </header>
 
-  <p>许多贝叶斯统计教材都用医学检测情境来介绍<strong>后验推断</strong>。沿用常见例子的结构，假设有一种血液检测，能在 95% 的情况下正确检出吸血鬼。用更精确的数学记号表示，就是 <span class="math-inline">Pr(检测阳性 | 吸血鬼) = 0.95</span>。这项检测非常准确，几乎总能抓住真正的吸血鬼。</p>
+  <p>许多贝叶斯统计教材都用医学检测情境来介绍<strong>后验推断</strong>。沿用常见例子的结构，假设有一种血液检测，能在 95% 的情况下正确检出吸血鬼。用更精确的数学记号表示，就是 <span class="math-inline">Pr(positive test result | vampire) = 0.95</span>。这项检测非常准确，几乎总能抓住真正的吸血鬼。</p>
 
-  <p>不过，它也会犯错，产生假阳性：有 1% 的时候，它会把普通人误诊为吸血鬼，即 <span class="math-inline">Pr(检测阳性 | 凡人) = 0.01</span>。最后一条已知信息是，吸血鬼相当罕见，只占人口的 0.1%，因此 <span class="math-inline">Pr(吸血鬼) = 0.001</span>。现在假设某人的吸血鬼检测结果为阳性。这个人真是不死嗜血者的概率是多少？</p>
+  <p>不过，它也会犯错，产生假阳性：有 1% 的时候，它会把普通人误诊为吸血鬼，即 <span class="math-inline">Pr(positive test result | mortal) = 0.01</span>。最后一条已知信息是，吸血鬼相当罕见，只占人口的 0.1%，因此 <span class="math-inline">Pr(vampire) = 0.001</span>。现在假设某人的吸血鬼检测结果为阳性。这个人真是不死嗜血者的概率是多少？</p>
 
-  <p>正确做法是用贝叶斯定理把条件概率反转，计算 <span class="math-inline">Pr(吸血鬼 | 阳性)</span>。可以把计算写成：</p>
+  <p>正确做法是用贝叶斯定理把条件概率反转，计算 <span class="math-inline">Pr(vampire | positive)</span>。可以把计算写成：</p>
 
   <div class="equation-block vampire-bayes-equation" id="eq-3-vampire-positive">
-    <span>Pr(吸血鬼 | 阳性)</span>
+    <span>Pr(vampire | positive)</span>
     <span>=</span>
     <span class="fraction">
-      <span>Pr(阳性 | 吸血鬼) Pr(吸血鬼)</span>
-      <span>Pr(阳性)</span>
+      <span>Pr(positive | vampire) Pr(vampire)</span>
+      <span>Pr(positive)</span>
     </span>
   </div>
 
-  <p>其中，<span class="math-inline">Pr(阳性)</span> 是检测呈阳性的平均概率，也就是：</p>
+  <p>其中，<span class="math-inline">Pr(positive)</span> 是检测呈阳性的平均概率，也就是：</p>
 
   <div class="equation-block positive-rate-equation" id="eq-3-positive-rate">
-    <div>Pr(阳性) = Pr(阳性 | 吸血鬼) Pr(吸血鬼)</div>
-    <div>+ Pr(阳性 | 凡人) [1 - Pr(吸血鬼)]</div>
+    <div>Pr(positive) = Pr(positive | vampire) Pr(vampire)</div>
+    <div>+ Pr(positive | mortal) [1 - Pr(vampire)]</div>
   </div>
 
   <p>在 R 中完成计算：</p>
@@ -60,7 +60,7 @@ Pr_Positive &lt;- Pr_Positive_Vampire * Pr_Vampire +
   <p>现在告诉我：如果检测全部 100,000 人，结果呈阳性的人中，真正的吸血鬼占多大比例？很多人——当然不是所有人——会觉得这种表达容易得多。<sup><a id="note-49-ref" href="#note-49" aria-label="尾注 49">49</a></sup>现在只需数一数阳性者：<span class="math-inline">95 + 999 = 1094</span>。在这 1094 个阳性结果中，有 95 个来自真正的吸血鬼，因此：</p>
 
   <div class="equation-block natural-frequency-equation" id="eq-3-natural-frequency">
-    <span>Pr(吸血鬼 | 阳性)</span>
+    <span>Pr(vampire | positive)</span>
     <span>=</span>
     <span class="fraction"><span>95</span><span>1094</span></span>
     <span>≈ 0.087</span>
@@ -93,25 +93,29 @@ Pr_Positive &lt;- Pr_Positive_Vampire * Pr_Vampire +
     <h3>再思考：为什么统计学救不了糟糕的科学</h3>
     <p>本章开头的吸血鬼例子，与许多不同的信号检测问题具有相同逻辑结构：（1）存在某种我们看不见的二元状态；（2）我们观察到一个关于隐藏状态的不完美线索；（3）我们（应该）使用贝叶斯定理，从逻辑上推导这条线索会怎样改变我们的不确定性。</p>
     <p>科学推断经常以类似方式表述：（1）一个假说非真即假；（2）我们使用某种统计程序，得到关于假说为假的不完美线索；（3）我们（应该）使用贝叶斯定理，从逻辑上推导这条线索会怎样改变假说的地位。第三步几乎从来没有完成。不过，让我们用一个玩具例子真正做一遍，看看统计程序——无论是否贝叶斯——能为我们做的事情有多少。</p>
-    <p>假设在假说为真时，得到阳性发现的概率为 <span class="math-inline">Pr(显著 | 真) = 0.95</span>，这就是检验的功效。再假设在假说为假时，得到阳性发现的概率为 <span class="math-inline">Pr(显著 | 假) = 0.05</span>，这是假阳性率，类似传统显著性检验中的 5%。</p>
-    <p>最后，还必须说明假说为真的基础率。比如，假设每 100 个假说中有 1 个最终为真，那么 <span class="math-inline">Pr(真) = 0.01</span>。没有人知道这个值，但科学史表明它很小。第 17 章会进一步讨论。现在用贝叶斯定理计算后验：</p>
+    <p>假设在假说为真时，得到阳性发现的概率为 <span class="math-inline">Pr(sig | true) = 0.95</span>，这就是检验的功效。再假设在假说为假时，得到阳性发现的概率为 <span class="math-inline">Pr(sig | false) = 0.05</span>，这是假阳性率，类似传统显著性检验中的 5%。</p>
+    <p>最后，还必须说明假说为真的基础率。比如，假设每 100 个假说中有 1 个最终为真，那么 <span class="math-inline">Pr(true) = 0.01</span>。没有人知道这个值，但科学史表明它很小。第 17 章会进一步讨论。现在用贝叶斯定理计算后验：</p>
 
     <div class="equation-block bad-science-equation" id="eq-3-true-positive">
-      <span>Pr(真 | 阳性)</span>
-      <span>=</span>
-      <span class="fraction">
-        <span>Pr(阳性 | 真) Pr(真)</span>
-        <span>Pr(阳性)</span>
+      <span class="equation-term">
+        <span>Pr(true | pos)</span>
+        <span>=</span>
+        <span class="fraction">
+          <span>Pr(pos | true) Pr(true)</span>
+          <span>Pr(pos)</span>
+        </span>
       </span>
-      <span>=</span>
-      <span class="fraction wide-fraction">
-        <span>Pr(阳性 | 真) Pr(真)</span>
-        <span>Pr(阳性 | 真) Pr(真) + Pr(阳性 | 假) Pr(假)</span>
+      <span class="equation-term equation-continuation">
+        <span>=</span>
+        <span class="fraction wide-fraction">
+          <span>Pr(pos | true) Pr(true)</span>
+          <span>Pr(pos | true) Pr(true) + Pr(pos | false) Pr(false)</span>
+        </span>
       </span>
     </div>
 
-    <p>代入相应数值，得到的答案约为 <span class="math-inline">Pr(真 | 阳性) = 0.16</span>。也就是说，一项阳性发现只对应假说为真的 16% 概率。这与医学检测（以及吸血鬼检测）中的低基础率现象完全相同。</p>
-    <p>即使把假阳性率降到 1%，这个后验概率也只能升至 0.5，和抛硬币一样。最重要的是提高基础率 <span class="math-inline">Pr(真)</span>；而这需要思考，不是检测。<sup><a id="note-52-ref" href="#note-52" aria-label="尾注 52">52</a></sup></p>
+    <p>代入相应数值，得到的答案约为 <span class="math-inline">Pr(true | pos) = 0.16</span>。也就是说，一项阳性发现只对应假说为真的 16% 概率。这与医学检测（以及吸血鬼检测）中的低基础率现象完全相同。</p>
+    <p>即使把假阳性率降到 1%，这个后验概率也只能升至 0.5，和抛硬币一样。最重要的是提高基础率 <span class="math-inline">Pr(true)</span>；而这需要思考，不是检测。<sup><a id="note-52-ref" href="#note-52" aria-label="尾注 52">52</a></sup></p>
   </aside>
 
   <section id="sec-3-1">
@@ -193,7 +197,7 @@ dens( samples )</code></pre>
 
       <figure class="code-listing" id="code-3-6">
         <figcaption>R 代码 3.6</figcaption>
-        <pre><code># add up posterior probability where p &lt; 0.5
+        <pre><code># 对 p &lt; 0.5 的后验概率求和
 sum( posterior[ p_grid &lt; 0.5 ] )</code></pre>
         <pre class="code-output"><code>[1] 0.1718746</code></pre>
       </figure>
@@ -230,7 +234,7 @@ sum( posterior[ p_grid &lt; 0.5 ] )</code></pre>
     <section id="sec-3-2-2">
       <h3>3.2.2 概率质量已知的区间</h3>
 
-      <p>科学期刊更常报告概率质量已知的区间，通常称为<strong>置信区间</strong>。像这里这样基于后验概率的区间，也可以称为<strong>可信区间</strong>。不过，我们将把它称为<strong>兼容区间</strong>，以免“置信”和“可信”带来没有根据的暗示。<sup><a id="note-53-ref" href="#note-53" aria-label="尾注 53">53</a></sup>这种区间表示与模型和数据相容的一组参数值。模型与数据本身可能并不值得信任，那么区间当然也不会值得信任。</p>
+      <p>科学期刊更常报告概率质量已知的区间，通常称为<strong>置信区间</strong>。像这里这样基于后验概率的区间，也可以称为<strong>可信区间</strong>。不过，我们将把它称为<strong>相容区间</strong>，以免“置信”和“可信”带来没有根据的暗示。<sup><a id="note-53-ref" href="#note-53" aria-label="尾注 53">53</a></sup>这种区间表示与模型和数据相容的一组参数值。模型与数据本身可能并不值得信任，那么区间当然也不会值得信任。</p>
 
       <p>这类后验区间给出两个参数值，其间包含指定数量的后验概率，也就是一份概率质量。对这种区间，使用后验样本比使用网格近似更容易找到答案。</p>
 
@@ -242,7 +246,7 @@ sum( posterior[ p_grid &lt; 0.5 ] )</code></pre>
         <figcaption><strong>图 3.2：</strong>两类后验区间。上排：边界已知的区间。左上：蓝色面积是参数值低于 0.5 的后验概率；右上：0.5 与 0.75 之间的后验概率。下排：概率质量已知的区间。左下：较低的 80% 后验概率位于约 0.75 以下；右下：中间的 80% 后验概率位于 10% 与 90% 分位数之间。</figcaption>
       </figure>
 
-      <p>例如，假设你想知道较低的 80% 后验概率的边界。已知这个区间从 <span class="math-inline"><var>p</var> = 0</span> 开始。要找出它在哪里结束，可以把样本当作数据，询问第 80 百分位数位于何处：</p>
+      <p>例如，假设你想知道较低的 80% 后验概率的边界。已知这个区间从 <span class="math-inline"><var>p</var> = 0</span> 开始。要找出它在哪里结束，可以把样本当作数据，询问第 80 百分位位于何处：</p>
 
       <figure class="code-listing" id="code-3-9">
         <figcaption>R 代码 3.9</figcaption>
@@ -251,7 +255,7 @@ sum( posterior[ p_grid &lt; 0.5 ] )</code></pre>
 0.7607608</code></pre>
       </figure>
 
-      <p><a href="#fig-3-2">图 3.2</a> 左下图展示了这个区域。同理，中间的 80% 区间位于第 10 百分位数与第 90 百分位数之间。用同一方法可以找到这些边界：</p>
+      <p><a href="#fig-3-2">图 3.2</a> 左下图展示了这个区域。同理，中间的 80% 区间位于第 10 百分位与第 90 百分位之间。用同一方法可以找到这些边界：</p>
 
       <figure class="code-listing" id="code-3-10">
         <figcaption>R 代码 3.10</figcaption>
@@ -277,7 +281,7 @@ samples &lt;- sample( p_grid , size=1e4 , replace=TRUE , prob=posterior )</code>
       </figure>
       <p class="scroll-hint code-scroll-hint">代码较宽，可横向滚动查看完整行。</p>
 
-      <p>这段代码也顺便从后验中抽了样本。图 3.3 左图为 50% 百分位兼容区间。可以用 <code>rethinking</code> 中的 <code>PI</code> 方便地从样本计算：</p>
+      <p>这段代码也顺便从后验中抽了样本。图 3.3 左图为 50% 百分位区间。可以用 <code>rethinking</code> 中的 <code>PI</code> 方便地从样本计算：</p>
 
       <figure class="code-listing" id="code-3-12">
         <figcaption>R 代码 3.12</figcaption>
@@ -286,7 +290,7 @@ samples &lt;- sample( p_grid , size=1e4 , replace=TRUE , prob=posterior )</code>
 0.7037037 0.9329329</code></pre>
       </figure>
 
-      <p>这个区间在上下两侧各分配 25% 的概率质量，所以给出了中间的 50% 概率。但在本例中，它排除了 <span class="math-inline"><var>p</var> = 1</span> 附近最可能的参数值。因此，就描述后验分布形状——这些区间真正需要做的全部事情——而言，百分位区间可能具有误导性。</p>
+      <p>这个区间在上下两侧各分配 25% 的概率质量，所以给出了中间的 50% 概率。但在本例中，它排除了 <span class="math-inline"><var>p</var> = 1</span> 附近最可能的参数值。因此，若目的只是描述后验分布的形状——这本就是这些区间的职责——百分位区间可能具有误导性。</p>
 
       <p>相比之下，图 3.3 右图显示 50% 的<strong>最高后验密度区间</strong>（HPDI）。<sup><a id="note-56-ref" href="#note-56" aria-label="尾注 56">56</a></sup>HPDI 是包含指定概率质量的最窄区间。仔细想想，质量相同的后验区间必然有无穷多个；但若想让区间最好地代表与数据最相容的参数值，就应选择其中密度最高的一个，这正是 HPDI。可以用同样来自 <code>rethinking</code> 的 <code>HPDI</code> 从样本计算：</p>
 
@@ -302,10 +306,10 @@ samples &lt;- sample( p_grid , size=1e4 , replace=TRUE , prob=posterior )</code>
           <img src="/media/chapter-03-percentile-vs-hpdi.svg" alt="左图的百分位区间排除了参数值一，右图的最高后验密度区间包含参数值一且更窄">
         </div>
         <p class="scroll-hint">图较宽，可横向滚动比较两个区间。</p>
-        <figcaption><strong>图 3.3：</strong>百分位兼容区间与最高后验密度兼容区间的差异。这里的后验密度对应平坦先验，以及三次地球仪投掷全部观察到水域。左：50% 百分位区间，两侧尾部各分配相同的 25% 质量，因此漏掉最可能的参数值 <span class="math-inline"><var>p</var> = 1</span>。右：50% 最高后验密度区间（HPDI），寻找包含 50% 后验概率的最窄区域；这样的区域始终包含最可能的参数值。</figcaption>
+        <figcaption><strong>图 3.3：</strong>百分位相容区间与最高后验密度相容区间的差异。这里的后验密度对应平坦先验，以及三次地球仪投掷全部观察到水域。左：50% 百分位区间，两侧尾部各分配相同的 25% 质量，因此漏掉最可能的参数值 <span class="math-inline"><var>p</var> = 1</span>。右：50% 最高后验密度区间（HPDI），寻找包含 50% 后验概率的最窄区域；这样的区域始终包含最可能的参数值。</figcaption>
       </figure>
 
-      <p>这个区间既捕获了后验概率最高的参数，又明显更窄：宽度是 0.16，而百分位区间的宽度是 0.23。</p>
+      <p>这个区间既包含了后验概率最高的参数值，又明显更窄：宽度是 0.16，而百分位区间的宽度是 0.23。</p>
 
       <aside class="rethinking-box" id="rethinking-why-95">
         <h3>再思考：为什么是 95%？</h3>
@@ -315,18 +319,18 @@ samples &lt;- sample( p_grid , size=1e4 , replace=TRUE , prob=posterior )</code>
           <p>“当 <span class="math-inline"><var>P</var> = 0.05</span>，也就是二十分之一时，[标准差个数]为 1.96，约等于 2；把这一点作为判断某个偏差是否应被视为显著的界限，是很方便的。”<sup><a id="note-54-ref" href="#note-54" aria-label="尾注 54">54</a></sup></p>
         </blockquote>
         <p>大多数人不会把方便视为严肃标准。Fisher 在职业生涯后期还明确反对始终使用同一个显著性阈值。<sup><a id="note-55-ref" href="#note-55" aria-label="尾注 55">55</a></sup></p>
-        <p>那么究竟该怎么办？没有共识，但思考总是好主意。如果想说明某个区间不包含某个值，可以使用仍能排除该值的最宽区间。兼容区间往往只是为了传达分布形状；这时，一系列嵌套区间可能比任何单一区间都更有用。</p>
+        <p>那么究竟该怎么办？没有共识，但思考总是好主意。如果想说明某个区间不包含某个值，可以使用仍能排除该值的最宽区间。相容区间往往只是为了传达分布形状；这时，一系列嵌套区间可能比任何单一区间都更有用。</p>
         <p>例如，何不把 67%、89% 和 97% 区间与中位数一起报告？为什么是这些数值？没有理由。它们是质数，容易记住。真正重要的只是区间彼此分隔得足够开，能够展示后验形状。这些数值也避开了 95%，因为传统的 95% 区间会诱使许多读者在无意识中进行假设检验。</p>
       </aside>
 
-      <p>所以，HPDI 相比 PI 确实有一些优势。但在大多数情况下，这两类区间非常相似。<sup><a id="note-57-ref" href="#note-57" aria-label="尾注 57">57</a></sup>本例中它们看起来差异很大，只因为后验分布高度偏斜。如果改用九次投掷中六次水域的后验样本，两个区间几乎相同。可以用不同的概率质量亲自试试，例如 <code>prob=0.8</code> 和 <code>prob=0.95</code>。当后验呈钟形时，选择哪种区间几乎无关紧要。请记住，我们既不是发射火箭，也不是校准粒子对撞机；迷恋小数点后第五位的精度，并不会改善科学。</p>
+      <p>所以，HPDI 相比 PI 确实有一些优势。但在大多数情况下，这两类区间非常相似。<sup><a id="note-57-ref" href="#note-57" aria-label="尾注 57">57</a></sup>本例中它们看起来差异很大，只因为后验分布高度偏斜。如果改用九次投掷中六次水域的后验样本，两个区间几乎相同。可以用不同的概率质量亲自试试，例如 <code>prob=0.8</code> 和 <code>prob=0.95</code>。当后验呈钟形时，选择哪种区间几乎无关紧要。请记住，我们既不在发射火箭，也不在校准粒子对撞机；迷恋小数点后第五位的精度，并不会改善科学。</p>
 
       <p>HPDI 也有缺点。它的计算量比 PI 更大，模拟方差也更高——这只是说，它对从后验抽取了多少样本较为敏感。HPDI 也更难理解；许多科学读者不会欣赏它的特点，却能立刻理解百分位区间，因为普通非贝叶斯区间通常（错误地）被解释为百分位区间（不过请看下面的“再思考”框）。</p>
 
       <p>总的来说，如果区间类型的选择会造成很大差异，就不应该用区间来汇总后验。请记住，整个后验分布才是贝叶斯“估计”；它概括了参数每个可能取值的相对可信程度。分布区间只是方便的摘要。如果区间选择会导向不同推断，最好直接绘制完整后验分布。</p>
 
       <aside class="rethinking-box" id="rethinking-compatibility-meaning">
-        <h3>再思考：兼容区间意味着什么？</h3>
+        <h3>再思考：相容区间意味着什么？</h3>
         <p>经常有人说，95%“置信”区间意味着真实参数值有 0.95 的概率位于区间内。在严格的非贝叶斯统计推断中，这种说法绝不正确，因为严格的非贝叶斯推断不允许用概率衡量参数的不确定性。正确说法应是：如果把研究和分析重复非常多次，那么算出的区间中有 95% 会包含真实参数值。如果你觉得这一区别并不完全清楚，那么你并不孤单。大多数科学家都觉得置信区间的定义令人困惑，许多人会无意识地滑向贝叶斯解释。</p>
         <p>不过，无论是否采用贝叶斯解释，95% 区间都不会有 95% 的时候包含真实值。科学史告诉我们，置信区间长期表现得过度自信。<sup><a id="note-58-ref" href="#note-58" aria-label="尾注 58">58</a></sup>“真实”这个词应当拉响警报，提醒我们“包含真实值”这样的说法出了问题。95% 是一个小世界数字（见第 2 章引言），只在模型的逻辑世界中成立；它永远不会精确适用于真实的大世界。这是魔像相信的事情，但你可以相信别的。无论如何，区间的宽度及其覆盖的数值仍能提供有价值的建议。</p>
       </aside>
@@ -509,7 +513,7 @@ simplehist( dummy_w , xlab="dummy water count" )</code></pre>
         <figcaption><strong>图 3.5：</strong>九次地球仪投掷的模拟样本观测分布。这些样本假设水域比例为 0.7。</figcaption>
       </figure>
 
-      <p>结果见图 3.5。请注意，多数时候，预期观测并不会按真实比例 0.7 包含水域。这就是观测的本质：数据与数据生成过程之间是一对多关系。可以改变样本量（上面代码中的 <code>size</code>）以及 <code>prob</code>，观察模拟样本分布的形状与位置怎样变化。</p>
+      <p>结果见图 3.5。请注意，大多数模拟样本中的水域比例并不恰好等于真实比例 0.7。这就是观测的本质：数据与数据生成过程之间是一对多关系。可以改变样本量（上面代码中的 <code>size</code>）以及 <code>prob</code>，观察模拟样本分布的形状与位置怎样变化。</p>
 
       <p>这就是观测的基本模拟。它有什么用？这些样本有许多用途。本章会用它们检查模型的隐含预测；但要做到这一点，还必须把它们与后验分布样本结合起来。这就是下一步。</p>
     </section>
@@ -528,7 +532,7 @@ simplehist( dummy_w , xlab="dummy water count" )</code></pre>
       <section id="sec-3-3-2-1">
         <h4>3.3.2.1 软件工作正常吗？</h4>
 
-        <p>最简单的情况下，可以检查隐含预测是否与拟合模型所用的数据相对应，从而判断软件是否正常工作。也可以把这些隐含预测称为<strong>回溯预测</strong>，因为它们询问模型能多好地重现用来教育它的数据。既不期待、也不希望完全匹配；但若毫无对应关系，软件很可能出了问题。</p>
+        <p>最简单的情况下，可以检查隐含预测是否与拟合模型所用的数据相对应，从而判断软件是否正常工作。也可以把这些隐含预测称为<strong>回溯预测</strong>，因为它们询问模型能多好地重现用来拟合它的数据。既不期待、也不希望完全匹配；但若毫无对应关系，软件很可能出了问题。</p>
 
         <p>没有办法真正确定软件工作完全正确。即使回溯预测与观测数据相符，也可能存在细微错误。开始处理多层模型后，还必须预期回溯预测与观测之间出现某种特定的不对应模式。虽然没有完美办法保证软件无误，这里推荐的简单检查却经常能抓住愚蠢错误——每个人偶尔都会犯的那种。</p>
 
@@ -540,7 +544,7 @@ simplehist( dummy_w , xlab="dummy water count" )</code></pre>
 
         <p>确认软件正确工作、后验分布无误后，还应该寻找数据中没有被模型预期良好描述的方面。目标不是检验模型假设是否“真实”，因为所有模型都是错的；而是准确评估模型怎样未能描述数据，把这当作理解、修订和改进模型的路径。</p>
 
-        <p>所有模型都会在某些方面失败，所以必须运用自己和同事的判断，决定某项失败是否重要。很少有科学家只想制造重新描述现有样本、除此之外什么也不做的模型，所以不完美的预测（回溯预测）并不是坏事。通常我们希望预测未来观测，或者理解得足够深入，从而能有用地拨弄世界。第 6 章会再次讨论这些问题。</p>
+        <p>所有模型都会在某些方面失败，所以必须运用自己和同事的判断，决定某项失败是否重要。很少有科学家只想制造重新描述现有样本、除此之外什么也不做的模型，所以不完美的预测（回溯预测）并不是坏事。通常我们希望预测未来观测，或者获得足够深入的理解，从而能以有用的方式干预世界。第 6 章会再次讨论这些问题。</p>
 
         <p>现在，需要学习怎样把上一节的模拟观测抽样，与后验分布的参数抽样结合起来。使用完整后验分布，而不是从中取出的某个点估计，应当表现更好。为什么？因为整个后验包含大量不确定性信息。抽出单个参数值再进行计算，会丢失这些信息；信息损失会导致过度自信。</p>
 
@@ -602,7 +606,7 @@ simplehist( dummy_w , xlab="dummy water count" )</code></pre>
 
         <p><a href="#fig-3-7">图 3.7</a>用这两种新方式展示模拟预测。左图绘出水域或陆地最长连续段的长度，实际观测值 3 用蓝线标出。真实观测再次成为最常见的模拟观测，不过周围仍有相当大的离散。右图绘出从水域切到陆地、或从陆地切到水域的次数，实际观测值 6 同样用蓝线标出。现在，模拟预测与数据显得不那么相容：大多数模拟观测的切换次数都少于实际样本。这与地球仪投掷不独立的情况相符——每次投掷都与前一次呈负相关。</p>
 
-        <p>这是否意味着模型很糟糕？要看情况。模型总会在某种意义上出错，也就是存在<strong>设定偏误</strong>；但是否应因这种偏误尝试其他模型，取决于我们具体关心什么。本例中，如果投掷确实倾向于从 W 切到 L、再从 L 切到 W，那么每次投掷为地球仪真实水域覆盖比例提供的信息就会更少。长期来看，本章一直使用的错误模型仍会收敛到正确比例，只是它收敛得比后验分布让我们相信的更慢。</p>
+        <p>这是否意味着模型很糟糕？要看情况。模型总会在某种意义上出错，也就是存在<strong>模型错设</strong>；但是否应因此尝试其他模型，取决于我们具体关心什么。本例中，如果投掷确实倾向于从 W 切到 L、再从 L 切到 W，那么每次投掷为地球仪真实水域覆盖比例提供的信息就会更少。长期来看，本章一直使用的错误模型仍会收敛到正确比例，只是它收敛得比后验分布让我们相信的更慢。</p>
 
         <aside class="rethinking-box" id="rethinking-what-is-extreme">
           <h3>再思考：“更极端”是什么意思？</h3>
@@ -617,7 +621,7 @@ simplehist( dummy_w , xlab="dummy water count" )</code></pre>
   <section id="sec-3-4">
     <h2>3.4 总结</h2>
 
-    <p>本章介绍了操纵后验分布的基本程序。我们的基础工具，是从后验分布中抽取的参数值样本。使用样本，可以把积分微积分问题转化为数据汇总问题。这些样本既能用来生成区间、点估计和后验预测检查，也能用于其他类型的模拟。</p>
+    <p>本章介绍了处理后验分布的基本程序。我们的基础工具，是从后验分布中抽取的参数值样本。使用样本，可以把积分问题转化为数据汇总问题。这些样本既能用来生成区间、点估计和后验预测检查，也能用于其他类型的模拟。</p>
 
     <p>后验预测检查把参数的不确定性——由后验分布描述——与结果的不确定性——由假定的似然函数描述——结合起来。这些检查既能验证软件是否正常工作，也能探索模型在哪些方面不够充分。</p>
 
@@ -797,6 +801,6 @@ data(homeworkch3)</code></pre>
   </section>
 
   <aside class="translation-status" aria-label="翻译状态">
-    <strong>译稿状态：</strong>第 3 章 PDF 第 65–88 页已完成整章翻译、逐页渲染对照、结构契约和桌面/移动端视觉验收；第 88 页为空白保留页。
+    <strong>整章状态：</strong>第 3 章 PDF 第 65–88 页已完成第二次精译、公式与符号逐项复核、代码一致性处理及视觉验收；第 88 页为空白保留页。
   </aside>
 </article>

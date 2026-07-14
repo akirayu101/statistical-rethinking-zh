@@ -81,14 +81,14 @@ for ( l in c(0.1,0.3,0.5,0.8,0.99) )
     <aside class="overthinking-box" id="overthinking-14-variance-covariance-correlation"><h3>过度思考：方差、协方差与相关</h3>
       <p>在典型的统计用法中，我们用三个参数定义协方差：（1）第一个变量的标准差，例如 <span class="math-inline"><var>σ</var><sub><var>α</var></sub></span>；（2）第二个变量的标准差，例如 <span class="math-inline"><var>σ</var><sub><var>β</var></sub></span>；（3）两个变量之间的相关，例如 <span class="math-inline"><var>ρ</var><sub><var>αβ</var></sub></span>。为什么协方差等于 <span class="math-inline"><var>σ</var><sub><var>α</var></sub><var>σ</var><sub><var>β</var></sub><var>ρ</var><sub><var>αβ</var></sub></span>？</p>
       <p>变量 <var>x</var> 与 <var>y</var> 之间的协方差通常定义为：</p>
-      <div class="equation-block wallis-equation" id="eq-14-covariance-definition"><div><span class="math-line">cov(<var>x</var>, <var>y</var>) = E(<var>xy</var>) − E(<var>x</var>)E(<var>y</var>)</span></div><div><span class="math-line">var(<var>x</var>) = cov(<var>x</var>, <var>x</var>) = E(<var>x</var><sup>2</sup>) − E(<var>x</var>)<sup>2</sup></span></div></div>
-      <p>也可以说，“协方差等于乘积的平均值减去平均值的乘积”。方差只是它的特殊情形，即变量与自身的协方差。若只考虑期望为零的随机变量——这没有损失，因为随时可以重新居中——那么就只剩 <span class="math-inline">cov(<var>x</var>, <var>y</var>) = E(<var>xy</var>)</span> 与 <span class="math-inline">var(<var>x</var>) = E(<var>x</var><sup>2</sup>)</span>。</p>
-      <p>相关只是重新缩放后的协方差，使最小值为 −1、最大值为 1。用最大可能的协方差去除，就能把协方差标准化；这个最大值是 <span class="math-inline">√{var(<var>x</var>)var(<var>y</var>)}</span>，也就是两个标准差的乘积。</p>
-      <p>下面说明它为何确实是 <span class="math-inline">cov(<var>x</var>, <var>y</var>) = E(<var>xy</var>)</span> 能取得的最大值。当第二个变量 <var>y</var> 只是 <var>x</var> 的重新缩放副本时，协方差最大。比如令 <span class="math-inline"><var>y</var><sub><var>i</var></sub> = <var>p x</var><sub><var>i</var></sub></span>，其中 <var>p</var> 是 0.5 或 1.5 之类的比例。于是 <span class="math-inline"><var>y</var> = <var>px</var></span> 只是被拉伸的 <var>x</var>，而 <span class="math-inline">cov(<var>x</var>, <var>y</var>) = E(<var>px</var><sup>2</sup>) = <var>p</var>E(<var>x</var><sup>2</sup>)</span>。同时，<span class="math-inline">var(<var>x</var>) = E(<var>x</var><sup>2</sup>)</span>，<span class="math-inline">var(<var>y</var>) = E(<var>p</var><sup>2</sup><var>x</var><sup>2</sup>) = <var>p</var><sup>2</sup>E(<var>x</var><sup>2</sup>)</span>。还觉得有趣吗？马上就结束。两者方差乘积的平方根正好是 <span class="math-inline"><var>p</var>E(<var>x</var><sup>2</sup>) = cov(<var>x</var>, <var>y</var>)</span>；这就是协方差能达到的最大值。</p>
+      <div class="equation-block wallis-equation" id="eq-14-covariance-definition"><div><span class="math-line">cov(<var>x</var>, <var>y</var>) = E(<var>x</var><var>y</var>) − E(<var>x</var>)E(<var>y</var>)</span></div><div><span class="math-line">var(<var>x</var>) = cov(<var>x</var>, <var>x</var>) = E(<var>x</var><sup>2</sup>) − E(<var>x</var>)<sup>2</sup></span></div></div>
+      <p>也可以说，“协方差等于乘积的平均值减去平均值的乘积”。方差只是它的特殊情形，即变量与自身的协方差。若只考虑期望为零的随机变量——这没有损失，因为随时可以重新居中——那么就只剩 <span class="math-inline">cov(<var>x</var>, <var>y</var>) = E(<var>x</var><var>y</var>)</span> 与 <span class="math-inline">var(<var>x</var>) = E(<var>x</var><sup>2</sup>)</span>。</p>
+      <p>相关只是重新缩放后的协方差，使最小值为 −1、最大值为 1。用最大可能的协方差去除，就能把协方差标准化；这个最大值是 <span class="math-inline"><span class="radical-expression"><span class="radical-sign">√</span><span class="radicand">var(<var>x</var>)var(<var>y</var>)</span></span></span>，也就是两个标准差的乘积。</p>
+      <p>下面说明它为何确实是 <span class="math-inline">cov(<var>x</var>, <var>y</var>) = E(<var>x</var><var>y</var>)</span> 能取得的最大值。当第二个变量 <var>y</var> 只是 <var>x</var> 的重新缩放副本时，协方差最大。比如令 <span class="math-inline"><var>y</var><sub><var>i</var></sub> = <var>p</var><var>x</var><sub><var>i</var></sub></span>，其中 <var>p</var> 是 0.5 或 1.5 之类的比例。于是 <span class="math-inline"><var>y</var> = <var>p</var><var>x</var></span> 只是被拉伸的 <var>x</var>，而 <span class="math-inline">cov(<var>x</var>, <var>y</var>) = E(<var>p</var><var>x</var><sup>2</sup>) = <var>p</var>E(<var>x</var><sup>2</sup>)</span>。同时，<span class="math-inline">var(<var>x</var>) = E(<var>x</var><sup>2</sup>)</span>，<span class="math-inline">var(<var>y</var>) = E(<var>p</var><sup>2</sup><var>x</var><sup>2</sup>) = <var>p</var><sup>2</sup>E(<var>x</var><sup>2</sup>)</span>。还觉得有趣吗？马上就结束。两者方差乘积的平方根正好是 <span class="math-inline"><var>p</var>E(<var>x</var><sup>2</sup>) = cov(<var>x</var>, <var>y</var>)</span>；这就是协方差能达到的最大值。</p>
       <p>因此，若想得到标准化的关联度量——相关——就用协方差除以这个最大值：</p>
-      <div class="equation-block wallis-equation" id="eq-14-correlation-definition"><div class="math-line"><var>ρ</var><sub><var>xy</var></sub> = <span class="fraction"><span>cov(<var>x</var>, <var>y</var>)</span><span>√{var(<var>x</var>)var(<var>y</var>)}</span></span></div></div>
+      <div class="equation-block wallis-equation" id="eq-14-correlation-definition"><div class="math-line"><var>ρ</var><sub><var>xy</var></sub> = <span class="compact-fraction"><span>cov(<var>x</var>, <var>y</var>)</span><span><span class="radical-expression"><span class="radical-sign">√</span><span class="radicand">var(<var>x</var>)var(<var>y</var>)</span></span></span></span></div></div>
       <p>把这个方程对 <span class="math-inline">cov(<var>x</var>, <var>y</var>)</span> 求解，就得到：</p>
-      <div class="equation-block wallis-equation" id="eq-14-covariance-product"><div class="math-line">cov(<var>x</var>, <var>y</var>) = √{var(<var>x</var>)var(<var>y</var>)}<var>ρ</var><sub><var>xy</var></sub> = <var>σ</var><sub><var>x</var></sub><var>σ</var><sub><var>y</var></sub><var>ρ</var><sub><var>xy</var></sub></div></div>
+      <div class="equation-block wallis-equation" id="eq-14-covariance-product"><div class="math-line">cov(<var>x</var>, <var>y</var>) = <span class="radical-expression"><span class="radical-sign">√</span><span class="radicand">var(<var>x</var>)var(<var>y</var>)</span></span><var>ρ</var><sub><var>xy</var></sub> = <var>σ</var><sub><var>x</var></sub><var>σ</var><sub><var>y</var></sub><var>ρ</var><sub><var>xy</var></sub></div></div>
       <p>呼。以上只是为了说明，应用统计中把协方差写成 <span class="math-inline">cov(<var>x</var>, <var>y</var>) = <var>σ</var><sub><var>x</var></sub><var>σ</var><sub><var>y</var></sub><var>ρ</var><sub><var>xy</var></sub></span>，既有充分依据，也很方便。</p>
     </aside>
 
@@ -110,7 +110,7 @@ d &lt;- data.frame( cafe=cafe_id , afternoon=afternoon , wait=wait )</code></pre
     <h3 id="sec-14-1-3">14.1.3 变化斜率模型</h3>
     <p>现在可以把过程倒着播放了。刚才从 20 家咖啡馆生成数据，而这些咖啡馆本身又来自一个统计总体；现在要通过模型，用数据反过来学习数据生成过程。</p>
     <p>这个模型很像上一章的变化截距模型，但现在出现的是截距与斜率的联合总体，而不再只是变化截距的分布。这就是变化斜率模型。先写数据的概率与线性模型：</p>
-    <div class="equation-block wallis-equation" id="eq-14-varying-slopes-data"><div><span class="math-line"><var>W</var><sub><var>i</var></sub> ∼ Normal(<var>μ</var><sub><var>i</var></sub>, <var>σ</var>)　　[likelihood]</span></div><div><span class="math-line"><var>μ</var><sub><var>i</var></sub> = <var>α</var><sub>CAFÉ[<var>i</var>]</sub> + <var>β</var><sub>CAFÉ[<var>i</var>]</sub><var>A</var><sub><var>i</var></sub>　　[线性模型]</span></div></div>
+    <div class="equation-block wallis-equation" id="eq-14-varying-slopes-data"><div class="annotated-equation-line"><span class="equation-expression"><var>W</var><sub><var>i</var></sub> ∼ Normal(<var>μ</var><sub><var>i</var></sub>, <var>σ</var>)</span><span class="equation-label">[似然]</span></div><div class="annotated-equation-line"><span class="equation-expression"><var>μ</var><sub><var>i</var></sub> = <var>α</var><sub>CAFÉ[<var>i</var>]</sub> + <var>β</var><sub>CAFÉ[<var>i</var>]</sub><var>A</var><sub><var>i</var></sub></span><span class="equation-label">[线性模型]</span></div></div>
     <p>接着是变化截距与斜率组成的矩阵，以及它的协方差矩阵：</p>
     <aside class="source-erratum" id="erratum-14-its-covariance"><strong>原文说明：</strong>原文此处把所有格 <em>its</em> 误写成了 <em>it’s</em>；译稿按正确语意处理。</aside>
     <div class="equation-block wallis-equation" id="eq-14-varying-effects-population"><div class="annotated-equation-line"><span class="equation-expression"><span class="matrix-2x1"><span><var>α</var><sub>CAFÉ</sub></span><span><var>β</var><sub>CAFÉ</sub></span></span> ∼ MVNormal(<span class="matrix-2x1"><span><var>α</var></span><span><var>β</var></span></span>, <strong>S</strong>)</span><span class="equation-label">[变化效应总体]</span></div><div class="annotated-equation-line"><span class="equation-expression"><strong>S</strong> = <span class="matrix-2x2"><span><var>σ</var><sub><var>α</var></sub></span><span>0</span><span>0</span><span><var>σ</var><sub><var>β</var></sub></span></span> <strong>R</strong> <span class="matrix-2x2"><span><var>σ</var><sub><var>α</var></sub></span><span>0</span><span>0</span><span><var>σ</var><sub><var>β</var></sub></span></span></span><span class="equation-label">[构造协方差矩阵]</span></div></div>
@@ -364,26 +364,26 @@ points( 1:28+xo , p_mu , pch=c(1,1,16,16) )</code></pre></figure>
     <aside class="overthinking-box" id="overthinking-14-noncentered-multilevel"><h3>过度思考：多层模型的非中心化参数化</h3>
       <p>当链的效率低下时，把链运行得足够久，往往仍能从后验分布获得可靠样本。正文中的 <code>m14.2</code> 就是这样。但这既低效又不可靠：链仍可能以难以察觉的细微方式带有偏差。更好的做法是按前一节的解释重新参数化。<sup id="note-195-ref"><a href="#note-195">195</a></sup> 遇到协方差矩阵时，具体该怎样做？</p>
       <p>模型 <code>m14.3</code> 用一个名为 Cholesky 分解的技巧，把协方差矩阵从先验中“偷运”出来。模型顶部与中心化版本 <code>m14.2</code> 相同，变化在于增加了构造自适应先验的几行：</p>
-      <pre><code># 自适应先验——非中心化
+      <figure class="code-listing" id="snippet-14-noncentered-ulam"><figcaption>R/Stan：非中心化自适应先验</figcaption><pre><code># 自适应先验——非中心化
 transpars&gt; matrix[actor,4]:alpha &lt;-
         compose_noncentered( sigma_actor , L_Rho_actor , z_actor ),
 transpars&gt; matrix[block_id,4]:beta &lt;-
         compose_noncentered( sigma_block , L_Rho_block , z_block ),
 matrix[4,actor]:z_actor ~ normal( 0 , 1 ),
-matrix[4,block_id]:z_block ~ normal( 0 , 1 ),</code></pre>
+matrix[4,block_id]:z_block ~ normal( 0 , 1 ),</code></pre></figure>
       <p>前两行以 <code>transpars&gt;</code> 开头，定义变化效应矩阵 <code>alpha</code> 与 <code>beta</code>。每个矩阵中，一行对应一个行动者或区组，一列对应一种效应。为了方便，<code>compose_noncentered</code> 把标准差向量、Cholesky 相关因子与 z 分数混合起来，生成在线性模型中具有正确尺度的参数矩阵。这样一来，上面第三、第四行的 z 分数矩阵只需服从 <code>normal(0,1)</code>。要把模型改为非中心化，另一处变化是把普通相关矩阵替换成所谓的 Cholesky 因子，确切类型为 <code>cholesky_factor_corr</code>。</p>
       <p>那么 <code>compose_noncentered</code> 到底在做什么？神秘的 Cholesky 因子又是什么？Cholesky 分解 <strong>L</strong> 能把相关矩阵 <strong>R</strong> 这类方形对称矩阵表示成 <span class="math-inline"><strong>R</strong> = <strong>L</strong><strong>L</strong><sup>⊺</sup></span>。一个奇妙事实是：用 <strong>L</strong> 乘以一组不相关样本（z 分数）组成的矩阵，便会得到一组相关样本（变化效应）组成的矩阵。正是这个技巧让我们能把协方差矩阵拿出先验：先抽取不相关 z 分数矩阵，再乘以 Cholesky 因子和标准差，就能得到尺度与相关都正确的变化效应。它看似魔法，其实只是代数。</p>
       <aside class="source-erratum" id="erratum-14-noncentered-typos"><strong>原文说明：</strong>这一侧栏原文依次出现 <code>compose_concentered</code>、把 “from the transformed parameters block” 写成 “form”，以及把 “principal goal” 写成 “principle goal” 三处明显笔误；译稿均按代码和上下文订正。</aside>
       <p>下面查看原始 Stan 代码，既揭开这些步骤的神秘面纱，也帮助你逐步过渡到直接在 Stan 中构造模型——在那里会有更多控制权。<code>ulam</code> 代码中的 <code>transpars&gt;</code> 标签把 <code>alpha</code> 与 <code>beta</code> 定义为转换参数；这意味着即便它们只是其他参数的函数，Stan 仍会把它们纳入后验。因此查看 <code>stancode(m14.3)</code> 时，会在 <code>model</code> 块上方看到一个新块：</p>
-      <pre><code>transformed parameters{
+      <figure class="code-listing" id="stan-14-transformed-parameters"><figcaption>Stan：transformed parameters 块</figcaption><pre><code>transformed parameters{
     matrix[7,4] alpha;
     matrix[6,4] beta;
     beta = (diag_pre_multiply(sigma_block, L_Rho_block) * z_block)';
     alpha = (diag_pre_multiply(sigma_actor, L_Rho_actor) * z_actor)';
-}</code></pre>
+}</code></pre></figure>
       <p>这些计算把标准差向量 <code>sigma_actor</code>、<code>sigma_block</code> 与 Cholesky 相关因子 <code>L_Rho_actor</code>、<code>L_Rho_block</code> 合并起来。<code>diag_pre_multiply</code> 所做的，就是把 <code>sigma</code> 向量变成对角矩阵后再相乘，从而得到正确协方差矩阵的 Cholesky 因子。最后，再把这个 Cholesky 协方差因子与 z 分数矩阵作矩阵乘法。为方便起见，结果还要转置——即每行末尾的 <code>'</code>——这样便可写成 <code>alpha[actor,effect]</code>，而非 <code>alpha[effect,actor]</code>；不过这一步并非真正必需。</p>
       <p>随后在 <code>model</code> 块中，<code>alpha</code> 与 <code>beta</code> 矩阵已经可以直接作为参数使用，所以线性模型部分看起来与中心化版本相同：</p>
-      <pre><code>model{
+      <figure class="code-listing" id="stan-14-model-block"><figcaption>Stan：model 块</figcaption><pre><code>model{
     vector[504] p;
     L_Rho_block ~ lkj_corr_cholesky( 2 );
     sigma_block ~ exponential( 1 );
@@ -397,10 +397,10 @@ matrix[4,block_id]:z_block ~ normal( 0 , 1 ),</code></pre>
         p[i] = inv_logit(p[i]);
     }
     L ~ binomial( 1 , p );
-}</code></pre>
+}</code></pre></figure>
       <p>从上到下看：先声明向量 <code>p</code>，用来保存每个观测的线性模型计算；接着用 Cholesky 相关因子与标准差向量定义先验。z 分数矩阵通过 <code>to_vector</code> 获得先验，因为 <code>normal(0,1)</code> 作用于向量而非矩阵。z 分数仍以矩阵形式存储；<code>to_vector</code> 只是为了强制矩阵中的每个单元格都服从相同的 <code>normal(0,1)</code> 先验。最后，线性模型使用转换参数块中的 <code>alpha</code> 与 <code>beta</code> 矩阵完成计算，再照常定义数据的概率。</p>
       <p>最后一部分是生成量块，可以在这里计算每个样本的函数。本例用它把 Cholesky 因子转换成普通相关矩阵，以便按相关矩阵解释；同时还计算 WAIC 或 PSIS 所需的对数概率：</p>
-      <pre><code>generated quantities{
+      <figure class="code-listing" id="stan-14-generated-quantities"><figcaption>Stan：generated quantities 块</figcaption><pre><code>generated quantities{
     vector[504] log_lik;
     vector[504] p;
     matrix[4,4] Rho_actor;
@@ -412,7 +412,7 @@ matrix[4,block_id]:z_block ~ normal( 0 , 1 ),</code></pre>
         p[i] = inv_logit(p[i]);
     }
     for ( i in 1:504 ) log_lik[i] = binomial_lpmf( L[i] | 1 , p[i] );
-}</code></pre>
+}</code></pre></figure>
       <p><code>multiply_lower_tri_self_transpose</code> 只是把 Cholesky 因子 <strong>L</strong> 转换成对应矩阵 <span class="math-inline"><strong>R</strong> = <strong>L</strong><strong>L</strong><sup>⊺</sup></span> 时，执行所需矩阵代数的一种紧凑高效写法。</p>
       <p>这些非中心化形式显然有代价：看起来混乱得多。难读的模型与模型代码，会限制我们同同事分享实现的能力；而分享正是科学计算的一项首要目标。</p>
       <p>最后，并非每一种模型结构与数据组合都受益于非中心化参数化。有时中心化版本——把均值与标准差放进先验——反而更好。因此可以先尝试你个人觉得最自然的形式；若遇到麻烦，再换一种。积累一些经验后，同一模型的不同形式便会渐渐熟悉。本章末有一道练习题可能有所帮助。</p>
@@ -695,7 +695,7 @@ Hawaii    5.7 5.3 5.4 7.2 4.9 6.7 5.8 6.7 5.0 0.0</code></pre></figure>
       <p>其中 <var>k</var><sub>society[<var>i</var>]</sub> 是变化截距。与典型变化截距不同，它根据地理距离而不是离散类别成员关系来估计。</p>
       <aside class="source-erratum" id="erratum-14-gp-wording"><strong>原文说明：</strong>PDF 第 499 页依次出现 “geographical similarly”、“Poisson probably”、“tools::” 与 “means the inside” 四处明显排印语病；译稿均按上下文语意处理。</aside>
       <p>Gaussian 过程的核心，是这些截距的多元先验：</p>
-      <div class="equation-block wallis-equation" id="eq-14-gp-intercept-prior"><div><strong><var>k</var></strong> = (<var>k</var><sub>1</sub>, <var>k</var><sub>2</sub>, …, <var>k</var><sub>10</sub>)<sup>T</sup></div><div><strong><var>k</var></strong> ∼ MVNormal((0, 0, …, 0)<sup>T</sup>, <strong>K</strong>)</div><div><var>K</var><sub><var>ij</var></sub> = <var>η</var><sup>2</sup> exp(−<var>ρ</var><sup>2</sup><var>D</var><sub><var>ij</var></sub><sup>2</sup>) + <var>δ</var><sub><var>ij</var></sub><var>σ</var><sup>2</sup></div></div>
+      <div class="equation-block wallis-equation" id="eq-14-gp-intercept-prior"><div class="annotated-equation-line"><span class="equation-expression"><span class="matrix-vector"><span><var>k</var><sub>1</sub></span><span><var>k</var><sub>2</sub></span><span><var>k</var><sub>3</sub></span><span>⋮</span><span><var>k</var><sub>10</sub></span></span> ∼ MVNormal(<span class="matrix-vector"><span>0</span><span>0</span><span>0</span><span>⋮</span><span>0</span></span>, <strong>K</strong>)</span><span class="equation-label">[截距先验]</span></div><div class="annotated-equation-line"><span class="equation-expression"><var>K</var><sub><var>ij</var></sub> = <var>η</var><sup>2</sup> exp(−<var>ρ</var><sup>2</sup><var>D</var><sub><var>ij</var></sub><sup>2</sup>) + <var>δ</var><sub><var>ij</var></sub><var>σ</var><sup>2</sup></span><span class="equation-label">[定义协方差矩阵]</span></div></div>
       <p>第一行是截距的十维 Gaussian 先验；之所以有十维，是因为距离矩阵中有十个社会。均值向量全为零，所以平均社会在模型内会把 <var>λ</var> 乘以 exp(0) = 1，不改变期望。负的 <var>k</var> 值会减小 <var>λ</var>，正值则会增大它。</p>
       <p>这些截距的协方差矩阵名为 <strong>K</strong>，任意社会 <var>i</var> 与 <var>j</var> 之间的协方差是 <var>K</var><sub><var>ij</var></sub>，由上式第二行定义。公式用 <var>η</var>、<var>ρ</var> 与 <var>σ</var> 三个参数，描述社会间协方差怎样随距离改变。它看起来可能很陌生，下面逐块拆解。</p>
       <p>决定 <strong>K</strong> 之协方差模型形状的部分是 exp(−<var>ρ</var><sup>2</sup><var>D</var><sub><var>ij</var></sub><sup>2</sup>)。<var>D</var><sub><var>ij</var></sub> 是第 <var>i</var> 与第 <var>j</var> 个社会之间的距离，所以这个函数表示两社会的协方差随距离平方呈指数下降；<var>ρ</var> 决定下降速率。它越大，协方差随距离平方下降得越快。</p>
@@ -753,7 +753,7 @@ etasq   0.20 0.20  0.03 0.56   863 1.00
 rhosq   1.31 1.60  0.08 4.41  1931 1.00</code></pre></figure>
       <p>首先，log 人口的系数 <code>b</code> 与加入 Gaussian 过程之前很接近，说明很难把工具数与人口之间的全部关联都解释成地理接触的副作用。其次，<code>k</code> 参数是每个社会的 Gaussian 过程变化截距；它们和 <code>a</code>、<code>b</code> 一样位于 log 计数尺度，直接解释并不容易。</p>
       <p>为了理解描述协方差如何随距离变化的 <code>rhosq</code> 与 <code>etasq</code>，需要把它们隐含的函数画出来。事实上，这两个参数的联合后验定义的是一整个协方差函数的后验分布。画出许多函数样本，再叠加后验中心曲线，就能感受这个“函数的分布”。由于 <code>rhosq</code> 与 <code>etasq</code> 的密度偏斜，单一均值或中位数都不足以概括它；真正重要的始终是完整分布，分布内没有哪个点天然特殊。</p>
-      <aside class="source-erratum" id="erratum-14-gp-sample-count"><strong>原文说明：</strong>PDF 第 502–503 页把 Gaussian 过程变化截距 <code>k</code> 误称为 <code>g</code>，并在正文、代码注释、循环与图注之间分别写成抽取 100、60、50、50 条曲线；正文还称粗线为“后验中位数”，实际代码与图注计算的是后验均值。译稿按代码和图注呈现 50 条曲线与后验均值。</aside>
+      <aside class="source-erratum" id="erratum-14-gp-sample-count"><strong>原文说明：</strong>PDF 第 502–503 页把模型中的人口系数 <code>b</code> 写成 <code>bp</code>，又把 Gaussian 过程变化截距 <code>k</code> 写成 <code>g</code>；正文、代码注释、循环与图注还分别写成抽取 100、60、50、50 条曲线，并把粗线称为“后验中位数”，但实际代码与图注计算的是后验均值。译稿按模型参数名以及代码和图注，统一呈现 <code>b</code>、<code>k</code>、50 条曲线与后验均值。</aside>
       <figure class="code-listing" id="code-14-41"><figcaption>R 代码 14.41</figcaption><pre><code>post &lt;- extract.samples(m14.8)
 
 # 绘制后验均值协方差函数
@@ -920,23 +920,23 @@ bG        0.12 0.02  0.09  0.16  1572    1
 bM        0.89 0.02  0.86  0.93  1481    1
 sigma_sq  0.05 0.01  0.04  0.06  2040    1</code></pre></figure>
       <p>脑大小与群体大小之间似乎存在可靠的正关联，体重与脑大小之间也有很强的关联。不过，这些数据充斥着混杂，现在还没有理由把任何关联解释成因果关系。</p>
-      <p>下面进行两种系统发育回归。两者所做的事都很简单：用编码了系统发育信息的矩阵替换上面的协方差矩阵 <strong>S</strong>。第一种是最古老也最保守的方法之一：用 Brownian 运动解释系统发育，并由此导出一种非常特定的协方差矩阵。Brownian 运动就是 Gaussian 随机游走。若物种分化后，各自性状相对于彼此随机漂移，那么一对物种之间的协方差最终会与它们的系统发育枝长距离呈线性关系——距离越远，协方差按比例越小。当然，我们关心的性状显然不是中性演化的，而且在树的不同部分也以不同速率演化；遗憾的是，接下来这套方法仍是最常见的系统发育控制形式。</p>
+      <p>下面进行两种系统发育回归。两者所做的事都很简单：用编码了系统发育信息的矩阵替换上面的协方差矩阵 <strong>S</strong>。第一种是最古老也最保守的方法之一：用布朗运动解释系统发育，并由此导出一种非常特定的协方差矩阵。布朗运动就是 Gaussian 随机游走。若物种分化后，各自性状相对于彼此随机漂移，那么一对物种之间的协方差最终会与它们的系统发育枝长距离呈线性关系——距离越远，协方差按比例越小。当然，我们关心的性状显然不是中性演化的，而且在树的不同部分也以不同速率演化；遗憾的是，接下来这套方法仍是最常见的系统发育控制形式。</p>
       <aside class="source-erratum" id="erratum-14-phylogeny-brownian-wording"><strong>原文说明：</strong>PDF 第 511 页的 “formethodm” 是排版粘连词，下一段 “The is otherwise the same” 又漏掉主语；第 512 页还有 “since it a much rougher function” 与 “If the goal is estimate” 两处漏字。译稿均依上下文补足，不改变论点。</aside>
-      <p>先计算 Brownian 模型隐含的协方差矩阵和距离矩阵，再看看二者怎样关联。<code>ape</code> 包已经提供了所需函数：</p>
+      <p>先计算布朗运动模型隐含的协方差矩阵和距离矩阵，再看看二者怎样关联。<code>ape</code> 包已经提供了所需函数：</p>
       <figure class="code-listing" id="code-14-50"><figcaption>R 代码 14.50</figcaption><pre><code>library(ape)
 tree_trimmed &lt;- keep.tip( Primates301_nex, spp_obs )
 Rbm &lt;- corBrownian( phy=tree_trimmed )
 V &lt;- vcv(Rbm)
 Dmat &lt;- cophenetic( tree_trimmed )
 plot( Dmat , V , xlab="phylogenetic distance" , ylab="covariance" )</code></pre></figure>
-      <p>原书没有展示这张图；运行代码会得到一个以物种对为点的散点图。横轴是系统发育距离，也称系统发育枝长距离；纵轴是 Brownian 模型下的协方差。二者实际上互为反向关系。用 <code>image(V)</code> 和 <code>image(Dmat)</code> 分别绘制热图，会看得更清楚。</p>
+      <p>原书没有展示这张图；运行代码会得到一个以物种对为点的散点图。横轴是系统发育距离，也称系统发育枝长距离；纵轴是布朗运动模型下的协方差。二者实际上互为反向关系。用 <code>image(V)</code> 和 <code>image(Dmat)</code> 分别绘制热图，会看得更清楚。</p>
       <p>现在只需把新矩阵放进回归，模型其余部分保持不变。不过，要先把矩阵行列重排为与数据相同的顺序，再将它转换成相关矩阵，以便估计残差方差；之后用新相关矩阵替换单位矩阵即可：</p>
       <figure class="code-listing" id="code-14-51"><figcaption>R 代码 14.51</figcaption><pre><code># 把物种排成正确顺序
 dat_list$V &lt;- V[ spp_obs , spp_obs ]
 # 转换成相关矩阵
 dat_list$R &lt;- dat_list$V / max(V)
 
-# Brownian 运动模型
+# 布朗运动模型
 m14.10 &lt;- ulam(
     alist(
         B ~ multi_normal( mu , SIGMA ),
@@ -952,7 +952,7 @@ bG        -0.01 0.02 -0.04  0.02  2691    1
 bM         0.70 0.04  0.64  0.76  1935    1
 sigma_sq   0.16 0.02  0.13  0.19  2251    1</code></pre></figure>
       <p>这个模型把群体大小效应彻底抹掉了：后验均值几乎为零，零点两侧都有大量概率质量。相较前一个模型，结果变化很大；这暗示脑大小在树上存在大量聚集，而同样聚集的群体大小因此与它产生了虚假关系。模型怎样利用这种聚集，取决于我们提供的相关矩阵细节。</p>
-      <p>Brownian 运动模型是一种特殊的 Gaussian 过程，其中协方差会随着距离增加，以非常僵硬的方式下降。没有必要如此僵硬，而且有充分理由认为演化并不能由 Brownian 运动很好描述。常见做法之一是用 Pagel’s <var>λ</var> 修正 Brownian 模型，但它只是用同一个因子缩放所有物种相关，仍保留同样武断而不现实的距离模型。另一个常见方案是 Ornstein–Uhlenbeck 过程（OU 过程）：一种有阻尼、倾向回归某个均值（或多个均值）的 Brownian 运动。实践中，它约束了变异，使系统发育距离与协方差之间的关系变为非线性。<sup id="note-208-ref"><a href="#note-208">208</a></sup> 更准确地说，OU 过程把物种 <var>i</var> 与 <var>j</var> 之间的协方差定义为：</p>
+      <p>布朗运动模型是一种特殊的 Gaussian 过程，其中协方差会随距离增加而以非常僵硬的方式下降。没有必要如此僵硬，而且有充分理由认为演化并不能由布朗运动很好地描述。常见做法之一是用 Pagel 的 <var>λ</var> 修正布朗运动模型，但它只是用同一个因子缩放所有物种相关，仍保留同样武断而不现实的距离模型。另一个常见方案是 Ornstein–Uhlenbeck 过程（OU 过程）：一种带阻尼、倾向回归某个均值（或多个均值）的布朗运动。实践中，它约束了变异，使系统发育距离与协方差之间的关系变为非线性。<sup id="note-208-ref"><a href="#note-208">208</a></sup> 更准确地说，OU 过程把物种 <var>i</var> 与 <var>j</var> 之间的协方差定义为：</p>
       <div class="equation-block wallis-equation" id="eq-14-ou-kernel"><div><var>K</var>(<var>i</var>, <var>j</var>) = <var>η</var><sup>2</sup> exp(−<var>ρ</var><sup>2</sup><var>D</var><sub><var>ij</var></sub>)</div></div>
       <p>这是指数距离核，不同于上一例中的二次核。指数核表示点（物种）之间的协方差会快速下降，生成的函数因此远不如二次核平滑。它通常也更难拟合，因为函数粗糙得多；实践中需要格外谨慎地指定先验，可能还要把先验收窄。</p>
       <p>OU 过程仍是 Gaussian 过程，所以拟合方式与上一节的二次核相同。系统发育回归文献尚未充分强调这一点；把模型写成 Gaussian 过程，便能按具体问题定制函数空间。<sup id="note-209-ref"><a href="#note-209">209</a></sup> 这种框架目前仍不常见。生物学家往往笼罩在迷信与惧怕按错按钮的阴云下使用系统发育；Gaussian 过程框架既统一了既有方法，又允许模型描述协变随系统发育距离变化的模式。它也应当说明：纳入系统发育距离并不存在唯一正确的方法。若目标是估计因果效应，只拒绝某个零模型远远不够；我们必须有效重建未测混杂之间的模式，而不同的演化历史会需要不同模型。</p>
@@ -976,7 +976,7 @@ bG    0.05 0.02  0.01  0.09  2634    1
 bM    0.83 0.03  0.79  0.88  2280    1
 etasq 0.03 0.01  0.03  0.05  2060    1
 rhosq 2.79 0.26  2.36  3.20  2192    1</code></pre></figure>
-      <p>现在，群体大小似乎又与脑大小相关了。关联不强，但大多数后验概率质量都在零以上。结果为何不同？答案必然是：推断得到的协方差函数与 Brownian 运动模型颇不相同。因此，接下来查看 <code>etasq</code> 与 <code>rhosq</code> 隐含的后验协方差函数。这两个参数共同产生协方差函数，而且在后验中几乎总是强相关；分别观察它们并不能真正看清发生了什么。需要把它们提取出来，再送回 Gaussian 过程协方差函数：</p>
+      <p>现在，群体大小似乎又与脑大小相关了。关联不强，但大多数后验概率质量都在零以上。结果为何不同？答案必然是：推断得到的协方差函数与布朗运动模型颇不相同。因此，接下来查看 <code>etasq</code> 与 <code>rhosq</code> 隐含的后验协方差函数。这两个参数共同产生协方差函数，而且在后验中几乎总是强相关；分别观察它们并不能真正看清发生了什么。需要把它们提取出来，再送回 Gaussian 过程协方差函数：</p>
       <figure class="code-listing" id="code-14-53"><figcaption>R 代码 14.53</figcaption><pre><code>post &lt;- extract.samples(m14.11)
 plot( NULL , xlim=c(0,max(dat_list$Dmat)) , ylim=c(0,1.5) ,
     xlab="phylogenetic distance" , ylab="covariance" )
@@ -996,9 +996,9 @@ text( 0.5 , 0.5 , "prior" )
 text( 0.2 , 0.1 , "posterior" , col=rangi2 )</code></pre></figure>
       <aside class="source-erratum" id="erratum-14-phylogeny-kernel-wording"><strong>原文说明：</strong>PDF 第 513 页把 “The result is shown” 误写成 “The result is show”；第 514 页的 “takes as input as distance matrix” 多出一个 <em>as</em>，而 “All that remain” 又有主谓不一致。译稿均按上下文订正。</aside>
       <p>结果见图 14.14。横轴是标准化系统发育距离，取值 1 只表示样本中的最长距离；纵轴是协方差。蓝线是后验分布的 30 次抽样，黑线是先验均值。后验被压在横轴附近，表示无论物种相距多远，协方差都非常低。至少按照这个模型与这些数据，脑大小并没有太多系统发育协方差。</p>
-      <figure class="book-figure phylogenetic-covariance-figure" id="fig-14-14"><div class="figure-scroll" tabindex="0" aria-label="系统发育 Gaussian 过程的先验与后验协方差函数"><img src="/media/chapter-14-phylogenetic-covariance.svg" alt="灰色先验带与黑色先验均值随系统发育距离下降，三十条蓝色后验曲线紧贴零协方差横轴"></div><figcaption><strong>图 14.14：</strong>系统发育 Gaussian 过程回归的后验协方差函数（蓝色），与先验（灰色）比较。Brownian 运动模型让协方差从高值开始、随距离线性衰减；这个模型却偏好在所有距离上都只有很小的协变。</figcaption></figure>
-      <p>因此，系统发育距离并没有像 Brownian 运动模型那样，完全消除群体大小与脑大小之间的关联。</p>
-      <aside class="overthinking-box" id="overthinking-14-custom-kernels"><h3>过度思考：构造自定义核</h3><p><code>rethinking</code> 包提供 <code>cov_GPL1</code>（OU 核）和 <code>cov_GPL2</code>（二次核），用来构造 Gaussian 过程协方差矩阵。不过，若直接使用 Stan，自行构造核也很容易。查看 <code>stancode(m14.11)</code>，顶部是一个自定义 <code>functions</code> 块，其中包含 <code>cov_GPL1</code> 函数：</p><pre class="stan-snippet" id="stan-14-gpl1-kernel"><code>functions{
+      <figure class="book-figure phylogenetic-covariance-figure" id="fig-14-14"><div class="figure-scroll" tabindex="0" aria-label="系统发育 Gaussian 过程的先验与后验协方差函数"><img src="/media/chapter-14-phylogenetic-covariance.svg" alt="灰色先验带与黑色先验均值随系统发育距离下降，三十条蓝色后验曲线紧贴零协方差横轴"></div><figcaption><strong>图 14.14：</strong>系统发育 Gaussian 过程回归的后验协方差函数（蓝色），与先验（灰色）比较。布朗运动模型让协方差从高值开始、随距离线性衰减；这个模型却偏好在所有距离上都只有很小的协变。</figcaption></figure>
+      <p>因此，系统发育距离并没有像布朗运动模型那样，完全消除群体大小与脑大小之间的关联。</p>
+      <aside class="overthinking-box" id="overthinking-14-custom-kernels"><h3>过度思考：构造自定义核</h3><p><code>rethinking</code> 包提供 <code>cov_GPL1</code>（OU 核）和 <code>cov_GPL2</code>（二次核），用来构造 Gaussian 过程协方差矩阵。不过，若直接使用 Stan，自行构造核也很容易。查看 <code>stancode(m14.11)</code>，顶部是一个自定义 <code>functions</code> 块，其中包含 <code>cov_GPL1</code> 函数：</p><figure class="code-listing" id="stan-14-gpl1-kernel"><figcaption>Stan：cov_GPL1 自定义核函数</figcaption><pre><code>functions{
     matrix cov_GPL1(matrix x, real sq_alpha, real sq_rho, real delta) {
         int N = dims(x)[1];
         matrix[N, N] K;
@@ -1012,7 +1012,7 @@ text( 0.2 , 0.1 , "posterior" , col=rangi2 )</code></pre></figure>
         K[N, N] = sq_alpha + delta;
         return K;
     }
-}</code></pre><p>这个函数接收距离矩阵 <code>x</code> 和 Gaussian 过程参数，随后遍历协方差矩阵 <code>K</code> 的全部单元格，逐一计算其值。若要修改核，只需改动计算每个协方差的语句：</p><pre class="stan-snippet" id="stan-14-gpl1-covariance-line"><code>K[i, j] = sq_alpha * exp(-sq_rho * x[i,j] );</code></pre><p>例如，二次核只需把 <code>x[i,j]</code> 平方。最后，在 <code>model</code> 块中调用这个函数即可。</p></aside>
+}</code></pre></figure><p>这个函数接收距离矩阵 <code>x</code> 和 Gaussian 过程参数，随后遍历协方差矩阵 <code>K</code> 的全部单元格，逐一计算其值。若要修改核，只需改动计算每个协方差的语句：</p><figure class="code-listing" id="stan-14-gpl1-covariance-line"><figcaption>Stan：协方差计算语句</figcaption><pre><code>K[i, j] = sq_alpha * exp(-sq_rho * x[i,j] );</code></pre></figure><p>例如，二次核只需把 <code>x[i,j]</code> 平方。最后，在 <code>model</code> 块中调用这个函数即可。</p></aside>
     </section>
   </section>
 
@@ -1022,7 +1022,7 @@ text( 0.2 , 0.1 , "posterior" , col=rangi2 )</code></pre></figure>
 
   <section id="sec-14-7"><h2>14.7 练习</h2>
     <div class="practice-group" id="practice-14-easy"><h3>简单题</h3>
-      <article class="exercise" id="exercise-14E1"><h4>14E1</h4><p>为下列模型加入预测变量 <var>x</var> 的变化斜率。</p><div class="equation-block wallis-equation" id="eq-14E1"><div><var>y</var><sub><var>i</var></sub> ∼ Normal(<var>μ</var><sub><var>i</var></sub>, <var>σ</var>)</div><div><var>μ</var><sub><var>i</var></sub> = <var>α</var><sub>GROUP[<var>i</var>]</sub> + <var>βx</var><sub><var>i</var></sub></div><div><var>α</var><sub>GROUP</sub> ∼ Normal(<var>α</var>, <var>σ</var><sub><var>α</var></sub>)</div><div><var>α</var> ∼ Normal(0, 10)</div><div><var>β</var> ∼ Normal(0, 1)</div><div><var>σ</var> ∼ HalfCauchy(0, 2)</div><div><var>σ</var><sub><var>α</var></sub> ∼ HalfCauchy(0, 2)</div></div></article>
+      <article class="exercise" id="exercise-14E1"><h4>14E1</h4><p>为下列模型加入预测变量 <var>x</var> 的变化斜率。</p><div class="equation-block wallis-equation" id="eq-14E1"><div><var>y</var><sub><var>i</var></sub> ∼ Normal(<var>μ</var><sub><var>i</var></sub>, <var>σ</var>)</div><div><var>μ</var><sub><var>i</var></sub> = <var>α</var><sub>GROUP[<var>i</var>]</sub> + <var>β</var><var>x</var><sub><var>i</var></sub></div><div><var>α</var><sub>GROUP</sub> ∼ Normal(<var>α</var>, <var>σ</var><sub><var>α</var></sub>)</div><div><var>α</var> ∼ Normal(0, 10)</div><div><var>β</var> ∼ Normal(0, 1)</div><div><var>σ</var> ∼ HalfCauchy(0, 2)</div><div><var>σ</var><sub><var>α</var></sub> ∼ HalfCauchy(0, 2)</div></div></article>
       <article class="exercise" id="exercise-14E2"><h4>14E2</h4><p>设想一种变化截距与变化斜率呈正相关的情境，并为这种相关给出机制解释。</p></article>
       <article class="exercise" id="exercise-14E3"><h4>14E3</h4><p>在什么情况下，变化斜率模型的有效参数数目（由 WAIC 或 DIC 估计）会少于相应的固定、无汇聚斜率模型？请解释。</p></article>
     </div>

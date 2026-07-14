@@ -1,10 +1,13 @@
-.PHONY: build audit preview extract-chapter-01
+.PHONY: build audit audit-second-pass preview extract-chapter-01
 
 build:
 	python3 scripts/build_site.py
 
 audit: build
 	python3 scripts/audit_site.py
+
+audit-second-pass:
+	python3 scripts/audit_second_pass.py
 
 preview: build
 	python3 -m http.server 8877 --directory site
