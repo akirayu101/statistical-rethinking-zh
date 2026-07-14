@@ -2439,7 +2439,7 @@
   },
   "chapter-14": {
     "required_status": "in_progress",
-    "source_pages": [465, 509],
+    "source_pages": [465, 512],
     "required_ids": [
       "intro-14",
       "eq-14-cafe-varying-slopes",
@@ -2580,6 +2580,16 @@
       "code-14-47",
       "fig-14-13",
       "eq-14-primate-mvnormal-model",
+      "eq-14-primate-identity-covariance",
+      "code-14-48",
+      "code-14-49",
+      "code-14-50",
+      "erratum-14-phylogeny-brownian-wording",
+      "code-14-51",
+      "note-208-ref",
+      "eq-14-ou-kernel",
+      "note-209-ref",
+      "code-14-52",
       "chapter-14-notes",
       "note-194",
       "note-195",
@@ -2594,7 +2604,9 @@
       "note-204",
       "note-205",
       "note-206",
-      "note-207"
+      "note-207",
+      "note-208",
+      "note-209"
     ],
     "required_headings": [
       "协方差历险",
@@ -2622,20 +2634,20 @@
     ],
     "counts": {
       "section": 10,
-      "figure": 65,
+      "figure": 70,
       "figure img": 13,
       ".book-figure": 13,
-      ".code-listing": 47,
-      ".code-output": 12,
+      ".code-listing": 52,
+      ".code-output": 14,
       ".rethinking-box": 5,
       ".overthinking-box": 3,
       ".book-quote": 0,
-      ".equation-block": 26,
-      ".wallis-equation": 26,
-      ".source-erratum": 13,
+      ".equation-block": 28,
+      ".wallis-equation": 28,
+      ".source-erratum": 14,
       ".chapter-introduction": 1,
       ".continuation-note": 1,
-      ".endnotes li": 14
+      ".endnotes li": 16
     }
   }
 }

@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-14" data-source-pages="465-509">
-  <header class="chapter-header"><p class="eyebrow">第十四章</p><h1>协方差历险</h1><p class="source-range">当前译稿对应原书 PDF 第 465–509 页</p></header>
+<article class="book-article" data-chapter="chapter-14" data-source-pages="465-512">
+  <header class="chapter-header"><p class="eyebrow">第十四章</p><h1>协方差历险</h1><p class="source-range">当前译稿对应原书 PDF 第 465–512 页</p></header>
 
   <div class="chapter-introduction" id="intro-14">
     <p>回想上一章导言中的咖啡机器人（原书第 413 页）。这个机器人被设定为在咖啡馆之间移动、点咖啡，并记录等待时间。上一章的重点是：在咖啡馆之间汇聚信息，能让机器人学得更高效；变化截距正是实现这种汇聚的一种机制。</p>
@@ -889,11 +889,85 @@ plot( ladderize(Primates301_nex) , type="fan" , font=1 , no.margin=TRUE ,
       <p>图 14.13 就是这棵系统发育树。我们会用它建模未观测混杂，同时处理某些近缘物种群在自然界可能被过度代表的问题，例如狐猴很多。这会造成抽样不平衡，类似普通多层模型的情形；变化效应也能提供帮助，只不过这次变化效应来自系统发育树结构。</p>
       <p>在使用树之前，先作一个普通回归：以（log）群体大小和（log）体重预测（log）脑大小。这里故意用不普通的方式构造普通回归，以便理解下一步怎样嵌入系统发育信息。把所有物种看成一个变量，即由 301 个性状值组成的向量；其中一些值当然彼此更相似。典型回归用预测变量建模这种相似性，而以预测变量为条件后，模型预期仍有相关。因此可以用一个大型多元结果分布写出模型：</p>
       <div class="equation-block wallis-equation" id="eq-14-primate-mvnormal-model"><div><strong>B</strong> ∼ MVNormal(<strong>μ</strong>, <strong>S</strong>)</div><div><var>μ</var><sub><var>i</var></sub> = <var>α</var> + <var>β</var><sub><var>G</var></sub><var>G</var><sub><var>i</var></sub> + <var>β</var><sub><var>M</var></sub><var>M</var><sub><var>i</var></sub></div></div>
-      <p class="continuation-note">普通回归的单位协方差矩阵、灵长类数据筛选与代码 14.48，将从原书 PDF 第 510 页继续。</p>
+      <p>其中，<strong>B</strong> 是各物种脑大小组成的向量，<strong>S</strong> 是行数、列数都等于物种数的协方差矩阵。在普通回归中，这个矩阵写成：</p>
+      <div class="equation-block wallis-equation" id="eq-14-primate-identity-covariance"><div><strong>S</strong> = <var>σ</var><sup>2</sup><strong>I</strong></div></div>
+      <p><var>σ</var> 仍是从第 4 章起一直使用的标准差，<strong>I</strong> 是<strong>单位矩阵</strong>：主对角线上全为 1，其余位置全为 0。也可以把它看成所有相关都为零的相关矩阵；将方差乘进去，只会让每个物种具有相同的残差方差。这仍是普通线性回归，只是把它理解成一个多元结果。</p>
+      <p>现在把模型拟合到灵长类数据。先只保留同时观测到群体大小、脑大小和体重的物种：</p>
+      <figure class="code-listing" id="code-14-48"><figcaption>R 代码 14.48</figcaption><pre><code>d &lt;- Primates301
+d$name &lt;- as.character(d$name)
+dstan &lt;- d[ complete.cases( d$group_size , d$body , d$brain ) , ]
+spp_obs &lt;- dstan$name</code></pre></figure>
+      <p>最后应剩下 151 个物种。接着把 log 转换并标准化后的变量组成列表，交给 <code>ulam</code>：</p>
+      <figure class="code-listing" id="code-14-49"><figcaption>R 代码 14.49</figcaption><pre><code>dat_list &lt;- list(
+    N_spp = nrow(dstan),
+    M = standardize(log(dstan$body)),
+    B = standardize(log(dstan$brain)),
+    G = standardize(log(dstan$group_size)),
+    Imat = diag(nrow(dstan)) )
+
+m14.9 &lt;- ulam(
+    alist(
+        B ~ multi_normal( mu , SIGMA ),
+        mu &lt;- a + bM*M + bG*G,
+        matrix[N_spp,N_spp]: SIGMA &lt;- Imat * sigma_sq,
+        a ~ normal( 0 , 1 ),
+        c(bM,bG) ~ normal( 0 , 0.5 ),
+        sigma_sq ~ exponential( 1 )
+    ), data=dat_list , chains=4 , cores=4 )
+precis( m14.9 )</code></pre><pre class="code-output" id="output-14-49"><code>          mean   sd  5.5% 94.5% n_eff Rhat
+a         0.00 0.02 -0.03  0.03  1859    1
+bG        0.12 0.02  0.09  0.16  1572    1
+bM        0.89 0.02  0.86  0.93  1481    1
+sigma_sq  0.05 0.01  0.04  0.06  2040    1</code></pre></figure>
+      <p>脑大小与群体大小之间似乎存在可靠的正关联，体重与脑大小之间也有很强的关联。不过，这些数据充斥着混杂，现在还没有理由把任何关联解释成因果关系。</p>
+      <p>下面进行两种系统发育回归。两者所做的事都很简单：用编码了系统发育信息的矩阵替换上面的协方差矩阵 <strong>S</strong>。第一种是最古老也最保守的方法之一：用 Brownian 运动解释系统发育，并由此导出一种非常特定的协方差矩阵。Brownian 运动就是 Gaussian 随机游走。若物种分化后，各自性状相对于彼此随机漂移，那么一对物种之间的协方差最终会与它们的系统发育枝长距离呈线性关系——距离越远，协方差按比例越小。当然，我们关心的性状显然不是中性演化的，而且在树的不同部分也以不同速率演化；遗憾的是，接下来这套方法仍是最常见的系统发育控制形式。</p>
+      <aside class="source-erratum" id="erratum-14-phylogeny-brownian-wording"><strong>原文说明：</strong>PDF 第 511 页的 “formethodm” 是排版粘连词，下一段 “The is otherwise the same” 又漏掉主语；第 512 页还有 “since it a much rougher function” 与 “If the goal is estimate” 两处漏字。译稿均依上下文补足，不改变论点。</aside>
+      <p>先计算 Brownian 模型隐含的协方差矩阵和距离矩阵，再看看二者怎样关联。<code>ape</code> 包已经提供了所需函数：</p>
+      <figure class="code-listing" id="code-14-50"><figcaption>R 代码 14.50</figcaption><pre><code>library(ape)
+tree_trimmed &lt;- keep.tip( Primates301_nex, spp_obs )
+Rbm &lt;- corBrownian( phy=tree_trimmed )
+V &lt;- vcv(Rbm)
+Dmat &lt;- cophenetic( tree_trimmed )
+plot( Dmat , V , xlab="phylogenetic distance" , ylab="covariance" )</code></pre></figure>
+      <p>原书没有展示这张图；运行代码会得到一个以物种对为点的散点图。横轴是系统发育距离，也称系统发育枝长距离；纵轴是 Brownian 模型下的协方差。二者实际上互为反向关系。用 <code>image(V)</code> 和 <code>image(Dmat)</code> 分别绘制热图，会看得更清楚。</p>
+      <p>现在只需把新矩阵放进回归，模型其余部分保持不变。不过，要先把矩阵行列重排为与数据相同的顺序，再将它转换成相关矩阵，以便估计残差方差；之后用新相关矩阵替换单位矩阵即可：</p>
+      <figure class="code-listing" id="code-14-51"><figcaption>R 代码 14.51</figcaption><pre><code># 把物种排成正确顺序
+dat_list$V &lt;- V[ spp_obs , spp_obs ]
+# 转换成相关矩阵
+dat_list$R &lt;- dat_list$V / max(V)
+
+# Brownian 运动模型
+m14.10 &lt;- ulam(
+    alist(
+        B ~ multi_normal( mu , SIGMA ),
+        mu &lt;- a + bM*M + bG*G,
+        matrix[N_spp,N_spp]: SIGMA &lt;- R * sigma_sq,
+        a ~ normal( 0 , 1 ),
+        c(bM,bG) ~ normal( 0 , 0.5 ),
+        sigma_sq ~ exponential( 1 )
+    ), data=dat_list , chains=4 , cores=4 )
+precis( m14.10 )</code></pre><pre class="code-output" id="output-14-51"><code>           mean   sd  5.5% 94.5% n_eff Rhat
+a         -0.20 0.17 -0.47  0.06  2152    1
+bG        -0.01 0.02 -0.04  0.02  2691    1
+bM         0.70 0.04  0.64  0.76  1935    1
+sigma_sq   0.16 0.02  0.13  0.19  2251    1</code></pre></figure>
+      <p>这个模型把群体大小效应彻底抹掉了：后验均值几乎为零，零点两侧都有大量概率质量。相较前一个模型，结果变化很大；这暗示脑大小在树上存在大量聚集，而同样聚集的群体大小因此与它产生了虚假关系。模型怎样利用这种聚集，取决于我们提供的相关矩阵细节。</p>
+      <p>Brownian 运动模型是一种特殊的 Gaussian 过程，其中协方差会随着距离增加，以非常僵硬的方式下降。没有必要如此僵硬，而且有充分理由认为演化并不能由 Brownian 运动很好描述。常见做法之一是用 Pagel’s <var>λ</var> 修正 Brownian 模型，但它只是用同一个因子缩放所有物种相关，仍保留同样武断而不现实的距离模型。另一个常见方案是 Ornstein–Uhlenbeck 过程（OU 过程）：一种有阻尼、倾向回归某个均值（或多个均值）的 Brownian 运动。实践中，它约束了变异，使系统发育距离与协方差之间的关系变为非线性。<sup id="note-208-ref"><a href="#note-208">208</a></sup> 更准确地说，OU 过程把物种 <var>i</var> 与 <var>j</var> 之间的协方差定义为：</p>
+      <div class="equation-block wallis-equation" id="eq-14-ou-kernel"><div><var>K</var>(<var>i</var>, <var>j</var>) = <var>η</var><sup>2</sup> exp(−<var>ρ</var><sup>2</sup><var>D</var><sub><var>ij</var></sub>)</div></div>
+      <p>这是指数距离核，不同于上一例中的二次核。指数核表示点（物种）之间的协方差会快速下降，生成的函数因此远不如二次核平滑。它通常也更难拟合，因为函数粗糙得多；实践中需要格外谨慎地指定先验，可能还要把先验收窄。</p>
+      <p>OU 过程仍是 Gaussian 过程，所以拟合方式与上一节的二次核相同。系统发育回归文献尚未充分强调这一点；把模型写成 Gaussian 过程，便能按具体问题定制函数空间。<sup id="note-209-ref"><a href="#note-209">209</a></sup> 这种框架目前仍不常见。生物学家往往笼罩在迷信与惧怕按错按钮的阴云下使用系统发育；Gaussian 过程框架既统一了既有方法，又允许模型描述协变随系统发育距离变化的模式。它也应当说明：纳入系统发育距离并不存在唯一正确的方法。若目标是估计因果效应，只拒绝某个零模型远远不够；我们必须有效重建未测混杂之间的模式，而不同的演化历史会需要不同模型。</p>
+      <p>构造这次 Gaussian 过程回归需要距离矩阵，而前面已经算好了。接着只需写出 Gaussian 过程构造语句。本例使用 OU 过程核；更一般地说，它称为 <var>L</var>1 范数，<code>ulam</code> 以 <code>cov_GPL1</code> 提供。后面的“过度思考”框还会展示怎样自行编写 Gaussian 过程核。</p>
+      <figure class="code-listing" id="code-14-52"><figcaption>R 代码 14.52（续下页）</figcaption><pre><code># 加入缩放并重排后的距离矩阵
+dat_list$Dmat &lt;- Dmat[ spp_obs , spp_obs ] / max(Dmat)
+
+m14.11 &lt;- ulam(
+    alist(
+        B ~ multi_normal( mu , SIGMA ),</code></pre></figure>
+      <p class="continuation-note">OU Gaussian 过程模型代码 14.52 的其余部分、参数后验与结果解释，将从原书 PDF 第 513 页继续。</p>
     </section>
   </section>
 
-  <section class="endnotes" id="chapter-14-notes" role="doc-endnotes"><h2>尾注</h2><ol start="194"><li id="note-194">Lewandowski 等（2009）。“LKJ”来自三位作者姓氏的首字母；作者本人把这种方法称为“洋葱法”。关于它在 Bayesian 模型中的用法，可参见最新版 Stan 参考手册的说明。 <a class="backref" href="#note-194-ref" aria-label="返回正文">↩</a></li><li id="note-195">参见 Gelfand 等（1995）以及 Roberts 和 Sahu（1997）。较新的综述可参见 Papaspiliopoulos 等（2007）；以 Hamiltonian Monte Carlo 为重点的讨论可参见 Betancourt 和 Girolami（2013）。 <a class="backref" href="#note-195-ref" aria-label="返回正文">↩</a></li><li id="note-196">参见 Pearl（2011）。 <a class="backref" href="#note-196-ref" aria-label="返回正文">↩</a></li><li id="note-197">参见 Angrist 和 Krueger（1991）。 <a class="backref" href="#note-197-ref" aria-label="返回正文">↩</a></li><li id="note-198">Feyrer 和 Sacerdote（2009）。 <a class="backref" href="#note-198-ref" aria-label="返回正文">↩</a></li><li id="note-199">参见 Caniglia 等（2019）。 <a class="backref" href="#note-199-ref" aria-label="返回正文">↩</a></li><li id="note-200">参见 Angrist 和 Krueger（1995）以及 Kleibergen 和 Zivot（2003）。据作者所知，对参数化工具变量估计量——Bayesian 或其他形式——仍没有系统且有理论依据的理解；这很奇怪，因为 DAG 已提供正式的非参数理论。真实情况可能是：即使 DAG 表明存在工具，估计在实践中也常不可行。 <a class="backref" href="#note-200-ref" aria-label="返回正文">↩</a></li><li id="note-201">参见 Cohen 和 Malloy（2014）。作者从 Alex Chinco 的博客学到这个例子，参见其 2011 年文章。 <a class="backref" href="#note-201-ref" aria-label="返回正文">↩</a></li><li id="note-202">Thistlethwaite 和 Campbell（1960）。 <a class="backref" href="#note-202-ref" aria-label="返回正文">↩</a></li><li id="note-203">参见 Gelman 和 Imbens（2019）给出的尖锐示例与建议。 <a class="backref" href="#note-203-ref" aria-label="返回正文">↩</a></li><li id="note-204">Koster 和 Leckie（2014）。 <a class="backref" href="#note-204-ref" aria-label="返回正文">↩</a></li><li id="note-205">参见 Neal（1998）这篇高被引综述，其中也有实现说明。 <a class="backref" href="#note-205-ref" aria-label="返回正文">↩</a></li><li id="note-206">参见 Uyeda 等（2018）关于传统方法问题以及乳汁等强力二元性状影响的讨论。 <a class="backref" href="#note-206-ref" aria-label="返回正文">↩</a></li><li id="note-207">参见 Felsenstein（1985）与 Grafen（1989）。 <a class="backref" href="#note-207-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section class="endnotes" id="chapter-14-notes" role="doc-endnotes"><h2>尾注</h2><ol start="194"><li id="note-194">Lewandowski 等（2009）。“LKJ”来自三位作者姓氏的首字母；作者本人把这种方法称为“洋葱法”。关于它在 Bayesian 模型中的用法，可参见最新版 Stan 参考手册的说明。 <a class="backref" href="#note-194-ref" aria-label="返回正文">↩</a></li><li id="note-195">参见 Gelfand 等（1995）以及 Roberts 和 Sahu（1997）。较新的综述可参见 Papaspiliopoulos 等（2007）；以 Hamiltonian Monte Carlo 为重点的讨论可参见 Betancourt 和 Girolami（2013）。 <a class="backref" href="#note-195-ref" aria-label="返回正文">↩</a></li><li id="note-196">参见 Pearl（2011）。 <a class="backref" href="#note-196-ref" aria-label="返回正文">↩</a></li><li id="note-197">参见 Angrist 和 Krueger（1991）。 <a class="backref" href="#note-197-ref" aria-label="返回正文">↩</a></li><li id="note-198">Feyrer 和 Sacerdote（2009）。 <a class="backref" href="#note-198-ref" aria-label="返回正文">↩</a></li><li id="note-199">参见 Caniglia 等（2019）。 <a class="backref" href="#note-199-ref" aria-label="返回正文">↩</a></li><li id="note-200">参见 Angrist 和 Krueger（1995）以及 Kleibergen 和 Zivot（2003）。据作者所知，对参数化工具变量估计量——Bayesian 或其他形式——仍没有系统且有理论依据的理解；这很奇怪，因为 DAG 已提供正式的非参数理论。真实情况可能是：即使 DAG 表明存在工具，估计在实践中也常不可行。 <a class="backref" href="#note-200-ref" aria-label="返回正文">↩</a></li><li id="note-201">参见 Cohen 和 Malloy（2014）。作者从 Alex Chinco 的博客学到这个例子，参见其 2011 年文章。 <a class="backref" href="#note-201-ref" aria-label="返回正文">↩</a></li><li id="note-202">Thistlethwaite 和 Campbell（1960）。 <a class="backref" href="#note-202-ref" aria-label="返回正文">↩</a></li><li id="note-203">参见 Gelman 和 Imbens（2019）给出的尖锐示例与建议。 <a class="backref" href="#note-203-ref" aria-label="返回正文">↩</a></li><li id="note-204">Koster 和 Leckie（2014）。 <a class="backref" href="#note-204-ref" aria-label="返回正文">↩</a></li><li id="note-205">参见 Neal（1998）这篇高被引综述，其中也有实现说明。 <a class="backref" href="#note-205-ref" aria-label="返回正文">↩</a></li><li id="note-206">参见 Uyeda 等（2018）关于传统方法问题以及乳汁等强力二元性状影响的讨论。 <a class="backref" href="#note-206-ref" aria-label="返回正文">↩</a></li><li id="note-207">参见 Felsenstein（1985）与 Grafen（1989）。 <a class="backref" href="#note-207-ref" aria-label="返回正文">↩</a></li><li id="note-208">Uhlenbeck 和 Ornstein（1930）。关于拟合这类模型时的问题，另见 Cooper 等（2016）。 <a class="backref" href="#note-208-ref" aria-label="返回正文">↩</a></li><li id="note-209">参见 Jones 和 Moriarty（2013）、Landis 等（2013）以及 Meagher 等（2018）。 <a class="backref" href="#note-209-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 14 章 PDF 第 465–509 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 510 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 14 章 PDF 第 465–512 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 513 页继续。</aside>
 </article>

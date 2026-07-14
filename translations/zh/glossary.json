@@ -1215,6 +1215,13 @@
     "life history": "生活史",
     "consensus phylogeny": "共识系统发育",
     "phylogenetic tree": "系统发育树",
+    "identity matrix": "单位矩阵",
+    "Brownian motion": "Brownian 运动",
+    "patristic distance": "系统发育枝长距离",
+    "Pagel's lambda": "Pagel’s λ",
+    "Ornstein-Uhlenbeck process": "Ornstein–Uhlenbeck 过程",
+    "exponential distance kernel": "指数距离核",
+    "L1 norm": "L1 范数",
     "cross-classified varying slopes model": "交叉分类变化斜率模型"
   },
   "protected": [
