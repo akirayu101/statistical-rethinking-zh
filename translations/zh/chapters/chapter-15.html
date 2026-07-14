@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-15" data-source-pages="517-545">
-  <header class="chapter-header"><p class="eyebrow">第十五章</p><h1>缺失数据与其他机会</h1><p class="source-range">当前译稿对应原书 PDF 第 517–545 页</p></header>
+<article class="book-article" data-chapter="chapter-15" data-source-pages="517-548">
+  <header class="chapter-header"><p class="eyebrow">第十五章</p><h1>缺失数据与其他机会</h1><p class="source-range">当前译稿对应原书 PDF 第 517–548 页</p></header>
 
   <div class="chapter-introduction" id="intro-15">
     <p>Bayesian 推断的一大优点，是不必非得聪明才行。例如，有一道经典概率谜题叫作<strong>Bertrand 盒子悖论</strong>。<sup id="note-210-ref"><a href="#note-210">210</a></sup> 我偏爱的版本用煎饼来讲。假设我煎了三张饼：第一张两面都焦了（BB），第二张只焦了一面（BU），第三张两面都没焦（UU）。现在我随机拿一张给你，盘中朝上的一面恰好焦了。另一面也焦了的概率是多少？</p>
@@ -505,17 +505,88 @@ moralizing_gods   NA   NA   NA   NA   NA   NA   NA   NA    1</code></pre></figur
       <p>猫是否存在 <var>C</var> 会影响鸟唱出的音符数 <var>N</var>。然而由于缺失值 <var>R</var><sub><var>C</var></sub>，我们只能观测到 <var>C</var>*。要把它变成完全生成式的模型，现在必须为上面每条箭头选择函数。下面是我用统计记号表达的选择：</p>
       <div class="equation-block wallis-equation" id="eq-15-discrete-cats-model"><div class="annotated-equation-line"><span class="equation-expression"><var>N</var><sub><var>i</var></sub> ∼ Poisson(<var>λ</var><sub><var>i</var></sub>)</span><span class="equation-label">[鸟鸣音符数的概率]</span></div><div class="annotated-equation-line"><span class="equation-expression">log <var>λ</var><sub><var>i</var></sub> = <var>α</var> + <var>βC</var><sub><var>i</var></sub></span><span class="equation-label">[音符率是猫状态的函数]</span></div><div class="annotated-equation-line"><span class="equation-expression"><var>C</var><sub><var>i</var></sub> ∼ Bernoulli(<var>k</var>)</span><span class="equation-label">[猫存在的概率]</span></div><div class="annotated-equation-line"><span class="equation-expression"><var>R</var><sub><var>C</var>,<var>i</var></sub> ∼ Bernoulli(<var>r</var>)</span><span class="equation-label">[不知道 <var>C</var><sub><var>i</var></sub> 的概率]</span></div></div>
       <p>要真正模拟一些演示数据，还必须为 <var>α</var>、<var>β</var>、<var>k</var> 与 <var>r</var> 选择数值。下面是一段可运行的模拟：</p>
-      <figure class="code-listing" id="code-15-29"><figcaption>R 代码 15.29（续下页）</figcaption><pre><code>set.seed(9)
+      <figure class="code-listing" id="code-15-29"><figcaption>R 代码 15.29</figcaption><pre><code>set.seed(9)
 N_houses &lt;- 100L
 alpha &lt;- 5
 beta &lt;- (-3)
 k &lt;- 0.5
-r &lt;- 0.2</code></pre></figure>
-      <p class="continuation-note">代码 15.29 的数据生成、离散猫状态的加权平均 likelihood 与代码 15.30，将从原书 PDF 第 546 页继续。</p>
+r &lt;- 0.2
+cat &lt;- rbern( N_houses , k )
+notes &lt;- rpois( N_houses , alpha + beta*cat )
+R_C &lt;- rbern( N_houses , r )
+cat_obs &lt;- cat
+cat_obs[R_C==1] &lt;- (-9L)
+dat &lt;- list(
+    notes = notes,
+    cat = cat_obs,
+    RC = R_C,
+    N = as.integer(N_houses) )</code></pre></figure>
+      <p>最后，我把 <code>cat_obs</code> 中每个未知值都替换成了 −9。这个数本身没有任何特殊之处，模型会跳过它们。不过，通常最好选一个无效值；这样一旦编码出错，就会触发错误。本例中的 <code>cat</code> 服从 Bernoulli 分布，所以若模型真的去询问观测到 −9 的概率，就应当报错，因为 −9 根本不可能出现。</p>
+      <p>为这个模型编程时，不能给每个未观测的 <code>cat</code> 都声明一个参数。因此，我们会直接对“那里究竟有没有猫”的不确定性取平均。准确说来，不以 <var>C</var><sub><var>i</var></sub> 为条件时，观测到 <var>N</var><sub><var>i</var></sub> 个音符的 likelihood 是：</p>
+      <div class="equation-block wallis-equation" id="eq-15-cat-average-likelihood"><div>Pr(<var>N</var><sub><var>i</var></sub>) =（有猫的概率）（有猫时出现 <var>N</var><sub><var>i</var></sub> 的概率）</div><div>+（没有猫的概率）（没有猫时出现 <var>N</var><sub><var>i</var></sub> 的概率）</div><div class="math-line">Pr(<var>N</var><sub><var>i</var></sub>) = Pr(<var>C</var><sub><var>i</var></sub> = 1) Pr(<var>N</var><sub><var>i</var></sub> | <var>C</var><sub><var>i</var></sub> = 1) + Pr(<var>C</var><sub><var>i</var></sub> = 0) Pr(<var>N</var><sub><var>i</var></sub> | <var>C</var><sub><var>i</var></sub> = 0)</div></div>
+      <p>不知道 <var>C</var><sub><var>i</var></sub> 时，就对 <var>C</var><sub><var>i</var></sub> 的每个可能值——这里是 1 或 0——分别计算 <var>N</var><sub><var>i</var></sub> 的 likelihood，再用 <var>C</var><sub><var>i</var></sub> 取各值的概率对这些 likelihood 加权平均。上面的表达式正是模型中需要编码的内容。既可以直接使用 Stan，也可以在 <code>ulam()</code> 中使用自定义分布。先看 <code>ulam()</code> 代码，再来解释。</p>
+      <figure class="code-listing" id="code-15-30"><figcaption>R 代码 15.30</figcaption><pre><code>m15.6 &lt;- ulam(
+    alist(
+        # singing bird model
+        ## cat known present/absent:
+        notes|RC==0 ~ poisson( lambda ),
+        log(lambda) &lt;- a + b*cat,
+        ## cat NA:
+        notes|RC==1 ~ custom( log_sum_exp(
+                 log(k) + poisson_lpmf( notes | exp(a + b) ),
+                 log(1-k) + poisson_lpmf( notes | exp(a) )
+            ) ),
+
+        # priors
+        a ~ normal(0,1),
+        b ~ normal(0,0.5),
+
+        # sneaking cat model
+        cat|RC==0 ~ bernoulli(k),
+        k ~ beta(2,2)
+    ), data=dat , chains=4 , cores=4 )</code></pre></figure>
+      <p>顶部的 <code>notes</code> likelihood 分成两种情形。可以把 <code>notes|RC==0</code> 读作“<span class="math-inline"><var>R</var><sub><var>C</var></sub> = 0</span> 时 <var>N</var> 的概率”。所以模型代码的第一行，就是已知猫存在或不存在（<span class="math-inline"><var>R</var><sub><var>C</var></sub> = 0</span>）时的普通 Poisson 概率。接下来几行，则是在没有观测到猫是否存在（<span class="math-inline"><var>R</var><sub><var>C</var></sub> = 1</span>）时的平均 likelihood。它看起来复杂，其实只是把前面的表达式写到对数尺度上。<code>log(k) + poisson_lpmf( notes | exp(a + b) )</code> 是 <span class="math-inline">log(Pr(<var>C</var><sub><var>i</var></sub> = 1) Pr(<var>N</var><sub><var>i</var></sub> | <var>C</var><sub><var>i</var></sub> = 1))</span>，而 <code>log(1-k) + poisson_lpmf( notes | exp(a) )</code> 是 <span class="math-inline">log(Pr(<var>C</var><sub><var>i</var></sub> = 0) Pr(<var>N</var><sub><var>i</var></sub> | <var>C</var><sub><var>i</var></sub> = 0))</span>。随后，辅助函数 <code>log_sum_exp</code> 在对数尺度上把这两项合成加权和。它只是接收一组对数概率，逐项取指数、求和，再返回总和的对数；不过整个计算采用数值稳定的方式。</p>
+      <p>上面模型的其余部分更熟悉，但务必留意底部猫是否存在的模型。已知猫存在或不存在时，<span class="math-inline"><var>R</var><sub><var>C</var></sub> = 0</span>，我们希望用该观测更新参数 <var>k</var>，也就是猫存在的概率。它与 likelihood 中的 <var>k</var> 是同一个参数。这意味着非缺失观测会更新缺失观测所使用的先验 <var>k</var>。查看 <code>m15.6</code> 的后验，确认链混合良好，所得结果也与数据生成过程一致。</p>
+      <p>现在假设希望推断未知的 <var>C</var> 值。要计算某一只猫存在或不存在的概率，可以回到生成模型。我们想知道的是 <span class="math-inline">Pr(<var>C</var><sub><var>i</var></sub> = 1)</span>。看到数据之前，这就是先验 <span class="math-inline">Pr(<var>C</var><sub><var>i</var></sub> = 1) = <var>k</var></span>。一旦观测到鸣唱音符数 <var>N</var><sub><var>i</var></sub>，就能用 Bayes 规则更新这个先验。本例中：</p>
+      <div class="equation-block wallis-equation" id="eq-15-cat-posterior-probability"><div class="math-line">Pr(<var>C</var><sub><var>i</var></sub> = 1 | <var>N</var><sub><var>i</var></sub>) = <span class="fraction"><span>Pr(<var>N</var><sub><var>i</var></sub> | <var>C</var><sub><var>i</var></sub> = 1) Pr(<var>C</var><sub><var>i</var></sub> = 1)</span><span>Pr(<var>N</var><sub><var>i</var></sub> | <var>C</var><sub><var>i</var></sub> = 1) Pr(<var>C</var><sub><var>i</var></sub> = 1) + Pr(<var>N</var><sub><var>i</var></sub> | <var>C</var><sub><var>i</var></sub> = 0) Pr(<var>C</var><sub><var>i</var></sub> = 0)</span></span></div></div>
+      <p>这看起来一团糟，其实只是一个定义。分子是 <span class="math-inline"><var>C</var><sub><var>i</var></sub> = 1</span> 时出现 <var>N</var><sub><var>i</var></sub> 个音符的概率；分母则是 <var>N</var><sub><var>i</var></sub> 个音符的平均概率。真正需要计算的只有两项，而且模型里已经用过它们。上式分母，正是刚才写入模型代码的 <var>N</var><sub><var>i</var></sub> 平均概率。</p>
+      <p>要为每个 <var>i</var> 计算 <span class="math-inline">Pr(<var>C</var><sub><var>i</var></sub> = 1 | <var>N</var><sub><var>i</var></sub>)</span>，只需在模型代码中再加几行。我们会在 Stan 的 <code>generated quantities</code> 块执行这些计算，也就是说，每次 HMC 转移只计算一次，并把结果保存在返回的样本中。使用 <code>ulam</code> 时，可以在行首标记 <code>gq&gt;</code> 来表达这一要求。下面是更新后的模型，新行位于底部：</p>
+      <figure class="code-listing" id="code-15-31"><figcaption>R 代码 15.31</figcaption><pre><code>m15.7 &lt;- ulam(
+    alist(
+        # singing bird model
+        notes|RC==0 ~ poisson( lambda ),
+        notes|RC==1 ~ custom( log_sum_exp(
+                 log(k) + poisson_lpmf( notes | exp(a + b) ),
+                 log(1-k) + poisson_lpmf( notes | exp(a) )
+            ) ),
+        log(lambda) &lt;- a + b*cat,
+        a ~ normal(0,1),
+        b ~ normal(0,0.5),
+
+        # sneaking cat model
+        cat|RC==0 ~ bernoulli(k),
+        k ~ beta(2,2),
+
+        # imputed values
+        gq&gt; vector[N]:PrC1 &lt;- exp(lpC1)/(exp(lpC1)+exp(lpC0)),
+        gq&gt; vector[N]:lpC1 &lt;- log(k) + poisson_lpmf( notes[i] | exp(a+b) ),
+        gq&gt; vector[N]:lpC0 &lt;- log(1-k) + poisson_lpmf( notes[i] | exp(a) )
+    ), data=dat , chains=4 , cores=4 )</code></pre></figure>
+      <p>以 <code>gq&gt;</code> 开头的三行执行 <span class="math-inline">Pr(<var>C</var><sub><var>i</var></sub> = 1 | <var>N</var><sub><var>i</var></sub>)</span> 的计算。第一行定义保存这些概率的向量；公式就是前面的数学表达式，也就是 Bayes 规则。之所以需要一堆 <code>exp</code>，是因为其余计算一如既往地在对数尺度上完成。接下来两行还是前面的 likelihood 计算：分别求猫存在（<code>lpC1</code>）或不存在（<code>lpC0</code>）时 <var>N</var><sub><var>i</var></sub> 的 likelihood。</p>
+      <p>章末练习会要求你把 <code>PrC1</code> 中的后验概率与模拟时的真实值比较。虽然这些样本的计算方式不同寻常，仍可以像处理其他参数一样处理它们。</p>
+      <p>这里的策略可以推广到取值不止两个的离散变量。此时，只需在平均 likelihood 中使用两项以上。例如，若每栋房子最多能养两只猫，猫的数量就可以改为在各房子间服从二项分布。likelihood 代码可以改成：</p>
+      <pre class="stan-snippet" id="snippet-15-two-cats"><code>notes|RC==1 ~ custom( log_sum_exp(
+        binomial_lpmf(2|2,k) + poisson_lpmf( notes | exp(a + b*2) ),
+        binomial_lpmf(1|2,k) + poisson_lpmf( notes | exp(a + b*1) ),
+        binomial_lpmf(0|2,k) + poisson_lpmf( notes | exp(a + b*0) )
+    ) )</code></pre>
+      <p>把上面每一行读作：若假定猫的数量以 2 为最大值、以 <var>k</var> 为概率服从二项分布，则某个特定猫数的对数概率，加上假定正好有该数量的猫时出现特定音符数的对数概率。无序类别的做法相同，只是开头各项来自某个概率单纯形。</p>
+      <p>当不止一个离散变量含有缺失值时，同样的方法依然成立。此时，每一种缺失值组合都需要不同的平均 likelihood（<code>custom()</code> 分布）。例如，假设还要根据每栋房子 <var>i</var> 是否住着狗（<var>D</var><sub><var>i</var></sub>）来分类。一栋房子可能属于四种观测组合之一：（1）有猫也有狗；（2）有猫；（3）有狗；（4）猫狗都没有（悲伤）。同样，其中一部分房子无法查明有没有狗。于是数据中，猫变量和狗变量可能任意一个为 <code>NA</code>，也可能两者都是 <code>NA</code>。若两者都为 <code>NA</code>，就必须对上面四种可能性全部取平均，其中还要同时纳入猫与狗的先验概率。</p>
+      <p class="continuation-note">猫与狗同时或分别缺失时的三组平均 likelihood、状态空间模型联系、15.3.2 与本章总结，将从原书 PDF 第 549 页继续。</p>
     </section>
   </section>
 
   <section class="endnotes" id="chapter-15-notes" role="doc-endnotes"><h2>尾注</h2><ol start="210"><li id="note-210">Joseph Bertrand，1889，<cite>Calcul des probabilités</cite>。 <a class="backref" href="#note-210-ref" aria-label="返回正文">↩</a></li><li id="note-211">这一主题有几篇很好的文章，各有自己的风格与记号变体。参见 Hernán 与 Cole（2009）、Loken 与 Gelman（2017）、Brakenhoff 等（2018）以及 van Smeden 等（2019）。 <a class="backref" href="#note-211-ref" aria-label="返回正文">↩</a></li><li id="note-212">关于这种做法富有建设性的批评，参见 Hernán 与 Cole（2009）。 <a class="backref" href="#note-212-ref" aria-label="返回正文">↩</a></li><li id="note-213">关于当代方法（Bayesian 与其他方法）的综述，参见 Molenberghs 等（2014）。 <a class="backref" href="#note-213-ref" aria-label="返回正文">↩</a></li><li id="note-214">参见 MacKenzie 等（2017）；这是一本意在应用的综合性著作。 <a class="backref" href="#note-214-ref" aria-label="返回正文">↩</a></li><li id="note-215">背景和更多术语见 Rubin（1976）及 Rubin 与 Little（2002）。Rubin 1976 年文章第 4 节对缺失数据成因给出了清晰定义，很有价值。 <a class="backref" href="#note-215-ref" aria-label="返回正文">↩</a></li><li id="note-216">Rubin（1987）。 <a class="backref" href="#note-216-ref" aria-label="返回正文">↩</a></li><li id="note-217">Whitehouse 等（2019）。原始数据下载见补充材料；这里的版本删除了若干变量，但其余部分与复现论文结果所需数据相同，并由 Bret Beheim 整理。完整文档与数据见 <a href="https://github.com/babeheim/moralizing-gods-reanalysis">moralizing-gods-reanalysis</a>。 <a class="backref" href="#note-217-ref" aria-label="返回正文">↩</a></li><li id="note-218">道德化神灵数据最初发表于颇具声望的科学刊物 <cite>Nature</cite>，作者确实把每个 <code>NA</code> 替换成零。论文从未提及 <code>moralizing_gods</code> 变量中的缺失数据，因此同行评审期间很可能无人注意。不过作者负责任地提供了全部数据与分析代码，论文发表后有多人独立发现了把 <code>NA</code> 变成零的问题；相关代码行见 <a href="https://github.com/pesavage/moralizing-gods/commit/ff61f9c">提交记录</a>，作者的透明做法值得充分肯定。作为记录，原作者至今仍不同意“以零替换 <code>NA</code>”是错误的。原始报告、批评与作者回应可分别参见 Whitehouse 等（2019）、Beheim 等（2019）和 Savage 等（2019）。注意原论文包含两项分析，两者都把 <code>NA</code> 当作零。 <a class="backref" href="#note-218-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 15 章 PDF 第 517–545 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 546 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 15 章 PDF 第 517–548 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 549 页继续。</aside>
 </article>
