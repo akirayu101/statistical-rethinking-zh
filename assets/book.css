@@ -251,6 +251,7 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .nut-posterior-figure .figure-scroll img { display: block; width: 45rem; max-width: none; height: auto; margin: 0 auto; }
 .lynx-hare-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
 .lotka-volterra-figure .figure-scroll img { display: block; width: 45rem; max-width: none; height: auto; margin: 0 auto; }
+.observation-density-figure .figure-scroll img { display: block; width: 45rem; max-width: none; height: auto; margin: 0 auto; }
 .derivative-equation .fraction { min-width: 3.5rem; }
 .gaussian-density-equation { display: flex; flex-wrap: wrap; justify-content: center; gap: .35rem; align-items: center; }
 .gaussian-density-equation .fraction { min-width: 5.5rem; }

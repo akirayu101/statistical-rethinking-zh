@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-16" data-source-pages="553-573">
-  <header class="chapter-header"><p class="eyebrow">第十六章</p><h1>广义线性疯狂</h1><p class="source-range">当前译稿对应原书 PDF 第 553–573 页</p></header>
+<article class="book-article" data-chapter="chapter-16" data-source-pages="553-576">
+  <header class="chapter-header"><p class="eyebrow">第十六章</p><h1>广义线性疯狂</h1><p class="source-range">当前译稿对应原书 PDF 第 553–576 页</p></header>
 
   <div class="chapter-introduction" id="intro-16">
     <p>高中时，我问物理老师怎么看统计学，她给我讲了一个笑话。以下是我记得的版本。一位物理学家、一位工程师和一位统计学家结伴去用弓打猎。几个小时后，他们终于在远处发现一只鹿。物理学家快速做了弹道计算，忽略空气阻力；箭飞得很正，却落在目标前几米，鹿毫无察觉。工程师冷笑一声，给空气阻力加入一个修正因子，然后放箭；第二支箭却落在目标后几米，鹿仍然没有察觉。统计学家取了平均值，高喊：“我们射中了！”</p>
@@ -389,12 +389,66 @@ mtext( "time" , 1 )</code></pre></figure>
       <p>仍用 <var>H</var><sub><var>t</var></sub> 与 <var>L</var><sub><var>t</var></sub> 表示时刻 <var>t</var> 的雪兔和猞猁真实数量，再用 <var>h</var><sub><var>t</var></sub> 与 <var>ℓ</var><sub><var>t</var></sub> 表示观测数量。<var>H</var><sub><var>t</var></sub> 会导致 <var>H</var><sub><var>t</var>+d<var>t</var></sub>，但观测值 <var>h</var><sub><var>t</var></sub> 什么也不导致；它只是时刻 <var>t</var> 未观测系统状态的一抹苍白倒影。必须用统计模型把它投射回底层的 <var>H</var><sub><var>t</var></sub> 与 <var>L</var><sub><var>t</var></sub>，再预测 <var>h</var><sub><var>t</var>+d<var>t</var></sub> 与 <var>ℓ</var><sub><var>t</var>+d<var>t</var></sub>。</p>
       <p>为此，需要给观测过程指定误差分布。原则性的做法，是勾勒从自然界真实状态 <var>H</var><sub><var>t</var></sub> 到测量 <var>h</var><sub><var>t</var></sub> 的生成过程。雪兔先被捕获；假设每只雪兔以概率 <var>p</var><sub><var>t</var></sub> 被捕，这个概率会因各种原因逐年变化。实际毛皮数又被四舍五入到最接近的 100，然后除以 1000，因此已不再是严格计数。听起来一团糟——测量就是这样。</p>
       <p>不过仍能建模。例如，假设真实雪兔种群为 <span class="math-inline"><var>H</var><sub><var>t</var></sub> = 10<sup>4</sup></span>，年度捕获率服从 <span class="math-inline"><var>p</var><sub><var>t</var></sub> ∼ Beta(2, 18)</span>。这表示平均捕获率为 10%，但几乎不会高到两倍。先从雪兔种群得到毛皮的二项计数，再四舍五入到最近的 100 并除以 1000。下一页将查看这种分布的形状。</p>
-      <aside class="source-erratum" id="erratum-16-population-dynamics-typos"><strong>原文说明：</strong>PDF 第 571 页的 “if you care about is forecasting” 漏排 <em>all</em>，“depends upon have” 应为 <em>having</em>；PDF 第 573 页的 “underly model” 应为 <em>underlying model</em>，而观测过程的步骤从 “First” 直接跳到 “Third”。译稿按上下文补齐并顺排。</aside>
-      <p class="continuation-note">图 16.8、代码 16.16、观测误差近似与完整状态空间统计模型，将从原书 PDF 第 574 页继续。</p>
+      <figure class="book-figure observation-density-figure" id="fig-16-8"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的年度捕获率变化所生成的毛皮观测数量密度图"><img src="/media/chapter-16-observation-model-density.svg" alt="毛皮观测数量密度明显右偏，峰值在一千张以下，长尾延伸至五千张左右"></div><p class="scroll-hint">图较宽，可横向滚动查看完整右偏分布。</p><figcaption><strong>图 16.8：</strong>观测模型的模拟分布，其中捕获概率逐年变化。此时，同一个真实种群规模可以对应很宽的毛皮数量范围，使种群规模推断变得困难。</figcaption></figure>
+      <figure class="code-listing" id="code-16-16"><figcaption>R 代码 16.16</figcaption><pre><code>N &lt;- 1e4
+Ht &lt;- 1e4
+p &lt;- rbeta(N,2,18)
+h &lt;- rbinom( N , size=Ht , prob=p )
+h &lt;- round( h/1000 , 2 )
+dens( h , xlab="thousand of pelts" , lwd=2 )</code></pre></figure>
+      <p>图 16.8 展示了这个密度。<var>p</var><sub><var>t</var></sub> 的变化带来右偏误差分布。试着在上面的代码里修改 <code>Ht</code> 和 <code>p</code> 的分布，看看结果怎样改变。</p>
+      <p>有几种合理方式可以近似这一分布。例如直接用 Log-Normal 分布：它具有正确的取值约束与偏斜方向。可以指定：</p>
+      <div class="equation-block wallis-equation" id="eq-16-observation-lognormal"><div><var>h</var><sub><var>t</var></sub> ∼ Log-Normal(log(<var>pH</var><sub><var>t</var></sub>), <var>σ</var><sub><var>H</var></sub>)</div></div>
+      <p>这使 <var>h</var><sub><var>t</var></sub> 的中位数为 <var>pH</var><sub><var>t</var></sub>，即预期被捕获的雪兔种群比例；参数 <var>σ</var><sub><var>H</var></sub> 控制离散程度。这个测量过程有个重要事实：至少在没有大量数据时，无法很好地估计 <var>p</var>。所以这里用强先验把它基本固定下来。若这让你不舒服，请注意，正是这个模型迫使我们承认：除非有可靠方法获知 <var>p</var>，否则最多只能估计相对种群规模。典型时间序列模型只会在自己的本轮上愉快空转，教不了我们这样有用的东西。</p>
+      <p>四舍五入误差最多是 <span class="math-inline">50/4000 = 0.0125 = 1.25%</span> 的毛皮数量，因此暂且忽略。若好奇怎样把四舍五入纳入统计模型，可看稍后的“过度思考”框。做起来并不难——只需生成式地思考，解法自然会出现。</p>
+      <p>现在列出完整统计模型。首先是观测变量——毛皮数量——的概率：</p>
+      <div class="equation-block wallis-equation annotated-model-equation" id="eq-16-observed-pelts"><div><span><var>h</var><sub><var>t</var></sub> ∼ Log-Normal(log(<var>p</var><sub><var>H</var></sub><var>H</var><sub><var>t</var></sub>), <var>σ</var><sub><var>H</var></sub>)</span><span class="equation-label">[观测雪兔毛皮的概率]</span></div><div><span><var>ℓ</var><sub><var>t</var></sub> ∼ Log-Normal(log(<var>p</var><sub><var>L</var></sub><var>L</var><sub><var>t</var></sub>), <var>σ</var><sub><var>L</var></sub>)</span><span class="equation-label">[观测猞猁毛皮的概率]</span></div></div>
+      <p>接下来定义未观测变量。先从猞猁 <var>L</var><sub><var>t</var></sub> 与雪兔 <var>H</var><sub><var>t</var></sub> 未观测的种群规模开始：</p>
+      <div class="equation-block wallis-equation annotated-model-equation population-model-equation" id="eq-16-population-state-model"><div><span><var>H</var><sub>1</sub> ∼ Log-Normal(log 10, 1)</span><span class="equation-label">[初始雪兔种群先验]</span></div><div><span><var>L</var><sub>1</sub> ∼ Log-Normal(log 10, 1)</span><span class="equation-label">[初始猞猁种群先验]</span></div><div><span><var>H</var><sub><var>T</var>&gt;1</sub> = <var>H</var><sub>1</sub> + ∫<sub>1</sub><sup><var>T</var></sup> <var>H</var><sub><var>t</var></sub>(<var>b</var><sub><var>H</var></sub> − <var>m</var><sub><var>H</var></sub><var>L</var><sub><var>t</var></sub>)d<var>t</var></span><span class="equation-label">[雪兔种群模型]</span></div><div><span><var>L</var><sub><var>T</var>&gt;1</sub> = <var>L</var><sub>1</sub> + ∫<sub>1</sub><sup><var>T</var></sup> <var>L</var><sub><var>t</var></sub>(<var>b</var><sub><var>L</var></sub><var>H</var><sub><var>t</var></sub> − <var>m</var><sub><var>L</var></sub>)d<var>t</var></span><span class="equation-label">[猞猁种群模型]</span></div></div>
+      <p>上面前两行给时刻 <span class="math-inline"><var>t</var> = 1</span> 的初始种群规模指定先验；第三、四行的微分方程模型定义之后所有时刻。最后，所有参数都需要先验：</p>
+      <div class="equation-block wallis-equation annotated-model-equation population-priors-equation" id="eq-16-population-priors"><div><span><var>σ</var><sub><var>H</var></sub> ∼ Exponential(1)</span><span class="equation-label">[测量离散程度先验]</span></div><div><span><var>σ</var><sub><var>L</var></sub> ∼ Exponential(1)</span><span class="equation-label">[测量离散程度先验]</span></div><div><span><var>p</var><sub><var>H</var></sub> ∼ Beta(<var>α</var><sub><var>H</var></sub>, <var>β</var><sub><var>H</var></sub>)</span><span class="equation-label">[雪兔捕获概率先验]</span></div><div><span><var>p</var><sub><var>L</var></sub> ∼ Beta(<var>α</var><sub><var>L</var></sub>, <var>β</var><sub><var>L</var></sub>)</span><span class="equation-label">[猞猁捕获概率先验]</span></div><div><span><var>b</var><sub><var>H</var></sub> ∼ Half-Normal(1, 0.5)</span><span class="equation-label">[雪兔出生率先验]</span></div><div><span><var>b</var><sub><var>L</var></sub> ∼ Half-Normal(0.05, 0.05)</span><span class="equation-label">[猞猁出生率先验]</span></div><div><span><var>m</var><sub><var>H</var></sub> ∼ Half-Normal(0.05, 0.05)</span><span class="equation-label">[雪兔死亡率先验]</span></div><div><span><var>m</var><sub><var>L</var></sub> ∼ Half-Normal(1, 0.5)</span><span class="equation-label">[猞猁死亡率先验]</span></div></div>
+      <p>在章末练习中，你会用这些先验进行先验预测模拟。</p>
+      <p>现在可以开始设计采样器。这个模型的障碍，是为每个时刻 <var>t</var> 计算 <var>H</var><sub><var>t</var></sub> 与 <var>L</var><sub><var>t</var></sub>。微分方程定义了这些变量，但采样器必须在每次迭代中数值求解。因此，需要把前面模拟模型时所做的数值积分写进贝叶斯采样器。幸好 Stan 已经提供求解微分方程的函数，事情没有听起来那么难。Stan 用户指南（<a href="https://mc-stan.org">mc-stan.org</a>）有完整一节讲这种模型的编程，并给出多个例子。</p>
+      <p>这里直接在 Stan 中编写模型。可以载入并显示 Stan 代码：</p>
+      <figure class="code-listing" id="code-16-17"><figcaption>R 代码 16.17</figcaption><pre><code>data(Lynx_Hare_model)
+cat(Lynx_Hare_model)</code></pre></figure>
+      <p>这里不重印整个模型，只指出处理微分方程的不寻常部分。第一处在最上面的 <code>functions</code> 块。这个可选代码块允许我们编写供模型调用的特殊计算。模型开头的 <code>dpop_dt</code> 函数就在这里——请真的去看看代码。名称中的 <code>pop</code> 是 population（种群）的缩写。函数返回种群的变化率，输入是时间 <code>t</code>、种群初始状态 <code>pop_init</code> 和参数向量 <code>theta</code>，然后计算猞猁与雪兔种群的变化率。</p>
+      <p>模型用这个函数确定 <var>H</var><sub><var>t</var></sub> 与 <var>L</var><sub><var>t</var></sub>。我们只需把函数名及其输入传给 Stan 方便的 <code>integrate_ode_rk45</code>，它会替我们完成积分。模型在 <code>transformed parameters</code> 块中执行积分，所以结果会像参数一样出现在后验里；但它们其实是其他参数——出生率、死亡率和初始种群规模——的确定性函数。结果存入矩阵 <code>pop</code>：每个观测时点一行，每个物种一列。</p>
+      <p>模型其余部分相当普通。<code>model</code> 块声明先验，并用下面的代码把方程解与观测数据联系起来：</p>
+      <figure class="code-listing" id="stan-16-pelts-likelihood"><figcaption>Stan 观测模型片段</figcaption><pre><code>for ( t in 1:N )
+  for ( k in 1:2 )
+    pelts[t,k] ~ lognormal( log(pop[t,k]*p[k]) , sigma[k] );</code></pre></figure>
+      <p><code>generated quantities</code> 中还有进行后验预测模拟的代码；采样结束后会把它们画出来。</p>
+      <p>现在准备好数据列表，点火启动：</p>
+      <figure class="code-listing" id="code-16-18"><figcaption>R 代码 16.18</figcaption><pre><code>dat_list &lt;- list(
+    N = nrow(Lynx_Hare),
+    pelts = Lynx_Hare[,2:3] )
+
+m16.5 &lt;- stan( model_code=Lynx_Hare_model , data=dat_list , chains=3 , cores=3 ,
+    control=list( adapt_delta=0.95 ) )</code></pre></figure>
+      <p>照例检查各条链。采样应该快速而平稳。你可以检查参数；每个参数都有生物学含义。不过它们以高度非线性的方式协同产生种群动力学，所以很难仅从单个参数读出整体动态。因此，分别在毛皮（已观测）与种群（未观测）两个层次绘制后验预测。对毛皮层次，画出原始数据，并叠加 21 条来自后验的模拟时间序列：</p>
+      <figure class="code-listing" id="code-16-19"><figcaption>R 代码 16.19</figcaption><pre><code>post &lt;- extract.samples(m16.5)
+pelts &lt;- dat_list$pelts
+plot( 1:21 , pelts[,2] , pch=16 , ylim=c(0,120) , xlab="year" ,
+    ylab="thousands of pelts" , xaxt="n" )
+at &lt;- c(1,11,21)
+axis( 1 , at=at , labels=Lynx_Hare$Year[at] )
+points( 1:21 , pelts[,1] , col=rangi2 , pch=16 )
+# 21 time series from posterior
+for ( s in 1:21 ) {
+    lines( 1:21 , post$pelts_pred[s,,2] , col=col.alpha("black",0.2) , lwd=2 )
+    lines( 1:21 , post$pelts_pred[s,,1] , col=col.alpha(rangi2,0.3) , lwd=2 )
+}
+# text labels
+text( 17 , 90 , "Lepus" , pos=2 )
+text( 19 , 50 , "Lynx" , pos=2 , col=rangi2 )</code></pre></figure>
+      <p>结果见图 16.9 上图。黑点与黑色轨迹是雪兔毛皮，蓝点与蓝色轨迹是猞猁毛皮。注意预测轨迹的锯齿；这是模型假定各时点测量误差互不相关的结果。</p>
+      <aside class="source-erratum" id="erratum-16-population-dynamics-typos"><strong>原文说明：</strong>PDF 第 571 页的 “if you care about is forecasting” 漏排 <em>all</em>，“depends upon have” 应为 <em>having</em>；PDF 第 573 页的 “underly model” 应为 <em>underlying model</em>，而观测过程步骤从 “First” 直接跳到 “Third”。PDF 第 573 页叙述说毛皮数取整到最近的 100，而第 574 页代码 <code>round(h/1000, 2)</code> 实际取整到最近的 10；PDF 第 575 页 “sampler need” 应为 <em>sampler needs</em>，第 576 页 “overly 21 simulated” 应为 <em>overlay 21 simulated</em>。译稿按上下文修正，代码保持原样。</aside>
+      <p class="continuation-note">图 16.9、测量误差与隐藏状态的因果解释，以及代码 16.20，将从原书 PDF 第 577 页继续。</p>
     </section>
   </section>
 
   <section class="endnotes" id="chapter-16-notes" role="doc-endnotes"><h2>尾注</h2><ol start="219"><li id="note-219">“Vitruvian Can”（“维特鲁威罐头”）这个双关由 Clint Johns（Twitter：@DrClintonJohns）提供。 <a class="backref" href="#note-219-ref" aria-label="返回正文">↩</a></li><li id="note-220">Harte（1988）。 <a class="backref" href="#note-220-ref" aria-label="返回正文">↩</a></li><li id="note-221">关于模型构建哲学有许多好文章，作者推荐三篇：Levins（1966）、Wimsatt（2002）和 Smaldino（2017）。 <a class="backref" href="#note-221-ref" aria-label="返回正文">↩</a></li><li id="note-222">资料来自 van Leeuwen 等（2018）。 <a class="backref" href="#note-222-ref" aria-label="返回正文">↩</a></li><li id="note-223">资料来自 Boesch 等（2019）。数据由 Roger Mundry 慷慨提供；论文中巧妙的分析也是由他设计的。 <a class="backref" href="#note-223-ref" aria-label="返回正文">↩</a></li><li id="note-224">von Bertalanffy（1934）。 <a class="backref" href="#note-224-ref" aria-label="返回正文">↩</a></li><li id="note-225">见 Walker 等（2006）以及 Leigh 和 Shea（1996）。 <a class="backref" href="#note-225-ref" aria-label="返回正文">↩</a></li><li id="note-226">本例依据 Bob Carpenter 的 Stan 案例研究改编：<a href="https://mc-stan.org/users/documentation/case-studies/lotka-volterra-predator-prey.html">Lotka–Volterra 捕食者—猎物模型</a>。 <a class="backref" href="#note-226-ref" aria-label="返回正文">↩</a></li><li id="note-227">Hewitt（1921）。注意，猞猁与雪兔数据大多来自不同地区。尽管这些数据常被用来说明种群动力学，但大量文献认为它们并不是很好的示例；简单搜索即可找到许多讨论。 <a class="backref" href="#note-227-ref" aria-label="返回正文">↩</a></li><li id="note-228">Volterra（1926）；Lotka（1925）。 <a class="backref" href="#note-228-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 16 章 PDF 第 553–573 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 574 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 16 章 PDF 第 553–576 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 577 页继续。</aside>
 </article>

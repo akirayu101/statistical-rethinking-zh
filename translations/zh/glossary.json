@@ -1280,6 +1280,9 @@
     "coupled ordinary differential equations": "耦合常微分方程",
     "observation process": "观测过程",
     "trapping rate": "捕获率",
+    "numerical integration": "数值积分",
+    "differential equation solver": "微分方程求解器",
+    "measurement dispersion": "测量离散程度",
     "occupancy model": "占域模型",
     "cross-classified varying slopes model": "交叉分类变化斜率模型"
   },

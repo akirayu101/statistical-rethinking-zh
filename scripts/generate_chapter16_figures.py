@@ -16,6 +16,7 @@ NUT_PRIOR_OUT = ROOT / "translations" / "zh" / "media" / "chapter-16-nut-prior-p
 NUT_POSTERIOR_OUT = ROOT / "translations" / "zh" / "media" / "chapter-16-nut-posterior-curves.svg"
 LYNX_HARE_OUT = ROOT / "translations" / "zh" / "media" / "chapter-16-lynx-hare-series.svg"
 LOTKA_OUT = ROOT / "translations" / "zh" / "media" / "chapter-16-lotka-volterra-simulation.svg"
+OBSERVATION_OUT = ROOT / "translations" / "zh" / "media" / "chapter-16-observation-model-density.svg"
 DATA_URL = "https://raw.githubusercontent.com/rmcelreath/rethinking/master/data/Howell1.csv"
 BOXES_DATA_URL = "https://raw.githubusercontent.com/rmcelreath/rethinking/master/data/Boxes.csv"
 PANDA_DATA_URL = "https://raw.githubusercontent.com/rmcelreath/rethinking/master/data/Panda_nuts.csv"
@@ -401,6 +402,57 @@ def write_lotka_volterra_figure(data: list[tuple[int, float, float]]) -> None:
     print(f"wrote {LOTKA_OUT}")
 
 
+def write_observation_density_figure() -> None:
+    rng = random.Random(1616)
+    population = 10_000
+    observations: list[float] = []
+    for _ in range(10_000):
+        probability = rng.betavariate(2, 18)
+        mean = population * probability
+        deviation = math.sqrt(population * probability * (1 - probability))
+        count = min(population, max(0, round(rng.gauss(mean, deviation))))
+        observations.append(round(count / 1000, 2))
+
+    curve = density_curve(observations, 0, 5.5, steps=220)
+    bandwidth = 5.5 / 35
+    normalizer = len(observations) * bandwidth * math.sqrt(2 * math.pi)
+    curve = [(x, y / normalizer) for x, y in curve]
+    width, height = 900, 550
+    left, top, panel_w, panel_h = 100, 60, 735, 390
+
+    def px(value: float) -> float:
+        return left + panel_w * value / 5.5
+
+    def py(value: float) -> float:
+        return top + panel_h - panel_h * value / 0.75
+
+    curve_path = [(px(x), py(y)) for x, y in curve]
+    parts = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-labelledby="title desc">',
+        '<title id="title">逐年变化捕获率下的观测毛皮数量分布</title>',
+        '<desc id="desc">在真实种群固定为一万只且年度捕获率服从 Beta(2, 18) 分布时，观测毛皮数呈明显右偏；同一真实种群规模可产生很宽的观测范围。</desc>',
+        '<rect width="100%" height="100%" fill="#fff"/>',
+        f'<style>.axis{{font:16px {FONT};fill:#30332e}}.label{{font:20px {FONT};fill:#30332e}}.title{{font:700 23px {FONT};fill:#263f86}}.panel{{fill:#fff;stroke:#3c403b;stroke-width:1.4}}.density{{fill:none;stroke:#202420;stroke-width:3}}</style>',
+        '<text class="title" x="450" y="31" text-anchor="middle">观测模型的模拟分布</text>',
+        f'<rect class="panel" x="{left}" y="{top}" width="{panel_w}" height="{panel_h}"/>',
+        f'<path class="density" d="{path(curve_path)}"/>',
+    ]
+    for tick in range(6):
+        xpos = px(tick)
+        parts.append(f'<line x1="{fmt(xpos)}" y1="{top + panel_h}" x2="{fmt(xpos)}" y2="{top + panel_h + 6}" stroke="#3c403b"/>')
+        parts.append(f'<text class="axis" x="{fmt(xpos)}" y="{top + panel_h + 28}" text-anchor="middle">{tick}</text>')
+    for tick in (0, 0.2, 0.4, 0.6):
+        ypos = top + panel_h - panel_h * tick / 0.75
+        parts.append(f'<line x1="{left - 6}" y1="{fmt(ypos)}" x2="{left}" y2="{fmt(ypos)}" stroke="#3c403b"/>')
+        parts.append(f'<text class="axis" x="{left - 12}" y="{fmt(ypos + 5)}" text-anchor="end">{tick:.1f}</text>')
+    parts.append(f'<text class="label" x="{left + panel_w / 2}" y="{height - 38}" text-anchor="middle">毛皮数量（千张）</text>')
+    parts.append(f'<text class="label" x="32" y="{top + panel_h / 2}" text-anchor="middle" transform="rotate(-90 32 {top + panel_h / 2})">密度</text>')
+    parts.append('</svg>')
+    OBSERVATION_OUT.write_text("".join(parts), encoding="utf-8")
+    print(f"wrote {OBSERVATION_OUT}")
+
+
 def main() -> int:
     raw = load_data()
     mean_h = sum(height for height, _ in raw) / len(raw)
@@ -522,6 +574,7 @@ def main() -> int:
     lynx_hare = load_lynx_hare()
     write_lynx_hare_figure(lynx_hare)
     write_lotka_volterra_figure(lynx_hare)
+    write_observation_density_figure()
     return 0
 
 
