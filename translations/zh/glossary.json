@@ -1249,6 +1249,9 @@
     "moralizing god": "道德化神灵",
     "polity": "政体",
     "literacy": "读写能力",
+    "categorical error": "类别误差",
+    "discrete missing data": "离散缺失数据",
+    "weighted average": "加权平均",
     "occupancy model": "占域模型",
     "cross-classified varying slopes model": "交叉分类变化斜率模型"
   },

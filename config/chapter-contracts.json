@@ -2684,7 +2684,7 @@
   },
   "chapter-15": {
     "required_status": "in_progress",
-    "source_pages": [517, 542],
+    "source_pages": [517, 545],
     "required_ids": [
       "intro-15",
       "note-210-ref",
@@ -2783,6 +2783,17 @@
       "fig-15-7",
       "code-15-27",
       "output-15-27",
+      "dag-15-moralizing-missingness",
+      "code-15-28",
+      "output-15-28",
+      "note-218-ref",
+      "erratum-15-all-the-of",
+      "rethinking-15-report-missing-data",
+      "sec-15-3",
+      "sec-15-3-1",
+      "dag-15-discrete-cats",
+      "eq-15-discrete-cats-model",
+      "code-15-29",
       "chapter-15-notes",
       "note-210",
       "note-211",
@@ -2791,7 +2802,8 @@
       "note-214",
       "note-215",
       "note-216",
-      "note-217"
+      "note-217",
+      "note-218"
     ],
     "required_headings": [
       "缺失数据与其他机会",
@@ -2808,24 +2820,27 @@
       "再思考：多重插补",
       "过度思考：Stan 插补算法",
       "15.2.3 你的神现在在哪里？",
+      "再思考：呈现缺失数据的细节",
+      "15.3 类别误差与离散缺失",
+      "15.3.1 离散的猫",
       "尾注"
     ],
     "counts": {
-      "section": 9,
-      "figure": 43,
+      "section": 11,
+      "figure": 47,
       "figure img": 6,
       ".book-figure": 9,
-      ".code-listing": 27,
-      ".code-output": 10,
-      ".rethinking-box": 4,
+      ".code-listing": 29,
+      ".code-output": 11,
+      ".rethinking-box": 5,
       ".overthinking-box": 1,
       ".book-quote": 0,
-      ".equation-block": 12,
-      ".wallis-equation": 12,
-      ".source-erratum": 8,
+      ".equation-block": 13,
+      ".wallis-equation": 13,
+      ".source-erratum": 9,
       ".chapter-introduction": 1,
       ".continuation-note": 1,
-      ".endnotes li": 8
+      ".endnotes li": 9
     }
   }
 }
