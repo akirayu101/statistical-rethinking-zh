@@ -209,7 +209,7 @@
 
       <p>右栏的新计数汇总了支持每个猜想的全部证据。随着新数据到来，只要它们独立于先前观测，猜想产生截至该时点全部数据的逻辑可能方式数，就可以直接用新计数乘以旧计数得到。</p>
 
-      <p>这种更新方法只是在断言：第一，若先前信息表明，一个猜想有 <span class="math-inline"><var>W</var><sub>prior</sub></span> 种方式产生先前观测 <span class="math-inline"><var>D</var><sub>prior</sub></span>；第二，我们又得到新观测 <span class="math-inline"><var>D</var><sub>new</sub></span>，同一猜想有 <span class="math-inline"><var>W</var><sub>new</sub></span> 种方式产生它；那么第三，该猜想同时解释 <span class="math-inline"><var>D</var><sub>prior</sub></span> 与 <span class="math-inline"><var>D</var><sub>new</sub></span> 的方式数，就是乘积 <span class="math-inline"><var>W</var><sub>prior</sub> × <var>W</var><sub>new</sub></span>。</p>
+      <p>这种更新方法说的其实很简单。先前信息表明，某个猜想有 <span class="math-inline"><var>W</var><sub>prior</sub></span> 种方式产生旧观测 <span class="math-inline"><var>D</var><sub>prior</sub></span>；新观测 <span class="math-inline"><var>D</var><sub>new</sub></span> 到来后，同一猜想又有 <span class="math-inline"><var>W</var><sub>new</sub></span> 种方式产生它。那么，该猜想同时解释两批观测的方式总数，就是乘积 <span class="math-inline"><var>W</var><sub>prior</sub> × <var>W</var><sub>new</sub></span>。</p>
 
       <p>例如，上表中的猜想
         <span class="marble-set" aria-label="2 蓝 2 白"><i class="marble blue"></i><i class="marble blue"></i><i class="marble white"></i><i class="marble white"></i></span>
@@ -500,7 +500,7 @@ ways/sum(ways)</code></pre>
 
         <aside class="overthinking-box">
           <h3>过度思考：名称与概率分布</h3>
-          <p><code>dbinom</code> 中的 <code>d</code> 代表密度（density）。按这种方式命名的函数，几乎总有以 <code>r</code> 开头、用于随机抽样的伙伴，以及以 <code>p</code> 开头、用于累积概率的伙伴。例如可查看帮助 <code>?dbinom</code>。</p>
+          <p><code>dbinom</code> 中的 <code>d</code> 来自英文 density。对于连续分布，<code>d</code> 系列函数给出<strong>概率密度</strong>；对于二项分布这样的离散分布，它给出某个结果的<strong>概率质量</strong>。按这种方式命名的函数，几乎总有以 <code>r</code> 开头、用于随机抽样的伙伴，以及以 <code>p</code> 开头、用于计算累积概率的伙伴。例如可查看帮助 <code>?dbinom</code>。</p>
         </aside>
 
         <aside class="rethinking-box">
@@ -676,7 +676,7 @@ ways/sum(ways)</code></pre>
 
       <aside class="rethinking-box">
         <h3>再思考：如何拟合模型，也是模型的一部分</h3>
-        <p>本章前面把模型隐式定义为先验与似然的组合，这是典型定义。但从实践看，还应把模型如何拟合数据也视为模型的一部分。在本章贯穿始终的地球仪投掷这类简单问题中，计算后验密度轻而易举，不易出错；可在稍微复杂的问题中，拟合细节会迫使我们承认，数值技术会影响推断。</p>
+        <p>本章前面把模型隐式定义为先验与似然的组合，这是典型定义。但从实践看，还应把模型如何拟合数据也视为模型的一部分。对本章一直使用的地球仪投掷这类简单问题，计算后验概率密度轻而易举，也不容易出错；问题稍微复杂一些，拟合细节就会迫使我们承认：数值计算方法会影响推断。</p>
         <p>原因是，不同技术会产生不同错误与妥协。同一模型用不同技术拟合同一数据，可能给出不同答案。出了问题时，机器的每一部分都可能有嫌疑。因此，我们的魔像随身携带自己的更新引擎；它们既受制于自身工程结构，也受制于我们编入其中的先验和似然。</p>
       </aside>
     </section>

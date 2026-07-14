@@ -162,7 +162,7 @@ m5.2 &lt;- quap(
     <section id="sec-5-1-1">
       <h3>5.1.1 回归前先思考</h3>
 
-      <p>这里涉及三个观测变量：各州的离婚率（<span class="math-inline"><var>D</var></span>）、结婚率（<span class="math-inline"><var>M</var></span>）和结婚年龄中位数（<span class="math-inline"><var>A</var></span>）。前两个模型中呈现、并在<a href="#fig-5-2">图 5.2</a>中展示的模式，是这样一种情形的典型症状：只有一个预测变量——本例中的 <span class="math-inline"><var>A</var></span>——对结果 <span class="math-inline"><var>D</var></span> 有因果影响，尽管两个预测变量都与结果强烈关联。</p>
+      <p>这里涉及三个观测变量：各州的离婚率（<span class="math-inline"><var>D</var></span>）、结婚率（<span class="math-inline"><var>M</var></span>）和结婚年龄中位数（<span class="math-inline"><var>A</var></span>）。前两个模型及<a href="#fig-5-2">图 5.2</a>呈现的模式，通常说明：虽然两个预测变量都与结果强烈关联，真正对结果 <span class="math-inline"><var>D</var></span> 产生因果影响的却只有一个——本例中是 <span class="math-inline"><var>A</var></span>。</p>
 
       <p>为了更好地理解这一点，引入一种特殊的因果图会很有帮助：<strong>DAG</strong>，即<strong>有向无环图</strong>。所谓“图”，表示它由节点和连接组成；“有向”表示连接带有箭头，指出因果影响的方向；“无环”表示原因最终不会流回自身。DAG 是描述变量之间定性因果关系的一种方式。它不像完整模型定义那样详细，却包含纯统计模型没有的信息。与统计模型不同，如果 DAG 正确，它会告诉你干预并改变某个变量会产生什么后果。</p>
 
@@ -449,7 +449,7 @@ div &lt;- rnorm( N , age )  # 模拟 A -&gt; D</code></pre>
 
       <section id="sec-5-1-5-1">
         <h4>5.1.5.1 预测变量残差图</h4>
-        <p>预测变量残差，是使用其他全部预测变量对关心的某个预测变量建模时的平均预测误差。这个概念很复杂，所以直接看例子会更容易理解。计算这些残差的好处是：把它们与结果画在一起后，会得到某种已经“控制”其他全部预测变量的二元回归；图中只保留了其他预测变量对均值 <span class="math-inline"><var>μ</var></span> 的模型所未预期到的变异。</p>
+        <p>预测变量残差，是用其余全部预测变量来预测所关注变量时留下的预测误差。这个概念听起来复杂，看例子反而更容易理解。把残差与结果画在一起，相当于得到一幅已经“控制”其余预测变量的二元回归图：横轴只保留了那些无法由其他预测变量解释的变异。</p>
 
         <p>离婚率多变量模型有两个预测变量：（1）结婚率 <span class="math-inline"><var>M</var></span>；（2）结婚年龄中位数 <span class="math-inline"><var>A</var></span>。要计算其中任何一个预测变量的残差，只需用另一个预测变量对它建模。对于结婚率，需要下面的模型：</p>
 

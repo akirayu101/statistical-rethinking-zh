@@ -179,7 +179,7 @@ def generate_figure_48() -> None:
     body.extend(
         [
             f'  <text x="{left + plot_w / 2}" y="{top + plot_h + 76}" text-anchor="middle" font-family="{FONT}" font-size="21" font-weight="700" fill="#263f86">μ｜体重 = 50 千克</text>',
-            f'  <text x="38" y="{top + plot_h / 2}" transform="rotate(-90 38 {top + plot_h / 2})" text-anchor="middle" font-family="{FONT}" font-size="21" font-weight="700" fill="#263f86">密度</text>',
+            f'  <text x="38" y="{top + plot_h / 2}" transform="rotate(-90 38 {top + plot_h / 2})" text-anchor="middle" font-family="{FONT}" font-size="21" font-weight="700" fill="#263f86">概率密度</text>',
             f'  <text x="{width / 2}" y="520" text-anchor="middle" font-family="{FONT}" font-size="16" fill="#656963">曲线表示不同平均身高值的相对可信程度</text>',
             "</svg>",
             "",

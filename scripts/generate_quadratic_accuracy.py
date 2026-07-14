@@ -82,7 +82,7 @@ def main() -> int:
         body.extend(
             [
                 f'    <text x="{fmt(x_plot + plot_width / 2)}" y="{fmt(y_plot + plot_height + 61)}" text-anchor="middle" font-family="{font}" font-size="17" fill="#30332e">水域比例</text>',
-                f'    <text x="{fmt(x0 + 17)}" y="{fmt(y_plot + plot_height / 2)}" transform="rotate(-90 {fmt(x0 + 17)} {fmt(y_plot + plot_height / 2)})" text-anchor="middle" font-family="{font}" font-size="17" fill="#30332e">密度</text>',
+                f'    <text x="{fmt(x0 + 17)}" y="{fmt(y_plot + plot_height / 2)}" transform="rotate(-90 {fmt(x0 + 17)} {fmt(y_plot + plot_height / 2)})" text-anchor="middle" font-family="{font}" font-size="17" fill="#30332e">概率密度</text>',
                 "  </g>",
             ]
         )

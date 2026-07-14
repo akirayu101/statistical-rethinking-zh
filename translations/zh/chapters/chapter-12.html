@@ -3,8 +3,8 @@
 
   <div class="chapter-introduction" id="intro-12">
     <p>在夏威夷传说中，Nanaue 是一条爱上人类女子的鲨鱼之子。他长成一个凶残的男人，背部中央还长着一张鲨鱼嘴。在希腊传说中，Minotaur 是牛头人身的怪物，由一名人类女子与一头大白牛所生。Gryphon 是一种半鹰半狮的传说怪物。毛利传说中的 Taniwha 则兼具蛇、鸟乃至鲨鱼的特征，很像中国与欧洲神话里的龙。</p>
-    <p>把不同生物的部件拼在一起，很容易就能造出怪物。许多怪物都是混合体，许多统计模型也是。本章要把前几章较简单的组成部分拼接起来，构造 likelihood 与 link 函数。像传说中的怪物一样，这些混合 likelihood 含有其他模型类型的部件；它们继承了各个部件的一些性质，从而帮助我们对具有棘手但常见性质的结果变量建模。既然是怪物，这些模型既强大又危险：它们通常更难估计，也更难理解。不过，只要具备一些知识并保持谨慎，它们就是重要工具。</p>
-    <p>我们会考察三类常见而有用的例子。第一类模型处理<strong>过度离散</strong>：它们扩展上一章的二项模型与 Poisson 模型，稍稍应对未测量的变异来源。第二类是一族<strong>零膨胀模型</strong>与<strong>零增广模型</strong>，每个模型都把一个二元事件同普通 GLM likelihood——例如 Poisson 或二项 likelihood——混合起来。第三类是<strong>有序类别模型</strong>，适用于具有固定顺序的类别结果。它把分类 likelihood 函数同一种特殊的 link 函数（通常是<strong>累积 link</strong>）合并起来。我们还会学习怎样构造有序类别预测变量。</p>
+    <p>把不同生物的部件拼在一起，很容易就能造出怪物。许多怪物都是混合体，许多统计模型也是。本章要把前几章较简单的组成部分拼接起来，构造似然与 link 函数。像传说中的怪物一样，这些混合似然含有其他模型类型的部件；它们继承了各个部件的一些性质，从而帮助我们对具有棘手但常见性质的结果变量建模。既然是怪物，这些模型既强大又危险：它们通常更难估计，也更难理解。不过，只要具备一些知识并保持谨慎，它们就是重要工具。</p>
+    <p>我们会考察三类常见而有用的例子。第一类模型处理<strong>过度离散</strong>：它们扩展上一章的二项模型与 Poisson 模型，稍稍应对未测量的变异来源。第二类是一族<strong>零膨胀模型</strong>与<strong>零增广模型</strong>，每个模型都把一个二元事件同普通 GLM 似然——例如 Poisson 或二项似然——混合起来。第三类是<strong>有序类别模型</strong>，适用于具有固定顺序的类别结果。它把分类似然函数同一种特殊的 link 函数（通常是<strong>累积 link</strong>）合并起来。我们还会学习怎样构造有序类别预测变量。</p>
     <p>这些模型让我们能够改造建模方法，以适应测量中不方便的现实，而不是改造测量去迁就模型的约束。还有许多其他模型也出于这个目的、以这种方式产生——把较简单模型的零件混合起来。我们不可能全部讲完；但以后遇到新类型时，至少会有一个理解它的框架。如果有一天需要构造自己独有的怪物，也尽管动手。只是务必用虚拟数据模拟验证它，再把模型拟合到虚拟数据上，确认能够恢复数据生成过程。</p>
   </div>
 
@@ -18,7 +18,7 @@
     <section id="sec-12-1-1"><h3>12.1.1 Beta-binomial</h3>
       <p>Beta-binomial 模型假设，每个二项计数观测都有自己独特的成功概率。<sup id="note-175-ref"><a href="#note-175">175</a></sup>模型估计的是各案例成功概率的<strong>分布</strong>，而不是单一的成功概率；预测变量改变的也是这个分布的形状，而不是直接决定每一次成功的概率。</p>
       <p>结合例子会更容易理解。上一章见过的 <code>UCBadmit</code> 数据，只要忽略院系，就表现出很强的过度离散，因为各院系的基准录取率差异很大。你已经看到，忽略这种变异会对申请者性别作出错误推断。现在拟合一个忽略院系的 beta-binomial 模型，看看它怎样捕捉由遗漏变量造成的变异。</p>
-      <p>对这些数据使用 beta-binomial 模型，意味着假设数据表每一行的观测计数都有一个独特、未观测的录取概率；这些录取概率本身又来自同一个分布。这个共同分布用 beta 分布描述——它是一种“概率的概率分布”。为什么用 beta 分布？因为这样数学上很方便：采用 beta 分布时，可以推导出一个封闭形式的 likelihood 函数，对每个观测未知的概率完成平均。细节见本节末尾原书第 387 页的“过度思考”框。</p>
+      <p>对这些数据使用 beta-binomial 模型，意味着假设数据表每一行的观测计数都有一个独特、未观测的录取概率；这些录取概率本身又来自同一个分布。这个共同分布用 beta 分布描述——它是一种“概率的概率分布”。为什么用 beta 分布？因为这样数学上很方便：采用 beta 分布时，可以推导出一个封闭形式的似然函数，对每个观测未知的概率完成平均。细节见本节末尾原书第 387 页的“过度思考”框。</p>
       <p>Beta 分布有两个参数：平均概率 <span class="math-inline"><var>p̄</var></span> 与形状参数 <span class="math-inline"><var>θ</var></span>。<sup id="note-176-ref"><a href="#note-176">176</a></sup>形状参数 <span class="math-inline"><var>θ</var></span> 描述分布有多分散。当 <span class="math-inline"><var>θ</var> = 2</span> 时，从 0 到 1 的每个概率都同样可能。<span class="math-inline"><var>θ</var></span> 大于 2 并继续增大时，概率分布会越来越集中；当 <span class="math-inline"><var>θ</var> &lt; 2</span> 时，分布非常分散，以至于接近 0 与 1 的极端概率比均值附近更可能。可以摆弄参数，体会这个分布能呈现哪些形状：</p>
       <figure class="code-listing" id="code-12-1"><figcaption>R 代码 12.1</figcaption><pre><code>pbar &lt;- 0.5
 theta &lt;- 5
@@ -107,7 +107,7 @@ m12.2 &lt;- ulam(
     <section id="sec-12-1-3"><h3>12.1.3 过度离散、熵与信息准则</h3>
       <figure class="book-figure poisson-gamma-comparison-figure" id="fig-12-2"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的纯 Poisson 与 gamma-Poisson 模型双面板比较图"><img src="/media/chapter-12-poisson-gamma-poisson.svg" alt="左图为受 Hawaii 强烈影响的纯 Poisson 大洋洲工具模型，右图为预测区间更宽、受 Hawaii 影响较小的 gamma-Poisson 模型"></div><p class="scroll-hint">图较宽，可横向滚动比较两种模型的趋势与预测区间。</p><figcaption><strong>图 12.2：</strong>大洋洲工具的 Poisson 模型（左）受到 Hawaii 的强烈影响；等价的 gamma-Poisson 模型（右）受 Hawaii 的影响小得多，因为模型预期均值周围会有更大变异。阴影区域明显变宽，正体现了增加的变异。</figcaption></figure>
       <p>Beta-binomial 与 gamma-Poisson 模型，分别在与普通二项分布和 Poisson 分布相同的约束下达到最大熵。它们只是试图解释概率与率中未观测的异质性。因此，尽管这些模型拟合起来可能困难得多，却仍可像普通二项与 Poisson GLM 那样理解。从使用信息准则比较模型的角度看，beta-binomial 模型是二项模型，gamma-Poisson（负二项）模型则是 Poisson 模型。</p>
-      <p>不过，除非非常清楚自己在做什么，否则不要对这些模型使用 WAIC 与 PSIS。普通二项模型和 Poisson 模型可以把数据行聚合或拆开，而不改变任何因果假设；beta-binomial 与 gamma-Poisson 模型却并非如此。原因是，beta-binomial 或 gamma-Poisson likelihood 会给数据的<strong>每一行</strong>分配一个未观测参数。接下来计算对数 likelihood 时，数据的组织方式会决定服从 beta 分布或 Gamma 分布的变异怎样进入模型。</p>
+      <p>不过，除非非常清楚自己在做什么，否则不要对这些模型使用 WAIC 与 PSIS。普通二项模型和 Poisson 模型可以把数据行聚合或拆开，而不改变任何因果假设；beta-binomial 与 gamma-Poisson 模型却并非如此。原因是，beta-binomial 或 gamma-Poisson 似然会给数据的<strong>每一行</strong>分配一个未观测参数。接下来计算对数似然时，数据的组织方式会决定服从 beta 分布或 Gamma 分布的变异怎样进入模型。</p>
       <p>例如，本章前面考察的 beta-binomial 模型，每一行都包含计数。当时各行是院系与性别的组合，并假定同一院系—性别组合中的所有申请者共享一个未知的基准录取概率。我们真正想做的是把每份申请都视为一项观测，在申请层面计算 WAIC，从而估计一份新申请投向已知院系—性别组合时的准确度。确实可以把数据拆开，让每一行只包含一份申请；但这样就丢掉了 beta-binomial 模型所蕴含的信息：原数据同一行中的所有申请者共享同一个潜在概率。这非常麻烦。</p>
       <p>怎么办？下一章会介绍怎样用多层模型纳入过度离散，到那时这个障碍就会减轻。为什么？因为多层模型可以在任意聚合层级上为概率或率分配异质性。</p>
 
@@ -116,7 +116,7 @@ m12.2 &lt;- ulam(
   </section>
 
   <section id="sec-12-2"><h2>12.2 零膨胀结果</h2>
-    <p>我们能够测量的事物，往往并不是某种纯过程的产物，而是多个过程的混合。只要同一种观测可能由不同原因造成，混合模型就可能有用。混合模型使用不止一个简单概率分布，对多种原因的混合建模；实际上，这类模型会为同一个结果变量使用不止一个 likelihood。</p>
+    <p>我们能够测量的事物，往往并不是某种纯过程的产物，而是多个过程的混合。只要同一种观测可能由不同原因造成，混合模型就可能有用。混合模型使用不止一个简单概率分布，对多种原因的混合建模；实际上，这类模型会为同一个结果变量使用不止一个似然。</p>
     <p>计数变量尤其容易需要混合处理，因为零计数往往不止一种来路。“零”表示什么也没发生；而什么也没发生，可能是因为事件发生率很低，也可能是因为产生事件的过程根本没有启动。假如我们在林地里数灌丛松鸦，记录到零，既可能是林地中没有灌丛松鸦，也可能是我们在开始观察前就把它们全吓跑了。不论哪种情况，数据里都出现一个零。</p>
     <p>本节将展示怎样构造简单的零膨胀模型。仍然可以使用早先模型中的相同部件，只是装配方式不同。因此，即使永远不需要使用或解释零膨胀模型，看看它们如何构造，也应当能够拓展你的建模想象力。</p>
 
@@ -124,16 +124,16 @@ m12.2 &lt;- ulam(
 
     <section id="sec-12-2-1"><h3>12.2.1 示例：零膨胀 Poisson</h3>
       <p>第 11 章用修道院制作手稿的例子介绍了 Poisson GLM。每天，大量僧侣各自完成抄写少量手稿。这个过程本质上是二项过程；但因为试验次数很多、概率极低，所以分布趋近 Poisson。</p>
-      <figure class="book-figure zero-inflated-structure-figure" id="fig-12-3"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的零膨胀生成结构与模拟频数图"><img src="/media/chapter-12-zero-inflated-structure.svg" alt="左侧决策树显示僧侣饮酒或工作两条路径，右侧频数图显示零膨胀手稿计数及饮酒造成的额外零"></div><p class="scroll-hint">图较宽，可横向滚动比较生成结构与模拟频数。</p><figcaption><strong>图 12.3：</strong>左：零膨胀 likelihood 的计算结构。从顶部开始，僧侣以概率 <span class="math-inline"><var>p</var></span> 饮酒，或以概率 <span class="math-inline">1 − <var>p</var></span> 工作。饮酒的僧侣总会产生观测 <span class="math-inline"><var>y</var> = 0</span>；工作的僧侣则可能产生 <span class="math-inline"><var>y</var> = 0</span> 或 <span class="math-inline"><var>y</var> &gt; 0</span>。右：零膨胀观测的频数分布。零上方的蓝色线段表示由饮酒造成的 <span class="math-inline"><var>y</var> = 0</span> 观测。在真实数据里，我们通常看不出各个零究竟来自哪个过程。</figcaption></figure>
+      <figure class="book-figure zero-inflated-structure-figure" id="fig-12-3"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的零膨胀生成结构与模拟频数图"><img src="/media/chapter-12-zero-inflated-structure.svg" alt="左侧决策树显示僧侣饮酒或工作两条路径，右侧频数图显示零膨胀手稿计数及饮酒造成的额外零"></div><p class="scroll-hint">图较宽，可横向滚动比较生成结构与模拟频数。</p><figcaption><strong>图 12.3：</strong>左：零膨胀似然的计算结构。从顶部开始，僧侣以概率 <span class="math-inline"><var>p</var></span> 饮酒，或以概率 <span class="math-inline">1 − <var>p</var></span> 工作。饮酒的僧侣总会产生观测 <span class="math-inline"><var>y</var> = 0</span>；工作的僧侣则可能产生 <span class="math-inline"><var>y</var> = 0</span> 或 <span class="math-inline"><var>y</var> &gt; 0</span>。右：零膨胀观测的频数分布。零上方的蓝色线段表示由饮酒造成的 <span class="math-inline"><var>y</var> = 0</span> 观测。在真实数据里，我们通常看不出各个零究竟来自哪个过程。</figcaption></figure>
       <p>现在设想，僧侣有些日子会休息。这些日子里没有手稿完成；酒窖反而会打开，大家从事一些更世俗的享乐。身为修道院主人，你想知道僧侣多常饮酒。推断的障碍在于：即使在诚实工作、没有饮酒的日子里，也可能纯属偶然地出现零。那么，怎样估计饮酒天数呢？</p>
       <p>我们来构造一个混合模型解决这个问题。<sup id="note-178-ref"><a href="#note-178">178</a></sup>要考虑数据里的任意一个零都可能来自两个过程：（1）僧侣整天饮酒；（2）僧侣当天工作，却没能完成任何手稿。令 <span class="math-inline"><var>p</var></span> 表示僧侣整天饮酒的概率，令 <span class="math-inline"><var>λ</var></span> 表示他们工作时完成手稿的平均数量。</p>
-      <p>要启动这个模型，需要定义一个把两个过程混在一起的 likelihood 函数。为了理解怎样构造这种怪物，可以把僧侣是否饮酒想成一次抛硬币的结果（图 12.3）。“硬币”一面画着酒桶，另一面画着羽毛笔。酒桶朝上的概率是 <span class="math-inline"><var>p</var></span>，可以取 0 到 1 之间的任意值。根据抛硬币的结果，僧侣要么开始饮酒，要么开始抄写。饮酒的僧侣完成的手稿数总是零；工作的僧侣完成的手稿数则服从均值率为 <span class="math-inline"><var>λ</var></span> 的 Poisson 分布。因此，即使僧侣工作，也仍可能观察到零。</p>
-      <p>在这些假设下，观察到零的 likelihood 是：</p>
+      <p>要启动这个模型，需要定义一个把两个过程混在一起的似然函数。为了理解怎样构造这种怪物，可以把僧侣是否饮酒想成一次抛硬币的结果（图 12.3）。“硬币”一面画着酒桶，另一面画着羽毛笔。酒桶朝上的概率是 <span class="math-inline"><var>p</var></span>，可以取 0 到 1 之间的任意值。根据抛硬币的结果，僧侣要么开始饮酒，要么开始抄写。饮酒的僧侣完成的手稿数总是零；工作的僧侣完成的手稿数则服从均值率为 <span class="math-inline"><var>λ</var></span> 的 Poisson 分布。因此，即使僧侣工作，也仍可能观察到零。</p>
+      <p>在这些假设下，观察到零的似然是：</p>
       <div class="equation-block wallis-equation" id="eq-12-zero-likelihood"><div>Pr(0 | <var>p</var>, <var>λ</var>) = Pr(饮酒 | <var>p</var>) + Pr(工作 | <var>p</var>) × Pr(0 | <var>λ</var>)</div><div>= <var>p</var> + (1 − <var>p</var>) exp(−<var>λ</var>)</div></div>
-      <p>由于 <span class="math-inline"><var>y</var></span> 的 Poisson likelihood 是 <span class="math-inline">Pr(<var>y</var> | <var>λ</var>) = <span class="compact-fraction"><span><var>λ</var><sup><var>y</var></sup> exp(−<var>λ</var>)</span><span><var>y</var>!</span></span></span>，当 <span class="math-inline"><var>y</var> = 0</span> 时，likelihood 就只是 <span class="math-inline">exp(−<var>λ</var>)</span>。上式只是在用数学表达：</p>
+      <p>由于 <span class="math-inline"><var>y</var></span> 的 Poisson 似然是 <span class="math-inline">Pr(<var>y</var> | <var>λ</var>) = <span class="compact-fraction"><span><var>λ</var><sup><var>y</var></sup> exp(−<var>λ</var>)</span><span><var>y</var>!</span></span></span>，当 <span class="math-inline"><var>y</var> = 0</span> 时，似然就只是 <span class="math-inline">exp(−<var>λ</var>)</span>。上式只是在用数学表达：</p>
       <blockquote class="book-quote"><p>观察到零的概率，等于僧侣饮酒的概率，<strong>或</strong>（+）僧侣工作<strong>且</strong>（×）什么也没完成的概率。</p></blockquote>
       <p class="source-erratum" id="erratum-12-zero-verbal"><strong>原文表述不一致：</strong>上面的公式与模型设定都令 <span class="math-inline"><var>p</var></span> 为饮酒概率，原书紧随公式的解释句却印作 “the monks didn’t drink”。译文按公式与全文含义改为“饮酒”，并在此记录原文差异。</p>
-      <p>非零值 <span class="math-inline"><var>y</var></span> 的 likelihood 则是：</p>
+      <p>非零值 <span class="math-inline"><var>y</var></span> 的似然则是：</p>
       <div class="equation-block wallis-equation" id="eq-12-nonzero-likelihood"><span class="math-line">Pr(<var>y</var> | <var>y</var> &gt; 0, <var>p</var>, <var>λ</var>) = Pr(饮酒 | <var>p</var>)(0) + Pr(工作 | <var>p</var>) Pr(<var>y</var> | <var>λ</var>) = (1 − <var>p</var>) <span class="compact-fraction"><span><var>λ</var><sup><var>y</var></sup> exp(−<var>λ</var>)</span><span><var>y</var>!</span></span></span></div>
       <p>因为饮酒的僧侣永远不会产生 <span class="math-inline"><var>y</var> &gt; 0</span>，上式只是僧侣既工作——概率为 <span class="math-inline">1 − <var>p</var></span>——又完成 <span class="math-inline"><var>y</var></span> 份手稿的概率。</p>
       <p>把上面这个分布定义为 ZIPoisson，用参数 <span class="math-inline"><var>p</var></span>（产生零的概率）与 <span class="math-inline"><var>λ</var></span>（Poisson 均值）描述它的形状。那么，零膨胀 Poisson 回归可写成：</p>
@@ -160,7 +160,7 @@ zeros_work &lt;- sum(y==0 &amp; drink==0)
 zeros_total &lt;- sum(y==0)
 lines( c(0,0) , c(zeros_work,zeros_total) , lwd=4 , col=rangi2 )</code></pre></figure>
       <p>结果已经画在图 12.3 右侧。饮酒造成的零用蓝色表示，工作造成的零用黑色表示。相对于典型 Poisson 分布，零的总数被膨胀了。</p>
-      <p>要拟合模型，<code>rethinking</code> 包提供了零膨胀 Poisson likelihood <code>dzipois</code>。它与上面数学表达式的具体关系，见本节末尾的“过度思考”框。<code>dzipois</code> 用起来很直接。这里还会稍稍调整饮酒概率的先验，让 0.5 以下的概率质量多于 0.5 以上——僧侣大概不会多数时候都在饮酒。</p>
+      <p>要拟合模型，<code>rethinking</code> 包提供了零膨胀 Poisson 似然 <code>dzipois</code>。它与上面数学表达式的具体关系，见本节末尾的“过度思考”框。<code>dzipois</code> 用起来很直接。这里还会稍稍调整饮酒概率的先验，让 0.5 以下的概率质量多于 0.5 以上——僧侣大概不会多数时候都在饮酒。</p>
       <figure class="code-listing" id="code-12-9"><figcaption>R 代码 12.9</figcaption><pre><code>m12.3 &lt;- ulam(
     alist(
         y ~ dzipois( p , lambda ),
@@ -180,7 +180,7 @@ mean( exp( post$al ) )       # 不饮酒时完成手稿的率</code></pre><pre c
       <p>注意，即使无法判断某个特定日子僧侣究竟有没有饮酒，我们仍能准确估计他们饮酒的日子所占比例。</p>
       <p>这个例子已经简单到不能再简单。真实问题里，可能会有与零膨胀 Poisson 混合中一个或两个过程相关的预测变量。遇到这种情况，只需把那些变量及其参数加入其中一个或两个线性模型。</p>
 
-      <aside class="overthinking-box" id="overthinking-zipoisson-stan"><h3>过度思考：Stan 中的零膨胀 Poisson 计算</h3><p>函数 <code>dzipois</code> 的实现会防范某些数值误差，所以代码看起来有些费解——只要在 R 提示符下输入 <code>dzipois</code> 就能看到。不过，它真正做的只是实现本节前面定义的 likelihood 公式。我们聚焦于它在 Stan 中的实现。当你告诉 <code>ulam</code> 使用 <code>dzipois</code> 时，它会把模型理解为：</p><figure class="code-listing" id="code-12-11"><figcaption>R 代码 12.11</figcaption><pre><code>m12.3_alt &lt;- ulam(
+      <aside class="overthinking-box" id="overthinking-zipoisson-stan"><h3>过度思考：Stan 中的零膨胀 Poisson 计算</h3><p>函数 <code>dzipois</code> 的实现会防范某些数值误差，所以代码看起来有些费解——只要在 R 提示符下输入 <code>dzipois</code> 就能看到。不过，它真正做的只是实现本节前面定义的似然公式。我们聚焦于它在 Stan 中的实现。当你告诉 <code>ulam</code> 使用 <code>dzipois</code> 时，它会把模型理解为：</p><figure class="code-listing" id="code-12-11"><figcaption>R 代码 12.11</figcaption><pre><code>m12.3_alt &lt;- ulam(
     alist(
         y|y&gt;0 ~ custom( log1m(p) + poisson_lpmf(y|lambda) ),
         y|y==0 ~ custom( log_mix( p , 0 , poisson_lpmf(0|lambda) ) ),
@@ -243,18 +243,18 @@ ylab="cumulative proportion" , ylim=c(0,1) )</code></pre></figure>
 round( lco &lt;- logit( cum_pr_k ) , 2 )</code></pre><pre class="code-output"><code>    1     2     3    4    5    6   7
 -1.92 -1.27 -0.72 0.25 0.89 1.77 Inf</code></pre></figure>
       <p>这些值绘制在图 12.4 右侧。注意，最大回答值 7 的累积 logit 是无穷大，因为 <span class="math-inline">log<span class="compact-fraction"><span>1</span><span>1 − 1</span></span> = ∞</span>。最大回答值的累积概率总是 1，所以实际上不需要为它设置参数；根据全概率法则，它是免费得到的。因此，对 <span class="math-inline"><var>K</var> = 7</span> 个可能回答值，只需要 <span class="math-inline"><var>K</var> − 1 = 6</span> 个截距。</p>
-      <p>以上都很不错，但我们真正想要的是这些截距的后验分布。这样才能考虑样本量与先验信息，还能加入预测变量（下一小节）。要用 Bayes 定理计算这些截距的后验分布，需要求出每个可能回答值的 likelihood。因此，构造有序类别结果基础模型拟合引擎的最后一步，是用累积概率 <span class="math-inline">Pr(<var>y</var><sub>i</sub> ≤ <var>k</var>)</span> 计算 likelihood <span class="math-inline">Pr(<var>y</var><sub>i</sub> = <var>k</var>)</span>。</p>
-      <figure class="book-figure ordered-likelihood-figure" id="fig-12-5"><div class="figure-scroll" tabindex="0" aria-label="累积概率与各档离散 likelihood 图"><img src="/media/chapter-12-ordered-likelihood.svg" alt="灰色竖线表示七档回答的累积概率，蓝色线段表示相邻累积概率之差即各档离散 likelihood"></div><figcaption><strong>图 12.5：</strong>累积概率与有序 likelihood。横轴显示 1 到 7 的所有可能可观测结果，纵轴显示累积概率。每个结果上方的灰色竖线表示累积概率，它会随着结果值依次增加。蓝色线段表示各个结果的离散概率；这些就是进入 Bayes 定理的 likelihood。</figcaption></figure>
-      <p>图 12.5 展示了具体做法。每个截距 <span class="math-inline"><var>α</var><sub><var>k</var></sub></span> 都为每个 <span class="math-inline"><var>k</var></span> 隐含一个累积概率；只需使用逆 link，把对数累积赔率转换回累积概率。因此，观察到 <span class="math-inline"><var>k</var></span> 并需要它的 likelihood 时，可以通过相减得到：</p>
+      <p>以上都很不错，但我们真正想要的是这些截距的后验分布。这样才能考虑样本量与先验信息，还能加入预测变量（下一小节）。要用贝叶斯定理计算这些截距的后验分布，需要求出每个可能回答值的似然。因此，构造有序类别结果基础模型拟合引擎的最后一步，是用累积概率 <span class="math-inline">Pr(<var>y</var><sub>i</sub> ≤ <var>k</var>)</span> 计算似然 <span class="math-inline">Pr(<var>y</var><sub>i</sub> = <var>k</var>)</span>。</p>
+      <figure class="book-figure ordered-likelihood-figure" id="fig-12-5"><div class="figure-scroll" tabindex="0" aria-label="累积概率与各档离散似然图"><img src="/media/chapter-12-ordered-likelihood.svg" alt="灰色竖线表示七档回答的累积概率，蓝色线段表示相邻累积概率之差即各档离散似然"></div><figcaption><strong>图 12.5：</strong>累积概率与有序似然。横轴显示 1 到 7 的所有可能可观测结果，纵轴显示累积概率。每个结果上方的灰色竖线表示累积概率，它会随着结果值依次增加。蓝色线段表示各个结果的离散概率；这些就是进入贝叶斯定理的似然。</figcaption></figure>
+      <p>图 12.5 展示了具体做法。每个截距 <span class="math-inline"><var>α</var><sub><var>k</var></sub></span> 都为每个 <span class="math-inline"><var>k</var></span> 隐含一个累积概率；只需使用逆 link，把对数累积赔率转换回累积概率。因此，观察到 <span class="math-inline"><var>k</var></span> 并需要它的似然时，可以通过相减得到：</p>
       <div class="equation-block compact-equation wallis-equation" id="eq-12-ordered-likelihood"><span class="math-line"><var>p</var><sub><var>k</var></sub> = Pr(<var>y</var><sub>i</sub> = <var>k</var>) = Pr(<var>y</var><sub>i</sub> ≤ <var>k</var>) − Pr(<var>y</var><sub>i</sub> ≤ <var>k</var> − 1)</span><span class="equation-label">(12.2)</span></div>
-      <p>图 12.5 的蓝色线段就是通过相减算出的 likelihood。有了它们，便可以照常计算后验分布。</p>
+      <p>图 12.5 的蓝色线段就是通过相减算出的似然。有了它们，便可以照常计算后验分布。</p>
       <p>下面看看怎样把它写成模型。有序 logit 的数学表达惯例差异很大；本书采用：</p>
       <div class="equation-block wallis-equation" id="eq-12-ordered-logit-model"><div><var>R</var><sub>i</sub> ∼ Ordered-logit(<var>ϕ</var><sub>i</sub>, <var>κ</var>) <small>数据的概率</small></div><div><var>ϕ</var><sub>i</sub> = 0 <small>线性模型</small></div><div><var>κ</var><sub>k</sub> ∼ Normal(0, 1.5) <small>每个截距的共同先验</small></div></div>
       <p>也可以把模型写得更直白：</p>
       <div class="equation-block wallis-equation" id="eq-12-ordered-logit-literal"><div><var>R</var><sub>i</sub> ∼ Categorical(<strong>p</strong>) <small>数据的概率</small></div><div><var>p</var><sub>1</sub> = <var>q</var><sub>1</sub> <small>每个值 <var>k</var> 的概率</small></div><div><var>p</var><sub>k</sub> = <var>q</var><sub>k</sub> − <var>q</var><sub><var>k</var>−1</sub>，其中 <var>K</var> &gt; <var>k</var> &gt; 1</div><div><var>p</var><sub><var>K</var></sub> = 1 − <var>q</var><sub><var>K</var>−1</sub></div><div>logit(<var>q</var><sub>k</sub>) = <var>κ</var><sub>k</sub> − <var>ϕ</var><sub>i</sub> <small>累积 logit link</small></div><div><var>ϕ</var><sub>i</sub> = 线性模型中的各项 <small>线性模型</small></div><div><var>κ</var><sub>k</sub> ∼ Normal(0, 1.5) <small>每个截距的共同先验</small></div></div>
       <p class="source-erratum" id="erratum-12-ordered-last-probability"><strong>原文下标不一致：</strong>最大类别概率应为 <span class="math-inline"><var>p</var><sub><var>K</var></sub> = 1 − <var>q</var><sub><var>K</var>−1</sub></span>；原书对应行把最后一个下标印成小写 <span class="math-inline"><var>k</var> − 1</span>。译稿按一般式改为 <span class="math-inline"><var>K</var> − 1</span>，并在此记录。</p>
       <p>第二种写法很残酷，却揭示了有序 logit 分布其实只是一个类别分布：它接收向量 <span class="math-inline"><strong>p</strong> = {<var>p</var><sub>1</sub>, <var>p</var><sub>2</sub>, <var>p</var><sub>3</sub>, <var>p</var><sub>4</sub>, <var>p</var><sub>5</sub>, <var>p</var><sub>6</sub>}</span>，其中包含最大回答值以下各档回答的概率（本例最大值为 7）。向量中每个回答值 <span class="math-inline"><var>k</var></span>，都由它与截距参数 <span class="math-inline"><var>α</var><sub><var>k</var></sub></span> 的 link 定义。最后，再给这些截距设置弱正则化先验。本例数据很多，几乎任何先验都会被数据压倒；像往常一样，在小样本情境下，必须更认真地考虑先验。例如，在看到数据之前，我们就知道 <span class="math-inline"><var>α</var><sub>1</sub> &lt; <var>α</var><sub>2</sub></span>。</p>
-      <p>无论在 <code>quap</code> 还是 <code>ulam</code> 的代码中，link 函数都已经嵌入 likelihood 函数。这能提高计算效率，也不必强迫你为上面所有例行的中间步骤编程。因此，不加入任何预测变量时，基础模型拟合如下：</p>
+      <p>无论在 <code>quap</code> 还是 <code>ulam</code> 的代码中，link 函数都已经嵌入似然函数。这能提高计算效率，也不必强迫你为上面所有例行的中间步骤编程。因此，不加入任何预测变量时，基础模型拟合如下：</p>
       <figure class="code-listing" id="code-12-16"><figcaption>R 代码 12.16</figcaption><pre><code>m12.4 &lt;- ulam(
     alist(
         R ~ dordlogit( 0 , cutpoints ),
@@ -281,10 +281,10 @@ cutpoints[6]  1.77 0.03  1.72  1.81 2345    1</code></pre></figure>
     </section>
 
     <section id="sec-12-3-3"><h3>12.3.3 加入预测变量</h3>
-      <p>这一通计算到目前为止几乎没带来什么，除了把一张直方图表示成 Bayesian 模型。不过，为了给模型加入服从结果有序约束的预测变量，所有这些准备都是必要的。</p>
+      <p>到目前为止，这一大通计算似乎只做了一件事：把一张直方图改写成贝叶斯模型。可要加入服从结果有序约束的预测变量，这些准备一步也不能少。</p>
       <p>要纳入预测变量，就把每个回答 <span class="math-inline"><var>k</var></span> 的对数累积赔率定义为其截距 <span class="math-inline"><var>α</var><sub><var>k</var></sub></span> 与普通线性模型之和。例如，假设要把预测变量 <span class="math-inline"><var>x</var></span> 加入模型，可以定义线性模型 <span class="math-inline"><var>ϕ</var><sub>i</sub> = <var>βx</var><sub>i</sub></span>。于是，每个累积 logit 都变为：</p>
       <div class="equation-block wallis-equation" id="eq-12-ordered-predictor"><div>log <span class="compact-fraction"><span>Pr(<var>y</var><sub>i</sub> ≤ <var>k</var>)</span><span>1 − Pr(<var>y</var><sub>i</sub> ≤ <var>k</var>)</span></span> = <var>α</var><sub><var>k</var></sub> − <var>ϕ</var><sub>i</sub></div><div><var>ϕ</var><sub>i</sub> = <var>βx</var><sub>i</sub></div></div>
-      <p>这种形式自动保证结果值顺序正确，同时仍能随着预测变量 <span class="math-inline"><var>x</var><sub>i</sub></span> 改变，调整每个单独值的 likelihood。为什么从每个截距中<strong>减去</strong>线性模型 <span class="math-inline"><var>ϕ</var></span>？因为降低最大值以下每个结果值 <span class="math-inline"><var>k</var></span> 的对数累积赔率，必然会把概率质量向上推到更高结果值。于是，<span class="math-inline"><var>β</var></span> 为正就表示 <span class="math-inline"><var>x</var></span> 增大时，<span class="math-inline"><var>y</var></span> 的均值也增大。也可以把 <span class="math-inline"><var>ϕ</var></span> 加上去，写成 <span class="math-inline"><var>α</var><sub><var>k</var></sub> + <var>ϕ</var><sub>i</sub></span>；但那样一来，<span class="math-inline"><var>β</var> &gt; 0</span> 反而表示 <span class="math-inline"><var>x</var></span> 增大时均值下降。</p>
+      <p>这种形式自动保证结果值顺序正确，同时仍能随着预测变量 <span class="math-inline"><var>x</var><sub>i</sub></span> 改变，调整每个单独值的似然。为什么从每个截距中<strong>减去</strong>线性模型 <span class="math-inline"><var>ϕ</var></span>？因为降低最大值以下每个结果值 <span class="math-inline"><var>k</var></span> 的对数累积赔率，必然会把概率质量向上推到更高结果值。于是，<span class="math-inline"><var>β</var></span> 为正就表示 <span class="math-inline"><var>x</var></span> 增大时，<span class="math-inline"><var>y</var></span> 的均值也增大。也可以把 <span class="math-inline"><var>ϕ</var></span> 加上去，写成 <span class="math-inline"><var>α</var><sub><var>k</var></sub> + <var>ϕ</var><sub>i</sub></span>；但那样一来，<span class="math-inline"><var>β</var> &gt; 0</span> 反而表示 <span class="math-inline"><var>x</var></span> 增大时均值下降。</p>
       <p>举例来说，取模型 <code>m12.4</code> 的后验均值。函数 <code>dordlogit</code> 能直接计算各档概率：</p>
       <figure class="code-listing" id="code-12-20"><figcaption>R 代码 12.20</figcaption><pre><code>round( pk &lt;- dordlogit( 1:7 , 0 , coef(m12.4) ) , 2 )</code></pre><pre class="code-output"><code>[1] 0.13 0.09 0.11 0.23 0.15 0.15 0.15</code></pre></figure>
       <p>这些概率所隐含的平均结果值为：</p>

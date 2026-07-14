@@ -73,7 +73,7 @@ def panel(
     result.extend(
         [
             f'    <text x="{fmt(x + width / 2)}" y="{fmt(y + height + 52)}" text-anchor="middle" font-family="{FONT}" font-size="16" fill="#30332e">水域比例（p）</text>',
-            f'    <text x="{fmt(x - 43)}" y="{fmt(y + height / 2)}" transform="rotate(-90 {fmt(x - 43)} {fmt(y + height / 2)})" text-anchor="middle" font-family="{FONT}" font-size="16" fill="#30332e">密度</text>',
+            f'    <text x="{fmt(x - 43)}" y="{fmt(y + height / 2)}" transform="rotate(-90 {fmt(x - 43)} {fmt(y + height / 2)})" text-anchor="middle" font-family="{FONT}" font-size="16" fill="#30332e">概率密度</text>',
             "  </g>",
         ]
     )

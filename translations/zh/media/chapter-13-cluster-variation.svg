@@ -116,7 +116,7 @@
 <text x="695.0" y="204.4" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">3.0</text>
 <text x="355.0" y="700.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="400" fill="#30332e">参数值</text>
 <text x="927.5" y="700.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="400" fill="#30332e">标准差</text>
-<text x="655.0" y="360.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="400" fill="#30332e" transform="rotate(-90 655 360.0)">密度</text>
+<text x="655.0" y="360.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="400" fill="#30332e" transform="rotate(-90 655 360.0)">概率密度</text>
 <text x="753.5" y="261.6" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="20" font-weight="400" fill="#6670ee">区组</text>
 <text x="984.5" y="555.4" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="20" font-weight="400" fill="#30332e">行动者</text>
 </svg>

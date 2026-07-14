@@ -77,7 +77,7 @@ def main() -> int:
         "  <desc>左图标出偏斜后验的均值、中位数和众数；右图显示绝对距离规则下的期望损失，并在后验中位数处达到最小。</desc>",
         '  <rect width="100%" height="100%" fill="#ffffff"/>',
     ]
-    body.extend(axes(x=left_x, y=top, width=panel_width, height=panel_height, xlabel="水域比例（p）", ylabel="密度", ymax=4.0))
+    body.extend(axes(x=left_x, y=top, width=panel_width, height=panel_height, xlabel="水域比例（p）", ylabel="概率密度", ymax=4.0))
     body.append(f'  <path d="{path(density, x=left_x, y=top, width=panel_width, height=panel_height, ymax=4.0)}" fill="none" stroke="#6670ee" stroke-width="3"/>')
     for value, label, label_y in ((0.8005558, "均值", 290), (0.8408408, "中位数", 245), (0.9985486, "众数", 200)):
         x = left_x + panel_width * value

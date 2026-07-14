@@ -32,7 +32,7 @@
 <text x="442.5" y="421.3" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="19" fill="#30332e">先验</text>
 <text x="361.7" y="250.5" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="19" fill="#6670ee">后验</text>
 <text x="325.0" y="555" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="21" fill="#263f86">alpha</text>
-<text x="30" y="270.0" transform="rotate(-90 30 270.0)" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="21" fill="#263f86">密度</text>
+<text x="30" y="270.0" transform="rotate(-90 30 270.0)" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="21" fill="#263f86">概率密度</text>
 <defs><clipPath id="weak-prior-sigma"><rect x="680" y="65" width="430" height="410"/></clipPath></defs>
 <rect x="680" y="65" width="430" height="410" fill="#fff" stroke="#30332e"/>
 <line x1="680.0" y1="475" x2="680.0" y2="482" stroke="#30332e"/>
@@ -62,5 +62,5 @@
 <text x="811.0" y="410.0" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="19" fill="#30332e">先验</text>
 <text x="770.1" y="245.0" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="19" fill="#6670ee">后验</text>
 <text x="895.0" y="555" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="21" fill="#263f86">sigma</text>
-<text x="620" y="270.0" transform="rotate(-90 620 270.0)" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="21" fill="#263f86">密度</text>
+<text x="620" y="270.0" transform="rotate(-90 620 270.0)" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="21" fill="#263f86">概率密度</text>
 </svg>

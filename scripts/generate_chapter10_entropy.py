@@ -114,7 +114,7 @@ def figure_10_2() -> None:
     parts = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">',
         '<title>最大熵与高斯分布</title>',
-        '<desc>左图比较方差均为一的高斯与三种广义正态密度；右图显示广义正态的熵在形状参数贝塔等于二时达到最大。</desc>',
+        '<desc>左图比较方差均为一的高斯分布与三种广义正态分布的概率密度曲线；右图显示形状参数贝塔等于二、曲线呈高斯形状时，广义正态分布的熵达到最大。</desc>',
         '<rect width="100%" height="100%" fill="#fbfaf6"/>',
     ]
 
@@ -130,7 +130,7 @@ def figure_10_2() -> None:
         parts.extend([f'<line x1="{left - 7}" y1="{yy:.1f}" x2="{left}" y2="{yy:.1f}" stroke="{INK}"/>', text(left - 13, yy + 5, f"{tick:.1f}", size=15, anchor="end")])
     parts.extend([
         text(left + plot_w / 2, height - 35, "取值", size=19, anchor="middle", fill=BLUE),
-        text(28, top + plot_h / 2, "密度", size=19, anchor="middle", fill=BLUE, rotate=-90),
+        text(28, top + plot_h / 2, "概率密度", size=19, anchor="middle", fill=BLUE, rotate=-90),
     ])
     styles = [(1.0, "#111", 2.2), (1.5, "#777872", 2.2), (4.0, "#111", 2.2), (2.0, "#6670ee", 4.0)]
     for beta, color, stroke_width in styles:
@@ -141,7 +141,7 @@ def figure_10_2() -> None:
         parts.append(f'<polyline points="{" ".join(points)}" fill="none" stroke="{color}" stroke-width="{stroke_width}"/>')
     parts.extend([
         f'<line x1="{left + 22}" y1="{top + 24}" x2="{left + 62}" y2="{top + 24}" stroke="#6670ee" stroke-width="4"/>',
-        text(left + 72, top + 30, "高斯 β=2", size=16, fill=BLUE),
+        text(left + 72, top + 30, "高斯分布（β = 2）", size=16, fill=BLUE),
     ])
 
     left2, top2, plot_w2, plot_h2 = 690, 55, 420, 430
@@ -163,7 +163,7 @@ def figure_10_2() -> None:
         f'<line x1="{sx2(2):.1f}" y1="{top2}" x2="{sx2(2):.1f}" y2="{top2 + plot_h2}" stroke="{INK}" stroke-width="2" stroke-dasharray="8 7"/>',
         text(left2 + plot_w2 / 2, height - 35, "形状参数 β", size=19, anchor="middle", fill=BLUE),
         text(628, top2 + plot_h2 / 2, "熵", size=19, anchor="middle", fill=BLUE, rotate=-90),
-        text(sx2(2) + 12, sy2(generalized_normal_entropy(2)) - 12, "最大值 β=2", size=17, fill=BLUE, weight=700),
+        text(sx2(2) + 12, sy2(generalized_normal_entropy(2)) - 12, "最大值（β = 2）", size=17, fill=BLUE, weight=700),
         '</svg>',
     ])
     OUT2.write_text("\n".join(parts) + "\n", encoding="utf-8")
@@ -235,7 +235,7 @@ def figure_10_4() -> None:
     parts = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">',
         '<title>期望值为 1.4 的模拟分布及其熵</title>',
-        '<desc>左图显示十万次随机模拟所得熵的密度；右侧 A 到 D 展示熵逐渐降低时概率分布越来越不均匀。</desc>',
+        '<desc>左图显示十万次随机模拟所得熵值的概率密度；右侧 A 到 D 展示熵逐渐降低时概率分布越来越不均匀。</desc>',
         '<rect width="100%" height="100%" fill="#fbfaf6"/>',
     ]
 
@@ -262,7 +262,7 @@ def figure_10_4() -> None:
     sy = lambda value: bottom - value / peak * (bottom - top)
     parts.extend([
         f'<rect x="{x}" y="{y}" width="{plot_w}" height="{plot_h}" rx="8" fill="#fff" stroke="{GRID}"/>',
-        text(x + 20, y + 34, "模拟熵的密度", size=22, weight=700, fill=BLUE),
+        text(x + 20, y + 34, "模拟熵值的概率密度", size=22, weight=700, fill=BLUE),
     ])
     for tick in (0.7, 0.8, 0.9, 1.0, 1.1, 1.2):
         xx = sx(tick)
@@ -274,7 +274,7 @@ def figure_10_4() -> None:
         f'<line x1="{left}" y1="{bottom}" x2="{right}" y2="{bottom}" stroke="{INK}"/>',
         f'<line x1="{left}" y1="{bottom}" x2="{left}" y2="{top}" stroke="{INK}"/>',
         text((left + right) / 2, y + plot_h - 12, "熵", size=18, anchor="middle", fill=BLUE),
-        text(x + 25, (top + bottom) / 2, "密度", size=18, anchor="middle", fill=BLUE, rotate=-90),
+        text(x + 25, (top + bottom) / 2, "概率密度", size=18, anchor="middle", fill=BLUE, rotate=-90),
     ])
     density_points = []
     for index, value in enumerate(smooth):

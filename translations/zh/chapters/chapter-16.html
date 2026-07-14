@@ -43,7 +43,7 @@
       <div class="equation-block wallis-equation" id="eq-16-p-prior"><div><var>p</var> ∼ Beta(2, 18)</div></div>
       <p>这个先验的均值为 <span class="math-inline">2/(2 + 18) = 0.1</span>。若要做得更好，确实应当进行先验预测模拟（见本章末练习）；但暂时先这样处理 <var>p</var>。</p>
       <p>参数 <var>k</var> 是体重占体积的比例。它其实只是换算度量尺度，因为改变体积或体重的单位，就会改变它的值。例如，若身高以厘米计、体重以千克计，则体积单位为 cm<sup>3</sup>，<var>k</var> 的单位就必须是 kg/cm<sup>3</sup>。此时 <var>k</var> 的定义，正是每立方厘米对应多少千克。因此，为了把先验放到正确尺度上，需要知道一立方厘米人体大约有多重。可以查资料，也可以用自己的身体建立先验。</p>
-      <aside class="rethinking-box" id="rethinking-16-priors-never-arbitrary"><h4>再思考：先验从不任意</h4><p>常听人忧心忡忡地宣称，Bayes 不可信，因为先验是任意的。确实，有些人会任意对待先验；但只有在科学家忽视领域知识时，先验才会任意。即使坚持使用 GLM，先验预测模拟也会迫使我们接触背景知识，从而产生有用而非任意的先验。模型的科学基础越扎实，参数意义就越丰富。圆柱示例中的 <var>p</var> 与 <var>k</var> 都有科学含义，因而可以指定甚至能够直接物理测量的先验。出于某种形而上的“无知”承诺而在本例使用平坦先验，将是个错误。</p></aside>
+      <aside class="rethinking-box" id="rethinking-16-priors-never-arbitrary"><h4>再思考：先验从不任意</h4><p>常听人忧心忡忡地宣称，贝叶斯方法不可信，因为先验是任意的。确实，有些人会随意指定先验；但只有在科学家忽视领域知识时，先验才会变得任意。即使坚持使用 GLM，先验预测模拟也会迫使我们接触背景知识，从而得到有依据而非任意的先验。模型的科学基础越扎实，参数的含义就越丰富。圆柱示例中的 <var>p</var> 与 <var>k</var> 都有科学含义，因此可以为它们指定具有物理依据、甚至能够直接测量的先验。仅仅为了信守某种形而上的“无知”立场，就在本例中使用平坦先验，反而是错误的。</p></aside>
       <p>不过，假如查不到资料怎么办？一个非常实用的技巧，是彻底消除度量尺度——度量尺度只是人类的任意发明——再用已知生物学约束定位先验。怎样消除度量尺度？可以把观测变量除以某些参照值，单位就会约掉。例如，把身高和体重都除以各自均值：</p>
       <figure class="code-listing" id="code-16-1"><figcaption>R 代码 16.1</figcaption><pre><code>library(rethinking)
 data(Howell1)
@@ -139,11 +139,11 @@ sum(y==2)/N</code></pre><pre class="code-output" id="output-16-6"><code>[1] 0.63
 
     <section id="sec-16-2-2"><h3>16.2.2 统计模型</h3>
       <p>现在需要一个反映上述生成模型的统计模型。记住，统计模型的运行方向与生成模型相反：在生成模型中，假定策略并模拟观测行为；在统计模型中，则假定观测行为（数据）并模拟策略（参数）。</p>
-      <p>本例无法直接测量每名儿童的策略，它是未观测变量。但每种策略产生每种选择的概率都是特定的。可以利用这个事实，在用参数指定各策略概率后，计算每种选择的概率；随后放出 Bayes，取回每种策略的后验分布。不过在放出 Bayes 之前，还要列举参数、为每个参数指定先验，并解决若干编码技术问题。下面逐步完成。</p>
+      <p>本例无法直接测量每名儿童采用的策略，因为策略是未观测变量。不过，每种策略产生各种选择的概率都是确定的。利用这一点，可以先用参数指定各策略的比例，再算出每种选择的概率；随后交给贝叶斯更新，得到各策略比例的后验分布。在此之前，还要列出所有参数、为它们指定先验，并解决几个编码问题。下面逐步完成。</p>
       <p>未观测变量，是儿童采用五种策略各自的概率。这意味着五个数；但由于它们必须和为 1，只需四个参数。有一种叫作<strong>单纯形</strong>的变量类型能替我们处理：单纯形是一个数值向量，各值之和必须等于某个常数，通常为 1。Stan 允许把参数向量声明成单纯形，并自动管理“和固定”这项记账工作。可以给单纯形指定 Dirichlet 先验，也就是概率分布的先验。第 12 章构造有序类别预测变量时，已经用过 Dirichlet 与单纯形。这里对策略概率的单纯形使用弱均匀先验，并将其记作 <var>p</var>：</p>
       <div class="equation-block wallis-equation" id="eq-16-strategy-dirichlet-prior"><div><strong>p</strong> ∼ Dirichlet([4, 4, 4, 4, 4])</div></div>
       <p>正如第 12 章所见，这个先验并不表示我们预期各策略等概率；它表示任何一种策略都可能比任何另一种更常见或更少见。若把这些 4 调得更大，先验才会开始表达“预期它们实际相等”。</p>
-      <p>现在怎样表达数据的概率，也就是 likelihood？对于每个观测选择 <var>y</var><sub><var>i</var></sub>，每种策略 <var>s</var> 都意味着看到 <var>y</var><sub><var>i</var></sub> 的某个概率。把它记作 <span class="math-inline">Pr(<var>y</var><sub><var>i</var></sub> | <var>s</var>)</span>，即在假定某个具体策略 <var>s</var> 时数据的概率。例如，若假定 <span class="math-inline"><var>s</var> = 1</span>，也就是“跟随多数”，那么 <span class="math-inline">Pr(<var>y</var><sub><var>i</var></sub> = 2 | <var>s</var> = 1) = 1</span>。这只是用数学说：采用“跟随多数”策略的儿童，总会选择多数颜色。</p>
+      <p>现在怎样表达数据的概率，也就是似然？对于每个观测选择 <var>y</var><sub><var>i</var></sub>，每种策略 <var>s</var> 都意味着看到 <var>y</var><sub><var>i</var></sub> 的某个概率。把它记作 <span class="math-inline">Pr(<var>y</var><sub><var>i</var></sub> | <var>s</var>)</span>，即在假定某个具体策略 <var>s</var> 时数据的概率。例如，若假定 <span class="math-inline"><var>s</var> = 1</span>，也就是“跟随多数”，那么 <span class="math-inline">Pr(<var>y</var><sub><var>i</var></sub> = 2 | <var>s</var> = 1) = 1</span>。这只是用数学说：采用“跟随多数”策略的儿童，总会选择多数颜色。</p>
       <p>可是我们不知道 <var>s</var>，也不能直接观测它。不过，模型确实给出了每种 <var>s</var> 的概率，也就是单纯形 <var>p</var> 的各个元素。因此，要得到数据的无条件概率 <span class="math-inline">Pr(<var>y</var><sub><var>i</var></sub>)</span>，只需用 <var>p</var> 对未知策略 <var>s</var> 取平均：</p>
       <div class="equation-block wallis-equation" id="eq-16-strategy-mixture-likelihood"><div>Pr(<var>y</var><sub><var>i</var></sub>) = Σ<sub><var>s</var>=1</sub><sup>5</sup> <var>p</var><sub><var>s</var></sub> Pr(<var>y</var><sub><var>i</var></sub> | <var>s</var>)</div></div>
       <p>这句话读作：“<var>y</var><sub><var>i</var></sub> 的概率，是在每种策略 <var>s</var> 下 <var>y</var><sub><var>i</var></sub> 的条件概率的加权平均。”这个表达式与前面章节一样，是一个混合。有时你会看到“把未知策略取边际”这种说法；它只是指对各策略取平均，并用每种策略的某个概率作为权重。上式中，<var>p</var> 的各个值正提供这些权重。</p>
@@ -186,7 +186,7 @@ plot( precis(m16.2,2) , labels=p_labels )</code></pre></figure>
         <figure class="code-listing" id="stan-16-boxes-parameters"><figcaption>Stan：parameters 块</figcaption><pre><code>parameters{
     simplex[5] p;
 }</code></pre></figure>
-        <p>第三块是核心——<strong>模型块</strong>。它计算观测变量（数据）与未观测变量（参数）的对数概率，也就是 Bayes 定理的分子；Stan 用它运行 Hamiltonian 模拟（见第 9 章）。下面分段来看。首先，在顶部声明一个向量，保存每种策略的概率计算；处理数据的每一行时都会复用它，算出不同概率：</p>
+        <p>第三块是核心——<strong>模型块</strong>。它计算观测变量（数据）与未观测变量（参数）的对数概率，也就是贝叶斯定理的分子；Stan 用它运行 Hamiltonian 模拟（见第 9 章）。下面分段来看。首先，在顶部声明一个向量，保存每种策略的概率计算；处理数据的每一行时都会复用它，算出不同概率：</p>
         <figure class="code-listing" id="stan-16-boxes-model"><figcaption>Stan：model 块开头</figcaption><pre><code>model{
     vector[5] phi;</code></pre></figure>
         <p>然后指定先验：</p>
@@ -213,7 +213,7 @@ plot( precis(m16.2,2) , labels=p_labels )</code></pre></figure>
         <figure class="code-listing" id="stan-16-boxes-gender-simplex"><figcaption>Stan：按性别索引的单纯形</figcaption><pre><code>    simplex[5] p[2];</code></pre></figure>
         <p>然后在模型块中，用 <code>p[gender[i],s]</code> 同时按策略和性别索引 <code>p</code>：</p>
         <figure class="code-listing" id="stan-16-boxes-gender-index"><figcaption>Stan：按性别索引策略概率</figcaption><pre><code>    for ( s in 1:5 ) phi[s] = log(p[gender[i],s]) + log(phi[s]);</code></pre></figure>
-        <p>这个模型作为 <code>data(Boxes_model_gender)</code> 收录在 <code>rethinking</code> 包中。年龄这样的连续协变量会带来更多选择：Gaussian process、样条、多项式都能处理，却各要用不同方式编码。Stan 模型 <code>data(Boxes_model_age)</code> 展示了一个简单的线性年龄趋势：先给每个 <var>p</var> 在 logit 尺度上指定线性模型，再用多元逆 logit 变换到单纯形尺度。这完全是地心式做法；如果有更强的理论，它会有所帮助。</p>
+        <p>这个模型作为 <code>data(Boxes_model_gender)</code> 收录在 <code>rethinking</code> 包中。年龄这样的连续协变量会带来更多选择：高斯过程、样条、多项式都能处理，却各要用不同方式编码。Stan 模型 <code>data(Boxes_model_age)</code> 展示了一个简单的线性年龄趋势：先给每个 <var>p</var> 在 logit 尺度上指定线性模型，再用多元逆 logit 变换到单纯形尺度。这完全是地心式做法；如果有更强的理论，它会有所帮助。</p>
       </aside>
     </section>
 
@@ -248,7 +248,7 @@ data(Panda_nuts)</code></pre></figure>
     </section>
 
     <section id="sec-16-3-2"><h3>16.3.2 统计模型</h3>
-      <p>要用上面的模型作估计，需要 likelihood 与先验。Likelihood 很直接：只要打开的坚果数远少于可用坚果总数，Poisson 分布就具有正确约束。因此：</p>
+      <p>要用上面的模型作估计，需要似然与先验。似然很直接：只要打开的坚果数远少于可用坚果总数，Poisson 分布就具有正确约束。因此：</p>
       <div class="equation-block wallis-equation" id="eq-16-nut-statistical-model"><div><var>n</var><sub><var>i</var></sub> ∼ Poisson(<var>λ</var><sub><var>i</var></sub>)</div><div><var>λ</var><sub><var>i</var></sub> = <var>d</var><sub><var>i</var></sub><var>ϕ</var>(1 − exp(−<var>k</var><var>t</var><sub><var>i</var></sub>))<sup><var>θ</var></sup></div></div>
       <p>其中 <var>n</var><sub><var>i</var></sub> 是打开的坚果数，<var>d</var><sub><var>i</var></sub> 是开坚果所用时间，<var>t</var><sub><var>i</var></sub> 是观测 <var>i</var> 中个体的年龄。唯一新增的是暴露量 <var>d</var><sub><var>i</var></sub>。第 11 章曾通过在线性模型中加入持续时间的对数，给 Poisson 模型添加暴露量；这里不用对数，因为模型并非线性，也没有对数链接函数。我们直接编写速率 <var>λ</var>，所以持续时间 <var>d</var><sub><var>i</var></sub> 只需乘上速率，得到期望打开数。比如我说自己每秒能打开 <span class="math-inline"><var>λ</var> = 0.4</span> 颗坚果；要算 10 秒能打开多少，只需用 0.4 乘 10，得到每 10 秒 4 颗。</p>
       <p>先验怎么办？要在这里取得合理先验，需要同时考虑相关生物学事实，并借助模拟把事实转化为分布假设。最相关的事实是，黑猩猩大约在 12 岁达到成年体重，所以先验生长曲线应当在 12 岁左右趋平。需要为 <var>k</var> 和 <var>θ</var> 选择能做到这一点的分布；而 <var>ϕ</var> 的先验均值应当接近开坚果的最大速率。我并不是开坚果专家，不过不妨假定一只专业黑猩猩每秒能打开一颗——毕竟可以同时捶打好几颗。</p>
@@ -275,7 +275,7 @@ axis( 1 , at=at , labels=round(at*max(Panda_nuts$age)) )
 for ( i in 1:20 ) curve( phi[i]*(1-exp(-k[i]*x))^theta[i] , add=TRUE ,
     col=grau() , lwd=1.5 )</code></pre></figure>
       <p>这些图会显示在图 16.4 中。用 <code>dens()</code> 检查每个参数各自的分布当然有帮助，但这种把所有参数结合起来的图，对于理解先验含义必不可少。</p>
-      <p>编写模型不会带来新问题，只需构造惯常的数据列表，再用 <code>ulam()</code> 表达 likelihood 与先验：</p>
+      <p>编写模型不会带来新问题，只需构造惯常的数据列表，再用 <code>ulam()</code> 表达似然与先验：</p>
       <figure class="code-listing" id="code-16-11"><figcaption>R 代码 16.11</figcaption><pre><code>dat_list &lt;- list(
     n = as.integer( Panda_nuts$nuts_opened ),
     age = Panda_nuts$age / max(Panda_nuts$age),
@@ -458,7 +458,7 @@ for ( s in 1:21 ) {
     </section>
 
     <section id="sec-16-4-3"><h3>16.4.3 猞猁带来的教训</h3>
-      <p>我们有充分理由怀疑，这个模型并不能完美解释雪兔与猞猁的种群动力学。猞猁在某些时期确实几乎完全依赖雪兔，但雪兔会被很多捕食者吃掉，所以雪兔周期很可能并不是猞猁造成的。换句话说，这里潜伏着一个混杂因素。真实生态系统十分复杂。章末练习会要求你把这个模型用于一个没有这些复杂因素的实验捕食者—猎物系统；还会要求你与自回归模型比较，看看后者需要多少个本轮，才能接近这个简单捕食者—猎物模型的预测质量。</p>
+      <p>我们有充分理由怀疑，这个模型并不能完美解释雪兔与猞猁的种群动力学。猞猁在某些时期确实几乎完全依赖雪兔，但雪兔会被许多捕食者捕食，所以雪兔的种群周期很可能并非由猞猁造成。换句话说，这里潜伏着混杂因素。真实生态系统十分复杂。章末练习会要求你把这个模型用于一个没有这些复杂因素的实验捕食者—猎物系统；还会让它与自回归模型比较，看看后者需要加入多少个滞后项，才能接近这个简单捕食者—猎物模型的预测质量。</p>
     </section>
     <aside class="source-erratum" id="erratum-16-population-dynamics-typos"><strong>原文说明：</strong>PDF 第 571 页的 “if you care about is forecasting” 漏排 <em>all</em>，“depends upon have” 应为 <em>having</em>；PDF 第 573 页的 “underly model” 应为 <em>underlying model</em>，而观测过程步骤从 “First” 直接跳到 “Third”。PDF 第 573 页叙述说毛皮数取整到最近的 100，而第 574 页代码 <code>round(h/1000, 2)</code> 实际取整到最近的 10；PDF 第 575 页 “sampler need” 应为 <em>sampler needs</em>，第 576 页 “overly 21 simulated” 应为 <em>overlay 21 simulated</em>。译稿按上下文修正，代码保持原样。</aside>
   </section>

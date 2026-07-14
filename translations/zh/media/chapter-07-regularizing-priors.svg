@@ -32,5 +32,5 @@
 <line x1="118" y1="92.21" x2="125" y2="92.21" stroke="#343732"/>
 <text x="109" y="98.21" text-anchor="end" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="17" fill="#30332e">2.0</text>
 <text x="470.0" y="525" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="21" font-weight="700" fill="#263f86">参数值</text>
-<text x="43" y="260.0" transform="rotate(-90 43 260.0)" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="21" font-weight="700" fill="#263f86">密度</text>
+<text x="43" y="260.0" transform="rotate(-90 43 260.0)" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="21" font-weight="700" fill="#263f86">概率密度</text>
 </svg>

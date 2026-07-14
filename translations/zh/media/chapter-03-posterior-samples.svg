@@ -50,7 +50,7 @@
   <text x="317.5" y="430" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="18" fill="#30332e">样本序号</text>
   <text x="35" y="207" transform="rotate(-90 35 207)" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="18" fill="#30332e">水域比例（p）</text>
   <text x="902.5" y="430" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="18" fill="#30332e">水域比例（p）</text>
-  <text x="635" y="207" transform="rotate(-90 635 207)" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="18" fill="#30332e">密度</text>
+  <text x="635" y="207" transform="rotate(-90 635 207)" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="18" fill="#30332e">概率密度</text>
   <text x="317.5" y="482" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="700" fill="#263f86">10,000 个后验样本</text>
   <text x="902.5" y="482" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="700" fill="#263f86">样本密度估计</text>
 </svg>

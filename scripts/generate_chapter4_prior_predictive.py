@@ -77,7 +77,7 @@ def plot_panel(
     body.extend(
         [
             f'  <text x="{fmt(x + width / 2)}" y="{y + height + 58}" text-anchor="middle" font-family="{FONT}" font-size="17" fill="#30332e">{xlabel}</text>',
-            f'  <text x="{x - 35}" y="{fmt(y + height / 2)}" transform="rotate(-90 {x - 35} {fmt(y + height / 2)})" text-anchor="middle" font-family="{FONT}" font-size="17" fill="#30332e">密度</text>',
+            f'  <text x="{x - 35}" y="{fmt(y + height / 2)}" transform="rotate(-90 {x - 35} {fmt(y + height / 2)})" text-anchor="middle" font-family="{FONT}" font-size="17" fill="#30332e">概率密度</text>',
         ]
     )
     return body

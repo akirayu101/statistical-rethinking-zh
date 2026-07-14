@@ -66,7 +66,7 @@ def generate_priors() -> None:
         ])
     body.extend([
         f'<text x="{left + plot_width / 2}" y="525" text-anchor="middle" font-family="{FONT}" font-size="21" font-weight="700" fill="#263f86">参数值</text>',
-        f'<text x="43" y="{top + plot_height / 2}" transform="rotate(-90 43 {top + plot_height / 2})" text-anchor="middle" font-family="{FONT}" font-size="21" font-weight="700" fill="#263f86">密度</text>',
+        f'<text x="43" y="{top + plot_height / 2}" transform="rotate(-90 43 {top + plot_height / 2})" text-anchor="middle" font-family="{FONT}" font-size="21" font-weight="700" fill="#263f86">概率密度</text>',
         "</svg>",
         "",
     ])

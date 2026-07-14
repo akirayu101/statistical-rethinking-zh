@@ -347,8 +347,8 @@ sigma 0.11 0.01 0.10  0.12  2507    1</code></pre></figure>
     <section id="sec-9-4-4"><h3>9.4.4 可视化</h3>
       <p>把样本画出来，就能直接体会实际后验密度究竟有多接近高斯形状（也就是二次形状）。直接对模型对象调用 <code>pairs</code>，R 就知道怎样显示参数名称和参数相关性：</p>
       <figure class="code-listing" id="code-9-19"><figcaption>R 代码 9.19</figcaption><pre><code>pairs( m9.1 )</code></pre></figure>
-      <p>图 9.7 展示结果。这仍是一张变量对图，即二元散点图组成的矩阵；现在，对角线上显示每个参数的平滑直方图及其名称，下三角则显示每对参数之间的相关性，相关越强，数字相对越大。</p>
-      <figure class="book-figure pairs-posterior-figure" id="fig-9-7"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的五参数后验变量对图"><img src="/media/chapter-09-pairs-posterior.svg" alt="五乘五变量对矩阵，对角线为各参数密度，上三角为后验散点，下三角为参数相关系数"></div><p class="scroll-hint">图较宽，可横向滚动比较全部参数对。</p><figcaption><strong>图 9.7：</strong><code>ulam</code> 生成样本的变量对图。对角线显示每个参数的密度估计；对角线下方显示参数之间的相关系数。</figcaption></figure>
+      <p>图 9.7 展示结果。这仍是一张变量对图，即由二元散点图组成的矩阵；对角线上显示每个参数的边际后验概率密度及其名称，下三角则显示参数两两之间的相关系数，相关越强，数字越大。</p>
+      <figure class="book-figure pairs-posterior-figure" id="fig-9-7"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的五参数后验变量对图"><img src="/media/chapter-09-pairs-posterior.svg" alt="五乘五变量对矩阵，对角线为各参数的边际后验概率密度，上三角为后验散点，下三角为参数相关系数"></div><p class="scroll-hint">图较宽，可横向滚动比较全部参数对。</p><figcaption><strong>图 9.7：</strong><code>ulam</code> 生成样本的变量对图。对角线显示每个参数的边际后验概率密度；下三角显示参数之间的相关系数，上三角显示相应的样本散点。</figcaption></figure>
       <p>对这个模型和这组数据而言，得到的后验分布非常接近多元高斯。<code>sigma</code> 的密度确实如预期那样有所偏斜；但除此之外，二次近似几乎与哈密顿蒙特卡洛表现得一样好。这当然是一种非常简单的模型结构，而且使用高斯先验，所以得到近似二次形状的后验并不意外。后面会看到一些更奇异的后验分布。</p>
     </section>
 
@@ -521,7 +521,7 @@ sigma  1.03 0.08   0.92  1.17   448    1</code></pre></figure>
       <p>现在 <code>a1</code> 和 <code>a2</code> 的估计识别得更好了。严格说，它们各自仍未识别，但两者之和已经识别。再看图 9.12 中的轨迹图与 trank plot。还要注意，这个模型抽样快了许多：采用平坦先验的 <code>m9.4</code>，抽样耗时可能是 <code>m9.5</code> 的三倍。抽样极慢的模型往往识别不足。这正体现了贝叶斯统计学家 Andrew Gelman 所说的统计计算民间定理：拟合模型遇到麻烦时，往往说明模型本身不好。</p>
       <p>最终，一些弱信息先验救下了这个模型。你也许以为自己绝不会误拟合一个未识别模型，但事实并非如此。即使没有犯明显错误，复杂模型也很容易变得未识别或接近未识别。预测变量很多时，尤其存在交互作用时，参数之间的相关性可能很大。只要加入少量先验信息，告诉模型“这些参数没有一个会是三千万”，往往就能帮上忙，而且不会影响估计。平坦先验真的一路平坦到无穷远；除非你相信无穷大是合理估计，否则不要使用平坦先验。</p>
       <p>此外，加入弱先验还可能加快抽样，因为马尔可夫链不会再觉得自己必须跑向那些你明知极不可信、模型却不知道的极端值。</p>
-      <aside class="rethinking-box" id="rethinking-hamiltonian-warnings"><h3>再思考：Hamiltonian 警告与 Gibbs 的过度自信</h3><p>人们刚开始使用 Stan 或其他 Hamiltonian 抽样器时，常会发现，以前用 Metropolis-Hastings 或 BUGS、JAGS、MCMCglmm 等 Gibbs 抽样器拟合的模型，现在不再运行良好：链很慢，警告很多，Stan 简直不停唠叨。难道是 Stan 出了问题？</p><p>不是。这些问题很可能一直存在，其他工具中也一样。只是 Gibbs 不使用梯度，所以察觉不到 Hamiltonian 引擎能够发现的某些问题。应用统计学甚至形成了一种文化：让坏链运行极长时间，达到数百万次迭代，然后激进地稀疏抽样、祈祷，再发表。系统发育分析可能尤其容易如此，因为树空间非常难探索。<sup id="note-152-ref"><a href="#note-152">152</a></sup> Stan 和其他 Hamiltonian 引擎对可靠研究如此重要，恰恰因为它们为蒙特卡洛近似的准确性提供了更多诊断标准。不要怨恨这些唠叨。</p></aside>
+      <aside class="rethinking-box" id="rethinking-hamiltonian-warnings"><h3>再思考：Hamiltonian 警告与 Gibbs 的过度自信</h3><p>人们刚开始使用 Stan 或其他 Hamiltonian 抽样器时，常会发现，以前用 Metropolis-Hastings 或 BUGS、JAGS、MCMCglmm 等 Gibbs 抽样器拟合的模型，现在突然跑不顺了：链很慢，警告很多，Stan 简直不停唠叨。难道是 Stan 出了问题？</p><p>不是。这些问题很可能一直存在，其他工具中也一样。只是 Gibbs 不使用梯度，所以察觉不到 Hamiltonian 引擎能够发现的某些问题。应用统计学甚至形成了一种文化：让坏链运行极长时间，达到数百万次迭代，然后激进地稀疏抽样、祈祷，再发表。系统发育分析可能尤其容易如此，因为树空间非常难探索。<sup id="note-152-ref"><a href="#note-152">152</a></sup> Stan 和其他 Hamiltonian 引擎对可靠研究如此重要，恰恰因为它们为蒙特卡洛近似的准确性提供了更多诊断标准。不要怨恨这些唠叨。</p></aside>
     </section>
   </section>
 

@@ -103,7 +103,7 @@ def axes(parts: list[str], *, x: float, y: float, width: float, height: float,
         f'<line x1="{left}" y1="{bottom}" x2="{right}" y2="{bottom}" stroke="{INK}" stroke-width="1.5"/>',
         f'<line x1="{left}" y1="{bottom}" x2="{left}" y2="{top}" stroke="{INK}" stroke-width="1.5"/>',
         text((left + right) / 2, y + height - 16, xlabel, size=18, anchor="middle"),
-        text(x + 20, (top + bottom) / 2, "密度", size=18, anchor="middle", rotate=-90),
+        text(x + 20, (top + bottom) / 2, "概率密度", size=18, anchor="middle", rotate=-90),
     ])
     return sx, sy
 
@@ -439,7 +439,7 @@ def poisson_intercept_priors() -> None:
         f'<line x1="{left}" y1="{bottom}" x2="{right}" y2="{bottom}" stroke="{INK}" stroke-width="2"/>',
         f'<line x1="{left}" y1="{bottom}" x2="{left}" y2="{top}" stroke="{INK}" stroke-width="2"/>',
         text((left + right) / 2, height - 24, "工具数量的先验均值", size=19, anchor="middle"),
-        text(28, (top + bottom) / 2, "密度", size=19, anchor="middle", rotate=-90),
+        text(28, (top + bottom) / 2, "概率密度", size=19, anchor="middle", rotate=-90),
     ])
     values = [index / 10 for index in range(1, 1001)]
     black = [(value, min(.08, lognormal_density(value, 0, 10))) for value in values]
@@ -695,7 +695,7 @@ def exponential_gamma_generative_plot() -> None:
     parts = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">',
         '<title>指数分布与 Gamma 分布的生成过程</title>',
-        '<desc>左图显示两个或五个部件中第一个故障的等待时间密度；右图显示十个部件中第二个或第五个故障的等待时间密度。</desc>',
+        '<desc>左图显示两个或五个部件中第一个故障的等待时间概率密度；右图显示十个部件中第二个或第五个故障的等待时间概率密度。</desc>',
         '<rect width="100%" height="100%" fill="#fbfaf6"/>',
     ]
     geometries = []
@@ -708,7 +708,7 @@ def exponential_gamma_generative_plot() -> None:
             f'<line x1="{left}" y1="{bottom}" x2="{right}" y2="{bottom}" stroke="{INK}" stroke-width="1.6"/>',
             f'<line x1="{left}" y1="{bottom}" x2="{left}" y2="{top}" stroke="{INK}" stroke-width="1.6"/>',
             text((left + right) / 2, 535, "天", size=18, anchor="middle"),
-            text(x + 25, (top + bottom) / 2, "密度", size=18, anchor="middle", rotate=-90),
+            text(x + 25, (top + bottom) / 2, "概率密度", size=18, anchor="middle", rotate=-90),
         ])
         for tick in (0, 20, 40, 60, 80, 100):
             xx = left + tick / 100 * (right - left)

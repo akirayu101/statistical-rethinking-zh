@@ -1228,5 +1228,5 @@
 <text x="973.00" y="520" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15">2.1</text>
 <text x="1051.00" y="520" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15">2.2</text>
 <text x="895" y="565" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="700" fill="#263f86">bl 与 br 之和</text>
-<text x="650" y="275" transform="rotate(-90 650 275)" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="700" fill="#263f86">密度</text>
+<text x="650" y="275" transform="rotate(-90 650 275)" text-anchor="middle" font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="700" fill="#263f86">概率密度</text>
 </svg>

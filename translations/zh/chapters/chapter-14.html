@@ -22,7 +22,7 @@
   <section id="sec-14-1"><h2>14.1 从构造出发理解变化斜率</h2>
     <p>机器人应当怎样跨截距和斜率汇聚信息？答案是建模截距与斜率的联合总体，也就是建模它们的协方差。在传统多层模型中，实现这一点的装置，是为全部变化效应——截距和斜率——指定一个联合多元高斯分布。因此，不再分别为截距和斜率指定两个相互独立的高斯分布，而是把截距放在第一维、斜率放在第二维，为两者共同指定一个二维高斯分布。</p>
     <p>从第 4 章开始使用二次近似表示后验分布时，你就已经在处理多元高斯分布。拟合模型的方差—协方差矩阵 <code>vcov</code>，描述每个参数的后验概率怎样与其他参数的后验概率关联。现在，我们要用同一类分布描述不同种类变化效应内部的变异，以及它们之间的协变：变化截距有变异，变化斜率有变异，截距与斜率还会协变。</p>
-    <p>为了看清它怎样工作，以及怎样指定和解释变化斜率，我们来模拟导言中的咖啡机器人。与先前的模拟练习一样，这既会再次强调 Bayesian 统计模型的生成性质，也会帮助你理解怎样开展自己的前瞻性功效分析。</p>
+    <p>为了看清它怎样工作，以及怎样指定和解释变化斜率，我们来模拟导言中的咖啡机器人。与先前的模拟练习一样，这既会再次强调贝叶斯统计模型的生成性质，也会帮助你理解怎样开展自己的前瞻性功效分析。</p>
 
     <aside class="rethinking-box" id="rethinking-14-why-gaussian"><h3>再思考：为什么是高斯分布？</h3><p>截距与斜率的多元分布并非一定要是高斯分布，但这里同时存在实践与认识论上的理由。实践上，容易处理的多元分布并不多，常见的只有多元高斯与多元 Student-t 分布。认识论上，如果我们只想陈述这些截距和斜率的均值、方差与协方差，那么最大熵分布就是多元高斯。不过，高斯分布的薄尾仍可能带来风险。</p></aside>
 
@@ -105,7 +105,7 @@ d &lt;- data.frame( cafe=cafe_id , afternoon=afternoon , wait=wait )</code></pre
     <p>现在查看数据框 <code>d</code>。你会看到一种非常适合变化斜率模型的数据：数据中有多个集群，也就是咖啡馆；每个集群又在不同条件下被观测。因此，既能为每个集群估计独立截距，也能估计独立斜率。</p>
     <p>在本例中，一切都很平衡：每家咖啡馆恰好观测 10 次，时段也始终平衡，每家店上午、下午各 5 次。但一般而言，数据不必平衡。与上一章的蝌蚪示例一样，不平衡实际上会让变化效应分析更占优势，因为部分汇聚能在最需要的地方利用总体信息。</p>
 
-    <aside class="rethinking-box" id="rethinking-14-simulation-misspecification"><h3>再思考：模拟与模型设定偏误</h3><p>在这项练习中，我们从一个生成过程模拟数据，再用结构完全正确地反映该过程的模型分析数据。但现实世界里从没有这么幸运；我们总被迫用存在设定偏误的模型分析数据，也就是模型不同于真实的数据生成过程。不过，模拟可以探索模型设定偏误：先从一个过程模拟数据，再观察若干都不与真实生成过程完全一致的模型表现如何。还要始终记住，Bayesian 推断并不依赖 likelihood 等数据生成假设为真。非 Bayesian 方法的推断可能依赖抽样分布，Bayesian 模型却并非如此；在 Bayesian 模型中，likelihood 是数据的先验，而对参数的推断可能对其细节惊人地不敏感。</p></aside>
+    <aside class="rethinking-box" id="rethinking-14-simulation-misspecification"><h3>再思考：模拟与模型设定偏误</h3><p>在这项练习中，我们从一个生成过程模拟数据，再用结构完全正确地反映该过程的模型分析数据。但现实世界里从没有这么幸运；我们总得用存在设定偏误的模型分析数据，也就是说，模型不可能等同于真实的数据生成过程。不过，模拟仍可用来探索模型设定偏误：先从一个过程模拟数据，再观察几个都与真实生成过程不完全一致的模型表现如何。还要始终记住，贝叶斯推断并不要求似然等数据生成假设必须为真。非贝叶斯方法的推断可能依赖抽样分布，贝叶斯模型却不这样依赖；在贝叶斯模型中，似然相当于对数据的先验分布，而参数推断有时对似然的具体形式并没有想象中那么敏感。</p></aside>
 
     <h3 id="sec-14-1-3">14.1.3 变化斜率模型</h3>
     <p>现在可以把过程倒着播放了。刚才从 20 家咖啡馆生成数据，而这些咖啡馆本身又来自一个统计总体；现在要通过模型，用数据反过来学习数据生成过程。</p>
@@ -168,7 +168,7 @@ plot( a1 , b1 , xlab="intercept" , ylab="slope" ,
 points( a2 , b2 , pch=1 )
 for ( i in 1:N_cafes ) lines( c(a1[i],a2[i]) , c(b1[i],b2[i]) )</code></pre></figure>
     <p>再叠加总体等高线：</p>
-    <figure class="code-listing" id="code-14-15"><figcaption>R 代码 14.15</figcaption><pre><code># 计算后验均值对应的二元 Gaussian
+    <figure class="code-listing" id="code-14-15"><figcaption>R 代码 14.15</figcaption><pre><code># 计算后验均值对应的二元高斯
 Mu_est &lt;- c( mean(post$a) , mean(post$b) )
 rho_est &lt;- mean( post$Rho[,1,2] )
 sa_est &lt;- mean( post$sigma_cafe[,1] )
@@ -203,7 +203,7 @@ abline( a=0 , b=1 , lty=2 )</code></pre></figure>
 
     <figure class="book-figure cafe-shrinkage-figure" id="fig-14-5"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的二维收缩双面板图"><img src="/media/chapter-14-cafe-shrinkage.svg" alt="左图在截距斜率尺度比较无汇聚点和部分汇聚点，右图在晨午等待时间尺度显示同一收缩"></div><p class="scroll-hint">图较宽，可横向滚动比较参数尺度与结果尺度上的二维收缩。</p><figcaption><strong>图 14.5：</strong>二维收缩。左：原始无汇聚截距和斜率（蓝色实心点）与部分汇聚后验均值（空心圆）比较；灰色等高线表示推断出的变化效应总体。右：结果尺度上的相同估计。</figcaption></figure>
 
-    <p>要加入右图的等高线，需要方差与协方差。可以使用公式——Gaussian 随机变量之间有一些简单关系；但为了让这节课更一般，这里改用模拟，让你看到怎样计算任何感兴趣的量：</p>
+    <p>要加入右图的等高线，需要方差与协方差。可以使用公式——高斯随机变量之间有一些简单关系；但为了让这节课更一般，这里改用模拟，让你看到怎样计算任何感兴趣的量：</p>
     <figure class="code-listing" id="code-14-17"><figcaption>R 代码 14.17</figcaption><pre><code># 用模拟得到结果尺度上的收缩分布
 v &lt;- mvrnorm( 1e4 , Mu_est , Sigma_est )
 v[,2] &lt;- v[,1] + v[,2] # 计算下午等待时间
@@ -222,7 +222,7 @@ for ( l in c(0.1,0.3,0.5,0.8,0.99) )
   <section id="sec-14-2"><h2>14.2 高级变化斜率</h2>
     <p>为了学习怎样构造含两个以上变化效应——变化截距加不止一条变化斜率——并同时含不止一种集群类型的模型，我们回到第 11 章介绍的黑猩猩实验数据。这里有两类集群：行动者与区组。原书第 429 页已经探索过含两类变化截距的交叉分类；还曾用两条不同斜率建模实验：一条表示亲社会选项（桌上有两块食物的一侧）的效应，另一条表示亲社会选项与另一只黑猩猩是否在场之间的交互作用。现在要同时建模两类集群，并让截距和两条斜率都成为变化效应。并非总需要整套机器，但有时确实需要；这是一个相对简单、足以把各部件铺开的例子。</p>
     <p>本例还会强调非中心化参数化对某些多层模型的重要性。任何一个多层模型都有若干不同写法，称为不同的“参数化”。在数学上，这些替代参数化彼此等价；但在 MCMC 引擎内部却不等价。请记住，怎样拟合模型也是模型的一部分。选择更好的参数化，是改善 MCMC 抽样的有力方法；对本节这样的复杂变化效应模型，非中心化参数化往往帮助很大。正文会隐藏技术细节，节末的“过度思考”框则会提供更多说明。</p>
-    <p>现在构造交叉分类变化斜率模型。为了在复杂模型中保持一点理智，我们会在公式中使用不止一个线性模型，把截距与每条斜率的子模型分隔开。likelihood 及其线性模型为：</p>
+    <p>现在构造交叉分类变化斜率模型。为了在复杂模型中保持一点理智，我们会在公式中使用不止一个线性模型，把截距与每条斜率的子模型分隔开。似然及其线性模型为：</p>
     <div class="equation-block wallis-equation" id="eq-14-advanced-varying-slopes-likelihood"><div><span class="math-line"><var>L</var><sub><var>i</var></sub> ∼ Binomial(1, <var>p</var><sub><var>i</var></sub>)</span></div><div><span class="math-line">logit(<var>p</var><sub><var>i</var></sub>) = <var>γ</var><sub>TID[<var>i</var>]</sub> + <var>α</var><sub>ACTOR[<var>i</var>],TID[<var>i</var>]</sub> + <var>β</var><sub>BLOCK[<var>i</var>],TID[<var>i</var>]</sub></span></div></div>
     <p><span class="math-inline">logit(<var>p</var><sub><var>i</var></sub>)</span> 的线性模型包含：每种处理的平均 log-odds <span class="math-inline"><var>γ</var><sub>TID[<var>i</var>]</sub></span>；每位行动者在每种处理下的效应 <span class="math-inline"><var>α</var><sub>ACTOR[<var>i</var>],TID[<var>i</var>]</sub></span>；以及每个区组在每种处理下的效应 <span class="math-inline"><var>β</var><sub>BLOCK[<var>i</var>],TID[<var>i</var>]</sub></span>。本质上，这是一个交互作用模型，允许每种处理的效应随行动者和区组变化。换句话说，平均处理效应能随区组改变，而每只黑猩猩跨区组也能对各处理作出不同响应。由此产生 <span class="math-inline">4 + 7 × 4 + 6 × 4 = 56</span> 个参数；这里确实非常需要汇聚。</p>
     <aside class="source-erratum" id="erratum-14-advanced-slopes-wording"><strong>原文说明：</strong>本段原文有 “and the each individual chimpanzee”，后文又有 “just let we had matrixes” 两处明显语病；译稿分别按“每只黑猩猩”和“就像先前的随机效应矩阵一样”的语意处理。</aside>
@@ -489,7 +489,7 @@ sigma 0.86 0.03  0.82  0.90  1823    1</code></pre></figure>
       <p><var>U</var> 也可以服从其他分布，但目前的生成模型就是如此。</p>
       <p>现在把这个生成模型翻译成统计模型。可以使用蛮力：直接把每个 <var>U</var><sub><var>i</var></sub> 当成缺失数据并插补；不过下一章才会介绍怎样做。况且，更高效的办法是对它们取平均，转而估计 <var>W</var> 与 <var>E</var> 之间的协方差。于是定义 <var>W</var> 与 <var>E</var> 来自共同的多元正态分布：</p>
       <div class="equation-block wallis-equation" id="eq-14-iv-joint-wage-education"><div class="annotated-equation-line"><span class="equation-expression"><span class="matrix-2x1"><span><var>W</var><sub><var>i</var></sub></span><span><var>E</var><sub><var>i</var></sub></span></span> ∼ MVNormal(<span class="matrix-2x1"><span><var>μ</var><sub><var>w</var>,<var>i</var></sub></span><span><var>μ</var><sub><var>e</var>,<var>i</var></sub></span></span>, <strong>S</strong>)</span><span class="equation-label">[工资与教育的联合模型]</span></div><div><var>μ</var><sub><var>w</var>,<var>i</var></sub> = <var>α</var><sub><var>w</var></sub> + <var>β</var><sub><var>ew</var></sub><var>E</var><sub><var>i</var></sub></div><div><var>μ</var><sub><var>e</var>,<var>i</var></sub> = <var>α</var><sub><var>e</var></sub> + <var>β</var><sub><var>qe</var></sub><var>Q</var><sub><var>i</var></sub></div></div>
-      <p>第一行的矩阵 <strong>S</strong> 是工资与教育之间的误差协方差。它不是这两个变量的描述性协方差，而是 Gaussian 回归中常用 <var>σ</var> 的矩阵版本。上面是一个<strong>多元线性模型</strong>：含多个同步结果的回归，所有结果都由一个联合误差结构建模。每个变量都有自己的线性模型，从而得到两个 <var>μ</var> 定义。看到教育 <var>E</var> 既是结果，又出现在 <var>W</var> 的均值中充当预测变量，可能会让人不安；但这种统计关系是 DAG 的推论，并没有什么违规之处。它只表示 <var>E</var> 可能影响 <var>W</var>，同时成对的 <var>W</var>、<var>E</var> 值还可能有某种残差相关。若相信这张 DAG，该相关就来自未观测混杂 <var>U</var>。</p>
+      <p>第一行的矩阵 <strong>S</strong> 是工资与教育之间的误差协方差。它不是这两个变量的描述性协方差，而是高斯回归中常用 <var>σ</var> 的矩阵版本。上面是一个<strong>多元线性模型</strong>：含多个同步结果的回归，所有结果都由一个联合误差结构建模。每个变量都有自己的线性模型，从而得到两个 <var>μ</var> 定义。看到教育 <var>E</var> 既是结果，又出现在 <var>W</var> 的均值中充当预测变量，可能会让人不安；但这种统计关系是 DAG 的推论，并没有什么违规之处。它只表示 <var>E</var> 可能影响 <var>W</var>，同时成对的 <var>W</var>、<var>E</var> 值还可能有某种残差相关。若相信这张 DAG，该相关就来自未观测混杂 <var>U</var>。</p>
       <p>完整模型当然还需要先验。变量已经标准化，因此可使用标准化线性回归的默认先验。<code>ulam</code> 代码如下：</p>
       <figure class="code-listing" id="code-14-26"><figcaption>R 代码 14.26</figcaption><pre><code>m14.6 &lt;- ulam(
     alist(
@@ -545,7 +545,7 @@ instrumentalVariables( dagIV , exposure="E" , outcome="W" )</code></pre><pre cla
       <p>寻找自然实验可能有很多方式，并非全都严格属于工具变量；但只要能相信其假设，它们就能提供理论上正确的因果推断设计。下面再看两种。</p>
       <p>除了第 6 章见过的后门准则，还有一种<strong>前门准则</strong>，适用于下面这样的 DAG：</p>
       <figure class="dag-figure" id="dag-14-front-door"><svg viewBox="0 0 900 340" role="img" aria-labelledby="dag-14-front-door-title dag-14-front-door-desc"><title id="dag-14-front-door-title">前门准则 DAG</title><desc id="dag-14-front-door-desc">X 经中介 Z 影响 Y，未观测混杂 U 同时指向 X 与 Y。</desc><defs><marker id="dag14-front-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#3f4752"/></marker></defs><g stroke="#3f4752" stroke-width="4" marker-end="url(#dag14-front-arrow)"><line x1="450" y1="90" x2="260" y2="245"/><line x1="450" y1="90" x2="640" y2="245"/><line x1="300" y1="275" x2="410" y2="275"/><line x1="490" y1="275" x2="600" y2="275"/></g><g fill="#f0f1fa" stroke="#263f86" stroke-width="3"><circle cx="450" cy="60" r="38" fill="#fff" stroke-dasharray="7 5"/><circle cx="260" cy="275" r="38"/><circle cx="450" cy="275" r="38"/><circle cx="640" cy="275" r="38"/></g><g text-anchor="middle" font-size="30" font-weight="700" fill="#263f86"><text x="450" y="71">U</text><text x="260" y="286">X</text><text x="450" y="286">Z</text><text x="640" y="286">Y</text></g></svg><figcaption><var>X</var> 经完美中介 <var>Z</var> 影响 <var>Y</var>，而未观测 <var>U</var> 混杂 <var>X</var> 与 <var>Y</var>。</figcaption></figure>
-      <p>照例，我们关心 <var>X</var> 对 <var>Y</var> 的因果影响，也照例存在未观测混杂 <var>U</var>。事实证明，若能找到一个完美中介 <var>Z</var>，便可能估计 <var>X</var> 对 <var>Y</var> 的因果效应。认为原因会由其他原因中介并不疯狂——一切都有机制，图中的 <var>Z</var> 就是这种机制。若拥有可信的 <var>Z</var>，就可把生成模型表达成统计模型，像前面的工具变量例子一样估计因果效应。在线性 Gaussian 等特殊情形中有现成公式；但我们不需要公式，只需按生成过程思考并使用 Bayes。</p>
+      <p>照例，我们关心 <var>X</var> 对 <var>Y</var> 的因果影响，也照例存在未观测混杂 <var>U</var>。事实证明，若能找到一个完美中介 <var>Z</var>，便可能估计 <var>X</var> 对 <var>Y</var> 的因果效应。认为原因会由其他原因中介并不疯狂——一切都有机制，图中的 <var>Z</var> 就是这种机制。若拥有可信的 <var>Z</var>，就可把生成模型表达成统计模型，像前面的工具变量例子一样估计因果效应。在线性高斯等特殊情形中有现成公式；但我们不需要公式，只需按生成过程思考并使用贝叶斯。</p>
       <p>前门准则用得不多，可能因为它相对较新，也可能只是可信的 <var>Z</var> 很少。一个例子是大学期间形成的社会关系对美国参议院投票行为的影响。<sup id="note-201-ref"><a href="#note-201">201</a></sup> 问题是：上过同一所大学的参议员是否因社会关系促进协调，而投票更相似。同校与同票之间的纯关联显然受到许多因素混杂；前门技巧是找到社会关系必须借助的某种机制。在参议院，这种机制可以是谁坐在谁旁边：更容易与邻座交谈并协调，而资历较浅的议员席位往往近乎随机分配，因此座位不太可能与大学经历共享同一批混杂因素。若几位 UCLA 校友中，坐得近的人彼此投票比坐在别处的 UCLA 校友更相似，这就可能构成社会关系经议场邻近性中介而影响投票的因果证据。</p>
       <p>更常见的设计是<strong>回归不连续</strong>（RDD），本质上是特殊的工具变量设计。假设要估计获得学术奖项对未来成功的影响。<sup id="note-202-ref"><a href="#note-202">202</a></sup> 能力等未观测因素同时影响奖项与后续成功，从而造成混杂；但若比较刚好低于获奖门槛与刚好高于门槛的人，他们在未观测因素上应更相似。对门槛附近的人而言，奖项仿佛随机施加——这就是回归不连续的核心。实践中，门槛上方和下方各拟合一条回归；因果效应估计就是刚好高于与刚好低于门槛者之间的平均差。虽然关心的是门槛附近差异，整个函数却会影响这个差，因此选择暴露与结果整体关系的函数时必须谨慎。<sup id="note-203-ref"><a href="#note-203">203</a></sup></p>
     </section>
@@ -623,7 +623,7 @@ r &lt;- sapply( 1:25 , function(i) post$a + post$gr[,i,2] )
 Eg_mu &lt;- apply( exp(g) , 2 , mean )
 Er_mu &lt;- apply( exp(r) , 2 , mean )</code></pre></figure>
     <p>查看 <code>str(g)</code>，会看到一个 4000 行（样本）× 25 列（住户）的矩阵，即每户给予率的后验分布；<code>r</code> 对接受率也一样。<code>Eg_mu</code> 与 <code>Er_mu</code> 保存结果尺度上的均值，所以先作了指数变换。</p>
-    <p>每个点的两个方向都有不确定性。直接绘制 <code>g</code> 与 <code>r</code> 的列也可以，例如 <code>plot(exp(g[,1]),exp(r[,1]))</code> 会显示第 1 户给予/接受率的后验分布；但图会很乱。在线性模型的潜在尺度上，每户 <var>g</var> 与 <var>r</var> 的二元分布近似 Gaussian，可以用椭圆描述，再把椭圆投影到结果尺度，得到干净的不确定性等高线：</p>
+    <p>每个点在两个方向上都有不确定性。也可以直接绘制 <code>g</code> 与 <code>r</code> 的列；例如，<code>plot(exp(g[,1]),exp(r[,1]))</code> 会显示第 1 户给予率和接受率的联合后验分布，但图会很乱。在线性模型的潜在尺度上，每户 <var>g</var> 与 <var>r</var> 近似服从二元高斯分布，因此可以先用椭圆描述，再把椭圆投影到结果尺度，得到清晰的不确定性等高线：</p>
     <figure class="code-listing" id="code-14-34"><figcaption>R 代码 14.34</figcaption><pre><code>plot( NULL , xlim=c(0,8.6) , ylim=c(0,8.6) , xlab="generalized giving" ,
     ylab="generalized receiving" , lwd=1.5 )
 abline(a=0,b=1,lty=2)
@@ -658,15 +658,15 @@ plot( dy1 , dy2 )</code></pre></figure>
     <aside class="rethinking-box" id="rethinking-14-everybody-knows-name"><h3>再思考：人人都知道你的名字</h3><p>赠礼例子是一种社会网络模型。由此看来，当前模型缺少的一个重要特征是社会关系的传递性：若住户 A 与 B 是朋友，而 C 与 B 也是朋友，那么 A 与 C 更可能成为朋友。这不是魔法，只是未观测因素制造相关关系。例如常去同一家酒吧的人往往彼此认识；对推断社会关系成因而言，酒吧就是未测量混杂。能估计并预期传递性的模型会更好，这可用<strong>随机区块模型</strong>实现。不过拟合此类模型需要下一章的一些技术。</p></aside>
   </section>
 
-  <section id="sec-14-5"><h2>14.5 连续类别与 Gaussian 过程</h2>
+  <section id="sec-14-5"><h2>14.5 连续类别与高斯过程</h2>
     <p>到目前为止，所有变化效应——无论截距还是斜率——都定义在离散、无序的类别上。例如咖啡馆是独特地点，不存在咖啡馆 1 排在咖啡馆 2 前面的含义；“1”和“2”只是独特事物的标签。蝌蚪池塘、大学院系与单只黑猩猩也一样。为每个集群估计独特参数，可以量化导致集群间变异与集群内观测协变的一些独特特征；跨集群汇聚既提高准确度，也同时描绘变异。</p>
     <p>但年龄、收入或身高这类连续变异维度呢？同龄人共享某些暴露：听过相同音乐、听说过相同政治人物、经历过相同天气事件。年龄相近的人也共享其中一部分，但程度不如完全同龄者。两个人在年龄、收入、身高或其他背景相似性维度上越不相似，协变就越弱。为所有同龄者估计一个独特变化截距、却忽略年龄相近者应有更相似截距，并不合理；而且样本中很可能每个人的年龄都不同，能利用的只有连续相似度差异。</p>
-    <p>幸运的是，变化效应方法可以推广到这种连续类别。这样既能为任意年龄估计独特截距（或斜率），又把年龄视为连续维度，使相近年龄拥有更相似的截距（或斜率）。一般方法称为 <strong>Gaussian 过程回归</strong>。<sup id="note-205-ref"><a href="#note-205">205</a></sup> 遗憾的是，这个名字完全没有说明它用来做什么、怎样工作。</p>
-    <p>下面通过一个基本例子说明 Gaussian 过程回归能做什么、又怎样工作。一般目的，是定义一个案例彼此有差异的维度，例如个体年龄或地理位置；然后测量每对案例之间的距离。模型要做的，就是估计距离不同的案例对之间协方差的函数。这个协方差函数把变化效应方法推广到连续类别。</p>
+    <p>幸运的是，变化效应方法可以推广到这种连续类别。这样既能为任意年龄估计独特截距（或斜率），又把年龄视为连续维度，使相近年龄拥有更相似的截距（或斜率）。一般方法称为 <strong>高斯过程回归</strong>。<sup id="note-205-ref"><a href="#note-205">205</a></sup> 遗憾的是，这个名字完全没有说明它用来做什么、怎样工作。</p>
+    <p>下面通过一个基本例子说明高斯过程回归能做什么、又怎样工作。一般目的，是定义一个案例彼此有差异的维度，例如个体年龄或地理位置；然后测量每对案例之间的距离。模型要做的，就是估计距离不同的案例对之间协方差的函数。这个协方差函数把变化效应方法推广到连续类别。</p>
 
     <section id="sec-14-5-1"><h3>14.5.1 示例：大洋洲工具的空间自相关</h3>
       <p>第 11 章研究历史上大洋洲社会的工具组合复杂度时（原书 PDF 第 354 页），我们用一个粗糙的二元接触预测变量代理社会间可能存在的交换。但这个变量很不令人满意。第一，它没有说明各社会究竟与哪些社会有接触；若所有邻居都是小岛，即使接触率很高，也未必会增加多少工具复杂度。第二，工具确实会在社会间交换——这一点已知属实——那么即使以所有预测变量为条件，各社会的工具总数也并非相互独立。相反，地理上接近的邻居会因交换而有更相似的工具数。第三，相近岛屿可能共享未测量的地理特征，例如石料或贝壳来源，由此发展出相似的技术产业。因此，空间可能通过多条路径发挥作用。</p>
-      <p>这正是使用 Gaussian 过程回归的经典场景。先定义社会之间的距离矩阵，再估计工具数的相似程度如何依赖地理距离。普通预测变量也可同时放进模型，使社会随距离产生的协变既控制其他技术影响因素，也受到这些因素的控制。</p>
+      <p>这正是使用高斯过程回归的经典场景。先定义社会之间的距离矩阵，再估计工具数的相似程度如何依赖地理距离。普通预测变量也可同时放进模型，使社会随距离产生的协变既控制其他技术影响因素，也受到这些因素的控制。</p>
       <p>先载入数据并查看地理距离矩阵。作者已经查好每对社会间按直线航行的距离；单位是千公里，矩阵随 <code>rethinking</code> 包提供：</p>
       <figure class="code-listing" id="code-14-37"><figcaption>R 代码 14.37</figcaption><pre><code># 载入距离矩阵
 library(rethinking)
@@ -694,9 +694,9 @@ Hawaii    5.7 5.3 5.4 7.2 4.9 6.7 5.8 6.7 5.0 0.0</code></pre></figure>
       <div class="equation-block wallis-equation" id="eq-14-oceania-gp-model"><div><var>T</var><sub><var>i</var></sub> ∼ Poisson(<var>λ</var><sub><var>i</var></sub>)</div><div><var>λ</var><sub><var>i</var></sub> = exp(<var>k</var><sub>society[<var>i</var>]</sub>) <var>α</var><var>P</var><sub><var>i</var></sub><sup><var>β</var></sup> / <var>γ</var></div></div>
       <p>其中 <var>k</var><sub>society[<var>i</var>]</sub> 是变化截距。与典型变化截距不同，它根据地理距离而不是离散类别成员关系来估计。</p>
       <aside class="source-erratum" id="erratum-14-gp-wording"><strong>原文说明：</strong>PDF 第 499 页依次出现 “geographical similarly”、“Poisson probably”、“tools::” 与 “means the inside” 四处明显排印语病；译稿均按上下文语意处理。</aside>
-      <p>Gaussian 过程的核心，是这些截距的多元先验：</p>
+      <p>高斯过程的核心，是这些截距的多元先验：</p>
       <div class="equation-block wallis-equation" id="eq-14-gp-intercept-prior"><div class="annotated-equation-line"><span class="equation-expression"><span class="matrix-vector"><span><var>k</var><sub>1</sub></span><span><var>k</var><sub>2</sub></span><span><var>k</var><sub>3</sub></span><span>⋮</span><span><var>k</var><sub>10</sub></span></span> ∼ MVNormal(<span class="matrix-vector"><span>0</span><span>0</span><span>0</span><span>⋮</span><span>0</span></span>, <strong>K</strong>)</span><span class="equation-label">[截距先验]</span></div><div class="annotated-equation-line"><span class="equation-expression"><var>K</var><sub><var>ij</var></sub> = <var>η</var><sup>2</sup> exp(−<var>ρ</var><sup>2</sup><var>D</var><sub><var>ij</var></sub><sup>2</sup>) + <var>δ</var><sub><var>ij</var></sub><var>σ</var><sup>2</sup></span><span class="equation-label">[定义协方差矩阵]</span></div></div>
-      <p>第一行是截距的十维 Gaussian 先验；之所以有十维，是因为距离矩阵中有十个社会。均值向量全为零，所以平均社会在模型内会把 <var>λ</var> 乘以 exp(0) = 1，不改变期望。负的 <var>k</var> 值会减小 <var>λ</var>，正值则会增大它。</p>
+      <p>第一行是截距的十维高斯先验；之所以有十维，是因为距离矩阵中有十个社会。均值向量全为零，所以平均社会在模型内会把 <var>λ</var> 乘以 exp(0) = 1，不改变期望。负的 <var>k</var> 值会减小 <var>λ</var>，正值则会增大它。</p>
       <p>这些截距的协方差矩阵名为 <strong>K</strong>，任意社会 <var>i</var> 与 <var>j</var> 之间的协方差是 <var>K</var><sub><var>ij</var></sub>，由上式第二行定义。公式用 <var>η</var>、<var>ρ</var> 与 <var>σ</var> 三个参数，描述社会间协方差怎样随距离改变。它看起来可能很陌生，下面逐块拆解。</p>
       <p>决定 <strong>K</strong> 之协方差模型形状的部分是 exp(−<var>ρ</var><sup>2</sup><var>D</var><sub><var>ij</var></sub><sup>2</sup>)。<var>D</var><sub><var>ij</var></sub> 是第 <var>i</var> 与第 <var>j</var> 个社会之间的距离，所以这个函数表示两社会的协方差随距离平方呈指数下降；<var>ρ</var> 决定下降速率。它越大，协方差随距离平方下降得越快。</p>
       <p>为什么要把距离平方？并非必须，这只是一个模型。平方距离是最常见的假设，一方面因为容易用数据拟合，另一方面因为它常有一个现实属性：距离越大，协方差可以下降得越快。把它与线性距离下降方案 exp(−<var>ρ</var><sup>2</sup><var>D</var><sub><var>ij</var></sub>) 画在一起就很直观。示例令 <var>ρ</var><sup>2</sup> = 1：</p>
@@ -707,13 +707,13 @@ curve( exp(-1*x) , from=0 , to=4 , lty=2 ,
 # 平方距离
 curve( exp(-1*x^2) , add=TRUE )</code></pre></figure>
       <figure class="book-figure gp-distance-figure" id="fig-14-10"><div class="figure-scroll" tabindex="0" aria-label="线性距离与平方距离协方差函数比较图"><img src="/media/chapter-14-gp-distance.svg" alt="虚线指数衰减，实线起初较慢随后更快衰减至零"></div><figcaption><strong>图 14.10：</strong>距离与协方差 <var>K</var><sub><var>ij</var></sub> 之间的函数形状。横轴是距离，纵轴是任意两个社会 <var>i</var> 与 <var>j</var> 相对于最大值的相关。虚线为线性距离函数，实线为平方距离函数。</figcaption></figure>
-      <p>图 14.10 的纵轴只是整个协方差函数的一部分，可理解为两社会最大相关的比例。虚线的线性距离函数给出精确的指数形状；实线的平方距离函数给出半 Gaussian 下降：起初比指数下降慢，随后迅速加速，最终下降得比指数更快。</p>
+      <p>图 14.10 的纵轴只展示了整个协方差函数的一部分，可以理解为两个社会最大相关程度的比例。虚线所示的线性距离函数呈严格的指数衰减；实线所示的平方距离函数则呈半高斯形衰减：起初比指数函数下降得慢，随后迅速加速，最终下降得更快。</p>
       <p><var>K</var><sub><var>ij</var></sub> 的最后两部分更简单。<var>η</var><sup>2</sup> 是任意两个社会 <var>i</var> 与 <var>j</var> 之间的最大协方差。末尾的 <var>δ</var><sub><var>ij</var></sub><var>σ</var><sup>2</sup> 在 <var>i</var> = <var>j</var> 时提供超出 <var>η</var><sup>2</sup> 的额外协方差，因为 <var>δ</var><sub><var>ij</var></sub> 在 <var>i</var> = <var>j</var> 时等于 1，其他时候为 0。在大洋洲社会数据里，每个社会只有一个观测，这一项不起作用；若每个社会有多个观测，<var>σ</var> 就描述同一社会内这些观测怎样协变。</p>
       <p>模型会计算 <var>ρ</var>、<var>η</var> 与 <var>σ</var> 的后验分布，也需要为它们指定先验。为便于计算，我们会直接给各参数的平方定义先验，并在同一尺度上估计。这个模型不需要 <var>σ</var>，所以只把它固定在一个无关紧要的常数上。</p>
       <p>现在给出完整模型，并在底部加入各参数的固定先验：</p>
       <div class="equation-block wallis-equation" id="eq-14-gp-full-model"><div><var>T</var><sub><var>i</var></sub> ∼ Poisson(<var>λ</var><sub><var>i</var></sub>)</div><div><var>λ</var><sub><var>i</var></sub> = exp(<var>k</var><sub>society[<var>i</var>]</sub>) <var>α</var><var>P</var><sub><var>i</var></sub><sup><var>β</var></sup> / <var>γ</var></div><div><strong><var>k</var></strong> ∼ MVNormal((0, …, 0)<sup>T</sup>, <strong>K</strong>)</div><div><var>K</var><sub><var>ij</var></sub> = <var>η</var><sup>2</sup> exp(−<var>ρ</var><sup>2</sup><var>D</var><sub><var>ij</var></sub><sup>2</sup>) + <var>δ</var><sub><var>ij</var></sub>(0.01)</div><div><var>α</var> ∼ Exponential(1)</div><div><var>β</var> ∼ Exponential(1)</div><div><var>η</var><sup>2</sup> ∼ Exponential(2)</div><div><var>ρ</var><sup>2</sup> ∼ Exponential(0.5)</div></div>
       <p><var>ρ</var><sup>2</sup> 与 <var>η</var><sup>2</sup> 必须为正，所以给它们放置指数先验。若具备一些太平洋航海知识，至少应能为 <var>ρ</var><sup>2</sup> 指定更聪明、更有信息的先验。</p>
-      <p>终于可以拟合模型了。若要告诉 <code>ulam</code> 使用平方距离 Gaussian 过程先验，应选用 <code>GPL2</code>；其余代码应该都很熟悉：</p>
+      <p>终于可以拟合模型了。若要告诉 <code>ulam</code> 使用平方距离高斯过程先验，应选用 <code>GPL2</code>；其余代码应该都很熟悉：</p>
       <figure class="code-listing" id="code-14-39"><figcaption>R 代码 14.39</figcaption><pre><code>data(Kline2) # 载入普通数据，现在含坐标
 d &lt;- Kline2
 d$society &lt;- 1:10 # 为观测建立索引
@@ -751,9 +751,9 @@ b       0.28 0.08  0.15 0.41  1107 1.00
 a       1.41 1.08  0.24 3.39  1811 1.00
 etasq   0.20 0.20  0.03 0.56   863 1.00
 rhosq   1.31 1.60  0.08 4.41  1931 1.00</code></pre></figure>
-      <p>首先，log 人口的系数 <code>b</code> 与加入 Gaussian 过程之前很接近，说明很难把工具数与人口之间的全部关联都解释成地理接触的副作用。其次，<code>k</code> 参数是每个社会的 Gaussian 过程变化截距；它们和 <code>a</code>、<code>b</code> 一样位于 log 计数尺度，直接解释并不容易。</p>
+      <p>首先，log 人口的系数 <code>b</code> 与加入高斯过程之前很接近，说明很难把工具数与人口之间的全部关联都解释成地理接触的副作用。其次，<code>k</code> 参数是每个社会的高斯过程变化截距；它们和 <code>a</code>、<code>b</code> 一样位于 log 计数尺度，直接解释并不容易。</p>
       <p>为了理解描述协方差如何随距离变化的 <code>rhosq</code> 与 <code>etasq</code>，需要把它们隐含的函数画出来。事实上，这两个参数的联合后验定义的是一整个协方差函数的后验分布。画出许多函数样本，再叠加后验中心曲线，就能感受这个“函数的分布”。由于 <code>rhosq</code> 与 <code>etasq</code> 的密度偏斜，单一均值或中位数都不足以概括它；真正重要的始终是完整分布，分布内没有哪个点天然特殊。</p>
-      <aside class="source-erratum" id="erratum-14-gp-sample-count"><strong>原文说明：</strong>PDF 第 502–503 页把模型中的人口系数 <code>b</code> 写成 <code>bp</code>，又把 Gaussian 过程变化截距 <code>k</code> 写成 <code>g</code>；正文、代码注释、循环与图注还分别写成抽取 100、60、50、50 条曲线，并把粗线称为“后验中位数”，但实际代码与图注计算的是后验均值。译稿按模型参数名以及代码和图注，统一呈现 <code>b</code>、<code>k</code>、50 条曲线与后验均值。</aside>
+      <aside class="source-erratum" id="erratum-14-gp-sample-count"><strong>原文说明：</strong>PDF 第 502–503 页把模型中的人口系数 <code>b</code> 写成 <code>bp</code>，又把高斯过程变化截距 <code>k</code> 写成 <code>g</code>；正文、代码注释、循环与图注还分别写成抽取 100、60、50、50 条曲线，并把粗线称为“后验中位数”，但实际代码与图注计算的是后验均值。译稿按模型参数名以及代码和图注，统一呈现 <code>b</code>、<code>k</code>、50 条曲线与后验均值。</aside>
       <figure class="code-listing" id="code-14-41"><figcaption>R 代码 14.41</figcaption><pre><code>post &lt;- extract.samples(m14.8)
 
 # 绘制后验均值协方差函数
@@ -771,7 +771,7 @@ for ( i in 1:50 )
     curve( post$etasq[i]*exp(-post$rhosq[i]*x^2) , add=TRUE ,
         col=col.alpha("black",0.3) )</code></pre></figure>
       <p>每组 <var>ρ</var><sup>2</sup> 与 <var>η</var><sup>2</sup> 取值都会产生一种协方差—距离关系。图 14.11 右侧的粗线是后验均值函数，表示相容函数的一个中心；其他曲线则显示空间协方差有很大不确定性。峰值约为后验中心两倍（约 0.2）的曲线并不少见，峰值只有中心一半的曲线也很常见。空间效应有多强仍很不确定，但多数后验曲线在 4000 公里之前就衰减到零协方差。</p>
-      <figure class="book-figure gp-functions-figure" id="fig-14-11"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的空间协方差函数先验与后验双面板图"><img src="/media/chapter-14-gp-functions.svg" alt="左图先验曲线分散，右图后验曲线较低且多数在四千公里内衰减至零"></div><p class="scroll-hint">图较宽，可横向滚动比较 Gaussian 过程先验与后验。</p><figcaption><strong>图 14.11：</strong>左：空间协方差函数的先验分布，每条曲线是从 <var>ρ</var><sup>2</sup> 与 <var>η</var><sup>2</sup> 的联合先验抽取的一组样本。右：空间协方差的后验分布；粗线是在每个距离上的后验均值协方差，细线是从 <var>ρ</var><sup>2</sup> 与 <var>η</var><sup>2</sup> 联合后验抽取的 50 条函数。</figcaption></figure>
+      <figure class="book-figure gp-functions-figure" id="fig-14-11"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的空间协方差函数先验与后验双面板图"><img src="/media/chapter-14-gp-functions.svg" alt="左图先验曲线分散，右图后验曲线较低且多数在四千公里内衰减至零"></div><p class="scroll-hint">图较宽，可横向滚动比较高斯过程先验与后验。</p><figcaption><strong>图 14.11：</strong>左：空间协方差函数的先验分布，每条曲线是从 <var>ρ</var><sup>2</sup> 与 <var>η</var><sup>2</sup> 的联合先验抽取的一组样本。右：空间协方差的后验分布；粗线是在每个距离上的后验均值协方差，细线是从 <var>ρ</var><sup>2</sup> 与 <var>η</var><sup>2</sup> 联合后验抽取的 50 条函数。</figcaption></figure>
       <p>这些协方差与 Poisson GLM 中的其他量一样位于 log 计数尺度，很难直接解释。因此改看后验中位数隐含的社会间相关。第一步，把参数重新送入协方差矩阵 <strong>K</strong> 的函数：</p>
       <figure class="code-listing" id="code-14-42"><figcaption>R 代码 14.42</figcaption><pre><code># 计算社会间的后验中位数协方差
 K &lt;- matrix(0,nrow=10,ncol=10)
@@ -844,14 +844,14 @@ for( i in 1:10 )
       <aside class="source-erratum" id="erratum-14-gp-map-wording"><strong>原文说明：</strong>PDF 第 504 页把 “were estimated” 误写为 “were estimating”，并称三个小型社会的成对相关都高于 0.8，但矩阵实际为 0.79、0.70 与 0.87。代码 14.45 还引用模型中不存在的 <code>post$bp</code>，并遗漏 <code>g</code>；译稿按代码 14.39 的 <code>a*P^b/g</code> 关系改成可执行表达式。</aside>
       <figure class="book-figure oceania-correlations-figure" id="fig-14-12"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的大洋洲社会空间相关与工具人口关系双面板图"><img src="/media/chapter-14-oceania-correlations.svg" alt="左图按地理空间连接十个大洋洲社会，右图把同一相关连线叠加到工具总数与人口对数关系上"></div><p class="scroll-hint">图较宽，可横向滚动比较地理空间与工具—人口空间中的后验相关。</p><figcaption><strong>图 14.12：</strong>左：地理空间中社会之间的后验相关。右：相同的后验相关，改画在工具总数与人口对数的关系上。</figcaption></figure>
       <p>图 14.12 右侧更容易看出：Malekula、Tikopia 与 Santa Cruz 之间的相关，描述的是它们的工具数都低于各自人口对应的期望。三个社会既都低于期望，又彼此接近，这与空间协方差相容；后验相关只是描述了数据的这一特征。Manus 与 Trobriand 同样在地理上接近、后验相关显著，而且工具数都少于其人口规模对应的预期。Tonga 的工具数高于人口对应的预期；它接近 Fiji，抵消了 Fiji 的较小邻居——Malekula、Tikopia 与 Santa Cruz——对 Fiji 施加的部分牵引。因此模型似乎认为：若不是 Tonga，Fiji 的工具会更少。</p>
-      <p>当然，模型用地理距离描述的相关，可能源于地理上相近社会之间其他未测量的共同点。例如 Manus 与 Trobriand 在地质和生态上与 Fiji、Tonga 很不相同，也许工具石料等资源的可得性解释了部分相关。Gaussian 过程回归是一种宏大而强力的描述模型，因此其输出总是与许多不同的因果解释相容。</p>
-      <aside class="rethinking-box" id="rethinking-14-dispersion-other-names"><h3>再思考：换个名字的离散程度</h3><p>本节模型使用 Poisson likelihood，它常对 Hawaii 这种离群数据敏感。也可改用第 12 章介绍的 gamma-Poisson likelihood。但请注意，本例的变化效应已经在 Poisson 均值周围引入额外离散。给每个 Poisson 观测加入 Gaussian 噪声，是处理 Poisson 模型过度离散的另一种传统方法。不过仍值得亲自用 gamma-Poisson 拟合并比较。</p></aside>
-      <aside class="overthinking-box" id="overthinking-14-noncentered-islands"><h3>过度思考：非中心化岛屿</h3><p>构造非中心化 Gaussian 过程，可沿用同一个通用技巧：把协方差矩阵转换成 Cholesky 因子，再将该因子乘以各变化效应的 z 分数。协方差矩阵的定义不变，只会多出几个中间步骤。下面是大洋洲社会 Gaussian 过程模型的非中心化形式：</p><figure class="code-listing" id="code-14-46"><figcaption>R 代码 14.46</figcaption><pre><code>m14.8nc &lt;- ulam(
+      <p>当然，模型用地理距离描述的相关，可能源于地理上相近社会之间其他未测量的共同点。例如 Manus 与 Trobriand 在地质和生态上与 Fiji、Tonga 很不相同，也许工具石料等资源的可得性解释了部分相关。高斯过程回归是一种宏大而强力的描述模型，因此其输出总是与许多不同的因果解释相容。</p>
+      <aside class="rethinking-box" id="rethinking-14-dispersion-other-names"><h3>再思考：换个名字的离散程度</h3><p>本节模型使用 Poisson 似然，它常对 Hawaii 这种离群数据敏感。也可改用第 12 章介绍的 gamma-Poisson 似然。但请注意，本例的变化效应已经在 Poisson 均值周围引入额外离散。给每个 Poisson 观测加入高斯噪声，是处理 Poisson 模型过度离散的另一种传统方法。不过仍值得亲自用 gamma-Poisson 拟合并比较。</p></aside>
+      <aside class="overthinking-box" id="overthinking-14-noncentered-islands"><h3>过度思考：非中心化岛屿</h3><p>构造非中心化高斯过程，可沿用同一个通用技巧：把协方差矩阵转换成 Cholesky 因子，再将该因子乘以各变化效应的 z 分数。协方差矩阵的定义不变，只会多出几个中间步骤。下面是大洋洲社会高斯过程模型的非中心化形式：</p><figure class="code-listing" id="code-14-46"><figcaption>R 代码 14.46</figcaption><pre><code>m14.8nc &lt;- ulam(
     alist(
         T ~ dpois(lambda),
         lambda &lt;- (a*P^b/g)*exp(k[society]),
 
-        # 非中心化 Gaussian 过程先验
+        # 非中心化高斯过程先验
         transpars&gt; vector[10]: k &lt;&lt;- L_SIGMA * z,
         vector[10]: z ~ normal( 0 , 1 ),
         transpars&gt; matrix[10,10]: L_SIGMA &lt;&lt;- cholesky_decompose( SIGMA ),
@@ -920,7 +920,7 @@ bG        0.12 0.02  0.09  0.16  1572    1
 bM        0.89 0.02  0.86  0.93  1481    1
 sigma_sq  0.05 0.01  0.04  0.06  2040    1</code></pre></figure>
       <p>脑大小与群体大小之间似乎存在可靠的正关联，体重与脑大小之间也有很强的关联。不过，这些数据充斥着混杂，现在还没有理由把任何关联解释成因果关系。</p>
-      <p>下面进行两种系统发育回归。两者所做的事都很简单：用编码了系统发育信息的矩阵替换上面的协方差矩阵 <strong>S</strong>。第一种是最古老也最保守的方法之一：用布朗运动解释系统发育，并由此导出一种非常特定的协方差矩阵。布朗运动就是 Gaussian 随机游走。若物种分化后，各自性状相对于彼此随机漂移，那么一对物种之间的协方差最终会与它们的系统发育枝长距离呈线性关系——距离越远，协方差按比例越小。当然，我们关心的性状显然不是中性演化的，而且在树的不同部分也以不同速率演化；遗憾的是，接下来这套方法仍是最常见的系统发育控制形式。</p>
+      <p>下面进行两种系统发育回归。两者所做的事都很简单：用编码了系统发育信息的矩阵替换上面的协方差矩阵 <strong>S</strong>。第一种是最古老也最保守的方法之一：用布朗运动解释系统发育，并由此导出一种非常特定的协方差矩阵。布朗运动就是高斯随机游走。若物种分化后，各自性状相对于彼此随机漂移，那么一对物种之间的协方差最终会与它们的系统发育枝长距离呈线性关系——距离越远，协方差按比例越小。当然，我们关心的性状显然不是中性演化的，而且在树的不同部分也以不同速率演化；遗憾的是，接下来这套方法仍是最常见的系统发育控制形式。</p>
       <aside class="source-erratum" id="erratum-14-phylogeny-brownian-wording"><strong>原文说明：</strong>PDF 第 511 页的 “formethodm” 是排版粘连词，下一段 “The is otherwise the same” 又漏掉主语；第 512 页还有 “since it a much rougher function” 与 “If the goal is estimate” 两处漏字。译稿均依上下文补足，不改变论点。</aside>
       <p>先计算布朗运动模型隐含的协方差矩阵和距离矩阵，再看看二者怎样关联。<code>ape</code> 包已经提供了所需函数：</p>
       <figure class="code-listing" id="code-14-50"><figcaption>R 代码 14.50</figcaption><pre><code>library(ape)
@@ -952,11 +952,11 @@ bG        -0.01 0.02 -0.04  0.02  2691    1
 bM         0.70 0.04  0.64  0.76  1935    1
 sigma_sq   0.16 0.02  0.13  0.19  2251    1</code></pre></figure>
       <p>这个模型把群体大小效应彻底抹掉了：后验均值几乎为零，零点两侧都有大量概率质量。相较前一个模型，结果变化很大；这暗示脑大小在树上存在大量聚集，而同样聚集的群体大小因此与它产生了虚假关系。模型怎样利用这种聚集，取决于我们提供的相关矩阵细节。</p>
-      <p>布朗运动模型是一种特殊的 Gaussian 过程，其中协方差会随距离增加而以非常僵硬的方式下降。没有必要如此僵硬，而且有充分理由认为演化并不能由布朗运动很好地描述。常见做法之一是用 Pagel 的 <var>λ</var> 修正布朗运动模型，但它只是用同一个因子缩放所有物种相关，仍保留同样武断而不现实的距离模型。另一个常见方案是 Ornstein–Uhlenbeck 过程（OU 过程）：一种带阻尼、倾向回归某个均值（或多个均值）的布朗运动。实践中，它约束了变异，使系统发育距离与协方差之间的关系变为非线性。<sup id="note-208-ref"><a href="#note-208">208</a></sup> 更准确地说，OU 过程把物种 <var>i</var> 与 <var>j</var> 之间的协方差定义为：</p>
+      <p>布朗运动模型是一种特殊的高斯过程，其中协方差会随距离增加而以非常僵硬的方式下降。没有必要如此僵硬，而且有充分理由认为演化并不能由布朗运动很好地描述。常见做法之一是用 Pagel 的 <var>λ</var> 修正布朗运动模型，但它只是用同一个因子缩放所有物种相关，仍保留同样武断而不现实的距离模型。另一个常见方案是 Ornstein–Uhlenbeck 过程（OU 过程）：一种带阻尼、倾向回归某个均值（或多个均值）的布朗运动。实践中，它约束了变异，使系统发育距离与协方差之间的关系变为非线性。<sup id="note-208-ref"><a href="#note-208">208</a></sup> 更准确地说，OU 过程把物种 <var>i</var> 与 <var>j</var> 之间的协方差定义为：</p>
       <div class="equation-block wallis-equation" id="eq-14-ou-kernel"><div><var>K</var>(<var>i</var>, <var>j</var>) = <var>η</var><sup>2</sup> exp(−<var>ρ</var><sup>2</sup><var>D</var><sub><var>ij</var></sub>)</div></div>
       <p>这是指数距离核，不同于上一例中的二次核。指数核表示点（物种）之间的协方差会快速下降，生成的函数因此远不如二次核平滑。它通常也更难拟合，因为函数粗糙得多；实践中需要格外谨慎地指定先验，可能还要把先验收窄。</p>
-      <p>OU 过程仍是 Gaussian 过程，所以拟合方式与上一节的二次核相同。系统发育回归文献尚未充分强调这一点；把模型写成 Gaussian 过程，便能按具体问题定制函数空间。<sup id="note-209-ref"><a href="#note-209">209</a></sup> 这种框架目前仍不常见。生物学家往往笼罩在迷信与惧怕按错按钮的阴云下使用系统发育；Gaussian 过程框架既统一了既有方法，又允许模型描述协变随系统发育距离变化的模式。它也应当说明：纳入系统发育距离并不存在唯一正确的方法。若目标是估计因果效应，只拒绝某个零模型远远不够；我们必须有效重建未测混杂之间的模式，而不同的演化历史会需要不同模型。</p>
-      <p>构造这次 Gaussian 过程回归需要距离矩阵，而前面已经算好了。接着只需写出 Gaussian 过程构造语句。本例使用 OU 过程核；更一般地说，它称为 <var>L</var>1 范数，<code>ulam</code> 以 <code>cov_GPL1</code> 提供。后面的“过度思考”框还会展示怎样自行编写 Gaussian 过程核。</p>
+      <p>OU 过程仍是高斯过程，所以拟合方式与上一节的二次核相同。系统发育回归文献尚未充分强调这一点；把模型写成高斯过程，便能按具体问题定制函数空间。<sup id="note-209-ref"><a href="#note-209">209</a></sup> 这种框架目前仍不常见。生物学家往往笼罩在迷信与惧怕按错按钮的阴云下使用系统发育；高斯过程框架既统一了既有方法，又允许模型描述协变随系统发育距离变化的模式。它也应当说明：纳入系统发育距离并不存在唯一正确的方法。若目标是估计因果效应，只拒绝某个零模型远远不够；我们必须有效重建未测混杂之间的模式，而不同的演化历史会需要不同模型。</p>
+      <p>构造这次高斯过程回归需要距离矩阵，而前面已经算好了。接着只需写出高斯过程构造语句。本例使用 OU 过程核；更一般地说，它称为 <var>L</var>1 范数，<code>ulam</code> 以 <code>cov_GPL1</code> 提供。后面的“过度思考”框还会展示怎样自行编写高斯过程核。</p>
       <figure class="code-listing" id="code-14-52"><figcaption>R 代码 14.52</figcaption><pre><code># 加入缩放并重排后的距离矩阵
 dat_list$Dmat &lt;- Dmat[ spp_obs , spp_obs ] / max(Dmat)
 
@@ -976,7 +976,7 @@ bG    0.05 0.02  0.01  0.09  2634    1
 bM    0.83 0.03  0.79  0.88  2280    1
 etasq 0.03 0.01  0.03  0.05  2060    1
 rhosq 2.79 0.26  2.36  3.20  2192    1</code></pre></figure>
-      <p>现在，群体大小似乎又与脑大小相关了。关联不强，但大多数后验概率质量都在零以上。结果为何不同？答案必然是：推断得到的协方差函数与布朗运动模型颇不相同。因此，接下来查看 <code>etasq</code> 与 <code>rhosq</code> 隐含的后验协方差函数。这两个参数共同产生协方差函数，而且在后验中几乎总是强相关；分别观察它们并不能真正看清发生了什么。需要把它们提取出来，再送回 Gaussian 过程协方差函数：</p>
+      <p>现在，群体大小似乎又与脑大小相关了。关联不强，但大多数后验概率质量都在零以上。结果为何不同？答案必然是：推断得到的协方差函数与布朗运动模型颇不相同。因此，接下来查看 <code>etasq</code> 与 <code>rhosq</code> 隐含的后验协方差函数。这两个参数共同产生协方差函数，而且在后验中几乎总是强相关；分别观察它们并不能真正看清发生了什么。需要把它们提取出来，再送回高斯过程协方差函数：</p>
       <figure class="code-listing" id="code-14-53"><figcaption>R 代码 14.53</figcaption><pre><code>post &lt;- extract.samples(m14.11)
 plot( NULL , xlim=c(0,max(dat_list$Dmat)) , ylim=c(0,1.5) ,
     xlab="phylogenetic distance" , ylab="covariance" )
@@ -996,9 +996,9 @@ text( 0.5 , 0.5 , "prior" )
 text( 0.2 , 0.1 , "posterior" , col=rangi2 )</code></pre></figure>
       <aside class="source-erratum" id="erratum-14-phylogeny-kernel-wording"><strong>原文说明：</strong>PDF 第 513 页把 “The result is shown” 误写成 “The result is show”；第 514 页的 “takes as input as distance matrix” 多出一个 <em>as</em>，而 “All that remain” 又有主谓不一致。译稿均按上下文订正。</aside>
       <p>结果见图 14.14。横轴是标准化系统发育距离，取值 1 只表示样本中的最长距离；纵轴是协方差。蓝线是后验分布的 30 次抽样，黑线是先验均值。后验被压在横轴附近，表示无论物种相距多远，协方差都非常低。至少按照这个模型与这些数据，脑大小并没有太多系统发育协方差。</p>
-      <figure class="book-figure phylogenetic-covariance-figure" id="fig-14-14"><div class="figure-scroll" tabindex="0" aria-label="系统发育 Gaussian 过程的先验与后验协方差函数"><img src="/media/chapter-14-phylogenetic-covariance.svg" alt="灰色先验带与黑色先验均值随系统发育距离下降，三十条蓝色后验曲线紧贴零协方差横轴"></div><figcaption><strong>图 14.14：</strong>系统发育 Gaussian 过程回归的后验协方差函数（蓝色），与先验（灰色）比较。布朗运动模型让协方差从高值开始、随距离线性衰减；这个模型却偏好在所有距离上都只有很小的协变。</figcaption></figure>
+      <figure class="book-figure phylogenetic-covariance-figure" id="fig-14-14"><div class="figure-scroll" tabindex="0" aria-label="系统发育高斯过程的先验与后验协方差函数"><img src="/media/chapter-14-phylogenetic-covariance.svg" alt="灰色先验带与黑色先验均值随系统发育距离下降，三十条蓝色后验曲线紧贴零协方差横轴"></div><figcaption><strong>图 14.14：</strong>系统发育高斯过程回归的后验协方差函数（蓝色），与先验（灰色）比较。布朗运动模型让协方差从高值开始、随距离线性衰减；这个模型却偏好在所有距离上都只有很小的协变。</figcaption></figure>
       <p>因此，系统发育距离并没有像布朗运动模型那样，完全消除群体大小与脑大小之间的关联。</p>
-      <aside class="overthinking-box" id="overthinking-14-custom-kernels"><h3>过度思考：构造自定义核</h3><p><code>rethinking</code> 包提供 <code>cov_GPL1</code>（OU 核）和 <code>cov_GPL2</code>（二次核），用来构造 Gaussian 过程协方差矩阵。不过，若直接使用 Stan，自行构造核也很容易。查看 <code>stancode(m14.11)</code>，顶部是一个自定义 <code>functions</code> 块，其中包含 <code>cov_GPL1</code> 函数：</p><figure class="code-listing" id="stan-14-gpl1-kernel"><figcaption>Stan：cov_GPL1 自定义核函数</figcaption><pre><code>functions{
+      <aside class="overthinking-box" id="overthinking-14-custom-kernels"><h3>过度思考：构造自定义核</h3><p><code>rethinking</code> 包提供 <code>cov_GPL1</code>（OU 核）和 <code>cov_GPL2</code>（二次核），用来构造高斯过程协方差矩阵。不过，若直接使用 Stan，自行构造核也很容易。查看 <code>stancode(m14.11)</code>，顶部是一个自定义 <code>functions</code> 块，其中包含 <code>cov_GPL1</code> 函数：</p><figure class="code-listing" id="stan-14-gpl1-kernel"><figcaption>Stan：cov_GPL1 自定义核函数</figcaption><pre><code>functions{
     matrix cov_GPL1(matrix x, real sq_alpha, real sq_rho, real delta) {
         int N = dims(x)[1];
         matrix[N, N] K;
@@ -1012,12 +1012,12 @@ text( 0.2 , 0.1 , "posterior" , col=rangi2 )</code></pre></figure>
         K[N, N] = sq_alpha + delta;
         return K;
     }
-}</code></pre></figure><p>这个函数接收距离矩阵 <code>x</code> 和 Gaussian 过程参数，随后遍历协方差矩阵 <code>K</code> 的全部单元格，逐一计算其值。若要修改核，只需改动计算每个协方差的语句：</p><figure class="code-listing" id="stan-14-gpl1-covariance-line"><figcaption>Stan：协方差计算语句</figcaption><pre><code>K[i, j] = sq_alpha * exp(-sq_rho * x[i,j] );</code></pre></figure><p>例如，二次核只需把 <code>x[i,j]</code> 平方。最后，在 <code>model</code> 块中调用这个函数即可。</p></aside>
+}</code></pre></figure><p>这个函数接收距离矩阵 <code>x</code> 和高斯过程参数，随后遍历协方差矩阵 <code>K</code> 的全部单元格，逐一计算其值。若要修改核，只需改动计算每个协方差的语句：</p><figure class="code-listing" id="stan-14-gpl1-covariance-line"><figcaption>Stan：协方差计算语句</figcaption><pre><code>K[i, j] = sq_alpha * exp(-sq_rho * x[i,j] );</code></pre></figure><p>例如，二次核只需把 <code>x[i,j]</code> 平方。最后，在 <code>model</code> 块中调用这个函数即可。</p></aside>
     </section>
   </section>
 
   <section id="sec-14-6"><h2>14.6 总结</h2>
-    <p>本章把多层模型中部分汇聚的基础策略，从截距扩展到了斜率。为此，需要对参数的统计总体中的协变建模。本章引入了 <code>LKJcorr</code> 先验，作为相关矩阵的一族便捷先验；还展示了怎样借助工具变量和前门准则，把协方差模型用于因果推断。Gaussian 过程则提供了一种实用方法，把变化效应策略扩展到相似性的连续维度，例如空间、网络、系统发育距离，以及数据实体之间任何其他抽象距离。下一章会继续发展这一更广义的多层方法，把它应用到统计推断中的常见问题：测量误差与缺失数据。</p>
+    <p>本章把多层模型中部分汇聚的基础策略，从截距扩展到了斜率。为此，需要对参数的统计总体中的协变建模。本章引入了 <code>LKJcorr</code> 先验，作为相关矩阵的一族便捷先验；还展示了怎样借助工具变量和前门准则，把协方差模型用于因果推断。高斯过程则提供了一种实用方法，把变化效应策略扩展到相似性的连续维度，例如空间、网络、系统发育距离，以及数据实体之间任何其他抽象距离。下一章会继续发展这一更广义的多层方法，把它应用到统计推断中的常见问题：测量误差与缺失数据。</p>
   </section>
 
   <section id="sec-14-7"><h2>14.7 练习</h2>
@@ -1028,9 +1028,9 @@ text( 0.2 , 0.1 , "posterior" , col=rangi2 )</code></pre></figure>
     </div>
     <div class="practice-group" id="practice-14-medium"><h3>中等题</h3>
       <article class="exercise" id="exercise-14M1"><h4>14M1</h4><p>重复本章开头的咖啡机器人模拟。这次把 <code>rho</code> 设为零，让截距与斜率不相关。相关的后验分布怎样反映底层模拟中的这一变化？</p></article>
-      <article class="exercise" id="exercise-14M2"><h4>14M2</h4><p>把下面的多层模型拟合到模拟的咖啡数据：</p><div class="equation-block wallis-equation" id="eq-14M2"><div><var>W</var><sub><var>i</var></sub> ∼ Normal(<var>μ</var><sub><var>i</var></sub>, <var>σ</var>)</div><div><var>μ</var><sub><var>i</var></sub> = <var>α</var><sub>CAFÉ[<var>i</var>]</sub> + <var>β</var><sub>CAFÉ[<var>i</var>]</sub><var>A</var><sub><var>i</var></sub></div><div><var>α</var><sub>CAFÉ</sub> ∼ Normal(<var>α</var>, <var>σ</var><sub><var>α</var></sub>)</div><div><var>β</var><sub>CAFÉ</sub> ∼ Normal(<var>β</var>, <var>σ</var><sub><var>β</var></sub>)</div><div><var>α</var> ∼ Normal(0, 10)</div><div><var>β</var> ∼ Normal(0, 10)</div><div><var>σ</var> ∼ HalfCauchy(0, 1)</div><div><var>σ</var><sub><var>α</var></sub> ∼ HalfCauchy(0, 1)</div><div><var>σ</var><sub><var>β</var></sub> ∼ HalfCauchy(0, 1)</div></div><p>用 WAIC 把这个模型与本章使用多元 Gaussian 先验的模型比较，并解释结果。</p></article>
+      <article class="exercise" id="exercise-14M2"><h4>14M2</h4><p>把下面的多层模型拟合到模拟的咖啡数据：</p><div class="equation-block wallis-equation" id="eq-14M2"><div><var>W</var><sub><var>i</var></sub> ∼ Normal(<var>μ</var><sub><var>i</var></sub>, <var>σ</var>)</div><div><var>μ</var><sub><var>i</var></sub> = <var>α</var><sub>CAFÉ[<var>i</var>]</sub> + <var>β</var><sub>CAFÉ[<var>i</var>]</sub><var>A</var><sub><var>i</var></sub></div><div><var>α</var><sub>CAFÉ</sub> ∼ Normal(<var>α</var>, <var>σ</var><sub><var>α</var></sub>)</div><div><var>β</var><sub>CAFÉ</sub> ∼ Normal(<var>β</var>, <var>σ</var><sub><var>β</var></sub>)</div><div><var>α</var> ∼ Normal(0, 10)</div><div><var>β</var> ∼ Normal(0, 10)</div><div><var>σ</var> ∼ HalfCauchy(0, 1)</div><div><var>σ</var><sub><var>α</var></sub> ∼ HalfCauchy(0, 1)</div><div><var>σ</var><sub><var>β</var></sub> ∼ HalfCauchy(0, 1)</div></div><p>用 WAIC 把这个模型与本章使用多元高斯先验的模型比较，并解释结果。</p></article>
       <article class="exercise" id="exercise-14M3"><h4>14M3</h4><p>重新估计 <code>UCBadmit</code> 数据的变化斜率模型，这次使用非中心化参数化。用 <code>n_eff</code> 比较两种模型形式的效率。哪一种更好？哪条链抽样更快？</p></article>
-      <article class="exercise" id="exercise-14M4"><h4>14M4</h4><p>用 WAIC 把大洋洲工具的 Gaussian 过程模型与第 11 章拟合到同一数据的模型比较。特别留意 WAIC 估计的有效参数数目。</p></article>
+      <article class="exercise" id="exercise-14M4"><h4>14M4</h4><p>用 WAIC 把大洋洲工具的高斯过程模型与第 11 章拟合到同一数据的模型比较。特别留意 WAIC 估计的有效参数数目。</p></article>
       <article class="exercise" id="exercise-14M5"><h4>14M5</h4><p>修改系统发育距离示例，把群体大小作为结果、脑大小作为预测变量。假设脑大小会影响群体大小，你对这一效应的估计是多少？系统发育怎样影响估计？</p></article>
     </div>
     <div class="practice-group" id="practice-14-hard"><h3>困难题</h3>
@@ -1041,7 +1041,7 @@ text( 0.2 , 0.1 , "posterior" , col=rangi2 )</code></pre></figure>
     </div>
   </section>
 
-  <section class="endnotes" id="chapter-14-notes" role="doc-endnotes"><h2>尾注</h2><ol start="194"><li id="note-194">Lewandowski 等（2009）。“LKJ”来自三位作者姓氏的首字母；作者本人把这种方法称为“洋葱法”。关于它在 Bayesian 模型中的用法，可参见最新版 Stan 参考手册的说明。 <a class="backref" href="#note-194-ref" aria-label="返回正文">↩</a></li><li id="note-195">参见 Gelfand 等（1995）以及 Roberts 和 Sahu（1997）。较新的综述可参见 Papaspiliopoulos 等（2007）；以 Hamiltonian Monte Carlo 为重点的讨论可参见 Betancourt 和 Girolami（2013）。 <a class="backref" href="#note-195-ref" aria-label="返回正文">↩</a></li><li id="note-196">参见 Pearl（2011）。 <a class="backref" href="#note-196-ref" aria-label="返回正文">↩</a></li><li id="note-197">参见 Angrist 和 Krueger（1991）。 <a class="backref" href="#note-197-ref" aria-label="返回正文">↩</a></li><li id="note-198">Feyrer 和 Sacerdote（2009）。 <a class="backref" href="#note-198-ref" aria-label="返回正文">↩</a></li><li id="note-199">参见 Caniglia 等（2019）。 <a class="backref" href="#note-199-ref" aria-label="返回正文">↩</a></li><li id="note-200">参见 Angrist 和 Krueger（1995）以及 Kleibergen 和 Zivot（2003）。据作者所知，对参数化工具变量估计量——Bayesian 或其他形式——仍没有系统且有理论依据的理解；这很奇怪，因为 DAG 已提供正式的非参数理论。真实情况可能是：即使 DAG 表明存在工具，估计在实践中也常不可行。 <a class="backref" href="#note-200-ref" aria-label="返回正文">↩</a></li><li id="note-201">参见 Cohen 和 Malloy（2014）。作者从 Alex Chinco 的博客学到这个例子，参见其 <a href="http://www.alexchinco.com/example-front-door-criterion/">2011 年文章</a>。 <a class="backref" href="#note-201-ref" aria-label="返回正文">↩</a></li><li id="note-202">Thistlethwaite 和 Campbell（1960）。 <a class="backref" href="#note-202-ref" aria-label="返回正文">↩</a></li><li id="note-203">参见 Gelman 和 Imbens（2019）给出的尖锐示例与建议。 <a class="backref" href="#note-203-ref" aria-label="返回正文">↩</a></li><li id="note-204">Koster 和 Leckie（2014）。 <a class="backref" href="#note-204-ref" aria-label="返回正文">↩</a></li><li id="note-205">参见 Neal（1998）这篇高被引综述，其中也有实现说明。 <a class="backref" href="#note-205-ref" aria-label="返回正文">↩</a></li><li id="note-206">参见 Uyeda 等（2018）关于传统方法问题以及乳汁等强力二元性状影响的讨论。 <a class="backref" href="#note-206-ref" aria-label="返回正文">↩</a></li><li id="note-207">参见 Felsenstein（1985）与 Grafen（1989）。 <a class="backref" href="#note-207-ref" aria-label="返回正文">↩</a></li><li id="note-208">Uhlenbeck 和 Ornstein（1930）。关于拟合这类模型时的问题，另见 Cooper 等（2016）。 <a class="backref" href="#note-208-ref" aria-label="返回正文">↩</a></li><li id="note-209">参见 Jones 和 Moriarty（2013）、Landis 等（2013）以及 Meagher 等（2018）。 <a class="backref" href="#note-209-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section class="endnotes" id="chapter-14-notes" role="doc-endnotes"><h2>尾注</h2><ol start="194"><li id="note-194">Lewandowski 等（2009）。“LKJ”来自三位作者姓氏的首字母；作者本人把这种方法称为“洋葱法”。关于它在贝叶斯模型中的用法，可参见最新版 Stan 参考手册的说明。 <a class="backref" href="#note-194-ref" aria-label="返回正文">↩</a></li><li id="note-195">参见 Gelfand 等（1995）以及 Roberts 和 Sahu（1997）。较新的综述可参见 Papaspiliopoulos 等（2007）；以 Hamiltonian Monte Carlo 为重点的讨论可参见 Betancourt 和 Girolami（2013）。 <a class="backref" href="#note-195-ref" aria-label="返回正文">↩</a></li><li id="note-196">参见 Pearl（2011）。 <a class="backref" href="#note-196-ref" aria-label="返回正文">↩</a></li><li id="note-197">参见 Angrist 和 Krueger（1991）。 <a class="backref" href="#note-197-ref" aria-label="返回正文">↩</a></li><li id="note-198">Feyrer 和 Sacerdote（2009）。 <a class="backref" href="#note-198-ref" aria-label="返回正文">↩</a></li><li id="note-199">参见 Caniglia 等（2019）。 <a class="backref" href="#note-199-ref" aria-label="返回正文">↩</a></li><li id="note-200">参见 Angrist 和 Krueger（1995）以及 Kleibergen 和 Zivot（2003）。据作者所知，对参数化工具变量估计量——贝叶斯或其他形式——仍没有系统且有理论依据的理解；这很奇怪，因为 DAG 已提供正式的非参数理论。真实情况可能是：即使 DAG 表明存在工具，估计在实践中也常不可行。 <a class="backref" href="#note-200-ref" aria-label="返回正文">↩</a></li><li id="note-201">参见 Cohen 和 Malloy（2014）。作者从 Alex Chinco 的博客学到这个例子，参见其 <a href="http://www.alexchinco.com/example-front-door-criterion/">2011 年文章</a>。 <a class="backref" href="#note-201-ref" aria-label="返回正文">↩</a></li><li id="note-202">Thistlethwaite 和 Campbell（1960）。 <a class="backref" href="#note-202-ref" aria-label="返回正文">↩</a></li><li id="note-203">参见 Gelman 和 Imbens（2019）给出的尖锐示例与建议。 <a class="backref" href="#note-203-ref" aria-label="返回正文">↩</a></li><li id="note-204">Koster 和 Leckie（2014）。 <a class="backref" href="#note-204-ref" aria-label="返回正文">↩</a></li><li id="note-205">参见 Neal（1998）这篇高被引综述，其中也有实现说明。 <a class="backref" href="#note-205-ref" aria-label="返回正文">↩</a></li><li id="note-206">参见 Uyeda 等（2018）关于传统方法问题以及乳汁等强力二元性状影响的讨论。 <a class="backref" href="#note-206-ref" aria-label="返回正文">↩</a></li><li id="note-207">参见 Felsenstein（1985）与 Grafen（1989）。 <a class="backref" href="#note-207-ref" aria-label="返回正文">↩</a></li><li id="note-208">Uhlenbeck 和 Ornstein（1930）。关于拟合这类模型时的问题，另见 Cooper 等（2016）。 <a class="backref" href="#note-208-ref" aria-label="返回正文">↩</a></li><li id="note-209">参见 Jones 和 Moriarty（2013）、Landis 等（2013）以及 Meagher 等（2018）。 <a class="backref" href="#note-209-ref" aria-label="返回正文">↩</a></li></ol></section>
 
   <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 14 章 PDF 第 465–516 页已完成整章翻译、逐页核对、结构契约检查与桌面/移动端全章验收，达到章节级 verified。</aside>
 </article>

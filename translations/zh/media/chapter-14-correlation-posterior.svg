@@ -31,5 +31,5 @@
 <text x="275.0" y="170.0" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="20" font-weight="700" fill="#6670ee">后验</text>
 <text x="610.0" y="345.0" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="20" font-weight="700" fill="#30332e">先验</text>
 <text x="480.0" y="585.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="21" font-weight="600" fill="#30332e">相关系数</text>
-<text x="32.0" y="287.5" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="21" font-weight="600" fill="#30332e" transform="rotate(-90 32 287.5)">密度</text>
+<text x="32.0" y="287.5" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="21" font-weight="600" fill="#30332e" transform="rotate(-90 32 287.5)">概率密度</text>
 </svg>

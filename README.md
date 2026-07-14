@@ -8,7 +8,7 @@
 
 ## 当前进度
 
-第二次精译已经完成。全书 PDF 第 1–617 页的中文、公式/符号和代码三条轨道均已复核，前置材料、第 1–17 章、尾注、参考文献与引文索引全部通过桌面/移动端视觉验收；统一代码组件已应用到全书。第二轮标准和 617/617 页完成账本见 `docs/second-pass-guidelines.md` 与 `translations/zh/second-pass.json`。
+第三次精译已经完成。全书 PDF 第 1–617 页沿“语义准确、中文自然、术语按语境”三条轨道再次复核；图轴和首次解释中的 `density` 明确译为“概率密度”，连续变量的概率密度与离散变量的概率质量也已区分。第二轮对公式/符号和代码的逐项复核仍由原审计保护。第三轮标准和 617/617 页完成账本见 `docs/third-pass-guidelines.md` 与 `translations/zh/third-pass.json`。
 
 - 已确认源文件为 617 页、带文字层的 XeTeX PDF。
 - 已建立 17 章及书后材料的 PDF 页码映射。
@@ -46,6 +46,7 @@ python3 scripts/build_site.py
 python3 scripts/audit_site.py
 python3 scripts/audit_coverage.py
 python3 scripts/audit_second_pass.py
+python3 scripts/audit_third_pass.py
 python3 -m http.server 8877 --directory site
 ```
 
@@ -53,7 +54,7 @@ python3 -m http.server 8877 --directory site
 
 ## GitHub Pages
 
-推送到 `main` 分支后，`.github/workflows/pages.yml` 会先运行全站、覆盖率和第二次精译审计，再以 `/statistical-rethinking-zh` 为站点路径构建并发布 GitHub Pages。本地构建不设置 `SITE_BASE_PATH`，因此预览地址保持不变。
+推送到 `main` 分支后，`.github/workflows/pages.yml` 会先运行全站、覆盖率、第二次精译与第三次精译审计，再以 `/statistical-rethinking-zh` 为站点路径构建并发布 GitHub Pages。本地构建不设置 `SITE_BASE_PATH`，因此预览地址保持不变。
 
 ## 工作约定
 

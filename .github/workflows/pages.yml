@@ -36,6 +36,7 @@ jobs:
           python scripts/audit_site.py
           python scripts/audit_coverage.py
           python scripts/audit_second_pass.py --require-complete
+          python scripts/audit_third_pass.py --require-complete
 
       - name: Build project Pages artifact
         env:

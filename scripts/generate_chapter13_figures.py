@@ -267,9 +267,9 @@ def figure_13_2(hyperparameters: list[tuple[float, float]]) -> None:
         ])
     svg.extend([
         text_el((lx0 + lx1) / 2, 620, "存活对数赔率", size=22, anchor="middle"),
-        text_el(28, (ly0 + ly1) / 2, "密度", size=22, anchor="middle", rotate=-90),
+        text_el(28, (ly0 + ly1) / 2, "概率密度", size=22, anchor="middle", rotate=-90),
         text_el((rx0 + rx1) / 2, 620, "存活概率", size=22, anchor="middle"),
-        text_el(625, (ry0 + ry1) / 2, "密度", size=22, anchor="middle", rotate=-90),
+        text_el(625, (ry0 + ry1) / 2, "概率密度", size=22, anchor="middle", rotate=-90),
         '</svg>',
     ])
     OUT2.write_text("\n".join(svg), encoding="utf-8")
@@ -487,7 +487,7 @@ def figure_13_4() -> None:
     svg.extend([
         text_el((lx0 + lx1) / 2, 700, "参数值", size=22, anchor="middle"),
         text_el((rx0 + rx1) / 2, 700, "标准差", size=22, anchor="middle"),
-        text_el(655, (ry0 + ry1) / 2, "密度", size=22, anchor="middle", rotate=-90),
+        text_el(655, (ry0 + ry1) / 2, "概率密度", size=22, anchor="middle", rotate=-90),
         text_el(right_xy(0.42, 2.55)[0], right_xy(0.42, 2.55)[1], "区组", size=20, fill=BLUE),
         text_el(right_xy(2.65, 0.46)[0], right_xy(2.65, 0.46)[1], "行动者", size=20),
         '</svg>',

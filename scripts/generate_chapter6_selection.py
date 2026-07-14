@@ -105,7 +105,7 @@ def multicollinear_legs() -> str:
         pts.append(f'{px(v):.2f},{py(d):.2f}')
     body.extend([f'<rect x="{rx}" y="{top}" width="390" height="{ph}" fill="#fff" stroke="#343732"/>',f'<polyline points="{" ".join(pts)}" fill="none" stroke="#263f86" stroke-width="4"/>'])
     for t in [1.8,1.9,2.0,2.1,2.2]: body.append(f'<text x="{px(t):.2f}" y="520" text-anchor="middle" font-family="{FONT}" font-size="15">{t:.1f}</text>')
-    body.extend([f'<text x="895" y="565" text-anchor="middle" font-family="{FONT}" font-size="19" font-weight="700" fill="#263f86">bl 与 br 之和</text>',f'<text x="650" y="275" transform="rotate(-90 650 275)" text-anchor="middle" font-family="{FONT}" font-size="19" font-weight="700" fill="#263f86">密度</text>','</svg>',''])
+    body.extend([f'<text x="895" y="565" text-anchor="middle" font-family="{FONT}" font-size="19" font-weight="700" fill="#263f86">bl 与 br 之和</text>',f'<text x="650" y="275" transform="rotate(-90 650 275)" text-anchor="middle" font-family="{FONT}" font-size="19" font-weight="700" fill="#263f86">概率密度</text>','</svg>',''])
     return "\n".join(body)
 
 

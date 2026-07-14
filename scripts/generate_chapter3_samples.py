@@ -96,7 +96,7 @@ def main() -> int:
             f'  <text x="{fmt(left_x + left_width / 2)}" y="430" text-anchor="middle" font-family="{font}" font-size="18" fill="#30332e">样本序号</text>',
             f'  <text x="35" y="{fmt(plot_top + plot_height / 2)}" transform="rotate(-90 35 {fmt(plot_top + plot_height / 2)})" text-anchor="middle" font-family="{font}" font-size="18" fill="#30332e">水域比例（p）</text>',
             f'  <text x="{fmt(right_x + right_width / 2)}" y="430" text-anchor="middle" font-family="{font}" font-size="18" fill="#30332e">水域比例（p）</text>',
-            f'  <text x="635" y="{fmt(plot_top + plot_height / 2)}" transform="rotate(-90 635 {fmt(plot_top + plot_height / 2)})" text-anchor="middle" font-family="{font}" font-size="18" fill="#30332e">密度</text>',
+            f'  <text x="635" y="{fmt(plot_top + plot_height / 2)}" transform="rotate(-90 635 {fmt(plot_top + plot_height / 2)})" text-anchor="middle" font-family="{font}" font-size="18" fill="#30332e">概率密度</text>',
             f'  <text x="{fmt(left_x + left_width / 2)}" y="482" text-anchor="middle" font-family="{font}" font-size="17" font-weight="700" fill="#263f86">10,000 个后验样本</text>',
             f'  <text x="{fmt(right_x + right_width / 2)}" y="482" text-anchor="middle" font-family="{font}" font-size="17" font-weight="700" fill="#263f86">样本密度估计</text>',
             "</svg>",

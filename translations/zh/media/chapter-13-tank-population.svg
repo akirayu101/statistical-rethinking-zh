@@ -160,7 +160,7 @@
 <line x1="683.0" y1="75.0" x2="690.0" y2="75.0" stroke="#30332e"/>
 <text x="675.0" y="81.0" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#30332e">3.5</text>
 <text x="322.5" y="620.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="400" fill="#30332e">存活对数赔率</text>
-<text x="28.0" y="305.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="400" fill="#30332e" transform="rotate(-90 28 305.0)">密度</text>
+<text x="28.0" y="305.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="400" fill="#30332e" transform="rotate(-90 28 305.0)">概率密度</text>
 <text x="922.5" y="620.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="400" fill="#30332e">存活概率</text>
-<text x="625.0" y="305.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="400" fill="#30332e" transform="rotate(-90 625 305.0)">密度</text>
+<text x="625.0" y="305.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="400" fill="#30332e" transform="rotate(-90 625 305.0)">概率密度</text>
 </svg>

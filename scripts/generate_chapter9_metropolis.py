@@ -157,7 +157,7 @@ def figure_9_4() -> None:
         label_x = max(mode, .8)
         label_y = min(chi_density(label_x, dims) + .1, .79)
         body.append(f'<text x="{sx(label_x):.1f}" y="{sy(label_y):.1f}" text-anchor="middle" font-family="{FONT}" font-size="19" font-weight="700" fill="{color}">{dims}</text>')
-    body += [f'<text x="{left+pw/2}" y="{h-24}" text-anchor="middle" font-family="{FONT}" font-size="21" fill="#263f86">到众数的径向距离</text>', f'<text x="30" y="{top+ph/2}" transform="rotate(-90 30 {top+ph/2})" text-anchor="middle" font-family="{FONT}" font-size="21" fill="#263f86">密度</text>', '</svg>', '']
+    body += [f'<text x="{left+pw/2}" y="{h-24}" text-anchor="middle" font-family="{FONT}" font-size="21" fill="#263f86">到众数的径向距离</text>', f'<text x="30" y="{top+ph/2}" transform="rotate(-90 30 {top+ph/2})" text-anchor="middle" font-family="{FONT}" font-size="21" fill="#263f86">概率密度</text>', '</svg>', '']
     OUT4.write_text('\n'.join(body), encoding="utf-8")
 
 
@@ -350,7 +350,7 @@ def figure_9_7() -> None:
     body = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" role="img">',
         '<title>ulam 后验样本的变量对图</title>',
-        '<desc>五个参数构成的变量对矩阵，对角线显示密度，上三角显示样本散点，下三角显示相关系数。</desc>',
+        '<desc>五个参数构成的变量对矩阵，对角线显示各参数的边际后验概率密度，上三角显示样本散点，下三角显示相关系数。</desc>',
         '<rect width="100%" height="100%" fill="#fff"/>',
     ]
     for row in range(5):
@@ -653,7 +653,7 @@ def figure_9_11() -> None:
         f'<text x="{sx(8):.1f}" y="{sy(.055):.1f}" font-family="{FONT}" font-size="19" fill="{INK}">先验</text>',
         f'<text x="{sx(2.5):.1f}" y="{sy(.23):.1f}" font-family="{FONT}" font-size="19" fill="{BLUE}">后验</text>',
         f'<text x="{left+pw/2}" y="{h-45}" text-anchor="middle" font-family="{FONT}" font-size="21" fill="#263f86">alpha</text>',
-        f'<text x="30" y="{top+ph/2}" transform="rotate(-90 30 {top+ph/2})" text-anchor="middle" font-family="{FONT}" font-size="21" fill="#263f86">密度</text>',
+        f'<text x="30" y="{top+ph/2}" transform="rotate(-90 30 {top+ph/2})" text-anchor="middle" font-family="{FONT}" font-size="21" fill="#263f86">概率密度</text>',
     ])
 
     left, top, pw, ph = panels[1]
@@ -679,7 +679,7 @@ def figure_9_11() -> None:
         f'<text x="{sx(3.2):.1f}" y="{sy(.13):.1f}" font-family="{FONT}" font-size="19" fill="{INK}">先验</text>',
         f'<text x="{sx(2.2):.1f}" y="{sy(.46):.1f}" font-family="{FONT}" font-size="19" fill="{BLUE}">后验</text>',
         f'<text x="{left+pw/2}" y="{h-45}" text-anchor="middle" font-family="{FONT}" font-size="21" fill="#263f86">sigma</text>',
-        f'<text x="{left-60}" y="{top+ph/2}" transform="rotate(-90 {left-60} {top+ph/2})" text-anchor="middle" font-family="{FONT}" font-size="21" fill="#263f86">密度</text>',
+        f'<text x="{left-60}" y="{top+ph/2}" transform="rotate(-90 {left-60} {top+ph/2})" text-anchor="middle" font-family="{FONT}" font-size="21" fill="#263f86">概率密度</text>',
         '</svg>',
         '',
     ])

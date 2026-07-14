@@ -72,7 +72,7 @@ def density_panel(
     body.extend(
         [
             f'  <text x="{fmt(x + width / 2)}" y="{y + height + 58}" text-anchor="middle" font-family="{FONT}" font-size="17" fill="#30332e">位置</text>',
-            f'  <text x="{x - 34}" y="{fmt(y + height / 2)}" transform="rotate(-90 {x - 34} {fmt(y + height / 2)})" text-anchor="middle" font-family="{FONT}" font-size="17" fill="#30332e">密度</text>',
+            f'  <text x="{x - 34}" y="{fmt(y + height / 2)}" transform="rotate(-90 {x - 34} {fmt(y + height / 2)})" text-anchor="middle" font-family="{FONT}" font-size="17" fill="#30332e">概率密度</text>',
         ]
     )
     return body
@@ -104,7 +104,7 @@ def main() -> int:
         '<?xml version="1.0" encoding="UTF-8"?>',
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">',
         "  <title>足球场随机游走逐渐形成正态分布</title>",
-        "  <desc>上图显示一百条十六步随机游走；下方三个面板显示四步、八步和十六步后位置的经验密度，十六步面板叠加理想正态曲线。</desc>",
+        "  <desc>上图显示一百条十六步随机游走；下方三个面板显示四步、八步和十六步后位置的经验概率密度，十六步面板叠加理想正态曲线。</desc>",
         '  <rect width="100%" height="100%" fill="#ffffff"/>',
         f'  <rect x="{top_x}" y="{top_y}" width="{top_width}" height="{top_height}" fill="#fff" stroke="#363934" stroke-width="1.2"/>',
     ]
@@ -146,7 +146,7 @@ def main() -> int:
     body.extend(
         [
             f'  <line x1="850" y1="805" x2="890" y2="805" stroke="#30332e" stroke-width="2.2"/>',
-            f'  <text x="902" y="811" font-family="{FONT}" font-size="15" fill="#30332e">理想正态密度</text>',
+            f'  <text x="902" y="811" font-family="{FONT}" font-size="15" fill="#30332e">理想正态概率密度</text>',
             "</svg>",
             "",
         ]

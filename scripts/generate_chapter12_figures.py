@@ -128,7 +128,7 @@ def main() -> None:
     svg.append(polyline(mean_pts, fill="none", stroke="#20221f", stroke_width="4.2"))
     svg.extend([
         f'<text class="axis" x="{(lx0 + lx1) / 2:.0f}" y="535" text-anchor="middle">录取概率</text>',
-        f'<text class="axis" x="28" y="{(ly0 + ly1) / 2:.0f}" text-anchor="middle" transform="rotate(-90 28 {(ly0 + ly1) / 2:.0f})">密度</text>',
+        f'<text class="axis" x="28" y="{(ly0 + ly1) / 2:.0f}" text-anchor="middle" transform="rotate(-90 28 {(ly0 + ly1) / 2:.0f})">概率密度</text>',
         '<line x1="120" y1="581" x2="175" y2="581" stroke="#20221f" stroke-width="4.2"/>',
         '<text class="legend" x="187" y="587">后验均值 beta 分布</text>',
         '<line x1="120" y1="616" x2="175" y2="616" stroke="#60635d" stroke-width="1.5" opacity=".45"/>',

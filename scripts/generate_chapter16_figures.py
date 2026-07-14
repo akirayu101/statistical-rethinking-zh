@@ -448,7 +448,7 @@ def write_observation_density_figure() -> None:
         parts.append(f'<line x1="{left - 6}" y1="{fmt(ypos)}" x2="{left}" y2="{fmt(ypos)}" stroke="#3c403b"/>')
         parts.append(f'<text class="axis" x="{left - 12}" y="{fmt(ypos + 5)}" text-anchor="end">{tick:.1f}</text>')
     parts.append(f'<text class="label" x="{left + panel_w / 2}" y="{height - 38}" text-anchor="middle">毛皮数量（千张）</text>')
-    parts.append(f'<text class="label" x="32" y="{top + panel_h / 2}" text-anchor="middle" transform="rotate(-90 32 {top + panel_h / 2})">密度</text>')
+    parts.append(f'<text class="label" x="32" y="{top + panel_h / 2}" text-anchor="middle" transform="rotate(-90 32 {top + panel_h / 2})">概率密度</text>')
     parts.append('</svg>')
     OBSERVATION_OUT.write_text("".join(parts), encoding="utf-8")
     print(f"wrote {OBSERVATION_OUT}")

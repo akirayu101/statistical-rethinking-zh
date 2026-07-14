@@ -19,7 +19,7 @@
     <line x1="530" y1="330" x2="530" y2="337" stroke="#363934"/>
     <text x="530" y="356" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="13" fill="#30332e">1</text>
     <text x="315" y="382" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="16" fill="#30332e">水域比例（p）</text>
-    <text x="57" y="195" transform="rotate(-90 57 195)" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="16" fill="#30332e">密度</text>
+    <text x="57" y="195" transform="rotate(-90 57 195)" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="16" fill="#30332e">概率密度</text>
   </g>
   <g aria-label="50% HPDI">
     <text x="905" y="42" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="700" fill="#263f86">50% HPDI</text>
@@ -37,6 +37,6 @@
     <line x1="1120" y1="330" x2="1120" y2="337" stroke="#363934"/>
     <text x="1120" y="356" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="13" fill="#30332e">1</text>
     <text x="905" y="382" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="16" fill="#30332e">水域比例（p）</text>
-    <text x="647" y="195" transform="rotate(-90 647 195)" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="16" fill="#30332e">密度</text>
+    <text x="647" y="195" transform="rotate(-90 647 195)" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="16" fill="#30332e">概率密度</text>
   </g>
 </svg>

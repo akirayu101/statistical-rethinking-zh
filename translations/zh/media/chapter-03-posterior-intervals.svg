@@ -19,7 +19,7 @@
     <line x1="530" y1="300" x2="530" y2="307" stroke="#363934"/>
     <text x="530" y="326" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="13" fill="#30332e">1</text>
     <text x="315" y="352" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="16" fill="#30332e">水域比例（p）</text>
-    <text x="57" y="177.5" transform="rotate(-90 57 177.5)" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="16" fill="#30332e">密度</text>
+    <text x="57" y="177.5" transform="rotate(-90 57 177.5)" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="16" fill="#30332e">概率密度</text>
   </g>
   <g aria-label="p = 0.5 至 0.75">
     <text x="905" y="37" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="700" fill="#263f86">p = 0.5 至 0.75</text>
@@ -37,7 +37,7 @@
     <line x1="1120" y1="300" x2="1120" y2="307" stroke="#363934"/>
     <text x="1120" y="326" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="13" fill="#30332e">1</text>
     <text x="905" y="352" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="16" fill="#30332e">水域比例（p）</text>
-    <text x="647" y="177.5" transform="rotate(-90 647 177.5)" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="16" fill="#30332e">密度</text>
+    <text x="647" y="177.5" transform="rotate(-90 647 177.5)" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="16" fill="#30332e">概率密度</text>
   </g>
   <g aria-label="较低的 80%">
     <text x="315" y="417" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="700" fill="#263f86">较低的 80%</text>
@@ -55,7 +55,7 @@
     <line x1="530" y1="680" x2="530" y2="687" stroke="#363934"/>
     <text x="530" y="706" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="13" fill="#30332e">1</text>
     <text x="315" y="732" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="16" fill="#30332e">水域比例（p）</text>
-    <text x="57" y="557.5" transform="rotate(-90 57 557.5)" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="16" fill="#30332e">密度</text>
+    <text x="57" y="557.5" transform="rotate(-90 57 557.5)" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="16" fill="#30332e">概率密度</text>
   </g>
   <g aria-label="中间的 80%">
     <text x="905" y="417" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="700" fill="#263f86">中间的 80%</text>
@@ -73,6 +73,6 @@
     <line x1="1120" y1="680" x2="1120" y2="687" stroke="#363934"/>
     <text x="1120" y="706" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="13" fill="#30332e">1</text>
     <text x="905" y="732" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="16" fill="#30332e">水域比例（p）</text>
-    <text x="647" y="557.5" transform="rotate(-90 647 557.5)" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="16" fill="#30332e">密度</text>
+    <text x="647" y="557.5" transform="rotate(-90 647 557.5)" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="16" fill="#30332e">概率密度</text>
   </g>
 </svg>

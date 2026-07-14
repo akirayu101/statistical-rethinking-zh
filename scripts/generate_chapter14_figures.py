@@ -212,7 +212,7 @@ def figure_14_3() -> None:
         svg.append(text(x + 12, y - 10, f"η = {eta}", size=18, weight=600))
     svg.extend([
         text((x0 + x1) / 2, 585, "相关系数", size=21, anchor="middle", weight=600),
-        text(32, (y0 + y1) / 2, "密度", size=21, anchor="middle", weight=600, rotate=-90),
+        text(32, (y0 + y1) / 2, "概率密度", size=21, anchor="middle", weight=600, rotate=-90),
         "</svg>",
     ])
     OUT3.write_text("\n".join(svg), encoding="utf-8")
@@ -272,7 +272,7 @@ def figure_14_4() -> None:
         text(275, 170, "后验", size=20, weight=700, fill=BLUE),
         text(610, 345, "先验", size=20, weight=700),
         text((x0 + x1) / 2, 585, "相关系数", size=21, anchor="middle", weight=600),
-        text(32, (y0 + y1) / 2, "密度", size=21, anchor="middle", weight=600, rotate=-90),
+        text(32, (y0 + y1) / 2, "概率密度", size=21, anchor="middle", weight=600, rotate=-90),
         "</svg>",
     ])
     OUT4.write_text("\n".join(svg), encoding="utf-8")
