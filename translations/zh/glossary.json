@@ -1231,6 +1231,8 @@
     "observation model": "观测模型",
     "true value": "真实值",
     "proxy variable": "代理变量",
+    "outcome measurement error": "结果变量测量误差",
+    "predictor measurement error": "预测变量测量误差",
     "cross-classified varying slopes model": "交叉分类变化斜率模型"
   },
   "protected": [

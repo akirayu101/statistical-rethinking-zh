@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-15" data-source-pages="517-521">
-  <header class="chapter-header"><p class="eyebrow">第十五章</p><h1>缺失数据与其他机会</h1><p class="source-range">当前译稿对应原书 PDF 第 517–521 页</p></header>
+<article class="book-article" data-chapter="chapter-15" data-source-pages="517-524">
+  <header class="chapter-header"><p class="eyebrow">第十五章</p><h1>缺失数据与其他机会</h1><p class="source-range">当前译稿对应原书 PDF 第 517–524 页</p></header>
 
   <div class="chapter-introduction" id="intro-15">
     <p>Bayesian 推断的一大优点，是不必非得聪明才行。例如，有一道经典概率谜题叫作<strong>Bertrand 盒子悖论</strong>。<sup id="note-210-ref"><a href="#note-210">210</a></sup> 我偏爱的版本用煎饼来讲。假设我煎了三张饼：第一张两面都焦了（BB），第二张只焦了一面（BU），第三张两面都没焦（UU）。现在我随机拿一张给你，盘中朝上的一面恰好焦了。另一面也焦了的概率是多少？</p>
@@ -78,13 +78,78 @@ for ( i in 1:nrow(d) ) {
       <div class="equation-block wallis-equation" id="eq-15-divorce-measurement-model"><div class="annotated-equation-line"><span class="equation-expression"><var>D</var><sub>obs,<var>i</var></sub> ∼ Normal(<var>D</var><sub>true,<var>i</var></sub>, <var>D</var><sub>SE,<var>i</var></sub>)</span><span class="equation-label">[观测值的分布]</span></div><div class="annotated-equation-line"><span class="equation-expression"><var>D</var><sub>true,<var>i</var></sub> ∼ Normal(<var>μ</var><sub><var>i</var></sub>, <var>σ</var>)</span><span class="equation-label">[真实值的分布]</span></div><div class="annotated-equation-line"><span class="equation-expression"><var>μ</var><sub><var>i</var></sub> = <var>α</var> + <var>β</var><sub><var>A</var></sub><var>A</var><sub><var>i</var></sub> + <var>β</var><sub><var>M</var></sub><var>M</var><sub><var>i</var></sub></span><span class="equation-label">[评估 <var>A</var> → <var>D</var> 的线性模型]</span></div><div><var>α</var> ∼ Normal(0, 0.2)</div><div><var>β</var><sub><var>A</var></sub> ∼ Normal(0, 0.5)</div><div><var>β</var><sub><var>M</var></sub> ∼ Normal(0, 0.5)</div><div><var>σ</var> ∼ Exponential(1)</div></div>
       <p>它很像线性回归，只在最上方多了一行，把观测连接到真实值。每个 <var>D</var><sub>true</sub> 参数还承担第二个角色：它既是真实值分布中的结果，也作为另一个分布的均值来预测观测测量。这样会产生一个很酷的复杂性：信息双向流动。测量不确定性会影响线性模型中的回归参数，线性模型中的回归参数也会影响测量的不确定性；这里会发生收缩。</p>
       <p>下面是 <code>ulam</code> 版本；所有变量都已标准化：</p>
-      <figure class="code-listing" id="code-15-3"><figcaption>R 代码 15.3（续下页）</figcaption><pre><code>dlist &lt;- list(
-    D_obs = standardize( d$Divorce ),</code></pre></figure>
-      <p class="continuation-note">代码 15.3 的其余数据列表、模型拟合与代码 15.4，将从原书 PDF 第 522 页继续。</p>
+      <figure class="code-listing" id="code-15-3"><figcaption>R 代码 15.3</figcaption><pre><code>dlist &lt;- list(
+    D_obs = standardize( d$Divorce ),
+    D_sd = d$Divorce.SE / sd( d$Divorce ),
+    M = standardize( d$Marriage ),
+    A = standardize( d$MedianAgeMarriage ),
+    N = nrow(d)
+)
+
+m15.1 &lt;- ulam(
+    alist(
+        D_obs ~ dnorm( D_true , D_sd ),
+        vector[N]:D_true ~ dnorm( mu , sigma ),
+        mu &lt;- a + bA*A + bM*M,
+        a ~ dnorm(0,0.2),
+        bA ~ dnorm(0,0.5),
+        bM ~ dnorm(0,0.5),
+        sigma ~ dexp(1)
+    ) , data=dlist , chains=4 , cores=4 )</code></pre></figure>
+      <p>先看看后验均值（下面缩略了 <code>precis</code> 输出）：</p>
+      <figure class="code-listing" id="code-15-4"><figcaption>R 代码 15.4</figcaption><pre><code>precis( m15.1 , depth=2 )</code></pre><pre class="code-output" id="output-15-4"><code>             mean   sd  5.5% 94.5% n_eff Rhat
+D_true[1]    1.18 0.37  0.60  1.78  1696 1.00
+D_true[2]    0.68 0.58 -0.20  1.63  2137 1.00
+D_true[3]    0.43 0.34 -0.09  0.96  1953 1.00
+...
+D_true[48]   0.55 0.46 -0.15  1.30  2564 1.00
+D_true[49]  -0.64 0.27 -1.09 -0.20  3153 1.00
+D_true[50]   0.84 0.59 -0.13  1.77  1815 1.00
+a            -0.06 0.10 -0.21  0.11  1314 1.00
+bA           -0.61 0.16 -0.86 -0.37  1021 1.01
+bM            0.05 0.17 -0.21  0.31   936 1.01
+sigma         0.60 0.11  0.44  0.78   628 1.00</code></pre></figure>
+      <p>回看第 5 章会发现，先前对 <code>bA</code> 的估计约为 −1；现在几乎只有原来的一半，但仍可靠地为负。因此，与忽略测量误差的原回归相比，离婚率与结婚年龄之间的关联减弱了。测量误差的影响取决于具体情境：有时它会像本例一样夸大效应，有时又会遮蔽效应；绝不能想当然地认为测量误差会让估计变得保守。<sup id="note-211-ref"><a href="#note-211">211</a></sup></p>
+      <p>再看图 15.1，便能发现这种变化的端倪。结婚年龄极低或极高的州，往往也有更不确定的离婚率。因此，这些离婚率会向回归线定义的预期均值收缩。图 15.2 展示了这种收缩现象。左图纵轴是观测离婚率与估计离婚率之差，横轴是观测值的标准误；零点虚线表示估计相对观测值没有变化。注意，离婚率越不确定——图上越靠右——其估计与观测值的差别通常越大。这正是前两章认识的老朋友：收缩。不太确定的估计通过与更确定的估计汇聚信息而得到改善。</p>
+      <figure class="book-figure divorce-shrinkage-figure" id="fig-15-2"><div class="figure-scroll" tabindex="0" aria-label="可横向滚动的离婚率收缩与测量误差回归比较双面板图"><img src="/media/chapter-15-divorce-shrinkage.svg" alt="左图显示离婚率标准误越大后验估计相对观测值的改变量通常越大，右图比较忽略测量误差的灰色回归与纳入误差的蓝色回归"></div><p class="scroll-hint">图较宽，可横向滚动比较收缩幅度与回归趋势。</p><figcaption><strong>图 15.2：</strong>左：为测量误差建模所产生的收缩。原始测量误差越小，后验估计的收缩越少。右：忽略测量误差的回归（虚线与灰色阴影）和纳入测量误差的回归（蓝线与蓝色阴影）比较。点与线段分别表示每个州后验离婚率 <var>D</var><sub>est,<var>i</var></sub> 的后验均值和标准差。</figcaption></figure>
+      <aside class="source-erratum" id="erratum-15-figure-15-2-sign"><strong>原图说明：</strong>PDF 第 523 页图 15.2 左图的纵轴标为 <span class="math-inline"><var>D</var><sub>est</sub> − <var>D</var><sub>obs</sub></span>，但点的正负方向实际对应 <span class="math-inline"><var>D</var><sub>obs</sub> − <var>D</var><sub>est</sub></span>（例如 Maine 为正、Idaho 为负）。重绘保留原轴标签与原点位，并在此记录这一符号不一致。</aside>
+      <p>这种收缩会把离婚率拉向回归线，正如同图右侧所示。该图把每个州离婚率的后验均值对其观测结婚年龄中位数作图；竖直线段表示各离婚率的后验标准差——估计虽然移动了，却仍然具有不确定性。</p>
+      <p>不过，估计的移动也带动了回归趋势。旧的无误差回归以灰色表示，花哨的新有误差回归以蓝色表示。更准确地说，估计与趋势其实同时在相互推动：对于离婚率不确定的州，趋势会强烈影响新的离婚率估计；对于离婚率相当确定、标准误较小的州，则是该州强烈影响趋势。所有这些信息取得平衡后，估计离婚率与回归关系都会发生位移。</p>
+    </section>
+
+    <section id="sec-15-1-2"><h3>15.1.2 结果与预测变量同时有误差</h3>
+      <p>若预测变量也有测量误差，会发生什么？基本方法相同。仍从生成角度考虑问题：每个观测预测变量值，都是从一个均值未知但标准差已知的分布中抽取的；未知均值就是真实值。因此，为每个未知真实值定义一个参数，再让这些参数充当一族标准差已知的 Gaussian 分布的均值。更新后的 DAG 如下：</p>
+      <figure class="dag-figure" id="dag-15-both-measurement-error"><svg viewBox="0 0 1100 430" role="img" aria-labelledby="dag-15-both-title dag-15-both-desc"><title id="dag-15-both-title">结果与预测变量同时带测量误差的 DAG</title><desc id="dag-15-both-desc">结婚年龄 A 指向真实结婚率 M 与真实离婚率 D，M 也指向 D；M 和其误差共同产生 Mobs，D 和其误差共同产生 Dobs。</desc><defs><marker id="dag15-both-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#3f4752"/></marker></defs><g stroke="#3f4752" stroke-width="4" marker-end="url(#dag15-both-arrow)"><line x1="205" y1="215" x2="420" y2="105"/><line x1="205" y1="225" x2="420" y2="325"/><line x1="460" y1="120" x2="460" y2="300"/><line x1="500" y1="95" x2="665" y2="95"/><line x1="890" y1="95" x2="735" y2="95"/><line x1="500" y1="335" x2="665" y2="335"/><line x1="890" y1="335" x2="735" y2="335"/></g><g fill="#f0f1fa" stroke="#263f86" stroke-width="3"><circle cx="180" cy="220" r="38"/><circle cx="460" cy="95" r="38" fill="#fff" stroke-dasharray="7 5"/><circle cx="460" cy="335" r="38" fill="#fff" stroke-dasharray="7 5"/><circle cx="700" cy="95" r="42"/><circle cx="700" cy="335" r="42"/><circle cx="920" cy="95" r="38" fill="#fff" stroke-dasharray="7 5"/><circle cx="920" cy="335" r="38" fill="#fff" stroke-dasharray="7 5"/></g><g fill="#263f86" font-size="29" font-weight="700" text-anchor="middle"><text x="180" y="231">A</text><text x="460" y="106">M</text><text x="460" y="346">D</text><text x="700" y="106">Mₒᵦₛ</text><text x="700" y="346">Dₒᵦₛ</text><text x="920" y="106">eᴹ</text><text x="920" y="346">eᴰ</text></g></svg><figcaption>现在 <var>M</var><sub>obs</sub> 与 <var>D</var><sub>obs</sub> 对称出现，结婚率也有对应的误差 <var>e</var><sup><var>M</var></sup>。真实结婚率 <var>M</var> 与真实离婚率 <var>D</var> 都不可观测。</figcaption></figure>
+      <p>现在增加了与 <var>D</var><sub>obs</sub> 对应的 <var>M</var><sub>obs</sub>，以及与之匹配的误差 <var>e</var><sup><var>M</var></sup>。这个 DAG 假设误差 <var>e</var><sup><var>D</var></sup> 与 <var>e</var><sup><var>M</var></sup> 相互独立，但现实中未必如此。</p>
+      <p>更新后的模型如下：</p>
+      <div class="equation-block wallis-equation" id="eq-15-both-measurement-model"><div class="annotated-equation-line"><span class="equation-expression"><var>D</var><sub>obs,<var>i</var></sub> ∼ Normal(<var>D</var><sub>true,<var>i</var></sub>, <var>D</var><sub>SE,<var>i</var></sub>)</span><span class="equation-label">[观测 <var>D</var> 值的分布]</span></div><div class="annotated-equation-line"><span class="equation-expression"><var>D</var><sub>true,<var>i</var></sub> ∼ Normal(<var>μ</var><sub><var>i</var></sub>, <var>σ</var>)</span><span class="equation-label">[真实 <var>D</var> 值的分布]</span></div><div class="annotated-equation-line"><span class="equation-expression"><var>μ</var><sub><var>i</var></sub> = <var>α</var> + <var>β</var><sub><var>A</var></sub><var>A</var><sub><var>i</var></sub> + <var>β</var><sub><var>M</var></sub><var>M</var><sub>true,<var>i</var></sub></span><span class="equation-label">[线性模型]</span></div><div class="annotated-equation-line"><span class="equation-expression"><var>M</var><sub>obs,<var>i</var></sub> ∼ Normal(<var>M</var><sub>true,<var>i</var></sub>, <var>M</var><sub>SE,<var>i</var></sub>)</span><span class="equation-label">[观测 <var>M</var> 值的分布]</span></div><div class="annotated-equation-line"><span class="equation-expression"><var>M</var><sub>true,<var>i</var></sub> ∼ Normal(0, 1)</span><span class="equation-label">[真实 <var>M</var> 值的分布]</span></div><div><var>α</var> ∼ Normal(0, 0.2)</div><div><var>β</var><sub><var>A</var></sub> ∼ Normal(0, 0.5)</div><div><var>β</var><sub><var>M</var></sub> ∼ Normal(0, 0.5)</div><div><var>σ</var> ∼ Exponential(1)</div></div>
+      <p><var>M</var><sub>true</sub> 参数将保存真实结婚率的后验分布。模型拟合与先前十分相似：</p>
+      <figure class="code-listing" id="code-15-5"><figcaption>R 代码 15.5</figcaption><pre><code>dlist &lt;- list(
+    D_obs = standardize( d$Divorce ),
+    D_sd = d$Divorce.SE / sd( d$Divorce ),
+    M_obs = standardize( d$Marriage ),
+    M_sd = d$Marriage.SE / sd( d$Marriage ),
+    A = standardize( d$MedianAgeMarriage ),
+    N = nrow(d)
+)
+
+m15.2 &lt;- ulam(
+    alist(
+        D_obs ~ dnorm( D_true , D_sd ),
+        vector[N]:D_true ~ dnorm( mu , sigma ),
+        mu &lt;- a + bA*A + bM*M_true[i],
+        M_obs ~ dnorm( M_true , M_sd ),
+        vector[N]:M_true ~ dnorm( 0 , 1 ),
+        a ~ dnorm(0,0.2),
+        bA ~ dnorm(0,0.5),
+        bM ~ dnorm(0,0.5),
+        sigma ~ dexp( 1 )
+    ) , data=dlist , chains=4 , cores=4 )</code></pre></figure>
+      <p class="continuation-note">图 15.3、代码 15.6、结果解释与 15.1.3“测量恐怖故事”，将从原书 PDF 第 525 页继续。</p>
     </section>
   </section>
 
-  <section class="endnotes" id="chapter-15-notes" role="doc-endnotes"><h2>尾注</h2><ol start="210"><li id="note-210">Joseph Bertrand，1889，<cite>Calcul des probabilités</cite>。 <a class="backref" href="#note-210-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section class="endnotes" id="chapter-15-notes" role="doc-endnotes"><h2>尾注</h2><ol start="210"><li id="note-210">Joseph Bertrand，1889，<cite>Calcul des probabilités</cite>。 <a class="backref" href="#note-210-ref" aria-label="返回正文">↩</a></li><li id="note-211">这一主题有几篇很好的文章，各有自己的风格与记号变体。参见 Hernán 与 Cole（2009）、Loken 与 Gelman（2017）、Brakenhoff 等（2018）以及 van Smeden 等（2019）。 <a class="backref" href="#note-211-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 15 章 PDF 第 517–521 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 522 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 15 章 PDF 第 517–524 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 525 页继续。</aside>
 </article>
