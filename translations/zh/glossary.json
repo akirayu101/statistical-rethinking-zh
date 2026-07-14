@@ -1237,7 +1237,10 @@
     "missingness": "缺失性",
     "missingness indicator": "缺失性指示变量",
     "missing completely at random": "完全随机缺失",
+    "missing at random": "随机缺失",
+    "missing not at random": "非随机缺失",
     "impute": "插补",
+    "imputation": "插补",
     "occupancy model": "占域模型",
     "cross-classified varying slopes model": "交叉分类变化斜率模型"
   },

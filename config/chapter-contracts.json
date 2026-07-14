@@ -2684,7 +2684,7 @@
   },
   "chapter-15": {
     "required_status": "in_progress",
-    "source_pages": [517, 530],
+    "source_pages": [517, 533],
     "required_ids": [
       "intro-15",
       "note-210-ref",
@@ -2737,12 +2737,22 @@
       "output-15-12",
       "code-15-13",
       "output-15-13",
+      "code-15-14",
+      "code-15-15",
+      "rethinking-15-naming-random",
+      "note-215-ref",
+      "erratum-15-missing-data-typos",
+      "sec-15-2-2",
+      "dag-15-milk-basic",
+      "dag-15-primate-missingness-three",
+      "dag-15-primate-missingness-v",
       "chapter-15-notes",
       "note-210",
       "note-211",
       "note-212",
       "note-213",
-      "note-214"
+      "note-214",
+      "note-215"
     ],
     "required_headings": [
       "缺失数据与其他机会",
@@ -2754,24 +2764,26 @@
       "15.2 缺失数据",
       "再思考：缺失数据是有意义的数据",
       "15.2.1 DAG 吃掉了我的作业",
+      "再思考：给“完全随机”命名",
+      "15.2.2 插补灵长类",
       "尾注"
     ],
     "counts": {
-      "section": 7,
-      "figure": 22,
+      "section": 8,
+      "figure": 27,
       "figure img": 3,
-      ".book-figure": 4,
-      ".code-listing": 13,
+      ".book-figure": 5,
+      ".code-listing": 15,
       ".code-output": 4,
-      ".rethinking-box": 2,
+      ".rethinking-box": 3,
       ".overthinking-box": 0,
       ".book-quote": 0,
       ".equation-block": 8,
       ".wallis-equation": 8,
-      ".source-erratum": 3,
+      ".source-erratum": 4,
       ".chapter-introduction": 1,
       ".continuation-note": 1,
-      ".endnotes li": 5
+      ".endnotes li": 6
     }
   }
 }

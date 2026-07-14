@@ -117,6 +117,7 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .divorce-shrinkage-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
 .both-errors-shrinkage-figure .figure-scroll img { display: block; width: 45rem; max-width: none; height: auto; margin: 0 auto; }
 .missing-homework-figure .figure-scroll svg { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; }
+.primate-missingness-dags .figure-scroll svg { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; }
 .divorce-predictors-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
 .divorce-prior-lines-figure .figure-scroll img { display: block; width: 45rem; max-width: none; height: auto; margin: 0 auto; }
 .residual-diagnostics-figure .figure-scroll img { display: block; width: 58rem; max-width: none; height: auto; margin: 0 auto; }
