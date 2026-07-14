@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-16" data-source-pages="553-558">
-  <header class="chapter-header"><p class="eyebrow">第十六章</p><h1>广义线性疯狂</h1><p class="source-range">当前译稿对应原书 PDF 第 553–558 页</p></header>
+<article class="book-article" data-chapter="chapter-16" data-source-pages="553-561">
+  <header class="chapter-header"><p class="eyebrow">第十六章</p><h1>广义线性疯狂</h1><p class="source-range">当前译稿对应原书 PDF 第 553–561 页</p></header>
 
   <div class="chapter-introduction" id="intro-16">
     <p>高中时，我问物理老师怎么看统计学，她给我讲了一个笑话。以下是我记得的版本。一位物理学家、一位工程师和一位统计学家结伴去用弓打猎。几个小时后，他们终于在远处发现一只鹿。物理学家快速做了弹道计算，忽略空气阻力；箭飞得很正，却落在目标前几米，鹿毫无察觉。工程师冷笑一声，给空气阻力加入一个修正因子，然后放箭；第二支箭却落在目标后几米，鹿仍然没有察觉。统计学家取了平均值，高喊：“我们射中了！”</p>
@@ -85,11 +85,70 @@ shade( w_CI , h_seq )</code></pre></figure>
     <section id="sec-16-1-3"><h3>16.1.3 伪装的 GLM</h3>
       <p>进入下一个示例之前，考虑把体重的对数与身高关联起来时，这个模型会怎样变化。此时，期望为：</p>
       <div class="equation-block wallis-equation" id="eq-16-log-cylinder-start"><div>log <var>w</var><sub><var>i</var></sub> = <var>μ</var><sub><var>i</var></sub> = log(<var>k</var>π<var>p</var><sup>2</sup><var>h</var><sub><var>i</var></sub><sup>3</sup>)</div></div>
-      <p class="continuation-note">对数尺度如何把圆柱模型显露为固定斜率的线性回归，以及 16.2“隐藏的心智与观测行为”，将从原书 PDF 第 559 页继续。</p>
+      <p>由于乘法在对数尺度上变成加法，可以改写为：</p>
+      <div class="equation-block wallis-equation" id="eq-16-log-cylinder-expanded"><div>log <var>w</var><sub><var>i</var></sub> = log(<var>k</var>) + log(π) + 2 log(<var>p</var>) + 3 log(<var>h</var><sub><var>i</var></sub>)</div></div>
+      <p>在对数尺度上，这就是线性回归。前三项共同组成截距；<span class="math-inline">3 log(<var>h</var><sub><var>i</var></sub>)</span> 则是系数固定为 3 的预测变量。这个系数的值由理论给出，不必估计，却仍保持普通线性回归项的形式。</p>
+      <p>指出这一点，是为了强调广义线性模型如此强大的一个原因：在某种特定度量尺度上，许多自然关系都是 GLM 关系。与此同时，GLM 路径倾向于直接估计那些本可由适当理论提供信息的参数，本例正是如此。</p>
     </section>
   </section>
 
-  <section class="endnotes" id="chapter-16-notes" role="doc-endnotes"><h2>尾注</h2><ol start="219"><li id="note-219">“Vitruvian Can”（“维特鲁威罐头”）这个双关由 Clint Johns（Twitter：@DrClintonJohns）提供。 <a class="backref" href="#note-219-ref" aria-label="返回正文">↩</a></li><li id="note-220">Harte（1988）。 <a class="backref" href="#note-220-ref" aria-label="返回正文">↩</a></li><li id="note-221">关于模型构建哲学有许多好文章，作者推荐三篇：Levins（1966）、Wimsatt（2002）和 Smaldino（2017）。 <a class="backref" href="#note-221-ref" aria-label="返回正文">↩</a></li></ol></section>
+  <section id="sec-16-2"><h2>16.2 隐藏的心智与观测行为</h2>
+    <p>科学推断最基本的问题之一，是所谓的<strong>逆问题</strong>：怎样从观测反推出原因。之所以是个问题，是因为许多不同原因可以产生相同证据。因此，从已知原因向前推导预测观测可能很容易，从观测反向追溯原因却可能非常困难。</p>
+    <p>每个科学分支都有自己的逆问题。本节考察发展心理学中的一个简单示例。儿童作决定时，可能拥有许多不同认知策略；给定一些行为观测，究竟是哪种策略造成的？具体考虑这样一项实验：629 名 4 至 14 岁儿童观看另外四名儿童在三只不同颜色的盒子中作选择（图 16.3）。随后，每名儿童自己选择一次。每轮试验中，三名示范者选择同一种颜色，第四名选择另一种颜色；于是三种颜色中，一种是多数选择，一种是少数选择，最后一种无人选择。怎样从实验判断儿童是否受到多数人的影响？</p>
+    <p>载入数据<sup id="note-222-ref"><a href="#note-222">222</a></sup>仔细看看：</p>
+    <figure class="code-listing" id="code-16-4"><figcaption>R 代码 16.4</figcaption><pre><code>library(rethinking)
+data(Boxes)
+precis(Boxes)</code></pre><pre class="code-output" id="output-16-4"><code>'data.frame': 629 obs. of 5 variables:
+                 mean   sd 5.5% 94.5%      histogram
+y                2.12 0.73    1     3     ▃▁▁▁▇▁▁▁▁▅
+male             0.51 0.50    0     1     ▇▁▁▁▁▁▁▁▁▇
+age              8.03 2.50    5    13     ▇▃▅▃▃▃▂▂▂▁
+majority_first   0.48 0.50    0     1     ▇▁▁▁▁▁▁▁▁▇
+culture          3.75 1.96    1     8 ▃▂▁▇▁▂▁▂▁▂▁▁▁▁</code></pre></figure>
+    <figure class="book-figure choice-box-figure" id="fig-16-3"><svg viewBox="0 0 760 520" role="img" aria-labelledby="fig-16-3-title fig-16-3-desc"><title id="fig-16-3-title">儿童选择箱实验装置</title><desc id="fig-16-3-desc">桌上选择箱有黄蓝红三根管道，一名儿童把球放入管道，玩具从盒子下方出来。</desc><g fill="none" stroke="#3d424a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><rect x="105" y="355" width="330" height="35" fill="#a6a7aa"/><line x1="135" y1="390" x2="135" y2="475"/><line x1="405" y1="390" x2="405" y2="475"/><rect x="150" y="270" width="240" height="90" fill="#42474d"/></g><g stroke="#2d3136" stroke-width="4"><path d="M175 270 L155 155 L205 145 L225 270z" fill="#f5c443"/><path d="M235 270 L230 130 L280 130 L285 270z" fill="#4056ad"/><path d="M295 270 L325 150 L373 163 L345 270z" fill="#c6463f"/></g><circle cx="540" cy="135" r="40" fill="#f2c29b" stroke="#3d424a" stroke-width="4"/><path d="M502 125 Q540 70 580 120 L575 90 Q600 100 588 130" fill="#26282b"/><path d="M495 195 Q540 165 585 195 L605 325 L485 325z" fill="#b866c4" stroke="#3d424a" stroke-width="4"/><g fill="none" stroke="#3d424a" stroke-width="7" stroke-linecap="round"><line x1="505" y1="205" x2="415" y2="165"/><line x1="415" y1="165" x2="350" y2="145"/><line x1="575" y1="210" x2="620" y2="290"/><line x1="510" y1="325" x2="500" y2="445"/><line x1="575" y1="325" x2="595" y2="445"/></g><circle cx="348" cy="140" r="14" fill="#6874ef"/><g fill="#263f86" font-family="-apple-system, BlinkMacSystemFont, PingFang SC, sans-serif"><text x="270" y="315" text-anchor="middle" font-size="24" font-weight="700" fill="#fff">选择箱</text><text x="270" y="505" text-anchor="middle" font-size="20">球落入彩色管道，玩具从箱中出现</text></g></svg><figcaption><strong>图 16.3：</strong>实验所用装置。“选择箱”有三根颜色各异的管道；把球投入管道后，玩具会从箱中出现。四名儿童先作示范，随后记录第五名儿童的选择。前四人的选择怎样影响第五人？</figcaption></figure>
+    <p>这里的结果 <code>y</code> 取值 1、2、3，表示三种选项中哪一个被选中：1 表示无人示范的颜色，2 表示多数示范者选择的颜色，3 表示少数示范者选择的颜色。本例还会用到变量 <code>majority_first</code>，它表示多数颜色是否先于少数颜色被示范；试验之间对该顺序作了平衡。其他变量也很有趣，但暂时放到一边。</p>
+    <p>我们希望利用结果 <code>y</code> 推断儿童选择颜色时采用的策略。结果分布中，有 45% 选择了多数颜色：</p>
+    <figure class="code-listing" id="code-16-5"><figcaption>R 代码 16.5</figcaption><pre><code>table( Boxes$y ) / length( Boxes$y )</code></pre><pre class="code-output" id="output-16-5"><code>        1         2         3
+0.2114467 0.4562798 0.3322734</code></pre></figure>
+    <p>这是否意味着 45% 的儿童采用“跟随多数”策略？不是。核心推断问题在于：可作三种选择，却有许多可能策略；而不同策略可能在同一轮产生相同选择。例如，儿童可能只是随机选择，这种策略有三分之一的机会给出与“跟随多数”儿童相同的预测。对这些选择拟合 GLM，会推断行为频率；但我们想推断的是策略。怎样才能做到？</p>
+    <aside class="source-erratum" id="erratum-16-hidden-minds-typos"><strong>原文说明：</strong>PDF 第 559 页的 “on a speicfic scale” 拼错了 <em>specific</em>；“One of the most basic problem” 应为复数 <em>problems</em>；“it can very hard” 漏排 <em>be</em>。译稿均按上下文订正。</aside>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 16 章 PDF 第 553–558 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 559 页继续。</aside>
+    <section id="sec-16-2-1"><h3>16.2.1 科学模型</h3>
+      <p>关键一如往常，是从生成角度思考。例如，有一群儿童，其中一半随机选择，另一半跟随多数。模拟这些儿童的选择，就能判断我们会多常看到代表多数颜色的“2”号选择。</p>
+      <figure class="code-listing" id="code-16-6"><figcaption>R 代码 16.6</figcaption><pre><code>set.seed(7)
+N &lt;- 30 # number of children
+
+# half are random
+# sample from 1,2,3 at random for each
+y1 &lt;- sample( 1:3 , size=N/2 , replace=TRUE )
+
+# half follow majority
+y2 &lt;- rep( 2 , N/2 )
+
+# combine and shuffle y1 and y2
+y &lt;- sample( c(y1,y2) )
+
+# count the 2s
+sum(y==2)/N</code></pre><pre class="code-output" id="output-16-6"><code>[1] 0.6333333</code></pre></figure>
+      <p>大约三分之二的选择落在多数颜色上，但真正跟随多数的儿童只有一半。上面只模拟了一次，却已展示问题所在：不同隐藏策略能产生相同行为时，对策略的推断远比单纯统计行为复杂。</p>
+      <p>下面考虑儿童可能使用的五种不同策略：</p>
+      <ol class="strategy-list" id="list-16-five-strategies"><li><strong>跟随多数：</strong>复制多数示范者选择的颜色。</li><li><strong>跟随少数：</strong>复制少数示范者选择的颜色。</li><li><strong>特立独行：</strong>选择没有任何示范者选择的颜色。</li><li><strong>随机：</strong>忽略示范者，随机选择一种颜色。</li><li><strong>跟随第一：</strong>复制最先示范的颜色；当 <code>majority_first</code> 等于 1 时，它是多数颜色，等于 0 时则是少数颜色。</li></ol>
+      <p>每种策略都对应一个含三个概率的向量，三个选择各一个。例如“随机”是 <span class="math-inline">[1/3, 1/3, 1/3]</span>。较复杂的是“跟随第一”，因为它取决于呈现顺序。</p>
+      <p>一个显而易见的问题是：为什么选择这几种策略？同样显而易见的回答是：因为它们在先验上看起来合理。如果你认为其中某些不合理，或者觉得还应加入更多策略，同一个生成框架都能容纳。</p>
+    </section>
+
+    <section id="sec-16-2-2"><h3>16.2.2 统计模型</h3>
+      <p>现在需要一个反映上述生成模型的统计模型。记住，统计模型的运行方向与生成模型相反：在生成模型中，假定策略并模拟观测行为；在统计模型中，则假定观测行为（数据）并模拟策略（参数）。</p>
+      <p>本例无法直接测量每名儿童的策略，它是未观测变量。但每种策略产生每种选择的概率都是特定的。可以利用这个事实，在用参数指定各策略概率后，计算每种选择的概率；随后放出 Bayes，取回每种策略的后验分布。不过在放出 Bayes 之前，还要列举参数、为每个参数指定先验，并解决若干编码技术问题。下面逐步完成。</p>
+      <p>未观测变量，是儿童采用五种策略各自的概率。这意味着五个数；但由于它们必须和为 1，只需四个参数。有一种叫作<strong>单纯形</strong>的变量类型能替我们处理：单纯形是一个数值向量，各值之和必须等于某个常数，通常为 1。Stan 允许把参数向量声明成单纯形，并自动管理“和固定”这项记账工作。可以给单纯形指定 Dirichlet 先验，也就是概率分布的先验。第 12 章构造有序类别预测变量时，已经用过 Dirichlet 与单纯形。这里对策略概率的单纯形使用弱均匀先验，并将其记作 <var>p</var>：</p>
+      <div class="equation-block wallis-equation" id="eq-16-strategy-dirichlet-prior"><div><strong>p</strong> ∼ Dirichlet([4, 4, 4, 4, 4])</div></div>
+      <p>正如第 12 章所见，这个先验并不表示我们预期各策略等概率；它表示任何一种策略都可能比任何另一种更常见或更少见。若把这些 4 调得更大，先验才会开始表达“预期它们实际相等”。</p>
+      <p>现在怎样表达数据的概率，也就是 likelihood？对于每个观测选择 <var>y</var><sub><var>i</var></sub>，每种策略 <var>s</var> 都意味着看到 <var>y</var><sub><var>i</var></sub> 的某个概率。把它记作 <span class="math-inline">Pr(<var>y</var><sub><var>i</var></sub> | <var>s</var>)</span>；其余定义与对未知策略取平均的 mixture likelihood 从下一页继续。</p>
+      <p class="continuation-note">策略 mixture likelihood、完整统计模型和 16.2.3 的 Stan 实现，将从原书 PDF 第 562 页继续。</p>
+    </section>
+  </section>
+
+  <section class="endnotes" id="chapter-16-notes" role="doc-endnotes"><h2>尾注</h2><ol start="219"><li id="note-219">“Vitruvian Can”（“维特鲁威罐头”）这个双关由 Clint Johns（Twitter：@DrClintonJohns）提供。 <a class="backref" href="#note-219-ref" aria-label="返回正文">↩</a></li><li id="note-220">Harte（1988）。 <a class="backref" href="#note-220-ref" aria-label="返回正文">↩</a></li><li id="note-221">关于模型构建哲学有许多好文章，作者推荐三篇：Levins（1966）、Wimsatt（2002）和 Smaldino（2017）。 <a class="backref" href="#note-221-ref" aria-label="返回正文">↩</a></li><li id="note-222">资料来自 van Leeuwen 等（2018）。 <a class="backref" href="#note-222-ref" aria-label="返回正文">↩</a></li></ol></section>
+
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 16 章 PDF 第 553–561 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 562 页继续。</aside>
 </article>

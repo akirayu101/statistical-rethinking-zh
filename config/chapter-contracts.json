@@ -2879,7 +2879,7 @@
   },
   "chapter-16": {
     "required_status": "in_progress",
-    "source_pages": [553, 558],
+    "source_pages": [553, 561],
     "required_ids": [
       "intro-16",
       "rethinking-16-bespoke",
@@ -2908,10 +2908,26 @@
       "erratum-16-cylinder-typos",
       "sec-16-1-3",
       "eq-16-log-cylinder-start",
+      "eq-16-log-cylinder-expanded",
+      "sec-16-2",
+      "note-222-ref",
+      "code-16-4",
+      "output-16-4",
+      "fig-16-3",
+      "code-16-5",
+      "output-16-5",
+      "erratum-16-hidden-minds-typos",
+      "sec-16-2-1",
+      "code-16-6",
+      "output-16-6",
+      "list-16-five-strategies",
+      "sec-16-2-2",
+      "eq-16-strategy-dirichlet-prior",
       "chapter-16-notes",
       "note-219",
       "note-220",
-      "note-221"
+      "note-221",
+      "note-222"
     ],
     "required_headings": [
       "广义线性疯狂",
@@ -2922,24 +2938,27 @@
       "16.1.2 统计模型",
       "再思考：先验从不任意",
       "16.1.3 伪装的 GLM",
+      "16.2 隐藏的心智与观测行为",
+      "16.2.1 科学模型",
+      "16.2.2 统计模型",
       "尾注"
     ],
     "counts": {
-      "section": 5,
-      "figure": 5,
+      "section": 8,
+      "figure": 9,
       "figure img": 1,
-      ".book-figure": 2,
-      ".code-listing": 3,
-      ".code-output": 0,
+      ".book-figure": 3,
+      ".code-listing": 6,
+      ".code-output": 3,
       ".rethinking-box": 3,
       ".overthinking-box": 0,
       ".book-quote": 0,
-      ".equation-block": 9,
-      ".wallis-equation": 9,
-      ".source-erratum": 2,
+      ".equation-block": 11,
+      ".wallis-equation": 11,
+      ".source-erratum": 3,
       ".chapter-introduction": 1,
       ".continuation-note": 1,
-      ".endnotes li": 3
+      ".endnotes li": 4
     }
   }
 }
