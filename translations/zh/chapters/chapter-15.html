@@ -1,5 +1,5 @@
-<article class="book-article" data-chapter="chapter-15" data-source-pages="517-533">
-  <header class="chapter-header"><p class="eyebrow">第十五章</p><h1>缺失数据与其他机会</h1><p class="source-range">当前译稿对应原书 PDF 第 517–533 页</p></header>
+<article class="book-article" data-chapter="chapter-15" data-source-pages="517-536">
+  <header class="chapter-header"><p class="eyebrow">第十五章</p><h1>缺失数据与其他机会</h1><p class="source-range">当前译稿对应原书 PDF 第 517–536 页</p></header>
 
   <div class="chapter-introduction" id="intro-15">
     <p>Bayesian 推断的一大优点，是不必非得聪明才行。例如，有一道经典概率谜题叫作<strong>Bertrand 盒子悖论</strong>。<sup id="note-210-ref"><a href="#note-210">210</a></sup> 我偏爱的版本用煎饼来讲。假设我煎了三张饼：第一张两面都焦了（BB），第二张只焦了一面（BU），第三张两面都没焦（UU）。现在我随机拿一张给你，盘中朝上的一面恰好焦了。另一面也焦了的概率是多少？</p>
@@ -285,11 +285,94 @@ Hm[D==1] &lt;- NA</code></pre></figure>
       <p>变量 <var>V</var> 可以代表与人类的系统发育相似性。人类拥有多得不合理的新皮层——这也是我们关注它的原因——与人类亲缘更近的其他灵长类往往也有更多新皮层。若这些灵长类受到更深入的研究，随着与人类的距离增加，<var>B</var> 值就会更容易缺失。这个情景几乎唯一的希望，是详细了解产生 <var>R</var><sub><var>B</var></sub> 的过程，从而能够插补 <var>B</var>；而这几乎总会要求很强的建模假设，且通常无法用手头数据检验。</p>
       <p>在上述每张 DAG 中，我们都想插补 <var>B</var> 的缺失值。前两个情景是为了不丢掉对应的 <var>M</var> 值；第三个情景则必须插补，才有希望合理估计 <span class="math-inline"><var>B</var> → <var>K</var></span>。下面看看实际怎样做。</p>
       <p>Bayesian 插补的统计诀窍，是为含有缺失值的变量建立模型。每个缺失值都分配一个独有参数；观测值会提供关于数值分布的信息，而该分布会成为缺失值的先验，随后由完整模型更新。</p>
-      <p class="continuation-note">每个缺失值的后验分布、插补模型方程与 <code>ulam</code> 实现，将从原书 PDF 第 534 页继续。</p>
+      <p>这样，每个缺失值都会得到一个后验分布。在概念上，这与测量误差情形相似：若不知道某件事，就以已知信息为条件，让 Bayes 来弄清其余部分。</p>
+      <p>本例中，含缺失值的变量是新皮层百分比，仍称作 <var>B</var>，代表“brain”：</p>
+      <div class="equation-block wallis-equation" id="eq-15-imputation-vector"><div><var>B</var> = [0.55, <var>B</var><sub>2</sub>, <var>B</var><sub>3</sub>, <var>B</var><sub>4</sub>, 0.65, 0.65, …, 0.76, 0.75]</div></div>
+      <p>每个缺失值所在的索引 <var>i</var>，都有一个参数 <var>B</var><sub><var>i</var></sub> 为它形成后验分布。最简单的模型直接从 <var>B</var> 自身的正态分布插补 <var>B</var>。模型如下：</p>
+      <div class="equation-block wallis-equation" id="eq-15-imputation-model"><div class="annotated-equation-line"><span class="equation-expression"><var>K</var><sub><var>i</var></sub> ∼ Normal(<var>μ</var><sub><var>i</var></sub>, <var>σ</var>)</span><span class="equation-label">[结果 <var>K</var> 的分布]</span></div><div class="annotated-equation-line"><span class="equation-expression"><var>μ</var><sub><var>i</var></sub> = <var>α</var> + <var>β</var><sub><var>B</var></sub><var>B</var><sub><var>i</var></sub> + <var>β</var><sub><var>M</var></sub> log <var>M</var><sub><var>i</var></sub></span><span class="equation-label">[线性模型]</span></div><div class="annotated-equation-line"><span class="equation-expression"><var>B</var><sub><var>i</var></sub> ∼ Normal(<var>ν</var>, <var>σ</var><sub><var>B</var></sub>)</span><span class="equation-label">[观测/缺失 <var>B</var> 的分布]</span></div><div><var>α</var> ∼ Normal(0, 0.5)</div><div><var>β</var><sub><var>B</var></sub> ∼ Normal(0, 0.5)</div><div><var>β</var><sub><var>M</var></sub> ∼ Normal(0, 0.5)</div><div><var>σ</var> ∼ Exponential(1)</div><div><var>ν</var> ∼ Normal(0.5, 1)</div><div><var>σ</var><sub><var>B</var></sub> ∼ Exponential(1)</div></div>
+      <p>该模型忽略了 <var>B</var> 与 <var>M</var> 通过 <var>U</var> 相关。为保持简单，先从它开始。起初，<span class="math-inline"><var>B</var><sub><var>i</var></sub> ∼ Normal(<var>ν</var>, <var>σ</var><sub><var>B</var></sub>)</span> 的解释有些别扭：当 <var>B</var><sub><var>i</var></sub> 已观测时，这一行就是似然，和普通线性回归一样；模型会学习与数据一致的 <var>ν</var> 与 <var>σ</var><sub><var>B</var></sub> 分布。但当 <var>B</var><sub><var>i</var></sub> 缺失、因而成为参数时，同一行被解释成先验。由于参数 <var>ν</var> 与 <var>σ</var><sub><var>B</var></sub> 也由估计得到，这个先验会像前几章的变化效应一样从数据中学习。</p>
+      <p>这个模型有一个问题：它假设每个 <var>B</var> 值都具有标准化 Gaussian 不确定性。然而这些值是比例，所以必然介于 0 与 1 之间；因此还能做得更好，章末练习会展示方法。不过要记住，给变量指定 Gaussian 分布，并不真表示其频数分布是一条钟形曲线；这里只表示我们仅用均值和方差描述它。Gaussian 是非常保守的选择，因为在给定方差下，它是最平坦的无界分布（第 10 章）。但正如第 7 章早已说明，若有理由怀疑分布尾部很厚，就绝对不要使用 Gaussian 分布。</p>
+      <p>插补模型有多种实现方式。每种方式都稍显别扭，因为必须尊重缺失值的位置，这意味着大量索引管理。这里采用与上述讨论紧密对应的方法：把观测值与参数合并成一个向量，在回归中把它当作“数据”。为方便起见，<code>ulam</code> 可以自动完成这种合并。本节末的“过度思考”框会给出原始 Stan 代码的完整实现。</p>
+      <aside class="source-erratum" id="erratum-15-imputation-indexing"><strong>原文说明：</strong>PDF 第 534 页的 “the locations of missing values have to respected” 漏排 <em>be</em>；译稿按 “have to be respected” 处理。</aside>
+      <p>要用 <code>ulam</code> 拟合模型，先载入数据并转换预测变量：</p>
+      <figure class="code-listing" id="code-15-16"><figcaption>R 代码 15.16</figcaption><pre><code>library(rethinking)
+data(milk)
+d &lt;- milk
+d$neocortex.prop &lt;- d$neocortex.perc / 100
+d$logmass &lt;- log(d$mass)
+dat_list &lt;- list(
+    K = standardize( d$kcal.per.g ),
+    B = standardize( d$neocortex.prop ),
+    M = standardize( d$logmass ) )</code></pre></figure>
+      <p>模型代码看起来完全普通，唯一例外是给 <var>B</var> 定义了分布：</p>
+      <figure class="code-listing" id="code-15-17"><figcaption>R 代码 15.17</figcaption><pre><code>m15.3 &lt;- ulam(
+    alist(
+        K ~ dnorm( mu , sigma ),
+        mu &lt;- a + bB*B + bM*M,
+        B ~ dnorm( nu , sigma_B ),
+        c(a,nu) ~ dnorm( 0 , 0.5 ),
+        c(bB,bM) ~ dnorm( 0, 0.5 ),
+        sigma_B ~ dexp( 1 ),
+        sigma ~ dexp( 1 )
+    ) , data=dat_list , chains=4 , cores=4 )</code></pre></figure>
+      <p>启动模型时，它会通知你发现 12 个 <code>NA</code> 值并正在尝试插补。完成后查看后验摘要：</p>
+      <figure class="code-listing" id="code-15-18"><figcaption>R 代码 15.18</figcaption><pre><code>precis( m15.3 , depth=2 )</code></pre><pre class="code-output" id="output-15-18"><code>              mean   sd  5.5% 94.5% n_eff Rhat
+nu           -0.04 0.20 -0.35  0.28  2013    1
+a             0.03 0.16 -0.22  0.28  2319    1
+bM           -0.55 0.21 -0.88 -0.21  1238    1
+bB            0.50 0.25  0.09  0.88   909    1
+sigma_B       1.00 0.17  0.77  1.31  1593    1
+sigma         0.84 0.15  0.63  1.11  1266    1
+B_impute[1]  -0.56 0.91 -1.95  0.95  2602    1
+B_impute[2]  -0.69 0.91 -2.10  0.79  2025    1
+B_impute[3]  -0.68 0.94 -2.10  0.84  2086    1
+B_impute[4]  -0.25 0.87 -1.61  1.15  3091    1
+B_impute[5]   0.48 0.85 -0.93  1.82  2532    1
+B_impute[6]  -0.16 0.85 -1.50  1.16  2626    1
+B_impute[7]   0.19 0.85 -1.08  1.58  2640    1
+B_impute[8]   0.28 0.86 -1.06  1.62  3697    1
+B_impute[9]   0.52 0.87 -0.93  1.84  2574    1
+B_impute[10] -0.46 0.89 -1.87  0.93  2092    1
+B_impute[11] -0.27 0.86 -1.61  1.09  2650    1
+B_impute[12]  0.17 0.85 -1.21  1.49  2749    1</code></pre></figure>
+      <p>这里列出了 12 个缺失值各自的插补分布，上方则是普通回归参数。为了看看纳入所有案例怎样影响推断，快速与删除缺失案例所得估计比较。下面会删除含缺失值的案例，但保持模型完全相同：</p>
+      <figure class="code-listing" id="code-15-19"><figcaption>R 代码 15.19</figcaption><pre><code>obs_idx &lt;- which( !is.na(d$neocortex.prop) )
+dat_list_obs &lt;- list(
+    K = dat_list$K[obs_idx],
+    B = dat_list$B[obs_idx],
+    M = dat_list$M[obs_idx] )
+m15.4 &lt;- ulam(
+    alist(
+        K ~ dnorm( mu , sigma ),
+        mu &lt;- a + bB*B + bM*M,
+        B ~ dnorm( nu , sigma_B ),
+        c(a,nu) ~ dnorm( 0 , 0.5 ),
+        c(bB,bM) ~ dnorm( 0, 0.5 ),
+        sigma_B ~ dexp( 1 ),
+        sigma ~ dexp( 1 )
+    ) , data=dat_list_obs , chains=4 , cores=4 )
+precis( m15.4 )</code></pre><pre class="code-output" id="output-15-19"><code>        mean   sd  5.5% 94.5% n_eff Rhat
+nu       0.00 0.22 -0.34  0.37  1821    1
+a        0.10 0.20 -0.21  0.42  1923    1
+bM      -0.63 0.25 -1.01 -0.21  1276    1
+bB       0.59 0.27  0.14  1.01  1244    1
+sigma_B 1.04 0.18  0.79  1.36  1458    1
+sigma    0.88 0.19  0.64  1.20  1145    1</code></pre></figure>
+      <p>用图比较这个后验与前一个会更容易：</p>
+      <figure class="code-listing" id="code-15-20"><figcaption>R 代码 15.20</figcaption><pre><code>plot( coeftab(m15.3,m15.4) , pars=c("bB","bM") )</code></pre></figure>
+      <figure class="book-figure coefficient-comparison-figure" id="plot-15-imputation-coefficients"><svg viewBox="0 0 900 470" role="img" aria-labelledby="plot-15-imputation-title plot-15-imputation-desc"><title id="plot-15-imputation-title">插补模型与完整案例模型的系数比较</title><desc id="plot-15-imputation-desc">bB 与 bM 的两组后验均值和百分之八十九相容区间；插补模型 m15.3 的两个区间都更窄。</desc><rect width="900" height="470" fill="#fff"/><line x1="560" y1="45" x2="560" y2="395" stroke="#b8bbb8" stroke-width="2"/><g font-size="21" fill="#263f86" font-weight="700"><text x="75" y="70">bB</text><text x="75" y="265">bM</text></g><g font-size="18" fill="#30332e"><text x="140" y="115">m15.4</text><text x="140" y="160">m15.3</text><text x="140" y="310">m15.4</text><text x="140" y="355">m15.3</text></g><g stroke="#30332e" stroke-width="5" stroke-linecap="round"><line x1="597" y1="108" x2="828" y2="108"/><line x1="585" y1="153" x2="793" y2="153"/><line x1="293" y1="303" x2="504" y2="303"/><line x1="327" y1="348" x2="504" y2="348"/></g><g fill="#fff" stroke="#30332e" stroke-width="2"><circle cx="716" cy="108" r="7"/><circle cx="693" cy="153" r="7"/><circle cx="393" cy="303" r="7"/><circle cx="414" cy="348" r="7"/></g><line x1="270" y1="395" x2="850" y2="395" stroke="#343732" stroke-width="2"/><g font-size="17" fill="#30332e" text-anchor="middle"><text x="295" y="425">−1.0</text><text x="428" y="425">−0.5</text><text x="560" y="425">0.0</text><text x="693" y="425">0.5</text><text x="825" y="425">1.0</text><text x="560" y="458" fill="#263f86" font-weight="700">估计值</text></g></svg><figcaption>代码 15.20 的输出。点是后验均值，水平线是 89% 相容区间；插补缺失值的 <code>m15.3</code> 在两个效应上都有更窄的边际分布。</figcaption></figure>
+      <p>插补缺失值的模型 <code>m15.3</code>，对两个效应都有更窄的边际分布。为何会这样？因为我们使用了更多信息：那些没有缺失、却被 <code>m15.4</code> 一并丢弃的体重值。这些值暗示体重效应 <code>bM</code> 略小，而影响又会传递到 <code>bB</code>。</p>
+      <p>再画些图，把这里发生的事可视化：</p>
+      <figure class="code-listing" id="code-15-21"><figcaption>R 代码 15.21（续下页）</figcaption><pre><code>post &lt;- extract.samples( m15.3 )
+B_impute_mu &lt;- apply( post$B_impute , 2 , mean )
+B_impute_ci &lt;- apply( post$B_impute , 2 , PI )
+
+# B vs K</code></pre></figure>
+      <p class="continuation-note">代码 15.21 的两组绘图语句、图 15.5 与插补值解释，将从原书 PDF 第 537 页继续。</p>
     </section>
   </section>
 
   <section class="endnotes" id="chapter-15-notes" role="doc-endnotes"><h2>尾注</h2><ol start="210"><li id="note-210">Joseph Bertrand，1889，<cite>Calcul des probabilités</cite>。 <a class="backref" href="#note-210-ref" aria-label="返回正文">↩</a></li><li id="note-211">这一主题有几篇很好的文章，各有自己的风格与记号变体。参见 Hernán 与 Cole（2009）、Loken 与 Gelman（2017）、Brakenhoff 等（2018）以及 van Smeden 等（2019）。 <a class="backref" href="#note-211-ref" aria-label="返回正文">↩</a></li><li id="note-212">关于这种做法富有建设性的批评，参见 Hernán 与 Cole（2009）。 <a class="backref" href="#note-212-ref" aria-label="返回正文">↩</a></li><li id="note-213">关于当代方法（Bayesian 与其他方法）的综述，参见 Molenberghs 等（2014）。 <a class="backref" href="#note-213-ref" aria-label="返回正文">↩</a></li><li id="note-214">参见 MacKenzie 等（2017）；这是一本意在应用的综合性著作。 <a class="backref" href="#note-214-ref" aria-label="返回正文">↩</a></li><li id="note-215">背景和更多术语见 Rubin（1976）及 Rubin 与 Little（2002）。Rubin 1976 年文章第 4 节对缺失数据成因给出了清晰定义，很有价值。 <a class="backref" href="#note-215-ref" aria-label="返回正文">↩</a></li></ol></section>
 
-  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 15 章 PDF 第 517–533 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 534 页继续。</aside>
+  <aside class="translation-status" aria-label="翻译状态"><strong>译稿状态：</strong>第 15 章 PDF 第 517–536 页已完成翻译、逐页核对、结构契约检查与桌面/移动端验收，达到页面级 verified。下一批从 PDF 第 537 页继续。</aside>
 </article>
