@@ -82,10 +82,14 @@ def main() -> int:
         ids = [tag.get("id") for tag in soup.select("[id]")]
         if len(ids) != len(set(ids)):
             failures.append(f"{path.name}: duplicate HTML id")
+        contract = CONTRACTS.get(path.stem)
         text = article.get_text(" ", strip=True)
         ratio = chinese_ratio(text)
-        if ratio < 0.58:
-            failures.append(f"{path.name}: Chinese ratio too low ({ratio:.3f})")
+        minimum_ratio = float(contract.get("minimum_chinese_ratio", 0.58)) if contract else 0.58
+        if ratio < minimum_ratio:
+            failures.append(
+                f"{path.name}: Chinese ratio too low ({ratio:.3f}; minimum {minimum_ratio:.3f})"
+            )
         source_pages = article.get("data-source-pages", "")
         if not source_pages:
             failures.append(f"{path.name}: data-source-pages missing")
@@ -138,7 +142,6 @@ def main() -> int:
         for svg in article.select("svg[role='img']"):
             if svg.select_one("title") is None or svg.select_one("desc") is None:
                 failures.append(f"{path.name}: accessible SVG requires title and desc")
-        contract = CONTRACTS.get(path.stem)
         if contract:
             required_status = contract.get("required_status")
             actual_status = PROGRESS.get(path.stem, {}).get("status")
