@@ -82,6 +82,19 @@ def main() -> int:
             failures.append(f"{path.name}: unexpected script source")
         if len(scripts) != 1 or soup.select("iframe, object, embed"):
             failures.append(f"{path.name}: unexpected active/external content")
+        audio_players = article.select(".audio-reader")
+        expected_audio = path.stem in {"chapter-01", "chapter-02", "chapter-03"}
+        if expected_audio and len(audio_players) != 1:
+            failures.append(f"{path.name}: expected one chapter audio player")
+        if not expected_audio and audio_players:
+            failures.append(f"{path.name}: unexpected chapter audio player")
+        for audio in article.select(".audio-reader audio[src]"):
+            src = audio.get("src", "")
+            asset = SITE / src.lstrip("/")
+            if not asset.is_file():
+                failures.append(f"{path.name}: missing audio asset {src}")
+            if audio.get("preload") != "metadata":
+                failures.append(f"{path.name}: chapter audio must use metadata preload")
         ids = [tag.get("id") for tag in soup.select("[id]")]
         if len(ids) != len(set(ids)):
             failures.append(f"{path.name}: duplicate HTML id")

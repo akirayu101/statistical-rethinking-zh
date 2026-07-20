@@ -17,6 +17,7 @@ CONFIG = json.loads((ROOT / "config" / "book.json").read_text(encoding="utf-8"))
 PROGRESS = json.loads((ROOT / "translations" / "zh" / "progress.json").read_text(encoding="utf-8"))
 CHAPTERS = ROOT / "translations" / "zh" / "chapters"
 MEDIA = ROOT / "translations" / "zh" / "media"
+AUDIO = ROOT / "translations" / "zh" / "audio"
 SITE = ROOT / "site"
 SITE_BASE_PATH = os.environ.get("SITE_BASE_PATH", "").strip()
 if SITE_BASE_PATH:
@@ -61,7 +62,7 @@ def shell(title: str, body: str, *, page_class: str = "") -> str:
 """
 
 
-def prepare_chapter_body(body: str) -> str:
+def prepare_chapter_body(body: str, chapter: dict[str, object]) -> str:
     """Normalize code-listing chrome without changing executable source text."""
     soup = BeautifulSoup(body, "html.parser")
     for listing in soup.select("figure.code-listing"):
@@ -122,6 +123,52 @@ def prepare_chapter_body(body: str) -> str:
             button.string = "复制"
             controls.append(button)
         caption.append(controls)
+
+    audio_file = AUDIO / f"{chapter['slug']}.m4a"
+    if audio_file.is_file():
+        header = soup.select_one("article.book-article > header.chapter-header")
+        if header is None:
+            raise SystemExit(f"Chapter with audio has no chapter header: {chapter['slug']}")
+        header["class"] = [*header.get("class", []), "has-audio"]
+        chapter_label = f"第 {chapter['number']} 章"
+        player_html = f"""
+<div class="audio-reader" data-audio-id="{esc(chapter['slug'])}" role="region" aria-label="{esc(chapter_label)}音频播放器">
+  <div class="audio-reader-heading">
+    <div>
+      <p class="audio-reader-kicker">本章音频 · AAC 24 kbps</p>
+      <p class="audio-reader-title">聆听{esc(chapter_label)}</p>
+    </div>
+    <p class="audio-reader-memory">播放进度仅保存在当前设备</p>
+  </div>
+  <audio class="audio-reader-native" controls preload="metadata" src="/audio/{esc(chapter['slug'])}.m4a"></audio>
+  <div class="audio-reader-controls">
+    <button class="audio-reader-toggle" type="button" data-audio-toggle aria-pressed="false">播放</button>
+    <div class="audio-reader-timeline">
+      <input type="range" min="0" max="1000" step="1" value="0" data-audio-seek aria-label="播放进度">
+      <span class="audio-reader-time"><span data-audio-current>0:00</span><span aria-hidden="true"> / </span><span data-audio-duration>--:--</span></span>
+    </div>
+    <div class="audio-reader-actions">
+      <button type="button" data-audio-skip="-15" aria-label="后退十五秒">后退 15 秒</button>
+      <button type="button" data-audio-skip="15" aria-label="前进十五秒">前进 15 秒</button>
+      <label>速度
+        <select data-audio-rate aria-label="播放速度">
+          <option value="0.75">0.75×</option>
+          <option value="1" selected>1×</option>
+          <option value="1.25">1.25×</option>
+          <option value="1.5">1.5×</option>
+          <option value="2">2×</option>
+        </select>
+      </label>
+      <button type="button" data-audio-reset>清除进度</button>
+    </div>
+    <p class="audio-reader-status" data-audio-status aria-live="polite">可边读边听，播放进度会自动保存。</p>
+  </div>
+</div>
+"""
+        player = BeautifulSoup(player_html, "html.parser").select_one(".audio-reader")
+        if player is None:
+            raise SystemExit(f"Failed to build audio player: {chapter['slug']}")
+        header.insert_after(player)
 
     if SITE_BASE_PATH:
         for attribute in ("href", "src"):
@@ -185,12 +232,14 @@ def main() -> int:
     shutil.copy2(ROOT / "assets" / "book.js", SITE / "assets" / "book.js")
     if MEDIA.exists():
         shutil.copytree(MEDIA, SITE / "media")
+    if AUDIO.exists():
+        shutil.copytree(AUDIO, SITE / "audio")
     (SITE / "index.html").write_text(build_index(), encoding="utf-8")
     for fragment in sorted(CHAPTERS.glob("*.html")):
         chapter = next((item for item in CONFIG["chapters"] if item["slug"] == fragment.stem), None)
         if chapter is None:
             raise SystemExit(f"Translation fragment has no config entry: {fragment.name}")
-        body = prepare_chapter_body(fragment.read_text(encoding="utf-8"))
+        body = prepare_chapter_body(fragment.read_text(encoding="utf-8"), chapter)
         output = shell(str(chapter["title_zh"]), body, page_class="chapter-page")
         (SITE / "chapters" / fragment.name).write_text(output, encoding="utf-8")
     print(f"built {SITE}")

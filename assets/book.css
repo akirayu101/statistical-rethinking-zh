@@ -50,6 +50,42 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
 .status-reviewed, .status-verified { color: var(--green); background: #e5f3ea; }
 .chapter-header { margin-bottom: 3.2rem; padding-bottom: 2rem; border-bottom: 1px solid var(--line); }
 .chapter-header h1 { color: var(--blue); }
+.chapter-header.has-audio { margin-bottom: 1.35rem; }
+.audio-reader {
+  margin: 0 0 3.2rem; padding: 1.15rem 1.2rem 1rem; border: 1px solid #cfd5e7; border-radius: .85rem;
+  background: linear-gradient(145deg, #f7f8fd, #eef1f9); box-shadow: 0 .55rem 1.6rem rgb(38 63 134 / .08);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; line-height: 1.45;
+}
+.audio-reader-heading { display: flex; gap: 1rem; align-items: end; justify-content: space-between; margin-bottom: .85rem; }
+.audio-reader-kicker { margin: 0 0 .18rem; color: var(--blue); font-size: .72rem; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+.audio-reader-title { margin: 0; color: #202b50; font-size: 1.12rem; font-weight: 750; }
+.audio-reader-memory { margin: 0; color: var(--muted); font-size: .73rem; text-align: right; }
+.audio-reader-native { display: block; width: 100%; height: 2.65rem; }
+.audio-reader-controls { display: none; }
+.audio-reader.is-enhanced .audio-reader-native { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.audio-reader.is-enhanced .audio-reader-controls { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: .75rem .9rem; align-items: center; }
+.audio-reader button, .audio-reader select {
+  min-height: 2.35rem; border: 1px solid #b9c1d9; border-radius: .55rem; background: rgb(255 255 255 / .82);
+  color: #273153; font: 650 .78rem/1 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+}
+.audio-reader button { padding: .55rem .75rem; cursor: pointer; }
+.audio-reader button:hover { border-color: var(--blue); background: #fff; }
+.audio-reader button:focus-visible, .audio-reader select:focus-visible, .audio-reader input:focus-visible { outline: 3px solid rgb(38 63 134 / .22); outline-offset: 2px; }
+.audio-reader button:disabled { cursor: not-allowed; opacity: .55; }
+.audio-reader .audio-reader-toggle { min-width: 5rem; border-color: var(--blue); background: var(--blue); color: #fff; font-size: .86rem; }
+.audio-reader.is-playing .audio-reader-toggle { background: #172b68; }
+.audio-reader-timeline { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .75rem; align-items: center; }
+.audio-reader-timeline input {
+  width: 100%; height: .38rem; margin: 0; border-radius: 999px; appearance: none;
+  background: linear-gradient(to right, var(--blue) var(--audio-progress, 0%), #cdd3e3 var(--audio-progress, 0%)); cursor: pointer;
+}
+.audio-reader-timeline input::-webkit-slider-thumb { width: 1rem; height: 1rem; border: 2px solid #fff; border-radius: 50%; appearance: none; background: var(--blue); box-shadow: 0 0 0 1px #8793b6; }
+.audio-reader-timeline input::-moz-range-thumb { width: .8rem; height: .8rem; border: 2px solid #fff; border-radius: 50%; background: var(--blue); box-shadow: 0 0 0 1px #8793b6; }
+.audio-reader-time { min-width: 7.3rem; color: #4f5670; font-size: .75rem; font-variant-numeric: tabular-nums; text-align: right; }
+.audio-reader-actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+.audio-reader-actions label { display: inline-flex; gap: .4rem; align-items: center; color: #545b72; font-size: .76rem; }
+.audio-reader-actions select { padding: .35rem 1.7rem .35rem .55rem; }
+.audio-reader-status { grid-column: 1 / -1; margin: 0; color: var(--muted); font-size: .73rem; }
 .book-article > p, .book-article section > p { margin: 1.15rem 0; font-size: 1.08rem; text-align: justify; text-justify: inter-ideograph; }
 .book-article sup { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; }
 .book-figure { width: min(60rem, calc(100vw - 2rem)); margin: 2.75rem 0 2.75rem 50%; transform: translateX(-50%); }
@@ -508,6 +544,15 @@ h4 { margin: 2.2rem 0 .9rem; color: #343632; font-size: 1.05rem; line-height: 1.
   .toc-list li { grid-template-columns: 1fr auto; gap: .35rem .7rem; }
   .toc-number { grid-column: 1 / -1; }
   .book-article > p, .book-article section > p { font-size: 1.02rem; text-align: left; }
+  .audio-reader { padding: 1rem; }
+  .audio-reader-heading { display: block; }
+  .audio-reader-memory { margin-top: .25rem; text-align: left; }
+  .audio-reader.is-enhanced .audio-reader-controls { grid-template-columns: 1fr; gap: .8rem; }
+  .audio-reader .audio-reader-toggle { width: 100%; }
+  .audio-reader-timeline { grid-template-columns: 1fr; gap: .4rem; }
+  .audio-reader-time { min-width: 0; text-align: left; }
+  .audio-reader-actions { grid-column: auto; }
+  .audio-reader-status { grid-column: auto; }
   .exercise { padding: .9rem; }
   .exercise p { text-align: left; }
   .scroll-hint { display: block; }

@@ -52,6 +52,10 @@ python3 -m http.server 8877 --directory site
 
 浏览器打开 `http://127.0.0.1:8877/`。
 
+## 有声阅读
+
+前三章提供 AAC 24 kbps 的中文朗读音频。源文件位于 `translations/zh/audio/`，构建时复制到站点的 `/audio/` 路径，并在对应章节标题下方自动加入播放器。播放器支持进度拖动、前后跳转、倍速播放与本机断点记忆；页面加载时只读取音频元数据，不会自动下载整章。
+
 ## GitHub Pages
 
 推送到 `main` 分支后，`.github/workflows/pages.yml` 会先运行全站、覆盖率、第二次精译与第三次精译审计，再以 `/statistical-rethinking-zh` 为站点路径构建并发布 GitHub Pages。本地构建不设置 `SITE_BASE_PATH`，因此预览地址保持不变。
